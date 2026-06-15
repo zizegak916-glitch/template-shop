@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusAI - AI-Powered SaaS Landing Page Template</title>
+<title>SaaS Landing Page Template - Dark Theme</title>
 <style>
 /* ============================
-   TEMPLATE: NexusAI Landing Page
-   Price: $29 | Customize in 5 min
-   Change colors via CSS variables below
+   TEMPLATE: Dark SaaS Landing Page
+   Customize via CSS variables below
+   Replace all placeholder content with your own
    ============================ */
 :root {
   --primary: #6C5CE7;
@@ -23,155 +23,148 @@
   --radius: 16px;
   --glow: 0 0 60px rgba(108,92,231,0.15);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', -apple-system, 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
-a { color: var(--primary-light); text-decoration: none; transition: color 0.2s; }
-a:hover { color: #fff; }
-.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,'PingFang SC',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--primary-light);text-decoration:none;transition:color .2s}
+a:hover{color:#fff}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
 
-/* ===== NAV ===== */
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 16px 0; backdrop-filter: blur(20px); background: rgba(10,10,26,0.8); border-bottom: 1px solid var(--border); }
-nav .container { display: flex; align-items: center; justify-content: space-between; }
-.logo { font-size: 22px; font-weight: 800; color: #fff; }
-.logo span { color: var(--primary-light); }
-.nav-links { display: flex; gap: 32px; align-items: center; }
-.nav-links a { color: var(--text-dim); font-size: 14px; font-weight: 500; }
-.nav-links a:hover { color: #fff; }
-.btn-nav { background: var(--primary); color: #fff !important; padding: 10px 24px; border-radius: 8px; font-weight: 600; }
-.btn-nav:hover { background: #5a4bd1; }
-.mobile-menu { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;backdrop-filter:blur(20px);background:rgba(10,10,26,.8);border-bottom:1px solid var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:22px;font-weight:800;color:#fff}
+.logo span{color:var(--primary-light)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--text-dim);font-size:14px;font-weight:500}
+.nav-links a:hover{color:#fff}
+.btn-nav{background:var(--primary);color:#fff!important;padding:10px 24px;border-radius:8px;font-weight:600}
+.btn-nav:hover{background:#5a4bd1}
+.mobile-menu{display:none;background:none;border:none;color:#fff;font-size:24px;cursor:pointer}
 
-/* ===== HERO ===== */
-.hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 0 80px; position: relative; }
-.hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(108,92,231,0.12) 0%, transparent 70%); pointer-events: none; }
-.hero .container { text-align: center; position: relative; z-index: 1; }
-.hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(108,92,231,0.1); border: 1px solid rgba(108,92,231,0.2); padding: 8px 20px; border-radius: 999px; font-size: 13px; color: var(--primary-light); margin-bottom: 32px; }
-.hero-badge .dot { width: 8px; height: 8px; background: #00cec9; border-radius: 50%; animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-h1 { font-size: clamp(40px, 7vw, 72px); font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -0.03em; }
-h1 .gradient { background: linear-gradient(135deg, #6C5CE7, #00cec9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { font-size: 18px; color: var(--text-dim); max-width: 560px; margin: 0 auto 40px; }
-.hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; transition: all 0.2s; border: none; cursor: pointer; }
-.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 24px rgba(108,92,231,0.4); }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(108,92,231,0.5); }
-.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
-.btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-.hero-visual { margin-top: 60px; position: relative; }
-.hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; box-shadow: var(--glow); max-width: 700px; margin: 0 auto; }
-.hero-card-bar { display: flex; gap: 8px; margin-bottom: 24px; }
-.hero-card-bar span { width: 12px; height: 12px; border-radius: 50%; }
-.hero-card-bar span:nth-child(1) { background: #ff5f57; }
-.hero-card-bar span:nth-child(2) { background: #ffbd2e; }
-.hero-card-bar span:nth-child(3) { background: #28c840; }
-.hero-card pre { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--primary-light); line-height: 1.8; }
-.hero-card .comment { color: var(--text-dim); }
-.hero-card .string { color: #00cec9; }
-.hero-card .keyword { color: #fd79a8; }
-.hero-card .func { color: #fdcb6e; }
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(108,92,231,.12) 0%,transparent 70%);pointer-events:none}
+.hero .container{text-align:center;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,92,231,.1);border:1px solid rgba(108,92,231,.2);padding:8px 20px;border-radius:999px;font-size:13px;color:var(--primary-light);margin-bottom:32px}
+.hero-badge .dot{width:8px;height:8px;background:#00cec9;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-size:clamp(40px,7vw,72px);font-weight:800;line-height:1.1;margin-bottom:24px;letter-spacing:-.03em}
+h1 .gradient{background:linear-gradient(135deg,#6C5CE7,#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:var(--text-dim);max-width:560px;margin:0 auto 40px}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;font-size:16px;font-weight:600;transition:all .2s;border:none;cursor:pointer}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 24px rgba(108,92,231,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,92,231,.5)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
 
-/* ===== LOGOS ===== */
-.logos { padding: 60px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.logos p { text-align: center; font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; }
-.logos-grid { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; opacity: 0.4; }
-.logos-grid span { font-size: 20px; font-weight: 700; color: var(--text-dim); }
+/* HERO CODE PREVIEW */
+.hero-visual{margin-top:60px;position:relative}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;box-shadow:var(--glow);max-width:700px;margin:0 auto;text-align:left}
+.hero-card-bar{display:flex;gap:8px;margin-bottom:24px}
+.hero-card-bar span{width:12px;height:12px;border-radius:50%}
+.hero-card-bar span:nth-child(1){background:#ff5f57}
+.hero-card-bar span:nth-child(2){background:#ffbd2e}
+.hero-card-bar span:nth-child(3){background:#28c840}
+.hero-card pre{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--primary-light);line-height:1.8;white-space:pre-wrap}
+.hero-card .c{color:var(--text-dim)}
+.hero-card .s{color:#00cec9}
+.hero-card .k{color:#fd79a8}
+.hero-card .f{color:#fdcb6e}
 
-/* ===== FEATURES ===== */
-section { padding: 100px 0; }
-.section-label { font-size: 13px; color: var(--primary-light); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 12px; }
-.section-title { font-size: clamp(28px, 4vw, 42px); font-weight: 800; margin-bottom: 16px; letter-spacing: -0.02em; }
-.section-desc { font-size: 16px; color: var(--text-dim); max-width: 560px; margin-bottom: 48px; }
-.section-desc.center { text-align: center; margin-left: auto; margin-right: auto; }
-.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-.feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; transition: all 0.3s; }
-.feature-card:hover { border-color: rgba(108,92,231,0.3); transform: translateY(-4px); box-shadow: var(--glow); }
-.feature-icon { width: 48px; height: 48px; background: rgba(108,92,231,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px; }
-.feature-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-.feature-card p { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+/* LOGOS */
+.logos{padding:60px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.logos p{text-align:center;font-size:13px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:32px}
+.logos-grid{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;opacity:.4}
+.logos-grid span{font-size:20px;font-weight:700;color:var(--text-dim)}
 
-/* ===== STATS ===== */
-.stats { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; padding: 60px 0; }
-.stat-num { font-size: 48px; font-weight: 800; background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.stat-label { font-size: 14px; color: var(--text-dim); margin-top: 8px; }
+/* SECTIONS */
+section{padding:100px 0}
+.section-label{font-size:13px;color:var(--primary-light);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:12px;text-align:center}
+.section-title{font-size:clamp(28px,4vw,42px);font-weight:800;margin-bottom:16px;letter-spacing:-.02em;text-align:center}
+.section-desc{font-size:16px;color:var(--text-dim);max-width:560px;margin:0 auto 48px;text-align:center}
 
-/* ===== HOW IT WORKS ===== */
-.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; }
-.step { text-align: center; padding: 32px 24px; }
-.step-num { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; color: #fff; margin: 0 auto 20px; }
-.step h3 { font-size: 20px; margin-bottom: 8px; }
-.step p { font-size: 14px; color: var(--text-dim); }
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:all .3s}
+.feature-card:hover{border-color:rgba(108,92,231,.3);transform:translateY(-4px);box-shadow:var(--glow)}
+.feature-icon{width:48px;height:48px;background:rgba(108,92,231,.1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+.feature-card h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.feature-card p{font-size:14px;color:var(--text-dim);line-height:1.7}
 
-/* ===== PRICING ===== */
-.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 960px; margin: 0 auto; }
-.price-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 32px; text-align: center; transition: all 0.3s; position: relative; }
-.price-card.popular { border-color: var(--primary); background: linear-gradient(180deg, rgba(108,92,231,0.08), var(--surface)); }
-.price-card.popular::before { content: 'Most Popular'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 6px 20px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-.price-card h3 { font-size: 22px; margin-bottom: 4px; }
-.price-card .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 24px; }
-.price-amount { font-size: 56px; font-weight: 800; margin-bottom: 8px; }
-.price-amount span { font-size: 16px; color: var(--text-dim); font-weight: 400; }
-.price-period { font-size: 14px; color: var(--text-dim); margin-bottom: 32px; }
-.price-features { text-align: left; margin-bottom: 32px; }
-.price-features li { list-style: none; padding: 10px 0; font-size: 14px; color: var(--text-dim); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-.price-features li::before { content: '✓'; color: var(--accent); font-weight: 700; }
-.price-card .btn { width: 100%; justify-content: center; }
+/* STATS */
+.stats{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center;padding:60px 0}
+.stat-num{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--primary-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:14px;color:var(--text-dim);margin-top:8px}
 
-/* ===== TESTIMONIALS ===== */
-.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-.testimonial { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
-.testimonial .stars { color: #fdcb6e; margin-bottom: 12px; font-size: 14px; }
-.testimonial p { font-size: 14px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.7; }
-.testimonial-author { display: flex; align-items: center; gap: 12px; }
-.testimonial-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); }
-.testimonial-name { font-size: 14px; font-weight: 600; }
-.testimonial-role { font-size: 12px; color: var(--text-dim); }
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px}
+.step{text-align:center;padding:32px 24px}
+.step-num{width:56px;height:56px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin:0 auto 20px}
+.step h3{font-size:20px;margin-bottom:8px}
+.step p{font-size:14px;color:var(--text-dim)}
 
-/* ===== FAQ ===== */
-.faq-list { max-width: 720px; margin: 0 auto; }
-.faq-item { border-bottom: 1px solid var(--border); }
-.faq-question { width: 100%; padding: 20px 0; background: none; border: none; color: var(--text); font-size: 16px; font-weight: 600; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-.faq-question::after { content: '+'; font-size: 20px; color: var(--text-dim); transition: transform 0.2s; }
-.faq-item.open .faq-question::after { transform: rotate(45deg); }
-.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-.faq-answer p { padding: 0 0 20px; font-size: 14px; color: var(--text-dim); line-height: 1.7; }
-.faq-item.open .faq-answer { max-height: 200px; }
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:960px;margin:0 auto}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 32px;text-align:center;transition:all .3s;position:relative}
+.price-card.popular{border-color:var(--primary);background:linear-gradient(180deg,rgba(108,92,231,.08),var(--surface))}
+.price-card.popular::before{content:'Most Popular';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:6px 20px;border-radius:999px;font-size:12px;font-weight:700}
+.price-card h3{font-size:22px;margin-bottom:4px}
+.price-card .subtitle{font-size:14px;color:var(--text-dim);margin-bottom:24px}
+.price-amount{font-size:56px;font-weight:800;margin-bottom:8px}
+.price-amount span{font-size:16px;color:var(--text-dim);font-weight:400}
+.price-period{font-size:14px;color:var(--text-dim);margin-bottom:32px}
+.price-features{text-align:left;margin-bottom:32px}
+.price-features li{list-style:none;padding:10px 0;font-size:14px;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.price-features li::before{content:'✓';color:var(--accent);font-weight:700}
+.price-card .btn{width:100%;justify-content:center}
 
-/* ===== CTA ===== */
-.cta-section { text-align: center; padding: 120px 0; position: relative; }
-.cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(108,92,231,0.1) 0%, transparent 70%); }
-.cta-section .container { position: relative; z-index: 1; }
-.cta-section h2 { font-size: clamp(32px, 5vw, 52px); font-weight: 800; margin-bottom: 16px; }
-.cta-section p { font-size: 18px; color: var(--text-dim); margin-bottom: 40px; }
+/* FAQ */
+.faq-list{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-question{width:100%;padding:20px 0;background:none;border:none;color:var(--text);font-size:16px;font-weight:600;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:inherit}
+.faq-question::after{content:'+';font-size:20px;color:var(--text-dim);transition:transform .2s}
+.faq-item.open .faq-question::after{transform:rotate(45deg)}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-answer p{padding:0 0 20px;font-size:14px;color:var(--text-dim);line-height:1.7}
+.faq-item.open .faq-answer{max-height:200px}
 
-/* ===== FOOTER ===== */
-footer { border-top: 1px solid var(--border); padding: 60px 0 32px; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-.footer-brand p { font-size: 14px; color: var(--text-dim); margin-top: 12px; max-width: 300px; }
-.footer-col h4 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
-.footer-col a { display: block; font-size: 14px; color: var(--text-dim); padding: 4px 0; }
-.footer-col a:hover { color: var(--text); }
-.footer-bottom { text-align: center; font-size: 13px; color: var(--text-dim); padding-top: 24px; border-top: 1px solid var(--border); }
+/* CTA */
+.cta-section{text-align:center;padding:120px 0;position:relative}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(108,92,231,.1) 0%,transparent 70%)}
+.cta-section .container{position:relative;z-index:1}
+.cta-section h2{font-size:clamp(32px,5vw,52px);font-weight:800;margin-bottom:16px}
+.cta-section p{font-size:18px;color:var(--text-dim);margin-bottom:40px}
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .mobile-menu { display: block; }
-  .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); padding: 24px; border-bottom: 1px solid var(--border); gap: 16px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .hero-card { padding: 20px; }
-  .hero-card pre { font-size: 11px; }
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:60px 0 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand p{font-size:14px;color:var(--text-dim);margin-top:12px;max-width:300px}
+.footer-col h4{font-size:14px;font-weight:600;margin-bottom:16px}
+.footer-col a{display:block;font-size:14px;color:var(--text-dim);padding:4px 0}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{text-align:center;font-size:13px;color:var(--text-dim);padding-top:24px;border-top:1px solid var(--border)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .mobile-menu{display:block}
+  .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--surface);padding:24px;border-bottom:1px solid var(--border);gap:16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .hero-card{padding:20px}
+  .hero-card pre{font-size:11px}
 }
 </style>
 </head>
 <body>
 
-<!-- ===== NAV ===== -->
+<!-- NAV -->
 <nav>
   <div class="container">
-    <div class="logo">Nexus<span>AI</span></div>
+    <div class="logo">Your<span>Brand</span></div>
     <div class="nav-links" id="navLinks">
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
@@ -182,170 +175,171 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 32px; }
   </div>
 </nav>
 
-<!-- ===== HERO ===== -->
+<!-- HERO -->
 <section class="hero">
   <div class="container">
-    <div class="hero-badge"><span class="dot"></span> Now in public beta</div>
-    <h1>Build Smarter with <span class="gradient">AI-Powered</span> Tools</h1>
-    <p>Automate your workflow, analyze data in real-time, and ship products 10x faster with our AI platform.</p>
+    <!-- ✏️ REPLACE: your badge text -->
+    <div class="hero-badge"><span class="dot"></span> Your badge text here</div>
+    <!-- ✏️ REPLACE: your headline -->
+    <h1>Your Product<br><span class="gradient">Headline Here</span></h1>
+    <!-- ✏️ REPLACE: your description -->
+    <p>Replace this text with your product description. Explain what you do and why visitors should care.</p>
     <div class="hero-actions">
-      <a href="#" class="btn btn-primary">Start Free Trial →</a>
+      <!-- ✏️ REPLACE: your CTA links -->
+      <a href="#" class="btn btn-primary">Get Started Free →</a>
       <a href="#" class="btn btn-ghost">▶ Watch Demo</a>
     </div>
+    <!-- ✏️ REPLACE: code preview or product screenshot -->
     <div class="hero-visual">
       <div class="hero-card">
         <div class="hero-card-bar"><span></span><span></span><span></span></div>
         <pre>
-<span class="comment">// Initialize NexusAI in 3 lines</span>
-<span class="keyword">import</span> { NexusAI } <span class="keyword">from</span> <span class="string">'@nexus/sdk'</span>
+<span class="c">// ✏️ Replace this with your code demo</span>
+<span class="k">import</span> { YourSDK } <span class="k">from</span> <span class="s">'your-package'</span>
 
-<span class="keyword">const</span> ai = <span class="keyword">new</span> <span class="func">NexusAI</span>({ apiKey: <span class="string">'your-key'</span> })
+<span class="k">const</span> client = <span class="k">new</span> <span class="f">YourSDK</span>({ <span class="s">/* config */</span> })
 
-<span class="keyword">const</span> result = <span class="keyword">await</span> ai.<span class="func">analyze</span>({
-  data: <span class="string">'sales-report.csv'</span>,
-  prompt: <span class="string">'Find trends and anomalies'</span>
+<span class="k">const</span> result = <span class="k">await</span> client.<span class="f">doSomething</span>({
+  <span class="c">// your parameters here</span>
 })
 
-console.<span class="func">log</span>(result.insights)
-<span class="comment">// → { trends: [...], anomalies: [...], score: 94 }</span></pre>
+console.<span class="f">log</span>(result)</pre>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== LOGOS ===== -->
+<!-- LOGOS: ✏️ Replace with your client/partner logos -->
 <section class="logos">
   <div class="container">
-    <p>Trusted by 2,000+ companies worldwide</p>
+    <p>Trusted by teams worldwide</p>
     <div class="logos-grid">
-      <span>Google</span><span>Stripe</span><span>Notion</span><span>Vercel</span><span>Linear</span><span>Figma</span>
+      <span>Logo 1</span><span>Logo 2</span><span>Logo 3</span><span>Logo 4</span><span>Logo 5</span>
     </div>
   </div>
 </section>
 
-<!-- ===== FEATURES ===== -->
+<!-- FEATURES: ✏️ Replace icons, titles, descriptions -->
 <section id="features">
   <div class="container">
     <div class="section-label">Features</div>
     <div class="section-title">Everything you need</div>
-    <div class="section-desc">Powerful tools that help you work smarter, not harder.</div>
+    <div class="section-desc">Describe your product's key features here.</div>
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">⚡</div>
-        <h3>Lightning Fast</h3>
-        <p>Process thousands of data points in milliseconds. Our optimized engine delivers results before you finish your coffee.</p>
+        <!-- ✏️ Replace feature title & description -->
+        <h3>Feature One</h3>
+        <p>Describe this feature and its benefit to users.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔒</div>
-        <h3>Enterprise Security</h3>
-        <p>SOC 2 compliant with end-to-end encryption. Your data never leaves your control.</p>
+        <h3>Feature Two</h3>
+        <p>Describe this feature and its benefit to users.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🤖</div>
-        <h3>AI-Powered Insights</h3>
-        <p>Automatic trend detection, anomaly alerts, and predictive analytics powered by cutting-edge ML.</p>
+        <h3>Feature Three</h3>
+        <p>Describe this feature and its benefit to users.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔌</div>
-        <h3>Easy Integration</h3>
-        <p>Connect with 100+ tools you already use. Slack, Notion, GitHub, and more.</p>
+        <h3>Feature Four</h3>
+        <p>Describe this feature and its benefit to users.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📊</div>
-        <h3>Real-time Dashboard</h3>
-        <p>Beautiful visualizations that update in real-time. Share with your team with one click.</p>
+        <h3>Feature Five</h3>
+        <p>Describe this feature and its benefit to users.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🌍</div>
-        <h3>Global Scale</h3>
-        <p>Deploy to 30+ regions worldwide. Sub-50ms latency guaranteed.</p>
+        <h3>Feature Six</h3>
+        <p>Describe this feature and its benefit to users.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== STATS ===== -->
+<!-- STATS: ✏️ Replace with your real numbers or remove this section -->
 <section class="stats">
   <div class="container">
     <div class="stats-grid">
-      <div><div class="stat-num">10M+</div><div class="stat-label">API Calls / Day</div></div>
-      <div><div class="stat-num">99.9%</div><div class="stat-label">Uptime SLA</div></div>
-      <div><div class="stat-num">2,000+</div><div class="stat-label">Happy Customers</div></div>
-      <div><div class="stat-num">4.9★</div><div class="stat-label">Average Rating</div></div>
+      <div><div class="stat-num">—</div><div class="stat-label">Your Metric</div></div>
+      <div><div class="stat-num">—</div><div class="stat-label">Your Metric</div></div>
+      <div><div class="stat-num">—</div><div class="stat-label">Your Metric</div></div>
+      <div><div class="stat-num">—</div><div class="stat-label">Your Metric</div></div>
     </div>
   </div>
 </section>
 
-<!-- ===== HOW IT WORKS ===== -->
+<!-- HOW IT WORKS: ✏️ Replace steps -->
 <section>
   <div class="container">
-    <div class="section-label center" style="text-align:center">How It Works</div>
-    <div class="section-title center" style="text-align:center">Up and running in 3 steps</div>
+    <div class="section-label">How It Works</div>
+    <div class="section-title">Up and running in 3 steps</div>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Connect Your Data</h3>
-        <p>Import from CSV, API, or connect directly to your database.</p>
+        <h3>Step One</h3>
+        <p>Describe what the user does first.</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
-        <h3>Describe What You Need</h3>
-        <p>Ask questions in plain English. Our AI understands your intent.</p>
+        <h3>Step Two</h3>
+        <p>Describe the second step.</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>Get Actionable Insights</h3>
-        <p>Receive detailed reports, charts, and recommendations instantly.</p>
+        <h3>Step Three</h3>
+        <p>Describe the final step.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== PRICING ===== -->
+<!-- PRICING: ✏️ Replace plans, prices, features -->
 <section id="pricing">
   <div class="container">
-    <div class="section-label center" style="text-align:center">Pricing</div>
-    <div class="section-title center" style="text-align:center">Simple, transparent pricing</div>
-    <div class="section-desc center" style="text-align:center">Start free, scale as you grow.</div>
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Simple, transparent pricing</div>
+    <div class="section-desc">Choose the plan that works for you.</div>
     <div class="pricing-grid">
       <div class="price-card">
-        <h3>Starter</h3>
-        <div class="subtitle">For individuals</div>
+        <h3>Free</h3>
+        <div class="subtitle">For getting started</div>
         <div class="price-amount">$0<span>/mo</span></div>
         <div class="price-period">Free forever</div>
         <ul class="price-features">
-          <li>1,000 API calls/month</li>
-          <li>Basic analytics</li>
-          <li>1 user</li>
-          <li>Community support</li>
+          <li>Feature one</li>
+          <li>Feature two</li>
+          <li>Feature three</li>
         </ul>
-        <a href="#" class="btn btn-ghost">Get Started Free</a>
+        <a href="#" class="btn btn-ghost">Get Started</a>
       </div>
       <div class="price-card popular">
         <h3>Pro</h3>
-        <div class="subtitle">For growing teams</div>
+        <div class="subtitle">For power users</div>
         <div class="price-amount">$29<span>/mo</span></div>
-        <div class="price-period">Billed annually</div>
+        <div class="price-period">Billed monthly</div>
         <ul class="price-features">
-          <li>Unlimited API calls</li>
-          <li>Advanced AI analytics</li>
-          <li>10 users</li>
+          <li>Everything in Free</li>
+          <li>Feature four</li>
+          <li>Feature five</li>
           <li>Priority support</li>
-          <li>Custom integrations</li>
         </ul>
         <a href="#" class="btn btn-primary">Start Free Trial</a>
       </div>
       <div class="price-card">
         <h3>Enterprise</h3>
-        <div class="subtitle">For organizations</div>
+        <div class="subtitle">For teams</div>
         <div class="price-amount">$99<span>/mo</span></div>
-        <div class="price-period">Billed annually</div>
+        <div class="price-period">Custom pricing</div>
         <ul class="price-features">
           <li>Everything in Pro</li>
-          <li>Unlimited users</li>
+          <li>Feature six</li>
           <li>Dedicated support</li>
-          <li>SLA guarantee</li>
-          <li>On-premise option</li>
+          <li>Custom integrations</li>
         </ul>
         <a href="#" class="btn btn-ghost">Contact Sales</a>
       </div>
@@ -353,100 +347,62 @@ console.<span class="func">log</span>(result.insights)
   </div>
 </section>
 
-<!-- ===== TESTIMONIALS ===== -->
-<section>
-  <div class="container">
-    <div class="section-label center" style="text-align:center">Testimonials</div>
-    <div class="section-title center" style="text-align:center">Loved by developers</div>
-    <div class="testimonials-grid">
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>"NexusAI cut our data analysis time from hours to minutes. The AI insights are genuinely useful."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar"></div>
-          <div><div class="testimonial-name">Sarah Chen</div><div class="testimonial-role">CTO at TechFlow</div></div>
-        </div>
-      </div>
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>"The best developer tool I've used this year. Clean API, great docs, and the support team is fantastic."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar"></div>
-          <div><div class="testimonial-name">Marcus Rodriguez</div><div class="testimonial-role">Lead Dev at StartupX</div></div>
-        </div>
-      </div>
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>"We replaced 3 separate tools with NexusAI. Saved us $500/month and our team loves the UX."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar"></div>
-          <div><div class="testimonial-name">Yuki Tanaka</div><div class="testimonial-role">Founder at DataCo</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== FAQ ===== -->
+<!-- FAQ: ✏️ Replace questions and answers -->
 <section id="faq">
   <div class="container">
-    <div class="section-label center" style="text-align:center">FAQ</div>
-    <div class="section-title center" style="text-align:center">Frequently asked questions</div>
+    <div class="section-label">FAQ</div>
+    <div class="section-title">Frequently asked questions</div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">How does the free trial work?</button>
-        <div class="faq-answer"><p>Start using NexusAI immediately with our free plan. No credit card required. Upgrade anytime to unlock premium features.</p></div>
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">Question one?</button>
+        <div class="faq-answer"><p>Answer to question one. Replace with your actual FAQ content.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">Can I cancel anytime?</button>
-        <div class="faq-answer"><p>Yes, you can cancel your subscription at any time. No long-term contracts or hidden fees.</p></div>
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">Question two?</button>
+        <div class="faq-answer"><p>Answer to question two.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">What kind of support do you offer?</button>
-        <div class="faq-answer"><p>We offer community support for free users, priority email support for Pro, and dedicated account managers for Enterprise.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">Is my data secure?</button>
-        <div class="faq-answer"><p>Absolutely. We're SOC 2 Type II certified with end-to-end encryption. Your data is never used to train our models.</p></div>
+        <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">Question three?</button>
+        <div class="faq-answer"><p>Answer to question three.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== CTA ===== -->
+<!-- CTA: ✏️ Replace headline and description -->
 <section class="cta-section">
   <div class="container">
-    <h2>Ready to get started?</h2>
-    <p>Join 2,000+ teams already building with NexusAI.</p>
+    <h2>Your CTA Headline</h2>
+    <p>Your call-to-action description goes here.</p>
     <div class="hero-actions">
-      <a href="#" class="btn btn-primary">Start Free Trial →</a>
-      <a href="#" class="btn btn-ghost">Schedule a Demo</a>
+      <a href="#" class="btn btn-primary">Get Started →</a>
+      <a href="#" class="btn btn-ghost">Learn More</a>
     </div>
   </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
+<!-- FOOTER: ✏️ Replace links and copyright -->
 <footer>
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="logo">Nexus<span>AI</span></div>
-        <p>AI-powered analytics platform for modern teams.</p>
+        <div class="logo">Your<span>Brand</span></div>
+        <p>Your product description goes here.</p>
       </div>
       <div class="footer-col">
         <h4>Product</h4>
-        <a href="#">Features</a><a href="#">Pricing</a><a href="#">Integrations</a><a href="#">Changelog</a>
+        <a href="#">Features</a><a href="#">Pricing</a><a href="#">Docs</a>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
-        <a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a><a href="#">Contact</a>
+        <a href="#">About</a><a href="#">Blog</a><a href="#">Contact</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
         <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a>
       </div>
     </div>
-    <div class="footer-bottom">© 2025 NexusAI. All rights reserved.</div>
+    <div class="footer-bottom">© 2025 Your Brand. All rights reserved.</div>
   </div>
 </footer>
 
