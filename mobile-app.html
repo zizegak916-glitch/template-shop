@@ -1,312 +1,314 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AppLaunch — Mobile App Template</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f1117;--card:#1a1c29;--primary:#3B82F6;--accent:#F97316;--text:#e2e8f0;--muted:#94a3b8;--radius:16px}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-.container{max-width:1140px;margin:0 auto;padding:0 24px}
-section{padding:80px 0}
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,17,23,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
-nav .container{display:flex;align-items:center;justify-content:space-between;height:70px}
-.logo{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav-links{display:flex;gap:28px;list-style:none}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .3s}
-.nav-links a:hover{color:#fff}
-.nav-cta{background:var(--primary);color:#fff;padding:10px 24px;border-radius:30px;text-decoration:none;font-weight:600;font-size:.9rem;transition:transform .3s,box-shadow .3s}
-.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.4)}
-.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
-.hamburger span{width:24px;height:2px;background:#fff;transition:.3s}
-/* HERO */
-.hero{padding:140px 0 80px;display:flex;align-items:center;gap:40px}
-.hero-content{flex:1}
-.hero h1{font-size:3.2rem;font-weight:800;line-height:1.15;margin-bottom:20px}
-.hero h1 .gradient{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{color:var(--muted);font-size:1.1rem;margin-bottom:32px;max-width:480px}
-.btn-group{display:flex;gap:16px;flex-wrap:wrap}
-.store-btn{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(255,255,255,.1);padding:14px 24px;border-radius:14px;text-decoration:none;color:#fff;transition:.3s}
-.store-btn:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 8px 30px rgba(59,130,246,.2)}
-.store-btn svg{width:24px;height:24px}
-.store-btn small{font-size:.65rem;color:var(--muted);display:block}
-.store-btn span{font-size:1rem;font-weight:600}
-.hero-phone{flex:0 0 300px;position:relative}
-.phone-mockup{width:260px;height:520px;background:linear-gradient(145deg,#1e293b,#0f172a);border-radius:36px;border:3px solid #334155;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#0f1117;border-radius:0 0 16px 16px;z-index:2}
-.phone-screen{position:absolute;top:36px;left:12px;right:12px;bottom:12px;background:linear-gradient(180deg,#3B82F6,#1e40af,#0f172a);border-radius:24px;overflow:hidden}
-.phone-screen .screen-content{padding:20px;color:#fff}
-.phone-screen .screen-bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;margin-bottom:12px}
-.phone-screen .screen-bar:nth-child(2){width:60%}
-.phone-screen .screen-block{height:60px;background:rgba(255,255,255,.1);border-radius:12px;margin-bottom:12px}
-.phone-screen .screen-circles{display:flex;gap:8px;margin-bottom:16px}
-.phone-screen .screen-circle{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15)}
-/* FEATURES */
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.feature-card{background:var(--card);border-radius:var(--radius);padding:32px;border:1px solid rgba(255,255,255,.05);transition:transform .3s,border-color .3s}
-.feature-card:hover{transform:translateY(-5px);border-color:var(--primary)}
-.feature-icon{width:52px;height:52px;background:rgba(59,130,246,.12);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
-.feature-icon svg{width:26px;height:26px;color:var(--primary)}
-.feature-card h3{font-size:1.1rem;margin-bottom:10px}
-.feature-card p{color:var(--muted);font-size:.9rem}
-/* SHOWCASE */
-.showcase{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
-.showcase-phone{width:220px;height:440px;background:linear-gradient(145deg,#1e293b,#0f172a);border-radius:30px;border:3px solid #334155;overflow:hidden;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.4)}
-.showcase-phone .s-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:22px;background:#0f1117;border-radius:0 0 14px 14px;z-index:2}
-.showcase-phone .s-screen{position:absolute;top:30px;left:10px;right:10px;bottom:10px;border-radius:20px;overflow:hidden}
-.showcase-phone:nth-child(1) .s-screen{background:linear-gradient(180deg,var(--primary),#6366f1)}
-.showcase-phone:nth-child(2) .s-screen{background:linear-gradient(180deg,var(--accent),#eab308)}
-.showcase-phone:nth-child(3) .s-screen{background:linear-gradient(180deg,#10b981,var(--primary))}
-.showcase-phone .s-screen-inner{padding:16px}
-.showcase-phone .s-bar{height:6px;background:rgba(255,255,255,.25);border-radius:3px;margin-bottom:10px}
-.showcase-phone .s-block{background:rgba(255,255,255,.12);border-radius:10px;height:50px;margin-bottom:10px}
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
-.stat-item h3{font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-item p{color:var(--muted);font-size:.9rem;margin-top:6px}
-/* HOW IT WORKS */
-.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
-.step{text-align:center}
-.step-num{width:60px;height:60px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;margin:0 auto 20px}
-.step h3{margin-bottom:10px}
-.step p{color:var(--muted);font-size:.9rem}
-/* TESTIMONIALS */
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.testimonial-card{background:var(--card);border-radius:var(--radius);padding:28px;border:1px solid rgba(255,255,255,.05)}
-.testimonial-card .stars{color:#facc15;font-size:1.1rem;margin-bottom:14px}
-.testimonial-card p{color:var(--muted);font-size:.9rem;margin-bottom:16px;line-height:1.7}
-.testimonial-author{display:flex;align-items:center;gap:12px}
-.testimonial-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent))}
-.testimonial-author span{font-weight:600;font-size:.9rem}
-.testimonial-author small{display:block;color:var(--muted);font-size:.75rem}
-/* FAQ */
-.faq-list{max-width:720px;margin:0 auto}
-.faq-item{background:var(--card);border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,.05);overflow:hidden}
-.faq-q{padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;transition:color .3s}
-.faq-q:hover{color:var(--primary)}
-.faq-q .arrow{transition:transform .3s;font-size:1.2rem}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 24px}
-.faq-a p{color:var(--muted);font-size:.9rem;padding-bottom:20px}
-.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
-.faq-item.open .faq-a{max-height:200px}
-/* CTA */
-.cta-section{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(249,115,22,.15));border-radius:24px;padding:80px;display:flex;align-items:center;gap:48px;margin:0 24px}
-.cta-section .cta-text{flex:1}
-.cta-section h2{font-size:2.2rem;font-weight:800;margin-bottom:16px}
-.cta-section p{color:var(--muted);margin-bottom:28px}
-.cta-section .phone-mockup{width:200px;height:400px}
-.cta-section .phone-notch{width:80px;height:22px}
-.cta-section .phone-screen{top:30px;left:10px;right:10px;bottom:10px;border-radius:20px}
-/* FOOTER */
-footer{padding:48px 0;border-top:1px solid rgba(255,255,255,.06)}
-.footer-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
-footer .logo{font-size:1.2rem}
-footer p{color:var(--muted);font-size:.85rem}
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
-.reveal.visible{opacity:1;transform:none}
-/* BACK TO TOP */
-.btt{position:fixed;bottom:32px;right:32px;width:48px;height:48px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:.3s;z-index:999;border:none;color:#fff;font-size:1.2rem}
-.btt.show{opacity:1}
-/* RESPONSIVE */
-@media(max-width:900px){
-.hero{flex-direction:column;text-align:center}
-.hero p{margin-left:auto;margin-right:auto}
-.btn-group{justify-content:center}
-.hero-phone{margin-top:20px}
-.features-grid,.steps-grid,.testimonials-grid{grid-template-columns:repeat(2,1fr)}
-.stats-grid{grid-template-columns:repeat(2,1fr)}
-.cta-section{flex-direction:column;text-align:center;margin:0}
-}
-@media(max-width:600px){
-.nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:rgba(15,17,23,.95);flex-direction:column;align-items:center;padding:24px;gap:20px}
-.nav-links.open{display:flex}
-.hamburger{display:flex}
-.hero h1{font-size:2.2rem}
-.features-grid,.steps-grid,.testimonials-grid,.stats-grid{grid-template-columns:1fr}
-.showcase{flex-direction:column;align-items:center}
-}
-</style>
-</head>
-<body>
-<!-- NAV -->
-<nav><div class="container">
-<a href="#" class="logo">⚡ AppLaunch</a>
-<ul class="nav-links" id="navLinks">
-<li><a href="#features">Features</a></li>
-<li><a href="#showcase">Showcase</a></li>
-<li><a href="#how">How It Works</a></li>
-<li><a href="#faq">FAQ</a></li>
-</ul>
-<a href="#cta" class="nav-cta">Download</a>
-<button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-</div></nav>
-<!-- HERO -->
-<section class="hero"><div class="container" style="display:flex;align-items:center;gap:60px;flex-wrap:wrap">
-<div class="hero-content reveal">
-<h1>The Smartest Way<br>to <span class="gradient">Manage Your Life</span></h1>
-<p>A beautifully designed app that helps you stay organized, productive, and focused. Download free today.</p>
-<div class="btn-group">
-<a href="#" class="store-btn">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-<div><small>Download on the</small><span>App Store</span></div>
-</a>
-<a href="#" class="store-btn">
-<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.66c.34.2.73.34 1.14.34.5 0 .98-.16 1.4-.5L18.34 14l-3.5-3.5-11.66 7.16a2.4 2.4 0 00-1 3zm19.52-11.04l-4.68-2.7-3.96 3.96 3.96 3.96 4.68-2.7c.88-.52 1.38-1.44 1.38-2.46s-.5-1.94-1.38-2.46v.4zm-4.68-3.7L5.72.84C5.34.62 4.9.5 4.46.5c-.42 0-.83.14-1.18.38L18.62 12l-.6.08zM5.72 23.16l12.32-7.56-3.5-3.5L5.72 23.16z"/></svg>
-<div><small>Get it on</small><span>Google Play</span></div>
-</a>
-</div>
-</div>
-<div class="hero-phone reveal">
-<div class="phone-mockup">
-<div class="phone-notch"></div>
-<div class="phone-screen">
-<div class="screen-content">
-<div class="screen-bar" style="width:80%"></div>
-<div class="screen-bar" style="width:50%"></div>
-<div class="screen-block"></div>
-<div class="screen-circles"><div class="screen-circle"></div><div class="screen-circle"></div><div class="screen-circle"></div></div>
-<div class="screen-block" style="height:80px"></div>
-<div class="screen-bar" style="width:70%"></div>
-<div class="screen-block" style="height:40px"></div>
-</div>
-</div>
-</div>
-</div>
-</div></section>
-<!-- FEATURES -->
-<section id="features"><div class="container">
-<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">Powerful Features</h2>
-<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">Everything you need to stay on top of your game</p>
-<div class="features-grid">
-<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><h3>Lightning Fast</h3><p>Optimized performance for instant response times on any device.</p></div>
-<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h3>Bank-Grade Security</h3><p>End-to-end encryption keeps your data safe and private.</p></div>
-<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><h3>Smart Automation</h3><p>Automate repetitive tasks with intelligent workflows.</p></div>
-<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><h3>Real-Time Chat</h3><p>Connect with your team through seamless messaging.</p></div>
-<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div><h3>Analytics Dashboard</h3><p>Track your progress with beautiful charts and insights.</p></div>
-<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div><h3>Cloud Sync</h3><p>Your data syncs automatically across all your devices.</p></div>
-</div>
-</div></section>
-<!-- SHOWCASE -->
-<section id="showcase"><div class="container">
-<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">See It In Action</h2>
-<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">A glimpse of the beautiful experience</p>
-<div class="showcase">
-<div class="showcase-phone reveal"><div class="s-notch"></div><div class="s-screen"><div class="s-screen-inner"><div class="s-bar" style="width:70%"></div><div class="s-bar" style="width:50%"></div><div class="s-block"></div><div class="s-block"></div><div class="s-block"></div></div></div></div>
-<div class="showcase-phone reveal"><div class="s-notch"></div><div class="s-screen"><div class="s-screen-inner"><div class="s-bar" style="width:80%"></div><div class="s-block"></div><div class="s-block" style="height:80px"></div><div class="s-block"></div></div></div></div>
-<div class="showcase-phone reveal"><div class="s-notch"></div><div class="s-screen"><div class="s-screen-inner"><div class="s-block" style="height:80px"></div><div class="s-bar" style="width:60%"></div><div class="s-block"></div><div class="s-block"></div></div></div></div>
-</div>
-</div></section>
-<!-- STATS -->
-<section id="stats"><div class="container">
-<div class="stats-grid">
-<div class="stat-item reveal"><h3 data-target="2500000" data-suffix="+" class="counter">0</h3><p>Downloads</p></div>
-<div class="stat-item reveal"><h3 data-target="4.9" data-suffix="★" class="counter" data-decimal="1">0</h3><p>User Rating</p></div>
-<div class="stat-item reveal"><h3 data-target="1500000" data-suffix="+" class="counter">0</h3><p>Active Users</p></div>
-<div class="stat-item reveal"><h3 data-target="85" data-suffix="" class="counter">0</h3><p>Countries</p></div>
-</div>
-</div></section>
-<!-- HOW IT WORKS -->
-<section id="how"><div class="container">
-<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">How It Works</h2>
-<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">Get started in three simple steps</p>
-<div class="steps-grid">
-<div class="step reveal"><div class="step-num">1</div><h3>Download the App</h3><p>Available on iOS and Android. Free to download with no hidden fees.</p></div>
-<div class="step reveal"><div class="step-num">2</div><h3>Create Your Account</h3><p>Sign up in seconds with your email or social media account.</p></div>
-<div class="step reveal"><div class="step-num">3</div><h3>Start Using</h3><p>Explore features, customize your experience, and boost productivity.</p></div>
-</div>
-</div></section>
-<!-- TESTIMONIALS -->
-<section><div class="container">
-<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">Loved by Users</h2>
-<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">See what people are saying</p>
-<div class="testimonials-grid">
-<div class="testimonial-card reveal"><div class="stars">★★★★★</div><p>"This app completely transformed how I manage my daily tasks. The interface is stunning."</p><div class="testimonial-author"><div class="testimonial-avatar"></div><div><span>Sarah Chen</span><small>Product Manager</small></div></div></div>
-<div class="testimonial-card reveal"><div class="stars">★★★★★</div><p>"Best app I've used this year. The automation features alone are worth the download."</p><div class="testimonial-author"><div class="testimonial-avatar"></div><div><span>James Wilson</span><small>Freelancer</small></div></div></div>
-<div class="testimonial-card reveal"><div class="stars">★★★★★</div><p>"Incredibly smooth and fast. I recommend it to everyone on my team."</p><div class="testimonial-author"><div class="testimonial-avatar"></div><div><span>Maria Garcia</span><small>CEO, StartupX</small></div></div></div>
-</div>
-</div></section>
-<!-- FAQ -->
-<section id="faq"><div class="container">
-<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">FAQ</h2>
-<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">Got questions? We've got answers</p>
-<div class="faq-list">
-<div class="faq-item reveal"><div class="faq-q">Is the app free to use?<span class="arrow">▾</span></div><div class="faq-a"><p>Yes! The core features are completely free. Premium features are available with a subscription.</p></div></div>
-<div class="faq-item reveal"><div class="faq-q">What platforms are supported?<span class="arrow">▾</span></div><div class="faq-a"><p>We support iOS 14+ and Android 8.0+. A web version is also available.</p></div></div>
-<div class="faq-item reveal"><div class="faq-q">Is my data secure?<span class="arrow">▾</span></div><div class="faq-a"><p>Absolutely. We use AES-256 encryption and are SOC 2 compliant. Your privacy is our priority.</p></div></div>
-<div class="faq-item reveal"><div class="faq-q">How do I contact support?<span class="arrow">▾</span></div><div class="faq-a"><p>Reach us via in-app chat, email at support@applaunch.io, or through our social channels.</p></div></div>
-</div>
-</div></section>
-<!-- CTA -->
-<section><div class="container">
-<div class="cta-section reveal">
-<div class="cta-text">
-<h2>Ready to Get Started?</h2>
-<p>Join millions of users who are already using AppLaunch to supercharge their productivity.</p>
-<div class="btn-group">
-<a href="#" class="store-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg><div><small>Download on the</small><span>App Store</span></div></a>
-<a href="#" class="store-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M3.18 23.66c.34.2.73.34 1.14.34.5 0 .98-.16 1.4-.5L18.34 14l-3.5-3.5-11.66 7.16a2.4 2.4 0 00-1 3zm19.52-11.04l-4.68-2.7-3.96 3.96 3.96 3.96 4.68-2.7c.88-.52 1.38-1.44 1.38-2.46s-.5-1.94-1.38-2.46v.4z"/></svg><div><small>Get it on</small><span>Google Play</span></div></a>
-</div>
-</div>
-<div class="phone-mockup" style="flex:0 0 200px">
-<div class="phone-notch" style="width:80px;height:22px"></div>
-<div class="phone-screen" style="top:30px;left:10px;right:10px;bottom:10px;border-radius:20px;background:linear-gradient(180deg,var(--accent),#eab308,#10b981)">
-<div class="screen-content" style="padding:14px">
-<div class="screen-bar" style="width:60%"></div><div class="screen-block" style="height:40px"></div><div class="screen-block"></div><div class="screen-circles"><div class="screen-circle" style="width:32px;height:32px"></div><div class="screen-circle" style="width:32px;height:32px"></div></div>
-</div>
-</div>
-</div>
-</div>
-</div></section>
-<!-- FOOTER -->
-<footer><div class="container"><div class="footer-content">
-<span class="logo">⚡ AppLaunch</span>
-<p>© 2026 AppLaunch. All rights reserved.</p>
-<div style="display:flex;gap:16px"><a href="#" style="color:var(--muted);text-decoration:none;font-size:.85rem">Privacy</a><a href="#" style="color:var(--muted);text-decoration:none;font-size:.85rem">Terms</a><a href="#" style="color:var(--muted);text-decoration:none;font-size:.85rem">Contact</a></div>
-</div></div></footer>
-<!-- BACK TO TOP -->
-<button class="btt" id="btt" aria-label="Back to top">↑</button>
-<script>
-// Mobile nav
-document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
-
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});document.getElementById('navLinks').classList.remove('open')}));
-
-// Reveal on scroll
-const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.15});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-
-// Counter animation
-function animateCounter(el){
-const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',dec=parseInt(el.dataset.decimal)||0;
-let start=0;const dur=2000,step=ts=>{
-if(!el._start)el._start=ts;
-const p=Math.min((ts-el._start)/dur,1),ease=1-Math.pow(1-p,3);
-let val=ease*target;
-if(dec)val=val.toFixed(dec);else val=Math.floor(val);
-if(target>=1000000)el.textContent=(target>=1000000?(val/1000000).toFixed(1)+'M':val)+suffix;
-else el.textContent=val.toLocaleString()+suffix;
-if(p<1)requestAnimationFrame(step);
-};requestAnimationFrame(step);}
-
-const sObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){animateCounter(e.target);sObs.unobserve(e.target)}}),{threshold:.5});
-document.querySelectorAll('.counter').forEach(el=>sObs.observe(el));
-
-// FAQ
-document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
-const item=q.parentElement;const wasOpen=item.classList.contains('open');
-document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-if(!wasOpen)item.classList.add('open');
-}));
-
-// Back to top
-const btt=document.getElementById('btt');
-window.addEventListener('scroll',()=>btt.classList.toggle('show',window.scrollY>500));
-btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+1|<!DOCTYPE html>
+2|<html lang="en">
+3|<head>
+4|<meta charset="UTF-8">
+5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
+6|<title>AppLaunch — Mobile App Template</title>
+7|<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+8|<style>
+9|*{margin:0;padding:0;box-sizing:border-box}
+10|:root{--bg:#0f1117;--card:#1a1c29;--primary:#3B82F6;--accent:#F97316;--text:#e2e8f0;--muted:#94a3b8;--radius:16px}
+11|body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+12|.container{max-width:1140px;margin:0 auto;padding:0 24px}
+13|section{padding:80px 0}
+14|/* NAV */
+15|nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,17,23,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
+16|nav .container{display:flex;align-items:center;justify-content:space-between;height:70px}
+17|.logo{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+18|.nav-links{display:flex;gap:28px;list-style:none}
+19|.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .3s}
+20|.nav-links a:hover{color:#fff}
+21|.nav-cta{background:var(--primary);color:#fff;padding:10px 24px;border-radius:30px;text-decoration:none;font-weight:600;font-size:.9rem;transition:transform .3s,box-shadow .3s}
+22|.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.4)}
+23|.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+24|.hamburger span{width:24px;height:2px;background:#fff;transition:.3s}
+25|/* HERO */
+26|.hero{padding:140px 0 80px;display:flex;align-items:center;gap:40px}
+27|.hero-content{flex:1}
+28|.hero h1{font-size:3.2rem;font-weight:800;line-height:1.15;margin-bottom:20px}
+29|.hero h1 .gradient{background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+30|.hero p{color:var(--muted);font-size:1.1rem;margin-bottom:32px;max-width:480px}
+31|.btn-group{display:flex;gap:16px;flex-wrap:wrap}
+32|.store-btn{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(255,255,255,.1);padding:14px 24px;border-radius:14px;text-decoration:none;color:#fff;transition:.3s}
+33|.store-btn:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 8px 30px rgba(59,130,246,.2)}
+34|.store-btn svg{width:24px;height:24px}
+35|.store-btn small{font-size:.65rem;color:var(--muted);display:block}
+36|.store-btn span{font-size:1rem;font-weight:600}
+37|.hero-phone{flex:0 0 300px;position:relative}
+38|.phone-mockup{width:260px;height:520px;background:linear-gradient(145deg,#1e293b,#0f172a);border-radius:36px;border:3px solid #334155;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+39|.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#0f1117;border-radius:0 0 16px 16px;z-index:2}
+40|.phone-screen{position:absolute;top:36px;left:12px;right:12px;bottom:12px;background:linear-gradient(180deg,#3B82F6,#1e40af,#0f172a);border-radius:24px;overflow:hidden}
+41|.phone-screen .screen-content{padding:20px;color:#fff}
+42|.phone-screen .screen-bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;margin-bottom:12px}
+43|.phone-screen .screen-bar:nth-child(2){width:60%}
+44|.phone-screen .screen-block{height:60px;background:rgba(255,255,255,.1);border-radius:12px;margin-bottom:12px}
+45|.phone-screen .screen-circles{display:flex;gap:8px;margin-bottom:16px}
+46|.phone-screen .screen-circle{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15)}
+47|/* FEATURES */
+48|.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+49|.feature-card{background:var(--card);border-radius:var(--radius);padding:32px;border:1px solid rgba(255,255,255,.05);transition:transform .3s,border-color .3s}
+50|.feature-card:hover{transform:translateY(-5px);border-color:var(--primary)}
+51|.feature-icon{width:52px;height:52px;background:rgba(59,130,246,.12);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+52|.feature-icon svg{width:26px;height:26px;color:var(--primary)}
+53|.feature-card h3{font-size:1.1rem;margin-bottom:10px}
+54|.feature-card p{color:var(--muted);font-size:.9rem}
+55|/* SHOWCASE */
+56|.showcase{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+57|.showcase-phone{width:220px;height:440px;background:linear-gradient(145deg,#1e293b,#0f172a);border-radius:30px;border:3px solid #334155;overflow:hidden;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.4)}
+58|.showcase-phone .s-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:22px;background:#0f1117;border-radius:0 0 14px 14px;z-index:2}
+59|.showcase-phone .s-screen{position:absolute;top:30px;left:10px;right:10px;bottom:10px;border-radius:20px;overflow:hidden}
+60|.showcase-phone:nth-child(1) .s-screen{background:linear-gradient(180deg,var(--primary),#6366f1)}
+61|.showcase-phone:nth-child(2) .s-screen{background:linear-gradient(180deg,var(--accent),#eab308)}
+62|.showcase-phone:nth-child(3) .s-screen{background:linear-gradient(180deg,#10b981,var(--primary))}
+63|.showcase-phone .s-screen-inner{padding:16px}
+64|.showcase-phone .s-bar{height:6px;background:rgba(255,255,255,.25);border-radius:3px;margin-bottom:10px}
+65|.showcase-phone .s-block{background:rgba(255,255,255,.12);border-radius:10px;height:50px;margin-bottom:10px}
+66|/* STATS */
+67|.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+68|.stat-item h3{font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+69|.stat-item p{color:var(--muted);font-size:.9rem;margin-top:6px}
+70|/* HOW IT WORKS */
+71|.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+72|.step{text-align:center}
+73|.step-num{width:60px;height:60px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;margin:0 auto 20px}
+74|.step h3{margin-bottom:10px}
+75|.step p{color:var(--muted);font-size:.9rem}
+76|/* TESTIMONIALS */
+77|.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+78|.testimonial-card{background:var(--card);border-radius:var(--radius);padding:28px;border:1px solid rgba(255,255,255,.05)}
+79|.testimonial-card .stars{color:#facc15;font-size:1.1rem;margin-bottom:14px}
+80|.testimonial-card p{color:var(--muted);font-size:.9rem;margin-bottom:16px;line-height:1.7}
+81|.testimonial-author{display:flex;align-items:center;gap:12px}
+82|.testimonial-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent))}
+83|.testimonial-author span{font-weight:600;font-size:.9rem}
+84|.testimonial-author small{display:block;color:var(--muted);font-size:.75rem}
+85|/* FAQ */
+86|.faq-list{max-width:720px;margin:0 auto}
+87|.faq-item{background:var(--card);border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,.05);overflow:hidden}
+88|.faq-q{padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;transition:color .3s}
+89|.faq-q:hover{color:var(--primary)}
+90|.faq-q .arrow{transition:transform .3s;font-size:1.2rem}
+91|.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 24px}
+92|.faq-a p{color:var(--muted);font-size:.9rem;padding-bottom:20px}
+93|.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
+94|.faq-item.open .faq-a{max-height:200px}
+95|/* CTA */
+96|.cta-section{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(249,115,22,.15));border-radius:24px;padding:80px;display:flex;align-items:center;gap:48px;margin:0 24px}
+97|.cta-section .cta-text{flex:1}
+98|.cta-section h2{font-size:2.2rem;font-weight:800;margin-bottom:16px}
+99|.cta-section p{color:var(--muted);margin-bottom:28px}
+100|.cta-section .phone-mockup{width:200px;height:400px}
+101|.cta-section .phone-notch{width:80px;height:22px}
+102|.cta-section .phone-screen{top:30px;left:10px;right:10px;bottom:10px;border-radius:20px}
+103|/* FOOTER */
+104|footer{padding:48px 0;border-top:1px solid rgba(255,255,255,.06)}
+105|.footer-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+106|footer .logo{font-size:1.2rem}
+107|footer p{color:var(--muted);font-size:.85rem}
+108|/* REVEAL */
+109|.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+110|.reveal.visible{opacity:1;transform:none}
+111|/* BACK TO TOP */
+112|.btt{position:fixed;bottom:32px;right:32px;width:48px;height:48px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:.3s;z-index:999;border:none;color:#fff;font-size:1.2rem}
+113|.btt.show{opacity:1}
+114|/* RESPONSIVE */
+115|@media(max-width:900px){
+116|.hero{flex-direction:column;text-align:center}
+117|.hero p{margin-left:auto;margin-right:auto}
+118|.btn-group{justify-content:center}
+119|.hero-phone{margin-top:20px}
+120|.features-grid,.steps-grid,.testimonials-grid{grid-template-columns:repeat(2,1fr)}
+121|.stats-grid{grid-template-columns:repeat(2,1fr)}
+122|.cta-section{flex-direction:column;text-align:center;margin:0}
+123|}
+124|@media(max-width:600px){
+125|.nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:rgba(15,17,23,.95);flex-direction:column;align-items:center;padding:24px;gap:20px}
+126|.nav-links.open{display:flex}
+127|.hamburger{display:flex}
+128|.hero h1{font-size:2.2rem}
+129|.features-grid,.steps-grid,.testimonials-grid,.stats-grid{grid-template-columns:1fr}
+130|.showcase{flex-direction:column;align-items:center}
+131|}
+132|</style>
+133|</head>
+134|<body>
+135|<!-- NAV -->
+136|<nav><div class="container">
+137|<a href="#" class="logo">⚡ AppLaunch</a>
+138|<ul class="nav-links" id="navLinks">
+139|<li><a href="#features">Features</a></li>
+140|<li><a href="#showcase">Showcase</a></li>
+141|<li><a href="#how">How It Works</a></li>
+142|<li><a href="#faq">FAQ</a></li>
+143|</ul>
+144|<a href="#cta" class="nav-cta">Download</a>
+145|<button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+146|</div></nav>
+147|<!-- HERO -->
+148|<section class="hero"><div class="container" style="display:flex;align-items:center;gap:60px;flex-wrap:wrap">
+149|<div class="hero-content reveal">
+150|<h1>The Smartest Way<br>to <span class="gradient">Manage Your Life</span></h1>
+151|<p>A beautifully designed app that helps you stay organized, productive, and focused. Download free today.</p>
+152|<div class="btn-group">
+153|<a href="#" class="store-btn">
+154|<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+155|<div><small>Download on the</small><span>App Store</span></div>
+156|</a>
+157|<a href="#" class="store-btn">
+158|<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.66c.34.2.73.34 1.14.34.5 0 .98-.16 1.4-.5L18.34 14l-3.5-3.5-11.66 7.16a2.4 2.4 0 00-1 3zm19.52-11.04l-4.68-2.7-3.96 3.96 3.96 3.96 4.68-2.7c.88-.52 1.38-1.44 1.38-2.46s-.5-1.94-1.38-2.46v.4zm-4.68-3.7L5.72.84C5.34.62 4.9.5 4.46.5c-.42 0-.83.14-1.18.38L18.62 12l-.6.08zM5.72 23.16l12.32-7.56-3.5-3.5L5.72 23.16z"/></svg>
+159|<div><small>Get it on</small><span>Google Play</span></div>
+160|</a>
+161|</div>
+162|</div>
+163|<div class="hero-phone reveal">
+164|<div class="phone-mockup">
+165|<div class="phone-notch"></div>
+166|<div class="phone-screen">
+167|<div class="screen-content">
+168|<div class="screen-bar" style="width:80%"></div>
+169|<div class="screen-bar" style="width:50%"></div>
+170|<div class="screen-block"></div>
+171|<div class="screen-circles"><div class="screen-circle"></div><div class="screen-circle"></div><div class="screen-circle"></div></div>
+172|<div class="screen-block" style="height:80px"></div>
+173|<div class="screen-bar" style="width:70%"></div>
+174|<div class="screen-block" style="height:40px"></div>
+175|</div>
+176|</div>
+177|</div>
+178|</div>
+179|</div></section>
+180|<!-- FEATURES -->
+181|<section id="features"><div class="container">
+182|<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">Powerful Features</h2>
+183|<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">Everything you need to stay on top of your game</p>
+184|<div class="features-grid">
+185|<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><h3>Lightning Fast</h3><p>Optimized performance for instant response times on any device.</p></div>
+186|<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h3>Bank-Grade Security</h3><p>End-to-end encryption keeps your data safe and private.</p></div>
+187|<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><h3>Smart Automation</h3><p>Automate repetitive tasks with intelligent workflows.</p></div>
+188|<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><h3>Real-Time Chat</h3><p>Connect with your team through seamless messaging.</p></div>
+189|<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div><h3>Analytics Dashboard</h3><p>Track your progress with beautiful charts and insights.</p></div>
+190|<div class="feature-card reveal"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div><h3>Cloud Sync</h3><p>Your data syncs automatically across all your devices.</p></div>
+191|</div>
+192|</div></section>
+193|<!-- SHOWCASE -->
+194|<section id="showcase"><div class="container">
+195|<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">See It In Action</h2>
+196|<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">A glimpse of the beautiful experience</p>
+197|<div class="showcase">
+198|<div class="showcase-phone reveal"><div class="s-notch"></div><div class="s-screen"><div class="s-screen-inner"><div class="s-bar" style="width:70%"></div><div class="s-bar" style="width:50%"></div><div class="s-block"></div><div class="s-block"></div><div class="s-block"></div></div></div></div>
+199|<div class="showcase-phone reveal"><div class="s-notch"></div><div class="s-screen"><div class="s-screen-inner"><div class="s-bar" style="width:80%"></div><div class="s-block"></div><div class="s-block" style="height:80px"></div><div class="s-block"></div></div></div></div>
+200|<div class="showcase-phone reveal"><div class="s-notch"></div><div class="s-screen"><div class="s-screen-inner"><div class="s-block" style="height:80px"></div><div class="s-bar" style="width:60%"></div><div class="s-block"></div><div class="s-block"></div></div></div></div>
+201|</div>
+202|</div></section>
+203|<!-- STATS -->
+204|<section id="stats"><div class="container">
+205|<div class="stats-grid">
+206|<div class="stat-item reveal"><h3 data-target="2500000" data-suffix="+" class="counter">0</h3><p>Downloads</p></div>
+207|<div class="stat-item reveal"><h3 data-target="4.9" data-suffix="★" class="counter" data-decimal="1">0</h3><p>User Rating</p></div>
+208|<div class="stat-item reveal"><h3 data-target="1500000" data-suffix="+" class="counter">0</h3><p>Active Users</p></div>
+209|<div class="stat-item reveal"><h3 data-target="85" data-suffix="" class="counter">0</h3><p>Countries</p></div>
+210|</div>
+211|</div></section>
+212|<!-- HOW IT WORKS -->
+213|<section id="how"><div class="container">
+214|<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">How It Works</h2>
+215|<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">Get started in three simple steps</p>
+216|<div class="steps-grid">
+217|<div class="step reveal"><div class="step-num">1</div><h3>Download the App</h3><p>Available on iOS and Android. Free to download with no hidden fees.</p></div>
+218|<div class="step reveal"><div class="step-num">2</div><h3>Create Your Account</h3><p>Sign up in seconds with your email or social media account.</p></div>
+219|<div class="step reveal"><div class="step-num">3</div><h3>Start Using</h3><p>Explore features, customize your experience, and boost productivity.</p></div>
+220|</div>
+221|</div></section>
+222|<!-- TESTIMONIALS -->
+223|<section><div class="container">
+224|<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">Loved by Users</h2>
+225|<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">See what people are saying</p>
+226|<div class="testimonials-grid">
+227|<div class="testimonial-card reveal"><div class="stars">★★★★★</div><p>"This app completely transformed how I manage my daily tasks. The interface is stunning."</p><div class="testimonial-author"><div class="testimonial-avatar"></div><div><span>Sarah Chen</span><small>Product Manager</small></div></div></div>
+228|<div class="testimonial-card reveal"><div class="stars">★★★★★</div><p>"Best app I've used this year. The automation features alone are worth the download."</p><div class="testimonial-author"><div class="testimonial-avatar"></div><div><span>James Wilson</span><small>Freelancer</small></div></div></div>
+229|<div class="testimonial-card reveal"><div class="stars">★★★★★</div><p>"Incredibly smooth and fast. I recommend it to everyone on my team."</p><div class="testimonial-author"><div class="testimonial-avatar"></div><div><span>Maria Garcia</span><small>CEO, StartupX</small></div></div></div>
+230|</div>
+231|</div></section>
+232|<!-- FAQ -->
+233|<section id="faq"><div class="container">
+234|<h2 class="reveal" style="text-align:center;font-size:2rem;margin-bottom:12px">FAQ</h2>
+235|<p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:48px">Got questions? We've got answers</p>
+236|<div class="faq-list">
+237|<div class="faq-item reveal"><div class="faq-q">Is the app free to use?<span class="arrow">▾</span></div><div class="faq-a"><p>Yes! The core features are completely free. Premium features are available with a subscription.</p></div></div>
+238|<div class="faq-item reveal"><div class="faq-q">What platforms are supported?<span class="arrow">▾</span></div><div class="faq-a"><p>We support iOS 14+ and Android 8.0+. A web version is also available.</p></div></div>
+239|<div class="faq-item reveal"><div class="faq-q">Is my data secure?<span class="arrow">▾</span></div><div class="faq-a"><p>Absolutely. We use AES-256 encryption and are SOC 2 compliant. Your privacy is our priority.</p></div></div>
+240|<div class="faq-item reveal"><div class="faq-q">How do I contact support?<span class="arrow">▾</span></div><div class="faq-a"><p>Reach us via in-app chat, email at support@applaunch.io, or through our social channels.</p></div></div>
+241|</div>
+242|</div></section>
+243|<!-- CTA -->
+244|<section><div class="container">
+245|<div class="cta-section reveal">
+246|<div class="cta-text">
+247|<h2>Ready to Get Started?</h2>
+248|<p>Join millions of users who are already using AppLaunch to supercharge their productivity.</p>
+249|<div class="btn-group">
+250|<a href="#" class="store-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg><div><small>Download on the</small><span>App Store</span></div></a>
+251|<a href="#" class="store-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M3.18 23.66c.34.2.73.34 1.14.34.5 0 .98-.16 1.4-.5L18.34 14l-3.5-3.5-11.66 7.16a2.4 2.4 0 00-1 3zm19.52-11.04l-4.68-2.7-3.96 3.96 3.96 3.96 4.68-2.7c.88-.52 1.38-1.44 1.38-2.46s-.5-1.94-1.38-2.46v.4z"/></svg><div><small>Get it on</small><span>Google Play</span></div></a>
+252|</div>
+253|</div>
+254|<div class="phone-mockup" style="flex:0 0 200px">
+255|<div class="phone-notch" style="width:80px;height:22px"></div>
+256|<div class="phone-screen" style="top:30px;left:10px;right:10px;bottom:10px;border-radius:20px;background:linear-gradient(180deg,var(--accent),#eab308,#10b981)">
+257|<div class="screen-content" style="padding:14px">
+258|<div class="screen-bar" style="width:60%"></div><div class="screen-block" style="height:40px"></div><div class="screen-block"></div><div class="screen-circles"><div class="screen-circle" style="width:32px;height:32px"></div><div class="screen-circle" style="width:32px;height:32px"></div></div>
+259|</div>
+260|</div>
+261|</div>
+262|</div>
+263|</div></section>
+264|<!-- FOOTER -->
+265|<footer><div class="container"><div class="footer-content">
+266|<span class="logo">⚡ AppLaunch</span>
+267|<p>© 2026 AppLaunch. All rights reserved.</p>
+268|<div style="display:flex;gap:16px"><a href="#" style="color:var(--muted);text-decoration:none;font-size:.85rem">Privacy</a><a href="#" style="color:var(--muted);text-decoration:none;font-size:.85rem">Terms</a><a href="#" style="color:var(--muted);text-decoration:none;font-size:.85rem">Contact</a></div>
+269|</div></div></footer>
+270|<!-- BACK TO TOP -->
+271|<button class="btt" id="btt" aria-label="Back to top">↑</button>
+272|<script>
+273|// Mobile nav
+274|document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+275|
+276|// Smooth scroll
+277|document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});document.getElementById('navLinks').classList.remove('open')}));
+278|
+279|// Reveal on scroll
+280|const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.1,rootMargin:"0px 0px -20px 0px"});
+281|document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+282|
+283|// Counter animation
+284|function animateCounter(el){
+285|const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',dec=parseInt(el.dataset.decimal)||0;
+286|let start=0;const dur=2000,step=ts=>{
+287|if(!el._start)el._start=ts;
+288|const p=Math.min((ts-el._start)/dur,1),ease=1-Math.pow(1-p,3);
+289|let val=ease*target;
+290|if(dec)val=val.toFixed(dec);else val=Math.floor(val);
+291|if(target>=1000000)el.textContent=(target>=1000000?(val/1000000).toFixed(1)+'M':val)+suffix;
+292|else el.textContent=val.toLocaleString()+suffix;
+293|if(p<1)requestAnimationFrame(step);
+294|};requestAnimationFrame(step);}
+295|
+296|const sObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){animateCounter(e.target);sObs.unobserve(e.target)}}),{threshold:.5});
+297|document.querySelectorAll('.counter').forEach(el=>sObs.observe(el));
+298|
+299|// FAQ
+300|document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
+301|const item=q.parentElement;const wasOpen=item.classList.contains('open');
+302|document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+303|if(!wasOpen)item.classList.add('open');
+304|}));
+305|
+306|// Back to top
+307|const btt=document.getElementById('btt');
+308|window.addEventListener('scroll',()=>btt.classList.toggle('show',window.scrollY>500));
+309|btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+310|// Fallback: ensure visibility after load
+setTimeout(()=>{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))},1500);
 </script>
-</body>
-</html>
+311|</body>
+312|</html>
