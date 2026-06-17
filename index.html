@@ -3,251 +3,262 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>落地页模板商店 — 6款风格任选</title>
+<title>Template Shop — 落地页模板合集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--p:#6C5CE7;--acc:#00cec9;--bg:#07071a;--s1:#0f0f2e;--tx:#e4e4f0;--td:#7878a0;--bd:rgba(255,255,255,.06);--r:16px}
+:root{--bg:#0a0a12;--s1:#12121e;--s2:#1a1a2e;--tx:#e4e4f0;--td:#7878a0;--bd:rgba(255,255,255,.06);--r:20px;--p:#6C5CE7;--acc:#00cec9}
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::selection{background:rgba(108,92,231,.3)}
-.container{max-width:1140px;margin:0 auto;padding:0 24px}
-a{text-decoration:none;color:inherit}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(108,92,231,.08);top:-150px;right:-100px;animation:float 12s ease-in-out infinite}
+.orb-2{width:400px;height:400px;background:rgba(0,206,201,.06);bottom:-100px;left:-100px;animation:float 12s ease-in-out infinite -6s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:999;backdrop-filter:blur(24px);background:rgba(7,7,26,.85);border-bottom:1px solid var(--bd)}
-nav .inner{max-width:1140px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:#fff}
-.logo .mark{width:32px;height:32px;background:linear-gradient(135deg,var(--p),var(--acc));border-radius:8px;display:flex;align-items:center;justify-content:center}
-.nav-links{display:flex;align-items:center;gap:24px}
-.nav-links a{font-size:14px;font-weight:500;color:var(--td);transition:color .2s}
-.nav-links a:hover{color:#fff}
-.nav-cta{background:var(--p);color:#fff!important;padding:10px 22px;border-radius:10px;font-weight:600;transition:all .2s}
-.nav-cta:hover{background:#5b4bcf;transform:translateY(-1px)}
-.mobile-btn{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
-
-/* HERO */
-.hero{padding:160px 0 80px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(ellipse,rgba(108,92,231,.1) 0%,rgba(0,206,201,.04) 40%,transparent 70%);pointer-events:none}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(108,92,231,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.04) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black,transparent);-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black,transparent);pointer-events:none}
-.hero .container{position:relative;z-index:1}
-h1{font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.08;letter-spacing:-.04em;margin-bottom:16px}
-h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-sub{font-size:18px;color:var(--td);max-width:560px;margin:0 auto 40px;line-height:1.7}
-.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);padding:6px 18px;border-radius:999px;font-size:13px;font-weight:500;color:var(--p);margin-bottom:24px}
-.badge .dot{width:7px;height:7px;background:var(--acc);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+/* HEADER */
+header{text-align:center;padding:120px 0 60px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);padding:6px 16px;border-radius:999px;font-size:13px;font-weight:500;color:var(--p);margin-bottom:24px}
+.badge .dot{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,206,201,.4)}50%{box-shadow:0 0 0 6px rgba(0,206,201,0)}}
+h1{font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.1;letter-spacing:-.04em;margin-bottom:16px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:18px;color:var(--td);max-width:560px;margin:0 auto 40px;line-height:1.7}
+.tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tag{background:rgba(255,255,255,.04);border:1px solid var(--bd);padding:6px 14px;border-radius:8px;font-size:12px;color:var(--td)}
 
-/* TEMPLATE GRID */
-.templates{padding:40px 0 100px}
-.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.tpl-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .3s;cursor:pointer;position:relative}
-.tpl-card:hover{border-color:rgba(108,92,231,.3);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.tpl-preview{height:200px;position:relative;overflow:hidden}
+/* FILTER */
+.filters{display:flex;justify-content:center;gap:8px;margin:40px 0 32px;flex-wrap:wrap}
+.fbtn{background:rgba(255,255,255,.04);border:1px solid var(--bd);padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;color:var(--td);cursor:pointer;transition:all .2s;font-family:inherit}
+.fbtn:hover,.fbtn.active{background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25);color:var(--p)}
+
+/* GRID */
+.tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;padding-bottom:80px}
+.tpl-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .35s cubic-bezier(.22,1,.36,1);position:relative}
+.tpl-card:hover{transform:translateY(-6px);border-color:rgba(108,92,231,.25);box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 0 1px rgba(108,92,231,.1)}
+.tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),var(--acc),transparent);opacity:0;transition:opacity .3s;z-index:2}
+.tpl-card:hover::before{opacity:1}
+
+/* PREVIEW */
+.tpl-preview{height:220px;position:relative;overflow:hidden;border-bottom:1px solid var(--bd)}
 .tpl-preview iframe{width:200%;height:400%;transform:scale(.5);transform-origin:top left;border:none;pointer-events:none}
-.tpl-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(7,7,26,.9) 100%);display:flex;align-items:flex-end;padding:16px}
-.tpl-info{padding:20px}
-.tpl-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
-.tpl-info h3{font-size:18px;font-weight:700;margin-bottom:4px}
-.tpl-info p{font-size:13px;color:var(--td);line-height:1.6}
-.tpl-btns{display:flex;gap:8px;margin-top:14px}
-.tpl-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;transition:all .2s}
-.tpl-btn-primary{background:var(--p);color:#fff}
-.tpl-btn-primary:hover{background:#5b4bcf;transform:translateY(-1px)}
-.tpl-btn-ghost{background:rgba(255,255,255,.04);color:var(--td);border:1px solid var(--bd)}
-.tpl-btn-ghost:hover{background:rgba(255,255,255,.08);color:var(--tx)}
+.tpl-preview .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,var(--s1));pointer-events:none;z-index:1}
 
-/* COLOR TAGS */
-.tag-dark{background:rgba(108,92,231,.15);color:#a29bfe}
-.tag-light{background:rgba(255,255,255,.08);color:#fff}
-.tag-gradient{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.15));color:#c4b5fd}
-.tag-warm{background:rgba(230,126,34,.15);color:#f0a500}
-.tag-blue{background:rgba(59,130,246,.15);color:#60a5fa}
-.tag-ai{background:rgba(0,206,201,.12);color:var(--acc)}
+/* INFO */
+.tpl-info{padding:24px 28px 28px}
+.tpl-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:12px}
+.tpl-name{font-size:20px;font-weight:700;white-space:nowrap}
+.tpl-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.tag-dark{background:rgba(139,92,246,.12);color:#a78bfa}
+.tag-light{background:rgba(37,99,235,.1);color:#60a5fa}
+.tag-gradient{background:rgba(236,72,153,.1);color:#f472b6}
+.tag-ai{background:rgba(6,182,212,.1);color:#22d3ee}
+.tag-mobile{background:rgba(249,115,22,.1);color:#fb923c}
+.tag-ecom{background:rgba(220,38,38,.1);color:#f87171}
+.tag-agency{background:rgba(212,175,55,.12);color:#d4af37}
+.tag-finance{background:rgba(59,130,246,.1);color:#60a5fa}
+.tpl-desc{font-size:14px;color:var(--td);line-height:1.6;margin-bottom:16px}
+.tpl-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tpl-feat{font-size:11px;color:var(--td);background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:4px 10px;border-radius:6px}
+.tpl-btns{display:flex;gap:10px}
+.tpl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;border:none;font-family:inherit}
+.tpl-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 16px rgba(108,92,231,.3)}
+.tpl-btn.primary:hover{background:#5b4bcf;transform:translateY(-1px)}
+.tpl-btn.secondary{background:rgba(255,255,255,.04);color:var(--tx);border:1px solid var(--bd)}
+.tpl-btn.secondary:hover{background:rgba(255,255,255,.08)}
+.tpl-btn svg{width:16px;height:16px}
 
-/* FEATURES */
-.features{padding:80px 0;border-top:1px solid var(--bd)}
-.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:48px}
-.feat{text-align:center;padding:24px 16px}
-.feat-ico{font-size:32px;margin-bottom:12px}
-.feat h4{font-size:15px;font-weight:700;margin-bottom:6px}
-.feat p{font-size:13px;color:var(--td);line-height:1.6}
+/* CTA BANNER */
+.cta-banner{background:linear-gradient(135deg,rgba(108,92,231,.12),rgba(0,206,201,.08));border:1px solid rgba(108,92,231,.15);border-radius:var(--r);padding:48px;text-align:center;margin-bottom:80px}
+.cta-banner h2{font-size:clamp(24px,3vw,32px);font-weight:800;margin-bottom:12px}
+.cta-banner p{color:var(--td);margin-bottom:24px}
+.cta-banner .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;background:var(--p);color:#fff;font-weight:600;font-size:16px;text-decoration:none;transition:all .2s}
+.cta-banner .btn:hover{background:#5b4bcf;transform:translateY(-2px)}
 
-/* CTA */
-.cta{text-align:center;padding:80px 0;position:relative}
-.cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(108,92,231,.08),transparent 60%);pointer-events:none}
-.cta .container{position:relative;z-index:1}
-.cta h2{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.03em;margin-bottom:14px}
-.cta p{font-size:16px;color:var(--td);margin-bottom:28px}
+.page-footer{text-align:center;padding:40px 0;border-top:1px solid var(--bd);font-size:13px;color:var(--td)}
 
-/* FOOTER */
-footer{border-top:1px solid var(--bd);padding:40px 0 24px;text-align:center}
-footer p{font-size:13px;color:var(--td)}
-footer a{color:var(--p)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
 
-/* RESPONSIVE */
-@media(max-width:900px){.tpl-grid{grid-template-columns:repeat(2,1fr)}.feat-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.tpl-grid{grid-template-columns:1fr}.feat-grid{grid-template-columns:1fr}.nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:rgba(7,7,26,.98);backdrop-filter:blur(20px);padding:20px;border-bottom:1px solid var(--bd);flex-direction:column;gap:14px}.nav-links.open{display:flex}.mobile-btn{display:block}.hero{padding:120px 0 40px}}
+@media(max-width:900px){.tpl-grid{grid-template-columns:1fr}}
+@media(max-width:640px){header{padding:100px 0 40px}.tpl-preview{height:180px}.cta-banner{padding:32px 20px}}
 </style>
 </head>
 <body>
 
-<nav>
-<div class="inner">
-<a href="#" class="logo">
-<div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-模板商店
-</a>
-<div class="nav-links" id="nl">
-<a href="#templates">全部模板</a>
-<a href="#features">为什么选我们</a>
-<a href="https://github.com/zizegak916-glitch" target="_blank">GitHub</a>
-</div>
-<button class="mobile-btn" onclick="document.getElementById('nl').classList.toggle('open')">☰</button>
-</div>
-</nav>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
 
-<section class="hero">
-<div class="hero-grid"></div>
-<div class="container">
-<div class="badge"><span class="dot"></span> 6款落地页模板 · 现可购买</div>
-<h1>高品质SaaS落地页<br><em>一键交付</em></h1>
-<p class="hero-sub">暗黑科技、极简白金、彩色渐变、暖色专业——多种风格任选。每款都是完整可部署的单文件HTML，买来改内容就能上线。</p>
-</div>
-</section>
+<div class="wrap">
 
-<section class="templates" id="templates">
-<div class="container">
-<div class="tpl-grid">
+<header>
+  <div class="badge"><span class="dot"></span> 8 套模板 · 持续更新</div>
+  <h1>SaaS 落地页<br><em>模板合集</em></h1>
+  <p class="sub">精选 8 套不同风格的落地页模板，即买即用。纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
+  <div class="tags">
+    <span class="tag">✨ 纯 HTML 单文件</span>
+    <span class="tag">📱 完全响应式</span>
+    <span class="tag">🎨 CSS 变量换色</span>
+    <span class="tag">⚡ 零依赖</span>
+    <span class="tag">📦 即买即发</span>
+  </div>
+</header>
 
-<!-- 1. Dark SaaS -->
-<div class="tpl-card" onclick="window.open('index-v1.html','_blank')">
-<div class="tpl-preview">
-<iframe src="index-v1.html" loading="lazy" scrolling="no"></iframe>
-</div>
-<div class="tpl-info">
-<div class="tpl-tag tag-dark">暗黑科技</div>
-<h3>Starter · SaaS Template</h3>
-<p>深空背景 + 紫色主调 + Bento Grid + 代码预览窗 + 动态图表。适合开发者工具、API产品。</p>
-<div class="tpl-btns">
-<a href="index-v1.html" target="_blank" class="tpl-btn tpl-btn-primary">预览 →</a>
-<a href="index-v1.html" target="_blank" class="tpl-btn tpl-btn-ghost">源码</a>
-</div>
-</div>
+<div class="filters">
+  <button class="fbtn active" data-filter="all">全部 (8)</button>
+  <button class="fbtn" data-filter="dark">暗色系 (3)</button>
+  <button class="fbtn" data-filter="light">亮色系 (2)</button>
+  <button class="fbtn" data-filter="industry">行业专属 (3)</button>
 </div>
 
-<!-- 2. AI Landing -->
-<div class="tpl-card" onclick="window.open('ai-landing/index.html','_blank')">
-<div class="tpl-preview">
-<iframe src="ai-landing/index.html" loading="lazy" scrolling="no"></iframe>
-</div>
-<div class="tpl-info">
-<div class="tpl-tag tag-ai">AI 产品</div>
-<h3>AI Landing Page</h3>
-<p>专为AI/SaaS产品设计。深色主题 + 智能仪表盘可视化 + API预览 + 团队协作展示。</p>
-<div class="tpl-btns">
-<a href="ai-landing/index.html" target="_blank" class="tpl-btn tpl-btn-primary">预览 →</a>
-<a href="ai-landing/index.html" target="_blank" class="tpl-btn tpl-btn-ghost">源码</a>
-</div>
-</div>
+<div class="tpl-grid" id="tpl-grid">
+
+  <!-- 1. Dark SaaS -->
+  <div class="tpl-card reveal" data-cat="dark">
+    <div class="tpl-preview"><iframe src="dark-saas.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">Starter</div><span class="tpl-tag tag-dark">暗黑科技风</span></div>
+      <div class="tpl-desc">深空蓝底色 + 紫/青渐变，适合 AI 产品、开发者工具、技术型 SaaS。含代码预览和仪表盘。</div>
+      <div class="tpl-features"><span class="tpl-feat">Bento Grid</span><span class="tpl-feat">代码预览</span><span class="tpl-feat">玻璃态导航</span><span class="tpl-feat">柱状图</span></div>
+      <div class="tpl-btns">
+        <a href="dark-saas.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="dark-saas.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Light Clean -->
+  <div class="tpl-card reveal" data-cat="light">
+    <div class="tpl-preview" style="background:#f5f5f5"><iframe src="light-clean.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">CleanSaaS</div><span class="tpl-tag tag-light">白色极简风</span></div>
+      <div class="tpl-desc">白底 + 蓝绿配色，干净专业。适合企业级 SaaS、B2B 产品、效率工具。含用户评价。</div>
+      <div class="tpl-features"><span class="tpl-feat">极简排版</span><span class="tpl-feat">用户评价</span><span class="tpl-feat">渐变 CTA</span><span class="tpl-feat">步骤流程</span></div>
+      <div class="tpl-btns">
+        <a href="light-clean.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="light-clean.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Gradient Bold -->
+  <div class="tpl-card reveal" data-cat="dark">
+    <div class="tpl-preview"><iframe src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">VibeLaunch</div><span class="tpl-tag tag-gradient">渐变潮流风</span></div>
+      <div class="tpl-desc">靛蓝→粉红渐变 + 暗色背景，视觉冲击力强。适合初创品牌、产品发布、创意工具。</div>
+      <div class="tpl-features"><span class="tpl-feat">渐变边框</span><span class="tpl-feat">产品展示</span><span class="tpl-feat">浮动光晕</span><span class="tpl-feat">邮件订阅</span></div>
+      <div class="tpl-btns">
+        <a href="gradient-bold.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="gradient-bold.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. AI Product -->
+  <div class="tpl-card reveal" data-cat="dark">
+    <div class="tpl-preview"><iframe src="ai-product.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">NeuralAI</div><span class="tpl-tag tag-ai">AI 产品专用</span></div>
+      <div class="tpl-desc">紫/青霓虹色 + 神经网络动画，专为 AI 产品打造。含 API 代码演示和功能对比表。</div>
+      <div class="tpl-features"><span class="tpl-feat">神经网络动画</span><span class="tpl-feat">API 演示</span><span class="tpl-feat">发光边框</span><span class="tpl-feat">对比表</span></div>
+      <div class="tpl-btns">
+        <a href="ai-product.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="ai-product.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Mobile App -->
+  <div class="tpl-card reveal" data-cat="industry">
+    <div class="tpl-preview"><iframe src="mobile-app.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">AppLaunch</div><span class="tpl-tag tag-mobile">App 专属</span></div>
+      <div class="tpl-desc">暗色背景 + 蓝/橙配色，专为移动端 App 设计。含 CSS 手机模型、应用商店按钮和三屏展示。</div>
+      <div class="tpl-features"><span class="tpl-feat">手机模型</span><span class="tpl-feat">应用商店按钮</span><span class="tpl-feat">三屏展示</span><span class="tpl-feat">下载统计</span></div>
+      <div class="tpl-btns">
+        <a href="mobile-app.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="mobile-app.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. E-commerce -->
+  <div class="tpl-card reveal" data-cat="light">
+    <div class="tpl-preview" style="background:#fafaf8"><iframe src="ecommerce.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">ShopWave</div><span class="tpl-tag tag-ecom">电商产品</span></div>
+      <div class="tpl-desc">暖白底 + 红/绿配色，适合电商产品展示、单品落地页、独立站。含产品卡片和用户评价。</div>
+      <div class="tpl-features"><span class="tpl-feat">产品卡片</span><span class="tpl-feat">星级评价</span><span class="tpl-feat">购物车</span><span class="tpl-feat">邮件订阅</span></div>
+      <div class="tpl-btns">
+        <a href="ecommerce.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="ecommerce.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Agency -->
+  <div class="tpl-card reveal" data-cat="dark">
+    <div class="tpl-preview"><iframe src="agency.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">Atelier</div><span class="tpl-tag tag-agency">创意工作室</span></div>
+      <div class="tpl-desc">近黑底 + 金色点缀，高级感排版。适合设计公司、创意代理、个人作品集。大量留白，编辑式布局。</div>
+      <div class="tpl-features"><span class="tpl-feat">编辑式排版</span><span class="tpl-feat">作品集网格</span><span class="tpl-feat">团队展示</span><span class="tpl-feat">金色点缀</span></div>
+      <div class="tpl-btns">
+        <a href="agency.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="agency.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Fintech -->
+  <div class="tpl-card reveal" data-cat="industry">
+    <div class="tpl-preview"><iframe src="fintech.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">FinFlow</div><span class="tpl-tag tag-finance">金融科技</span></div>
+      <div class="tpl-desc">深海军蓝底 + 蓝/绿配色，专业可信。适合金融产品、支付平台、加密货币。含合规徽章和金融仪表盘。</div>
+      <div class="tpl-features"><span class="tpl-feat">合规徽章</span><span class="tpl-feat">金融仪表盘</span><span class="tpl-feat">交易列表</span><span class="tpl-feat">定价对比</span></div>
+      <div class="tpl-btns">
+        <a href="fintech.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
+        <a href="fintech.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- 3. Minimal White -->
-<div class="tpl-card" onclick="window.open('minimal/index.html','_blank')">
-<div class="tpl-preview">
-<iframe src="minimal/index.html" loading="lazy" scrolling="no"></iframe>
-</div>
-<div class="tpl-info">
-<div class="tpl-tag tag-light">极简白金</div>
-<h3>Flow · Minimal Style</h3>
-<p>纯白背景 + 深蓝金色点缀 + 大量留白。适合企业级SaaS、项目管理、协作工具。</p>
-<div class="tpl-btns">
-<a href="minimal/index.html" target="_blank" class="tpl-btn tpl-btn-primary">预览 →</a>
-<a href="minimal/index.html" target="_blank" class="tpl-btn tpl-btn-ghost">源码</a>
-</div>
-</div>
+<!-- CTA -->
+<div class="cta-banner reveal">
+  <h2>需要定制？</h2>
+  <p>所有模板均可按需修改颜色、内容、区块。支持企业定制开发。</p>
+  <a href="#" class="btn">联系我们</a>
 </div>
 
-<!-- 4. Gradient Bold -->
-<div class="tpl-card" onclick="window.open('gradient/index.html','_blank')">
-<div class="tpl-preview">
-<iframe src="gradient/index.html" loading="lazy" scrolling="no"></iframe>
-</div>
-<div class="tpl-info">
-<div class="tpl-tag tag-gradient">彩色渐变</div>
-<h3>Pixel · Creative Tool</h3>
-<p>紫粉渐变 + 圆角卡片 + Bento布局 + 动态光球。适合创意工具、设计平台、年轻品牌。</p>
-<div class="tpl-btns">
-<a href="gradient/index.html" target="_blank" class="tpl-btn tpl-btn-primary">预览 →</a>
-<a href="gradient/index.html" target="_blank" class="tpl-btn tpl-btn-ghost">源码</a>
-</div>
-</div>
-</div>
-
-<!-- 5. Fintech Dark -->
-<div class="tpl-card" onclick="window.open('fintech/index.html','_blank')">
-<div class="tpl-preview">
-<iframe src="fintech/index.html" loading="lazy" scrolling="no"></iframe>
-</div>
-<div class="tpl-info">
-<div class="tpl-tag tag-blue">暗黑金融</div>
-<h3>Metric · Data Analytics</h3>
-<p>深邃暗蓝 + 蓝绿紫三色系 + 仪表盘Mockup + 代码块预览。适合数据平台、FinTech、API产品。</p>
-<div class="tpl-btns">
-<a href="fintech/index.html" target="_blank" class="tpl-btn tpl-btn-primary">预览 →</a>
-<a href="fintech/index.html" target="_blank" class="tpl-btn tpl-btn-ghost">源码</a>
-</div>
-</div>
-</div>
-
-<!-- 6. Warm Pro -->
-<div class="tpl-card" onclick="window.open('warm/index.html','_blank')">
-<div class="tpl-preview">
-<iframe src="warm/index.html" loading="lazy" scrolling="no"></iframe>
-</div>
-<div class="tpl-info">
-<div class="tpl-tag tag-warm">暖色专业</div>
-<h3>Advisor · Consulting</h3>
-<p>米白背景 + 暖橙珊瑚色 + 自动滚动评价 + 联系表单。适合咨询服务、教育平台、B2B。</p>
-<div class="tpl-btns">
-<a href="warm/index.html" target="_blank" class="tpl-btn tpl-btn-primary">预览 →</a>
-<a href="warm/index.html" target="_blank" class="tpl-btn tpl-btn-ghost">源码</a>
-</div>
-</div>
-</div>
+<div class="page-footer">© 2026 Template Shop · 8 套模板 · 单文件 · 零依赖 · 即买即用</div>
 
 </div>
-</div>
-</section>
-
-<section class="features">
-<div class="container">
-<h2 style="text-align:center;font-size:clamp(28px,4vw,36px);font-weight:800;letter-spacing:-.03em">所有模板统一标准</h2>
-<div class="feat-grid">
-<div class="feat"><div class="feat-ico">📱</div><h4>全端响应式</h4><p>手机/平板/桌面完美适配</p></div>
-<div class="feat"><div class="feat-ico">⚡</div><h4>单文件交付</h4><p>一个HTML文件，零依赖</p></div>
-<div class="feat"><div class="feat-ico">🎨</div><h4>高级设计</h4><p>Linear/Stripe级UI品质</p></div>
-<div class="feat"><div class="feat-ico">🔧</div><h4>易定制</h4><p>改文字换颜色就能上线</p></div>
-</div>
-</div>
-</section>
-
-<section class="cta">
-<div class="container">
-<h2>需要定制？</h2>
-<p>告诉我你的产品和需求，我可以基于模板做深度定制。</p>
-<a href="https://github.com/zizegak916-glitch" target="_blank" class="tpl-btn tpl-btn-primary" style="display:inline-flex;font-size:15px;padding:14px 32px;border-radius:12px">联系我 →</a>
-</div>
-</section>
-
-<footer>
-<div class="container">
-<p>© 2026 模板商店 · Built with 💜 by <a href="https://github.com/zizegak916-glitch" target="_blank">zizegak916</a></p>
-</div>
-</footer>
 
 <script>
-document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
+// Scroll reveal
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Filter
+document.querySelectorAll('.fbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    document.querySelectorAll('.tpl-card').forEach(card=>{
+      if(f==='all'||card.dataset.cat===f){card.style.display=''}
+      else{card.style.display='none'}
+    });
+  });
+});
 </script>
+
 </body>
 </html>

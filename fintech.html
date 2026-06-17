@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinFlow — Fintech Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0B1120;--card:#111827;--primary:#3B82F6;--green:#10B981;--text:#E5E7EB;--muted:#9CA3AF;--border:#1F2937}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{max-width:1140px;margin:0 auto;padding:0 24px}
+
+/* NAV */
+.nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(11,17,32,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav .container{display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav-logo{font-size:1.3rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.nav-logo svg{width:28px;height:28px}
+.nav-links{display:flex;gap:32px;list-style:none;font-size:.9rem}
+.nav-links a{color:var(--muted);transition:.2s}
+.nav-links a:hover{color:#fff}
+.nav-actions{display:flex;gap:12px;align-items:center}
+.btn{padding:10px 22px;border-radius:8px;font-weight:600;font-size:.88rem;border:none;cursor:pointer;transition:.2s;font-family:inherit}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:#2563EB}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#059669}
+.hamburger{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer}
+
+/* HERO */
+.hero{padding:140px 0 80px;text-align:center}
+.hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;color:#fff;max-width:700px;margin:0 auto 20px;line-height:1.15}
+.hero h1 span{color:var(--green)}
+.hero p{color:var(--muted);font-size:1.1rem;max-width:540px;margin:0 auto 36px}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.dashboard-mock{margin:60px auto 0;max-width:700px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.mock-chart{display:flex;align-items:flex-end;gap:8px;height:120px}
+.mock-chart .bar{width:32px;border-radius:6px 6px 0 0;transition:height .8s ease}
+.mock-chart .bar:nth-child(1){height:40px;background:var(--primary)}
+.mock-chart .bar:nth-child(2){height:70px;background:var(--primary)}
+.mock-chart .bar:nth-child(3){height:55px;background:var(--primary)}
+.mock-chart .bar:nth-child(4){height:90px;background:var(--green)}
+.mock-chart .bar:nth-child(5){height:65px;background:var(--primary)}
+.mock-chart .bar:nth-child(6){height:110px;background:var(--green)}
+.mock-chart .bar:nth-child(7){height:85px;background:var(--primary)}
+.mock-balance{text-align:left}
+.mock-balance small{color:var(--muted);font-size:.78rem}
+.mock-balance .amount{font-size:1.8rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff}
+.mock-balance .change{color:var(--green);font-size:.85rem;font-weight:600}
+
+/* TRUST BAR */
+.trust{padding:48px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.trust h3{text-align:center;color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:28px}
+.trust-badges{display:flex;justify-content:center;gap:48px;flex-wrap:wrap}
+.trust-badge{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;font-weight:500}
+.trust-badge svg{width:28px;height:28px;stroke:var(--green);fill:none;stroke-width:2}
+
+/* FEATURES */
+.features{padding:100px 0}
+.section-label{color:var(--primary);font-size:.8rem;text-transform:uppercase;letter-spacing:2px;font-weight:600;margin-bottom:12px;text-align:center}
+.section-title{font-size:2rem;font-weight:800;color:#fff;text-align:center;margin-bottom:16px}
+.section-sub{color:var(--muted);text-align:center;max-width:520px;margin:0 auto 56px}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;transition:.3s}
+.feature-card:hover{border-color:var(--primary);transform:translateY(-4px)}
+.feature-card svg{width:40px;height:40px;stroke:var(--primary);fill:none;stroke-width:1.5;margin-bottom:18px}
+.feature-card h3{color:#fff;font-size:1.1rem;margin-bottom:10px}
+.feature-card p{color:var(--muted);font-size:.9rem}
+
+/* PRODUCT SHOWCASE */
+.showcase{padding:100px 0}
+.showcase-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px}
+.showcase-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px}
+.showcase-card h4{color:#fff;font-size:1rem;margin-bottom:16px}
+.mini-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.mini-chart .bar{width:20px;border-radius:4px 4px 0 0;background:var(--primary)}
+.mini-chart .bar:nth-child(odd){background:var(--green)}
+.tx-list{list-style:none}
+.tx-list li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.tx-list li:last-child{border:none}
+.tx-list .tx-name{color:#fff}
+.tx-list .tx-amount{font-family:'JetBrains Mono',monospace;font-weight:600}
+.tx-list .tx-plus{color:var(--green)}.tx-list .tx-minus{color:#EF4444}
+
+/* STATS */
+.stats{padding:80px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;text-align:center}
+.stat-item h2{font-size:2.6rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff}
+.stat-item p{color:var(--muted);font-size:.9rem;margin-top:6px}
+
+/* PRICING */
+.pricing{padding:100px 0}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;text-align:center;transition:.3s}
+.price-card.featured{border-color:var(--primary);position:relative}
+.price-card.featured::after{content:'Popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:.72rem;font-weight:700;padding:4px 16px;border-radius:20px;text-transform:uppercase}
+.price-card h3{color:#fff;font-size:1.1rem;margin-bottom:8px}
+.price-card .price{font-size:2.4rem;font-weight:800;color:#fff;margin-bottom:24px}
+.price-card .price small{font-size:.9rem;color:var(--muted);font-weight:400}
+.price-card ul{list-style:none;text-align:left;margin-bottom:28px}
+.price-card ul li{color:var(--muted);font-size:.9rem;padding:8px 0;border-bottom:1px solid var(--border)}
+.price-card ul li::before{content:'✓ ';color:var(--green);font-weight:700}
+.price-card .btn{width:100%}
+
+/* FAQ */
+.faq{padding:100px 0}
+.faq-list{max-width:680px;margin:0 auto}
+.faq-item{border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.faq-q{background:var(--card);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;color:#fff;font-weight:600;font-size:.95rem}
+.faq-q span{transition:transform .3s}
+.faq-a{padding:0 24px;max-height:0;overflow:hidden;transition:.3s;color:var(--muted);font-size:.9rem;line-height:1.7}
+.faq-item.open .faq-q span{transform:rotate(180deg)}
+.faq-item.open .faq-a{max-height:200px;padding:0 24px 18px}
+
+/* CTA */
+.cta-banner{padding:80px 0}
+.cta-inner{background:linear-gradient(135deg,var(--primary),#7C3AED);border-radius:20px;padding:60px 40px;text-align:center}
+.cta-inner h2{font-size:2rem;font-weight:800;color:#fff;margin-bottom:16px}
+.cta-inner p{color:rgba(255,255,255,.8);margin-bottom:32px}
+.cta-inner .btn{background:#fff;color:var(--primary);font-weight:700}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:60px 0 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand p{color:var(--muted);font-size:.85rem;margin-top:12px}
+footer h4{color:#fff;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+footer ul{list-style:none}
+footer ul li{margin-bottom:10px}
+footer ul a{color:var(--muted);font-size:.85rem;transition:.2s}
+footer ul a:hover{color:var(--primary)}
+.footer-bottom{text-align:center;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);padding-top:20px}
+
+/* BACK TO TOP */
+.back-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:1.2rem;cursor:pointer;opacity:0;visibility:hidden;transition:.3s;z-index:99}
+.back-top.show{opacity:1;visibility:visible}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:.6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links,.nav-actions .btn-ghost{display:none}
+  .hamburger{display:block}
+  .nav-links.open,.nav-actions{display:flex}
+  .nav-actions{position:absolute;top:64px;right:24px;background:var(--card);padding:16px;border-radius:12px;border:1px solid var(--border);flex-direction:column}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .showcase-box{grid-template-columns:1fr}
+}
+@media(max-width:480px){.footer-grid{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="container">
+    <a href="#" class="nav-logo"><svg viewBox="0 0 28 28"><rect x="2" y="2" width="24" height="24" rx="6" stroke="#3B82F6" stroke-width="2" fill="none"/><path d="M8 14h4l2-6 4 12 2-6h4" stroke="#3B82F6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>FinFlow</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost">Sign In</button>
+      <button class="btn btn-primary">Get Started</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <h1 class="reveal">Scale Your <span>Financial</span> Operations Globally</h1>
+    <p class="reveal">The modern infrastructure for payments, banking, and financial data. Process billions with enterprise-grade reliability.</p>
+    <div class="hero-btns reveal">
+      <button class="btn btn-primary">Start Building →</button>
+      <button class="btn btn-ghost">View Documentation</button>
+    </div>
+    <div class="dashboard-mock reveal">
+      <div class="mock-balance">
+        <small>Total Balance</small>
+        <div class="amount">$284,392.18</div>
+        <div class="change">↑ 12.5% this month</div>
+      </div>
+      <div class="mock-chart">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<section class="trust">
+  <div class="container">
+    <h3>Trusted & Compliant Worldwide</h3>
+    <div class="trust-badges reveal">
+      <div class="trust-badge"><svg viewBox="0 0 28 28"><path d="M14 3L4 8v6c0 7.2 4.3 13.9 10 16 5.7-2.1 10-8.8 10-16V8L14 3z"/><path d="M10 14l3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>PCI DSS</div>
+      <div class="trust-badge"><svg viewBox="0 0 28 28"><path d="M14 3L4 8v6c0 7.2 4.3 13.9 10 16 5.7-2.1 10-8.8 10-16V8L14 3z"/><path d="M10 14l3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>SOC 2</div>
+      <div class="trust-badge"><svg viewBox="0 0 28 28"><path d="M14 3L4 8v6c0 7.2 4.3 13.9 10 16 5.7-2.1 10-8.8 10-16V8L14 3z"/><path d="M10 14l3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>GDPR</div>
+      <div class="trust-badge"><svg viewBox="0 0 28 28"><path d="M14 3L4 8v6c0 7.2 4.3 13.9 10 16 5.7-2.1 10-8.8 10-16V8L14 3z"/><path d="M10 14l3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>256-bit SSL</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <p class="section-label reveal">Features</p>
+    <h2 class="section-title reveal">Everything You Need to Scale</h2>
+    <p class="section-sub reveal">Powerful tools built for modern financial operations, from real-time analytics to global compliance.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal"><svg viewBox="0 0 40 40"><rect x="4" y="20" width="6" height="16" rx="1"/><rect x="13" y="12" width="6" height="24" rx="1"/><rect x="22" y="16" width="6" height="20" rx="1"/><rect x="31" y="8" width="6" height="28" rx="1"/></svg><h3>Real-time Analytics</h3><p>Track every transaction as it happens with sub-second latency dashboards and custom reports.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 40 40"><rect x="8" y="16" width="24" height="20" rx="3"/><path d="M14 16V10a6 6 0 0112 0v6"/><circle cx="20" cy="26" r="2"/></svg><h3>Bank-grade Security</h3><p>End-to-end encryption, tokenization, and SOC 2 Type II certified infrastructure.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 40 40"><path d="M8 20h24M26 14l6 6-6 6"/><circle cx="12" cy="20" r="6"/></svg><h3>Instant Transfers</h3><p>Move money in real-time across 150+ countries with near-zero latency settlement.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><path d="M20 10v10l7 4"/></svg><h3>Smart Budgeting</h3><p>AI-powered categorization and predictive budgeting to optimize your cash flow.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><ellipse cx="20" cy="20" rx="8" ry="16"/><path d="M4 20h32"/></svg><h3>Multi-currency</h3><p>Accept, hold, and send payments in 40+ currencies with transparent FX rates.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" rx="4"/><path d="M14 14h4M14 20h12M14 26h8"/><circle cx="30" cy="10" r="3" fill="#3B82F6" stroke="none"/></svg><h3>API Access</h3><p>RESTful APIs with SDKs for every major language. Integrate in hours, not weeks.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT SHOWCASE -->
+<section class="showcase">
+  <div class="container">
+    <p class="section-label reveal">Product</p>
+    <h2 class="section-title reveal">Your Complete Financial Dashboard</h2>
+    <p class="section-sub reveal">Everything in one place. Monitor balances, transactions, and performance at a glance.</p>
+    <div class="showcase-box reveal">
+      <div class="showcase-card">
+        <h4>Account Balance</h4>
+        <div class="amount" style="font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff;margin-bottom:6px">$124,892.00</div>
+        <div style="color:var(--green);font-size:.82rem;font-weight:600">↑ 8.3% from last week</div>
+        <div class="mini-chart" style="margin-top:20px">
+          <div class="bar" style="height:30%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:40%"></div><div class="bar" style="height:70%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:85%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:90%"></div>
+        </div>
+      </div>
+      <div class="showcase-card">
+        <h4>Recent Transactions</h4>
+        <ul class="tx-list">
+          <li><span class="tx-name">Stripe Payment</span><span class="tx-amount tx-plus">+$2,450.00</span></li>
+          <li><span class="tx-name">AWS Infrastructure</span><span class="tx-amount tx-minus">-$842.30</span></li>
+          <li><span class="tx-name">Client Invoice #1082</span><span class="tx-amount tx-plus">+$18,200.00</span></li>
+          <li><span class="tx-name">Payroll Processing</span><span class="tx-amount tx-minus">-$34,100.00</span></li>
+          <li><span class="tx-name">Wire Transfer</span><span class="tx-amount tx-plus">+$7,500.00</span></li>
+        </ul>
+      </div>
+      <div class="showcase-card">
+        <h4>Monthly Performance</h4>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+          <div><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px"><span style="color:var(--muted)">Revenue</span><span style="color:#fff;font-family:'JetBrains Mono',monospace">$284K</span></div><div style="height:8px;background:var(--border);border-radius:4px"><div style="width:82%;height:100%;background:var(--primary);border-radius:4px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px"><span style="color:var(--muted)">Expenses</span><span style="color:#fff;font-family:'JetBrains Mono',monospace">$127K</span></div><div style="height:8px;background:var(--border);border-radius:4px"><div style="width:45%;height:100%;background:#EF4444;border-radius:4px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px"><span style="color:var(--muted)">Profit</span><span style="color:#fff;font-family:'JetBrains Mono',monospace">$157K</span></div><div style="height:8px;background:var(--border);border-radius:4px"><div style="width:55%;height:100%;background:var(--green);border-radius:4px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px"><span style="color:var(--muted)">Growth</span><span style="color:#fff;font-family:'JetBrains Mono',monospace">+34%</span></div><div style="height:8px;background:var(--border);border-radius:4px"><div style="width:34%;height:100%;background:#7C3AED;border-radius:4px"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal"><h2 data-target="2" data-suffix="B+">$0</h2><p>Total Processed</p></div>
+      <div class="stat-item reveal"><h2 data-target="50" data-suffix="K+">0</h2><p>Active Users</p></div>
+      <div class="stat-item reveal"><h2 data-target="150" data-suffix="+">0</h2><p>Countries Served</p></div>
+      <div class="stat-item reveal"><h2 data-target="99.99" data-suffix="%" data-decimal="true">0</h2><p>Uptime SLA</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <p class="section-label reveal">Pricing</p>
+    <h2 class="section-title reveal">Transparent, Predictable Pricing</h2>
+    <p class="section-sub reveal">Start free and scale as you grow. No hidden fees, no surprises.</p>
+    <div class="pricing-grid">
+      <div class="price-card reveal"><h3>Starter</h3><div class="price">$0<small>/mo</small></div><ul><li>Up to 1,000 transactions</li><li>3 currencies</li><li>Basic analytics</li><li>Email support</li><li>Standard API access</li></ul><button class="btn btn-ghost">Get Started Free</button></div>
+      <div class="price-card featured reveal"><h3>Business</h3><div class="price">$79<small>/mo</small></div><ul><li>Unlimited transactions</li><li>15 currencies</li><li>Advanced analytics</li><li>Priority support</li><li>Full API + webhooks</li></ul><button class="btn btn-primary">Start Free Trial</button></div>
+      <div class="price-card reveal"><h3>Enterprise</h3><div class="price">Custom</div><ul><li>Everything in Business</li><li>40+ currencies</li><li>Dedicated account manager</li><li>Custom SLAs</li><li>On-premise option</li></ul><button class="btn btn-ghost">Contact Sales</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <p class="section-label reveal">FAQ</p>
+    <h2 class="section-title reveal">Frequently Asked Questions</h2>
+    <p class="section-sub reveal">Everything you need to know about getting started.</p>
+    <div class="faq-list">
+      <div class="faq-item reveal"><div class="faq-q">How long does account setup take?<span>▼</span></div><div class="faq-a">Account verification typically takes under 5 minutes for individuals and 1-2 business days for businesses. Our automated KYC/AML checks keep things fast while staying compliant.</div></div>
+      <div class="faq-item reveal"><div class="faq-q">What currencies do you support?<span>▼</span></div><div class="faq-a">We support 40+ currencies including USD, EUR, GBP, JPY, and major emerging market currencies. New currencies are added regularly based on customer demand.</div></div>
+      <div class="faq-item reveal"><div class="faq-q">Is my money safe?<span>▼</span></div><div class="faq-a">Absolutely. Funds are held in segregated accounts at tier-1 banks. We're PCI DSS Level 1 certified, SOC 2 Type II audited, and fully licensed in every jurisdiction we operate in.</div></div>
+      <div class="faq-item reveal"><div class="faq-q">Can I integrate with my existing systems?<span>▼</span></div><div class="faq-a">Yes. Our RESTful APIs and SDKs for Python, Node.js, Ruby, Go, and Java make integration straightforward. Most teams are up and running within a day.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner" id="contact">
+  <div class="container"><div class="cta-inner reveal">
+    <h2>Ready to Modernize Your Financial Stack?</h2>
+    <p>Join 50,000+ businesses already building on FinFlow. Start free, scale infinitely.</p>
+    <button class="btn">Create Free Account →</button>
+  </div></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="nav-logo" style="margin-bottom:0"><svg viewBox="0 0 28 28" width="28" height="28"><rect x="2" y="2" width="24" height="24" rx="6" stroke="#3B82F6" stroke-width="2" fill="none"/><path d="M8 14h4l2-6 4 12 2-6h4" stroke="#3B82F6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>FinFlow</div><p>Modern financial infrastructure for the internet economy.</p></div>
+      <div><h4>Product</h4><ul><li><a href="#">Payments</a></li><li><a href="#">Banking</a></li><li><a href="#">Analytics</a></li><li><a href="#">APIs</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Blog</a></li><li><a href="#">Press</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Security</a></li><li><a href="#">Compliance</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">© 2026 FinFlow Inc. All rights reserved.</div>
+  </div>
+</footer>
+
+<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
+
+<script>
+// Mobile nav
+document.getElementById('hamburger')?.addEventListener('click',()=>{document.getElementById('navLinks')?.classList.toggle('open')});
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{q.parentElement.classList.toggle('open')}));
+
+// Reveal on scroll
+const reveals=document.querySelectorAll('.reveal');
+const revealObs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}})},{threshold:.15});
+reveals.forEach(el=>revealObs.observe(el));
+
+// Animated counters
+const counters=document.querySelectorAll('[data-target]');
+let counted=false;
+const countObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!counted){counted=true;counters.forEach(c=>{const target=parseFloat(c.dataset.target);const suffix=c.dataset.suffix||'';const dec=c.dataset.decimal==='true';const duration=2000;const start=performance.now();const isDollar=c.textContent.startsWith('$');function tick(now){const p=Math.min((now-start)/duration,1);const ease=1-Math.pow(1-p,3);const v=target*ease;const prefix=isDollar?'$':'';c.textContent=prefix+(dec?v.toFixed(2):Math.floor(v))+suffix;if(p<1)requestAnimationFrame(tick)}requestAnimationFrame(tick)})}})},{threshold:.5});
+counters.forEach(c=>countObs.observe(c));
+
+// Back to top
+const bt=document.getElementById('backTop');
+window.addEventListener('scroll',()=>{bt?.classList.toggle('show',window.scrollY>500)});
+bt?.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>
