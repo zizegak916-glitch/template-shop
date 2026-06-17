@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow — Minimal Landing Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a1a2e;--gold:#d4a857;--bg:#fafaf8;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--border:rgba(0,0,0,.06);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(212,168,87,.2)}
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+a{text-decoration:none;color:inherit}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(250,250,248,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+nav .inner{max-width:1120px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:22px;color:var(--navy)}
+.logo span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-size:14px;font-weight:500;color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--navy)}
+.nav-cta{background:var(--navy);color:#fff!important;padding:10px 24px;border-radius:10px;font-weight:600;transition:all .2s}
+.nav-cta:hover{background:#0f0f1e;transform:translateY(-1px)}
+.mobile-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--navy)}
+
+/* HERO */
+.hero{padding:160px 0 100px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,168,87,.1);border:1px solid rgba(212,168,87,.2);padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--gold);margin-bottom:28px}
+h1{font-size:clamp(40px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-.04em;margin-bottom:20px}
+h1 .hl{color:var(--gold)}
+.hero-sub{font-size:18px;color:var(--muted);max-width:480px;margin:0 auto 36px;line-height:1.7}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-weight:600;border:none;cursor:pointer;transition:all .2s;font-size:15px;padding:14px 28px;border-radius:12px}
+.btn-p{background:var(--navy);color:#fff;box-shadow:0 4px 16px rgba(26,26,46,.2)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,26,46,.3)}
+.btn-o{background:transparent;color:var(--navy);border:1.5px solid var(--border)}
+.btn-o:hover{border-color:var(--navy);background:rgba(26,26,46,.03)}
+
+/* MOCKUP */
+.mockup{margin-top:56px;max-width:680px;margin-left:auto;margin-right:auto;position:relative}
+.mockup-inner{background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);overflow:hidden}
+.mock-header{height:44px;background:#f5f5f0;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:8px}
+.mock-dot{width:10px;height:10px;border-radius:50%}.mock-dot.r{background:#ff5f56}.mock-dot.y{background:#ffbd2e}.mock-dot.g{background:#27c93f}
+.mock-url{flex:1;background:#fff;border-radius:6px;padding:4px 12px;font-size:12px;color:var(--muted);margin-left:8px}
+.mock-body{padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mock-card{background:var(--bg);border-radius:12px;padding:16px}
+.mock-card .bar{height:8px;border-radius:4px;margin-bottom:8px}
+.mock-card .line{height:6px;border-radius:3px;margin-bottom:6px}
+
+/* SECTION */
+section{padding:96px 0}
+.sec-tag{text-align:center;font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.sec-title{text-align:center;font-size:clamp(28px,4vw,38px);font-weight:800;letter-spacing:-.03em;margin-bottom:14px}
+.sec-desc{text-align:center;font-size:16px;color:var(--muted);max-width:480px;margin:0 auto 48px;line-height:1.7}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat{background:var(--card);border-radius:var(--r);padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:all .3s;border:1px solid var(--border)}
+.feat:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+.feat-icon{font-size:28px;margin-bottom:14px}
+.feat h3{font-size:17px;font-weight:700;margin-bottom:6px}
+.feat p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* TESTIMONIALS */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.test{background:var(--card);border-radius:var(--r);padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border)}
+.test-stars{color:var(--gold);font-size:14px;margin-bottom:12px}
+.test blockquote{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:16px;font-style:italic}
+.test-author{display:flex;align-items:center;gap:12px}
+.test-avatar{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.test-name{font-size:14px;font-weight:600}.test-role{font-size:12px;color:var(--muted)}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:920px;margin:0 auto}
+.price{background:var(--card);border-radius:20px;padding:36px 28px;text-align:center;border:1px solid var(--border);transition:all .3s;position:relative}
+.price:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+.price.hot{border-color:var(--gold);box-shadow:0 8px 32px rgba(212,168,87,.12)}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;padding:4px 16px;border-radius:999px;font-size:11px;font-weight:700}
+.price h3{font-size:20px;font-weight:700;margin-bottom:4px}
+.price .sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.price-num{font-size:48px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.price-num small{font-size:14px;color:var(--muted);font-weight:400}
+.price-per{font-size:13px;color:var(--muted);margin:8px 0 24px}
+.price-list{list-style:none;text-align:left;margin-bottom:24px}
+.price-list li{padding:8px 0;font-size:13px;color:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.price-list li::before{content:"✓";color:var(--gold);font-weight:700;font-size:13px}
+.price .btn{width:100%;justify-content:center}
+
+/* FAQ */
+.faq-wrap{max-width:640px;margin:0 auto}
+.faq-q{border-bottom:1px solid var(--border)}
+.faq-q button{width:100%;padding:20px 0;background:none;border:none;color:var(--text);font-size:15px;font-weight:600;font-family:inherit;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q button::after{content:"+";font-size:20px;color:var(--muted);transition:transform .3s}
+.faq-q.open button::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-q.open+.faq-a{max-height:200px;padding-bottom:20px}
+.faq-a p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* CTA */
+.cta-section{background:var(--navy);color:#fff;text-align:center;padding:96px 0;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;top:-200px;right:-200px;width:500px;height:500px;border-radius:50%;background:rgba(212,168,87,.08);pointer-events:none}
+.cta-section h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:14px;color:#fff}
+.cta-section p{font-size:16px;color:rgba(255,255,255,.6);margin-bottom:32px}
+.cta-section .btn-p{background:var(--gold);box-shadow:0 4px 20px rgba(212,168,87,.3)}
+.cta-section .btn-o{border-color:rgba(255,255,255,.2);color:#fff}
+.cta-section .btn-o:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:56px 0 28px}
+.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.ft-brand p{font-size:13px;color:var(--muted);margin-top:12px;max-width:260px;line-height:1.7}
+.ft-col h4{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+.ft-col a{display:block;font-size:13px;color:var(--muted);padding:4px 0;transition:color .2s}
+.ft-col a:hover{color:var(--text)}
+.ft-bottom{text-align:center;font-size:12px;color:var(--muted);padding-top:24px;border-top:1px solid var(--border)}
+
+/* RESPONSIVE */
+@media(max-width:900px){.feat-grid,.test-grid,.price-grid{grid-template-columns:1fr}.ft-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:rgba(250,250,248,.98);backdrop-filter:blur(16px);padding:20px;border-bottom:1px solid var(--border);flex-direction:column;gap:14px}.nav-links.open{display:flex}.mobile-btn{display:block}.hero{padding:120px 0 60px}.mock-body{grid-template-columns:1fr}.ft-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+<div class="inner">
+<a href="#" class="logo">Flow<span>.</span></a>
+<div class="nav-links" id="nl">
+<a href="#features">Features</a>
+<a href="#pricing">Pricing</a>
+<a href="#faq">FAQ</a>
+<a href="#" class="nav-cta">Get Started</a>
+</div>
+<button class="mobile-btn" onclick="document.getElementById('nl').classList.toggle('open')">☰</button>
+</div>
+</nav>
+
+<section class="hero">
+<div class="container">
+<div class="badge reveal">✦ Now in public beta</div>
+<h1 class="reveal">Manage projects<br><span class="hl">effortlessly</span></h1>
+<p class="hero-sub reveal">Flow brings your team's work into one clean, focused workspace. Plan, track, and ship — without the noise.</p>
+<div class="hero-btns reveal">
+<a href="#" class="btn btn-p">Start Free →</a>
+<a href="#" class="btn btn-o">Watch Demo</a>
+</div>
+<div class="mockup reveal">
+<div class="mockup-inner">
+<div class="mock-header"><div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div><div class="mock-url">app.flow.dev</div></div>
+<div class="mock-body">
+<div class="mock-card"><div class="bar" style="width:70%;background:var(--gold);opacity:.3"></div><div class="line" style="width:90%;background:var(--border)"></div><div class="line" style="width:60%;background:var(--border)"></div><div class="line" style="width:80%;background:var(--border)"></div></div>
+<div class="mock-card"><div class="bar" style="width:50%;background:var(--navy);opacity:.15"></div><div class="line" style="width:75%;background:var(--border)"></div><div class="line" style="width:85%;background:var(--border)"></div><div class="line" style="width:45%;background:var(--border)"></div></div>
+<div class="mock-card"><div class="bar" style="width:60%;background:#10b981;opacity:.3"></div><div class="line" style="width:80%;background:var(--border)"></div><div class="line" style="width:55%;background:var(--border)"></div></div>
+<div class="mock-card"><div class="bar" style="width:40%;background:#ec4899;opacity:.3"></div><div class="line" style="width:70%;background:var(--border)"></div><div class="line" style="width:90%;background:var(--border)"></div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="features">
+<div class="container">
+<div class="sec-tag reveal">Features</div>
+<div class="sec-title reveal">Everything you need</div>
+<div class="sec-desc reveal">Simple tools for complex workflows. No bloat, no learning curve.</div>
+<div class="feat-grid">
+<div class="feat reveal"><div class="feat-icon">📋</div><h3>Smart Boards</h3><p>Kanban, list, and timeline views. Drag, drop, and organize your way.</p></div>
+<div class="feat reveal"><div class="feat-icon">⚡</div><h3>Instant Updates</h3><p>Real-time sync across all devices. Your team always sees the latest.</p></div>
+<div class="feat reveal"><div class="feat-icon">📊</div><h3>Built-in Analytics</h3><p>Track velocity, burndown, and milestones without extra tools.</p></div>
+<div class="feat reveal"><div class="feat-icon">🔗</div><h3>Deep Integrations</h3><p>Connect with GitHub, Slack, Notion, and 50+ other tools.</p></div>
+<div class="feat reveal"><div class="feat-icon">🛡️</div><h3>Enterprise Security</h3><p>SOC 2 compliant, SSO, role-based access. Your data stays yours.</p></div>
+<div class="feat reveal"><div class="feat-icon">🤖</div><h3>AI Assistant</h3><p>Auto-assign tasks, predict deadlines, and summarize standups.</p></div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<div class="sec-tag reveal">Testimonials</div>
+<div class="sec-title reveal">Loved by teams everywhere</div>
+<div class="sec-desc reveal">Don't take our word for it.</div>
+<div class="test-grid">
+<div class="test reveal"><div class="test-stars">★★★★★</div><blockquote>"Flow replaced 3 tools for us. The simplicity is the superpower."</blockquote><div class="test-author"><div class="test-avatar">SM</div><div><div class="test-name">Sarah M.</div><div class="test-role">CTO, Nimbus</div></div></div></div>
+<div class="test reveal"><div class="test-stars">★★★★★</div><blockquote>"Finally a project tool that doesn't need a training manual."</blockquote><div class="test-author"><div class="test-avatar">JK</div><div><div class="test-name">James K.</div><div class="test-role">PM, Voxel</div></div></div></div>
+<div class="test reveal"><div class="test-stars">★★★★★</div><blockquote>"Our sprint velocity went up 40% in the first month. Not joking."</blockquote><div class="test-author"><div class="test-avatar">AL</div><div><div class="test-name">Ava L.</div><div class="test-role">Engineering Lead, Arc</div></div></div></div>
+</div>
+</div>
+</section>
+
+<section id="pricing">
+<div class="container">
+<div class="sec-tag reveal">Pricing</div>
+<div class="sec-title reveal">Simple, transparent pricing</div>
+<div class="sec-desc reveal">Start free. Upgrade when you're ready.</div>
+<div class="price-grid">
+<div class="price reveal"><h3>Starter</h3><div class="sub">For small teams</div><div class="price-num">$0<small>/mo</small></div><div class="price-per">Free forever</div><ul class="price-list"><li>Up to 5 members</li><li>3 projects</li><li>Basic analytics</li><li>Community support</li></ul><a href="#" class="btn btn-o">Get Started</a></div>
+<div class="price hot reveal"><div class="price-badge">Most Popular</div><h3>Pro</h3><div class="sub">For growing teams</div><div class="price-num">$12<small>/mo</small></div><div class="price-per">Per member</div><ul class="price-list"><li>Unlimited members</li><li>Unlimited projects</li><li>Advanced analytics</li><li>AI assistant</li><li>Priority support</li></ul><a href="#" class="btn btn-p">Start Trial</a></div>
+<div class="price reveal"><h3>Enterprise</h3><div class="sub">For organizations</div><div class="price-num">$39<small>/mo</small></div><div class="price-per">Custom pricing</div><ul class="price-list"><li>Everything in Pro</li><li>SSO & SAML</li><li>Audit logs</li><li>SLA guarantee</li><li>Dedicated support</li></ul><a href="#" class="btn btn-o">Contact Sales</a></div>
+</div>
+</div>
+</section>
+
+<section id="faq">
+<div class="container">
+<div class="sec-tag reveal">FAQ</div>
+<div class="sec-title reveal">Common questions</div>
+<div class="faq-wrap reveal">
+<div class="faq-q"><button onclick="this.parentElement.classList.toggle('open')">How long is the free trial?</button></div>
+<div class="faq-a"><p>14 days, no credit card required. All Pro features included.</p></div>
+<div class="faq-q"><button onclick="this.parentElement.classList.toggle('open')">Can I switch plans anytime?</button></div>
+<div class="faq-a"><p>Yes. Upgrade or downgrade from your account settings instantly.</p></div>
+<div class="faq-q"><button onclick="this.parentElement.classList.toggle('open')">Is my data secure?</button></div>
+<div class="faq-a"><p>Absolutely. We're SOC 2 Type II certified with end-to-end encryption.</p></div>
+<div class="faq-q"><button onclick="this.parentElement.classList.toggle('open')">Do you offer refunds?</button></div>
+<div class="faq-a"><p>Yes — 30-day money-back guarantee, no questions asked.</p></div>
+<div class="faq-q"><button onclick="this.parentElement.classList.toggle('open')">Can I import from other tools?</button></div>
+<div class="faq-a"><p>Yes. We support import from Jira, Asana, Trello, and Linear with one click.</p></div>
+</div>
+</div>
+</section>
+
+<section class="cta-section">
+<div class="container">
+<h2 class="reveal">Ready to simplify?</h2>
+<p class="reveal">Join 2,400+ teams already using Flow.</p>
+<div class="hero-btns reveal" style="justify-content:center">
+<a href="#" class="btn btn-p">Start Free →</a>
+<a href="#" class="btn btn-o">Book a Demo</a>
+</div>
+</div>
+</section>
+
+<footer>
+<div class="container">
+<div class="ft-grid">
+<div class="ft-brand"><div class="logo">Flow<span>.</span></div><p>Simple project management for teams that ship.</p></div>
+<div class="ft-col"><h4>Product</h4><a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a><a href="#">Docs</a></div>
+<div class="ft-col"><h4>Company</h4><a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a></div>
+<div class="ft-col"><h4>Legal</h4><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a></div>
+</div>
+<div class="ft-bottom">© 2026 Flow. All rights reserved.</div>
+</div>
+</footer>
+
+<script>
+document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

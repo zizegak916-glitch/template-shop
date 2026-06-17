@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advisor — Your Trusted Business Consulting Partner</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f8f5f0;
+  --text: #2c1810;
+  --accent: #e67e22;
+  --coral: #e74c3c;
+  --cream: #f39c12;
+  --white: #ffffff;
+  --gray-light: #f0ebe5;
+  --gray: #9a8c7e;
+  --shadow: rgba(44, 24, 16, 0.08);
+  --shadow-md: rgba(44, 24, 16, 0.12);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Scroll animations */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- NAV ---- */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(248, 245, 240, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(44, 24, 16, 0.06);
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 2px 20px var(--shadow); }
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nav-logo span {
+  color: var(--accent);
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-cta {
+  background: var(--accent);
+  color: var(--white) !important;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(230, 126, 34, 0.35);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+.hamburger span {
+  width: 26px;
+  height: 3px;
+  background: var(--text);
+  border-radius: 3px;
+  transition: 0.3s;
+}
+
+/* ---- HERO ---- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 4rem;
+  background: linear-gradient(135deg, #f8f5f0 0%, #fdebd0 40%, #f5cba7 80%, #f39c12 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230,126,34,0.12) 0%, transparent 70%);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(231,76,60,0.08) 0%, transparent 70%);
+}
+.hero-content {
+  max-width: 750px;
+  position: relative;
+  z-index: 1;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(230, 126, 34, 0.15);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+.hero h1 .highlight {
+  background: linear-gradient(135deg, var(--accent), var(--coral));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 1.15rem;
+  color: var(--gray);
+  max-width: 550px;
+  margin: 0 auto 2.5rem;
+  font-weight: 400;
+}
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--white);
+  padding: 0.9rem 2.2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(230, 126, 34, 0.35);
+}
+.btn-secondary {
+  background: var(--white);
+  color: var(--text);
+  padding: 0.9rem 2.2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 2px solid rgba(44, 24, 16, 0.1);
+  transition: transform 0.2s, border-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+/* ---- TRUST LOGOS ---- */
+.trust {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+.trust p {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gray);
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+.trust-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  opacity: 0.5;
+}
+.trust-logos .logo-placeholder {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+
+/* ---- SECTION SHARED ---- */
+section { padding: 6rem 2rem; }
+.section-header {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 4rem;
+}
+.section-header .label {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+.section-header h2 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+.section-header p {
+  font-size: 1.05rem;
+  color: var(--gray);
+}
+
+/* ---- FEATURES ---- */
+.features { background: var(--white); }
+.features-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+.feature-card {
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px var(--shadow-md);
+}
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.feature-icon.orange { background: rgba(230,126,34,0.12); }
+.feature-icon.coral { background: rgba(231,76,60,0.12); }
+.feature-icon.cream { background: rgba(243,156,18,0.12); }
+.feature-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.feature-card p {
+  font-size: 0.95rem;
+  color: var(--gray);
+  line-height: 1.65;
+}
+
+/* ---- ABOUT / TEAM ---- */
+.about { background: var(--bg); }
+.about-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.about-text h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.about-text p {
+  color: var(--gray);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+.team-avatars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+.team-member {
+  text-align: center;
+}
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cream));
+  margin: 0 auto 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: var(--white);
+  font-weight: 700;
+}
+.team-member .name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.team-member .role {
+  font-size: 0.78rem;
+  color: var(--gray);
+}
+
+/* ---- TESTIMONIALS ---- */
+.testimonials { background: var(--white); }
+.testimonial-track-wrapper {
+  overflow: hidden;
+  max-width: 1200px;
+  margin: 0 auto;
+  mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+.testimonial-track {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  animation: scroll 30s linear infinite;
+}
+.testimonial-track:hover { animation-play-state: paused; }
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.testimonial-card {
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  min-width: 380px;
+  max-width: 380px;
+  flex-shrink: 0;
+}
+.testimonial-stars {
+  color: var(--cream);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+}
+.testimonial-card blockquote {
+  font-size: 0.98rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+  font-style: italic;
+}
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.testimonial-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--coral));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.testimonial-author .info .name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.testimonial-author .info .title {
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+/* ---- PRICING ---- */
+.pricing { background: var(--bg); }
+.pricing-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+.pricing-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.pricing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px var(--shadow-md);
+}
+.pricing-card.recommended {
+  border-color: var(--accent);
+  transform: scale(1.04);
+  box-shadow: 0 15px 45px rgba(230,126,34,0.15);
+}
+.pricing-card.recommended:hover {
+  transform: scale(1.04) translateY(-6px);
+}
+.pricing-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--white);
+  padding: 0.3rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.pricing-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.pricing-card .desc {
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin-bottom: 1.5rem;
+}
+.pricing-card .price {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+}
+.pricing-card .price span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--gray);
+}
+.pricing-card .period {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: 2rem;
+}
+.pricing-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+.pricing-features li {
+  padding: 0.5rem 0;
+  font-size: 0.92rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.pricing-features li::before {
+  content: '✓';
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.pricing-btn {
+  display: block;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pricing-btn:hover {
+  background: var(--accent);
+  color: var(--white);
+}
+.pricing-card.recommended .pricing-btn {
+  background: var(--accent);
+  color: var(--white);
+}
+.pricing-card.recommended .pricing-btn:hover {
+  box-shadow: 0 6px 20px rgba(230,126,34,0.35);
+}
+
+/* ---- CONTACT CTA ---- */
+.contact-cta {
+  background: linear-gradient(135deg, #2c1810 0%, #4a2c1a 100%);
+  color: var(--white);
+}
+.contact-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.contact-text .label {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+.contact-text h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+.contact-text p {
+  color: rgba(255,255,255,0.65);
+  font-size: 1rem;
+}
+.contact-form {
+  background: rgba(255,255,255,0.06);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.form-group {
+  margin-bottom: 1.2rem;
+}
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: rgba(255,255,255,0.8);
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+.form-submit {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: var(--accent);
+  color: var(--white);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.form-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(230,126,34,0.4);
+}
+
+/* ---- FAQ ---- */
+.faq { background: var(--bg); }
+.faq-list {
+  max-width: 750px;
+  margin: 0 auto;
+}
+.faq-item {
+  background: var(--white);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(44,24,16,0.06);
+}
+.faq-question {
+  width: 100%;
+  padding: 1.3rem 1.5rem;
+  background: none;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.2s;
+}
+.faq-question:hover { color: var(--accent); }
+.faq-question .icon {
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform 0.3s;
+  color: var(--accent);
+}
+.faq-item.open .faq-question .icon {
+  transform: rotate(45deg);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+}
+.faq-item.open .faq-answer {
+  max-height: 200px;
+}
+.faq-answer p {
+  padding: 0 1.5rem 1.3rem;
+  font-size: 0.92rem;
+  color: var(--gray);
+  line-height: 1.7;
+}
+
+/* ---- FOOTER ---- */
+footer {
+  background: #2c1810;
+  color: rgba(255,255,255,0.6);
+  padding: 4rem 2rem 2rem;
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+.footer-brand h3 {
+  font-size: 1.4rem;
+  color: var(--white);
+  margin-bottom: 0.8rem;
+}
+.footer-brand h3 span { color: var(--accent); }
+.footer-brand p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.footer-col h4 {
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.footer-col a {
+  display: block;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 0.88rem;
+  padding: 0.3rem 0;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--accent); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.footer-bottom a {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  margin-left: 1.5rem;
+  transition: color 0.2s;
+}
+.footer-bottom a:hover { color: var(--accent); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-card:last-child { grid-column: span 2; max-width: 400px; margin: 0 auto; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .nav-links { 
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(248,245,240,0.98);
+    backdrop-filter: blur(14px);
+    flex-direction: column;
+    padding: 1.5rem 2rem;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(44,24,16,0.06);
+  }
+  .nav-links.open { display: flex; }
+  .hamburger { display: flex; }
+  .features-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .team-avatars { grid-template-columns: repeat(4, 1fr); }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card:last-child { grid-column: span 1; max-width: none; }
+  .pricing-card.recommended { transform: none; }
+  .pricing-card.recommended:hover { transform: translateY(-6px); }
+  .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .testimonial-card { min-width: 300px; max-width: 300px; }
+  .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+}
+@media (max-width: 480px) {
+  .hero { padding: 7rem 1.2rem 3rem; }
+  section { padding: 4rem 1.2rem; }
+  .team-avatars { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">advisor<span>.</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#contact" class="nav-cta">Get Started</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content fade-up">
+    <div class="hero-badge">✨ Trusted by 2,000+ businesses</div>
+    <h1>Grow Your Business With <span class="highlight">Expert Guidance</span></h1>
+    <p>Advisor connects you with top-tier consultants who understand your vision. Personalized strategies, transparent pricing, real results.</p>
+    <div class="hero-buttons">
+      <a href="#contact" class="btn-primary">Start Free Trial →</a>
+      <a href="#features" class="btn-secondary">▶ See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST LOGOS -->
+<section class="trust fade-up">
+  <p>Trusted by innovative companies worldwide</p>
+  <div class="trust-logos">
+    <div class="logo-placeholder">LUMINA</div>
+    <div class="logo-placeholder">ORBITRA</div>
+    <div class="logo-placeholder">PEAKWISE</div>
+    <div class="logo-placeholder">NOVACORE</div>
+    <div class="logo-placeholder">SKYBRIDGE</div>
+    <div class="logo-placeholder">HELIXAI</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-header fade-up">
+    <div class="label">Features</div>
+    <h2>Everything You Need to Scale</h2>
+    <p>Powerful tools and expert insights to help you make smarter decisions, faster.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card fade-up">
+      <div class="feature-icon orange">📊</div>
+      <h3>Strategy Dashboard</h3>
+      <p>Visualize your business metrics in real time with an intuitive, beautifully designed analytics dashboard.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon coral">🤝</div>
+      <h3>Expert Matching</h3>
+      <p>Our AI-powered system pairs you with the perfect consultant based on your industry, goals, and budget.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon cream">📋</div>
+      <h3>Action Plans</h3>
+      <p>Receive step-by-step roadmaps tailored to your business — clear milestones, deadlines, and deliverables.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon orange">💬</div>
+      <h3>Secure Messaging</h3>
+      <p>Collaborate with your consultants through encrypted, real-time messaging — all conversations in one place.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon coral">📈</div>
+      <h3>Progress Tracking</h3>
+      <p>Monitor the impact of every strategy with clear KPIs and progress reports you can share with your team.</p>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon cream">🔒</div>
+      <h3>Enterprise Security</h3>
+      <p>Bank-level encryption, SOC 2 compliance, and GDPR-ready infrastructure keep your data safe.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT / TEAM -->
+<section class="about" id="about">
+  <div class="section-header fade-up">
+    <div class="label">About Us</div>
+    <h2>People Who Care About Your Growth</h2>
+    <p>We're a team of entrepreneurs, strategists, and technologists who've walked in your shoes.</p>
+  </div>
+  <div class="about-grid fade-up">
+    <div class="about-text">
+      <h3>We Built Advisor Because We Needed It</h3>
+      <p>After years of running our own businesses and working with expensive consulting firms that delivered generic advice, we asked a simple question: <em>what if expert guidance was accessible, personalized, and affordable?</em></p>
+      <p>That's Advisor. A platform where real experts provide real strategies — not cookie-cutter templates, but guidance shaped around your unique challenges.</p>
+      <a href="#contact" class="btn-primary" style="margin-top:0.5rem;">Join Our Community</a>
+    </div>
+    <div class="team-avatars">
+      <div class="team-member">
+        <div class="avatar">SM</div>
+        <div class="name">Sarah M.</div>
+        <div class="role">CEO</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#e74c3c,#f39c12);">JK</div>
+        <div class="name">James K.</div>
+        <div class="role">CTO</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#f39c12,#e67e22);">AL</div>
+        <div class="name">Ana L.</div>
+        <div class="role">Head of Ops</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#e67e22,#e74c3c);">DR</div>
+        <div class="name">David R.</div>
+        <div class="role">Lead Strategist</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">LP</div>
+        <div class="name">Lisa P.</div>
+        <div class="role">Design Lead</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#f39c12,#e74c3c);">MT</div>
+        <div class="name">Marco T.</div>
+        <div class="role">Marketing</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#e67e22,#f39c12);">RB</div>
+        <div class="name">Rachel B.</div>
+        <div class="role">Data Science</div>
+      </div>
+      <div class="team-member">
+        <div class="avatar" style="background:linear-gradient(135deg,#c0392b,#e67e22);">KW</div>
+        <div class="name">Kevin W.</div>
+        <div class="role">Sales</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="section-header fade-up">
+    <div class="label">Testimonials</div>
+    <h2>Loved by Founders & Teams</h2>
+    <p>Here's what our clients have to say about working with Advisor.</p>
+  </div>
+  <div class="testimonial-track-wrapper fade-up">
+    <div class="testimonial-track">
+      <!-- Set 1 -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"Advisor completely transformed how we approach growth. Our revenue is up 40% in six months, and I finally feel like I have a strategic partner, not just a tool."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">JR</div>
+          <div class="info">
+            <div class="name">Jake Rivera</div>
+            <div class="title">Founder, BrightPath Media</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"The consultant matching is scary good. They paired me with someone who'd built three companies in my exact niche. The advice was spot-on from day one."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#f39c12,#e67e22);">NK</div>
+          <div class="info">
+            <div class="name">Nadia Khoury</div>
+            <div class="title">CEO, GreenLoop</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"We were stuck at $2M ARR for two years. Within three months of using Advisor, we unlocked our path to $5M. Worth every penny."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#e74c3c,#f39c12);">TM</div>
+          <div class="info">
+            <div class="name">Tom Mitchell</div>
+            <div class="title">COO, DataWeave</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"I've tried dozens of SaaS tools. Advisor is the only one where the human element actually makes a difference. The dashboards are great, but the people are why I stay."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#f39c12,#e74c3c);">PS</div>
+          <div class="info">
+            <div class="name">Priya Sharma</div>
+            <div class="title">VP Growth, HaloStack</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"As a first-time founder, I needed guidance I could trust. Advisor gave me a roadmap I could actually follow — no jargon, no fluff, just clarity."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#e67e22,#c0392b);">MC</div>
+          <div class="info">
+            <div class="name">Marcus Chen</div>
+            <div class="title">Founder, NovaPulse</div>
+          </div>
+        </div>
+      </div>
+      <!-- Set 2 (duplicate for infinite scroll) -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"Advisor completely transformed how we approach growth. Our revenue is up 40% in six months, and I finally feel like I have a strategic partner, not just a tool."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">JR</div>
+          <div class="info">
+            <div class="name">Jake Rivera</div>
+            <div class="title">Founder, BrightPath Media</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"The consultant matching is scary good. They paired me with someone who'd built three companies in my exact niche. The advice was spot-on from day one."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#f39c12,#e67e22);">NK</div>
+          <div class="info">
+            <div class="name">Nadia Khoury</div>
+            <div class="title">CEO, GreenLoop</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"We were stuck at $2M ARR for two years. Within three months of using Advisor, we unlocked our path to $5M. Worth every penny."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#e74c3c,#f39c12);">TM</div>
+          <div class="info">
+            <div class="name">Tom Mitchell</div>
+            <div class="title">COO, DataWeave</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"I've tried dozens of SaaS tools. Advisor is the only one where the human element actually makes a difference. The dashboards are great, but the people are why I stay."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#f39c12,#e74c3c);">PS</div>
+          <div class="info">
+            <div class="name">Priya Sharma</div>
+            <div class="title">VP Growth, HaloStack</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <blockquote>"As a first-time founder, I needed guidance I could trust. Advisor gave me a roadmap I could actually follow — no jargon, no fluff, just clarity."</blockquote>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg,#e67e22,#c0392b);">MC</div>
+          <div class="info">
+            <div class="name">Marcus Chen</div>
+            <div class="title">Founder, NovaPulse</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-header fade-up">
+    <div class="label">Pricing</div>
+    <h2>Simple, Transparent Pricing</h2>
+    <p>No hidden fees. No surprises. Just straightforward plans that grow with you.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card fade-up">
+      <h3>Starter</h3>
+      <div class="desc">For solo founders & early-stage teams</div>
+      <div class="price">$29<span>/mo</span></div>
+      <div class="period">Billed monthly</div>
+      <ul class="pricing-features">
+        <li>1 consultant match per month</li>
+        <li>Strategy dashboard access</li>
+        <li>Secure messaging</li>
+        <li>Monthly progress reports</li>
+        <li>Email support</li>
+      </ul>
+      <button class="pricing-btn">Choose Starter</button>
+    </div>
+    <div class="pricing-card recommended fade-up">
+      <div class="pricing-badge">Most Popular</div>
+      <h3>Growth</h3>
+      <div class="desc">For growing teams ready to scale</div>
+      <div class="price">$79<span>/mo</span></div>
+      <div class="period">Billed monthly</div>
+      <ul class="pricing-features">
+        <li>Unlimited consultant matches</li>
+        <li>Full analytics suite</li>
+        <li>Priority matching algorithm</li>
+        <li>Weekly strategy calls</li>
+        <li>Action plan builder</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="pricing-btn">Choose Growth</button>
+    </div>
+    <div class="pricing-card fade-up">
+      <h3>Enterprise</h3>
+      <div class="desc">For organizations with complex needs</div>
+      <div class="price">$199<span>/mo</span></div>
+      <div class="period">Billed monthly</div>
+      <ul class="pricing-features">
+        <li>Everything in Growth</li>
+        <li>Dedicated account manager</li>
+        <li>Custom integrations</li>
+        <li>Team collaboration (up to 25)</li>
+        <li>Advanced security & SSO</li>
+        <li>Quarterly business reviews</li>
+      </ul>
+      <button class="pricing-btn">Choose Enterprise</button>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT CTA -->
+<section class="contact-cta" id="contact">
+  <div class="contact-inner fade-up">
+    <div class="contact-text">
+      <div class="label">Get in Touch</div>
+      <h2>Let's Talk About Your Goals</h2>
+      <p>Whether you're just getting started or scaling fast, we'd love to hear from you. Send us a message and we'll get back within 24 hours.</p>
+    </div>
+    <form class="contact-form" onsubmit="return false;">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="Jane Smith" />
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="jane@company.com" />
+      </div>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" placeholder="Tell us about your business goals..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Message →</button>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="section-header fade-up">
+    <div class="label">FAQ</div>
+    <h2>Frequently Asked Questions</h2>
+    <p>Got questions? We've got answers.</p>
+  </div>
+  <div class="faq-list fade-up">
+    <div class="faq-item">
+      <button class="faq-question">
+        How does the consultant matching work?
+        <span class="icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>Our algorithm analyzes your industry, business stage, goals, and budget to match you with a consultant who has direct, relevant experience. You can review profiles and switch consultants anytime.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">
+        Can I switch plans at any time?
+        <span class="icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>Absolutely. You can upgrade or downgrade your plan at any time from your dashboard. Changes take effect at the start of your next billing cycle.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">
+        What if I'm not satisfied with my consultant?
+        <span class="icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>We offer a satisfaction guarantee. If your consultant isn't the right fit, we'll match you with another one at no extra cost — or refund your month, no questions asked.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">
+        Is my data secure on Advisor?
+        <span class="icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>Yes. We use AES-256 encryption, are SOC 2 Type II certified, and fully GDPR compliant. Your business data is never shared with third parties.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">
+        Do you offer a free trial?
+        <span class="icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>Yes! Every plan comes with a 14-day free trial. No credit card required. Explore the platform, talk to a consultant, and see if Advisor is right for you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>advisor<span>.</span></h3>
+        <p>Expert guidance for growing businesses. Personalized strategies, trusted consultants, real results.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#">Features</a>
+        <a href="#">Pricing</a>
+        <a href="#">Integrations</a>
+        <a href="#">Changelog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#">Help Center</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Advisor. All rights reserved.</span>
+      <div>
+        <a href="#">Twitter</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hamburger menu
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+// Nav scroll shadow
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// FAQ accordion
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  });
+});
+</script>
+
+</body>
+</html>

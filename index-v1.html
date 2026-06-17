@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Shop — 落地页模板合集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a12;--s1:#12121e;--s2:#1a1a2e;--tx:#e4e4f0;--td:#7878a0;--bd:rgba(255,255,255,.06);--r:20px;--p:#6C5CE7;--acc:#00cec9}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(108,92,231,.3)}
+
+/* GRID BG */
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
+
+/* ORB */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;background:rgba(108,92,231,.08);top:-150px;right:-100px;animation:float 12s ease-in-out infinite}
+.orb-2{width:400px;height:400px;background:rgba(0,206,201,.06);bottom:-100px;left:-100px;animation:float 12s ease-in-out infinite -6s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+
+/* LAYOUT */
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+header{text-align:center;padding:120px 0 80px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);padding:6px 16px;border-radius:999px;font-size:13px;font-weight:500;color:var(--p);margin-bottom:24px}
+.badge .dot{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,206,201,.4)}50%{box-shadow:0 0 0 6px rgba(0,206,201,0)}}
+h1{font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.1;letter-spacing:-.04em;margin-bottom:16px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:18px;color:var(--td);max-width:560px;margin:0 auto 40px;line-height:1.7}
+.tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tag{background:rgba(255,255,255,.04);border:1px solid var(--bd);padding:6px 14px;border-radius:8px;font-size:12px;color:var(--td)}
+
+/* GRID */
+.tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;padding-bottom:80px}
+
+/* CARD */
+.tpl-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .35s cubic-bezier(.22,1,.36,1);position:relative}
+.tpl-card:hover{transform:translateY(-6px);border-color:rgba(108,92,231,.25);box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 0 1px rgba(108,92,231,.1)}
+.tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),var(--acc),transparent);opacity:0;transition:opacity .3s}
+.tpl-card:hover::before{opacity:1}
+
+/* PREVIEW */
+.tpl-preview{height:220px;position:relative;overflow:hidden;border-bottom:1px solid var(--bd)}
+.tpl-preview iframe{width:200%;height:400%;transform:scale(.5);transform-origin:top left;border:none;pointer-events:none}
+.tpl-preview .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,var(--s1));pointer-events:none;z-index:1}
+
+/* INFO */
+.tpl-info{padding:24px 28px 28px}
+.tpl-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.tpl-name{font-size:20px;font-weight:700}
+.tpl-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.tpl-tag.dark{background:rgba(139,92,246,.12);color:#a78bfa}
+.tpl-tag.light{background:rgba(37,99,235,.1);color:#60a5fa}
+.tpl-tag.gradient{background:rgba(236,72,153,.1);color:#f472b6}
+.tpl-tag.ai{background:rgba(6,182,212,.1);color:#22d3ee}
+.tpl-desc{font-size:14px;color:var(--td);line-height:1.6;margin-bottom:16px}
+.tpl-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tpl-feat{font-size:11px;color:var(--td);background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:4px 10px;border-radius:6px}
+.tpl-btns{display:flex;gap:10px}
+.tpl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;border:none;font-family:inherit}
+.tpl-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 16px rgba(108,92,231,.3)}
+.tpl-btn.primary:hover{background:#5b4bcf;transform:translateY(-1px)}
+.tpl-btn.secondary{background:rgba(255,255,255,.04);color:var(--tx);border:1px solid var(--bd)}
+.tpl-btn.secondary:hover{background:rgba(255,255,255,.08)}
+.tpl-btn svg{width:16px;height:16px}
+
+/* FOOTER */
+.page-footer{text-align:center;padding:40px 0;border-top:1px solid var(--bd);font-size:13px;color:var(--td)}
+
+/* SCROLL ANIM */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){.tpl-grid{grid-template-columns:1fr}}
+@media(max-width:640px){header{padding:100px 0 60px}.tpl-preview{height:180px}}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="wrap">
+
+<header>
+  <div class="badge"><span class="dot"></span> 4 套模板 · 持续更新</div>
+  <h1>SaaS 落地页<br><em>模板合集</em></h1>
+  <p class="sub">精选 4 套不同风格的落地页模板，即买即用。纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
+  <div class="tags">
+    <span class="tag">✨ 纯 HTML 单文件</span>
+    <span class="tag">📱 完全响应式</span>
+    <span class="tag">🎨 CSS 变量换色</span>
+    <span class="tag">⚡ 零依赖</span>
+    <span class="tag">📦 即买即发</span>
+  </div>
+</header>
+
+<div class="tpl-grid">
+
+  <!-- 1. Dark SaaS -->
+  <div class="tpl-card reveal">
+    <div class="tpl-preview">
+      <iframe src="dark-saas.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head">
+        <div class="tpl-name">Starter</div>
+        <span class="tpl-tag dark">暗黑科技风</span>
+      </div>
+      <div class="tpl-desc">深空蓝底色 + 紫/青渐变，适合 AI 产品、开发者工具、技术型 SaaS。含代码预览窗口和仪表盘可视化。</div>
+      <div class="tpl-features">
+        <span class="tpl-feat">Bento Grid</span>
+        <span class="tpl-feat">代码预览</span>
+        <span class="tpl-feat">玻璃态导航</span>
+        <span class="tpl-feat">6 区块</span>
+      </div>
+      <div class="tpl-btns">
+        <a href="dark-saas.html" target="_blank" class="tpl-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          预览
+        </a>
+        <a href="dark-saas.html" download class="tpl-btn secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          源码
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Light Clean -->
+  <div class="tpl-card reveal">
+    <div class="tpl-preview" style="background:#f5f5f5">
+      <iframe src="light-clean.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head">
+        <div class="tpl-name">CleanSaaS</div>
+        <span class="tpl-tag light">白色极简风</span>
+      </div>
+      <div class="tpl-desc">白底 + 蓝绿配色，干净专业。适合企业级 SaaS、B2B 产品、效率工具。含用户评价和定价对比。</div>
+      <div class="tpl-features">
+        <span class="tpl-feat">极简排版</span>
+        <span class="tpl-feat">用户评价</span>
+        <span class="tpl-feat">渐变 CTA</span>
+        <span class="tpl-feat">7 区块</span>
+      </div>
+      <div class="tpl-btns">
+        <a href="light-clean.html" target="_blank" class="tpl-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          预览
+        </a>
+        <a href="light-clean.html" download class="tpl-btn secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          源码
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Gradient Bold -->
+  <div class="tpl-card reveal">
+    <div class="tpl-preview">
+      <iframe src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head">
+        <div class="tpl-name">VibeLaunch</div>
+        <span class="tpl-tag gradient">渐变潮流风</span>
+      </div>
+      <div class="tpl-desc">靛蓝→粉红渐变 + 暗色背景，视觉冲击力强。适合初创品牌、产品发布、创意工具。含产品展示和邮件订阅。</div>
+      <div class="tpl-features">
+        <span class="tpl-feat">渐变边框</span>
+        <span class="tpl-feat">产品展示</span>
+        <span class="tpl-feat">浮动光晕</span>
+        <span class="tpl-feat">8 区块</span>
+      </div>
+      <div class="tpl-btns">
+        <a href="gradient-bold.html" target="_blank" class="tpl-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          预览
+        </a>
+        <a href="gradient-bold.html" download class="tpl-btn secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          源码
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. AI Product -->
+  <div class="tpl-card reveal">
+    <div class="tpl-preview">
+      <iframe src="ai-product.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head">
+        <div class="tpl-name">NeuralAI</div>
+        <span class="tpl-tag ai">AI 产品专用</span>
+      </div>
+      <div class="tpl-desc">紫/青霓虹色 + 神经网络动画，专为 AI 产品打造。含 API 代码演示、能力展示和功能对比表。</div>
+      <div class="tpl-features">
+        <span class="tpl-feat">神经网络动画</span>
+        <span class="tpl-feat">API 演示</span>
+        <span class="tpl-feat">发光边框</span>
+        <span class="tpl-feat">6 区块</span>
+      </div>
+      <div class="tpl-btns">
+        <a href="ai-product.html" target="_blank" class="tpl-btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          预览
+        </a>
+        <a href="ai-product.html" download class="tpl-btn secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          源码
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">© 2026 Template Shop · 单文件 · 零依赖 · 即买即用</div>
+
+</div>
+
+<script>
+// Scroll reveal
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Lazy load iframes when card enters viewport
+const iframeObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const f=e.target.querySelector('iframe');if(f&&f.dataset.src){f.src=f.dataset.src;iframeObs.unobserve(e.target)}})},{rootMargin:'200px'});
+document.querySelectorAll('.tpl-card').forEach(c=>iframeObs.observe(c));
+</script>
+
+</body>
+</html>
