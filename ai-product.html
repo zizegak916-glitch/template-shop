@@ -1,371 +1,370 @@
-1|<!DOCTYPE html>
-2|<html lang="en">
-3|<head>
-4|<meta charset="UTF-8">
-5|<meta name="viewport" content="width=device-width,initial-scale=1">
-6|<title>NeuralAI — AI Product Template</title>
-7|<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-8|<style>
-9|*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-10|:root{--bg:#050510;--purple:#8B5CF6;--cyan:#06B6D4;--glow:rgba(139,92,246,0.15);--text:#e2e8f0;--text-dim:#94a3b8;--card:#0d0d1a;--border:rgba(139,92,246,0.2)}
-11|html{scroll-behavior:smooth}
-12|body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;min-height:100vh}
-13|body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(139,92,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-14|.container{max-width:1140px;margin:0 auto;padding:0 20px}
-15|a{color:var(--cyan);text-decoration:none}
-16|
-17|/* NAV */
-18|nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:12px 0;background:rgba(5,5,16,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:background .3s}
-19|nav .container{display:flex;align-items:center;justify-content:space-between}
-20|.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.2rem;color:#fff}
-21|.logo svg{width:32px;height:32px}
-22|.nav-links{display:flex;gap:28px;list-style:none}
-23|.nav-links a{color:var(--text-dim);font-size:.9rem;transition:color .3s}
-24|.nav-links a:hover{color:var(--cyan)}
-25|.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
-26|.hamburger span{width:24px;height:2px;background:var(--text);transition:.3s}
-27|.nav-cta{background:var(--purple);color:#fff;padding:8px 20px;border-radius:8px;font-size:.85rem;font-weight:600;border:none;cursor:pointer}
-28|.nav-cta:hover{box-shadow:0 0 20px var(--glow)}
-29|
-30|/* HERO */
-31|.hero{position:relative;padding:160px 0 100px;text-align:center;overflow:hidden}
-32|#neuralCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.6}
-33|.hero-content{position:relative;z-index:2}
-34|.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;background:linear-gradient(135deg,#fff,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px;line-height:1.15}
-35|.hero p{font-size:1.15rem;color:var(--text-dim);max-width:600px;margin:0 auto 36px}
-36|.cta-group{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-37|.btn-primary{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;border:none;cursor:pointer;transition:all .3s;box-shadow:0 4px 25px var(--glow)}
-38|.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 35px rgba(139,92,246,.35)}
-39|.btn-secondary{background:transparent;color:var(--text);padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:all .3s}
-40|.btn-secondary:hover{border-color:var(--purple);box-shadow:0 0 20px var(--glow)}
-41|
-42|/* SECTIONS */
-43|section{padding:90px 0;position:relative;z-index:1}
-44|.section-label{color:var(--purple);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-45|.section-title{font-size:2.2rem;font-weight:800;margin-bottom:16px}
-46|.section-desc{color:var(--text-dim);max-width:600px;margin:0 auto 48px}
-47|.text-center{text-align:center}
-48|
-49|/* CAPABILITIES */
-50|.cap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
-51|.cap-card{position:relative;background:var(--card);border-radius:16px;padding:36px 28px;transition:transform .3s,box-shadow .3s}
-52|.cap-card::before{content:'';position:absolute;inset:-1px;border-radius:17px;padding:1px;background:linear-gradient(135deg,var(--purple),var(--cyan),var(--purple));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
-53|.cap-card:hover::before{opacity:1}
-54|.cap-card:hover{transform:translateY(-4px);box-shadow:0 10px 40px var(--glow)}
-55|.cap-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--glow),rgba(6,182,212,.12));display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:20px}
-56|.cap-card h3{font-size:1.2rem;margin-bottom:10px;color:#fff}
-57|.cap-card p{color:var(--text-dim);font-size:.92rem}
-58|
-59|/* CODE DEMO */
-60|.browser-mock{background:#0a0a1a;border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:740px;margin:0 auto}
-61|.browser-bar{background:rgba(139,92,246,.08);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
-62|.browser-bar span{width:10px;height:10px;border-radius:50%}
-63|.browser-bar .r{background:#ef4444}.browser-bar .y{background:#eab308}.browser-bar .g{background:#22c55e}
-64|.browser-url{margin-left:16px;background:rgba(255,255,255,.05);padding:3px 12px;border-radius:6px;font-size:.75rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
-65|.code-block{padding:24px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.8;overflow-x:auto;color:#e2e8f0}
-66|.code-block .kw{color:var(--purple)}.code-block .fn{color:var(--cyan)}.code-block .str{color:#22c55e}.code-block .cm{color:#64748b}
-67|
-68|/* STATS */
-69|.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-70|.stat-item{text-align:center;padding:32px 16px;background:var(--card);border-radius:16px;border:1px solid var(--border)}
-71|.stat-num{font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-72|.stat-label{color:var(--text-dim);font-size:.9rem;margin-top:6px}
-73|
-74|/* USE CASES */
-75|.uc-grid{display:grid;gap:20px}
-76|.uc-card{display:flex;align-items:center;gap:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 32px;transition:all .3s}
-77|.uc-card:hover{border-color:var(--purple);box-shadow:0 0 25px var(--glow)}
-78|.uc-icon{font-size:2.2rem;min-width:56px;text-align:center}
-79|.uc-card h3{font-size:1.1rem;color:#fff;margin-bottom:6px}
-80|.uc-card p{color:var(--text-dim);font-size:.88rem}
-81|
-82|/* COMPARISON */
-83|.comp-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border)}
-84|.comp-table th,.comp-table td{padding:14px 20px;text-align:center;font-size:.88rem;border-bottom:1px solid rgba(139,92,246,.08)}
-85|.comp-table th{background:rgba(139,92,246,.1);font-weight:600;color:#fff}
-86|.comp-table td:first-child{text-align:left;color:var(--text-dim)}
-87|.comp-table tr:last-child td{border-bottom:none}
-88|.check{color:#22c55e}.cross{color:#64748b}
-89|
-90|/* FAQ */
-91|.faq-list{max-width:720px;margin:0 auto;display:grid;gap:12px}
-92|.faq-item{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .3s}
-93|.faq-item.active{box-shadow:0 0 25px var(--glow);border-color:var(--purple)}
-94|.faq-q{padding:18px 24px;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;color:#fff;transition:color .3s}
-95|.faq-q:hover{color:var(--cyan)}
-96|.faq-arrow{transition:transform .3s;font-size:1.2rem;color:var(--purple)}
-97|.faq-item.active .faq-arrow{transform:rotate(180deg)}
-98|.faq-a{max-height:0;overflow:hidden;transition:max-height .4s,padding .3s;padding:0 24px;color:var(--text-dim);font-size:.9rem;line-height:1.7}
-99|.faq-item.active .faq-a{max-height:200px;padding:0 24px 18px}
-100|
-101|/* CTA */
-102|.cta-section{text-align:center;padding:100px 0;position:relative;overflow:hidden}
-103|.cta-section::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--purple) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);opacity:.15;animation:pulse 4s ease-in-out infinite}
-104|@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
-105|.cta-section .section-title{font-size:2.8rem;margin-bottom:16px}
-106|
-107|/* FOOTER */
-108|footer{border-top:1px solid var(--border);padding:40px 0 28px;color:var(--text-dim);font-size:.85rem}
-109|footer .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-110|.footer-links{display:flex;gap:24px}
-111|
-112|/* BACK TO TOP */
-113|#btt{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:12px;background:var(--purple);color:#fff;border:none;font-size:1.2rem;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;z-index:999}
-114|#btt.show{opacity:1;pointer-events:auto}
-115|#btt:hover{box-shadow:0 0 25px var(--glow)}
-116|
-117|/* REVEAL */
-118|.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
-119|.reveal.visible{opacity:1;transform:translateY(0)}
-120|
-121|/* MOBILE */
-122|@media(max-width:768px){
-123|  .nav-links{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:rgba(5,5,16,.95);padding:20px;gap:16px;border-bottom:1px solid var(--border)}
-124|  .nav-links.open{display:flex}
-125|  .hamburger{display:flex}
-126|  .stats-grid{grid-template-columns:repeat(2,1fr)}
-127|  .uc-card{flex-direction:column;text-align:center}
-128|  .comp-table{font-size:.78rem}
-129|  .comp-table th,.comp-table td{padding:10px 8px}
-130|  .browser-url{display:none}
-131|}
-132|</style>
-133|</head>
-134|<body>
-135|
-136|<!-- NAV -->
-137|<nav>
-138|<div class="container">
-139|  <a href="#" class="logo">
-140|    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="4" fill="#8B5CF6"/><circle cx="16" cy="4" r="2.5" fill="#06B6D4"/><circle cx="16" cy="28" r="2.5" fill="#06B6D4"/><circle cx="4" cy="16" r="2.5" fill="#06B6D4"/><circle cx="28" cy="16" r="2.5" fill="#06B6D4"/><line x1="16" y1="6.5" x2="16" y2="12" stroke="#8B5CF6" stroke-width="1.2"/><line x1="16" y1="20" x2="16" y2="25.5" stroke="#8B5CF6" stroke-width="1.2"/><line x1="6.5" y1="16" x2="12" y2="16" stroke="#8B5CF6" stroke-width="1.2"/><line x1="20" y1="16" x2="25.5" y2="16" stroke="#8B5CF6" stroke-width="1.2"/></svg>
-141|    NeuralAI
-142|  </a>
-143|  <ul class="nav-links" id="navLinks">
-144|    <li><a href="#capabilities">Capabilities</a></li>
-145|    <li><a href="#stats">Performance</a></li>
-146|    <li><a href="#usecases">Use Cases</a></li>
-147|    <li><a href="#pricing">Pricing</a></li>
-148|    <li><a href="#faq">FAQ</a></li>
-149|    <li><button class="nav-cta">Get Started</button></li>
-150|  </ul>
-151|  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-152|</div>
-153|</nav>
-154|
-155|<!-- HERO -->
-156|<section class="hero" id="hero">
-157|<canvas id="neuralCanvas"></canvas>
-158|<div class="hero-content">
-159|  <h1>Intelligence That<br>Scales With You</h1>
-160|  <p>Deploy production-ready AI models with a single API call. Built for speed, designed for developers, trusted by millions.</p>
-161|  <div class="cta-group">
-162|    <button class="btn-primary">Start Building Free →</button>
-163|    <button class="btn-secondary">View Documentation</button>
-164|  </div>
-165|</div>
-166|</section>
-167|
-168|<!-- CAPABILITIES -->
-169|<section id="capabilities">
-170|<div class="container text-center">
-171|  <p class="section-label reveal">Capabilities</p>
-172|  <h2 class="section-title reveal">Built for the AI era</h2>
-173|  <p class="section-desc reveal">Everything you need to ship intelligent applications, from prototype to production.</p>
-174|</div>
-175|<div class="container">
-176|  <div class="cap-grid">
-177|    <div class="cap-card reveal"><div class="cap-icon">⚡</div><h3>Real-Time Inference</h3><p>Sub-50ms latency at scale. Stream responses token-by-token for fluid, interactive AI experiences your users will love.</p></div>
-178|    <div class="cap-card reveal"><div class="cap-icon">🧠</div><h3>Multi-Model Routing</h3><p>Intelligently route requests across specialized models. Auto-select the best model for cost, speed, or accuracy.</p></div>
-179|    <div class="cap-card reveal"><div class="cap-icon">🔒</div><h3>Enterprise Security</h3><p>SOC 2 Type II certified. End-to-end encryption, private deployments, and granular access controls built in.</p></div>
-180|  </div>
-181|</div>
-182|</section>
-183|
-184|<!-- CODE DEMO -->
-185|<section>
-186|<div class="container text-center">
-187|  <p class="section-label reveal">Developer Experience</p>
-188|  <h2 class="section-title reveal">Ship AI in three lines</h2>
-189|</div>
-190|<div class="container">
-191|  <div class="browser-mock reveal">
-192|    <div class="browser-bar"><span class="r"></span><span class="y"></span><span class="g"></span><span class="browser-url">api.neuralai.dev/v1/completions</span></div>
-193|    <pre class="code-block"><span class="kw">import</span> { NeuralAI } <span class="kw">from</span> <span class="str">'@neuralai/sdk'</span>;
-194|
-195|<span class="kw">const</span> ai = <span class="kw">new</span> <span class="fn">NeuralAI</span>(<span class="str">'your-api-key'</span>);
-196|
-197|<span class="cm">// Generate intelligent responses</span>
-198|<span class="kw">const</span> response = <span class="kw">await</span> ai.<span class="fn">complete</span>({
-199|  model: <span class="str">'neural-pro-4'</span>,
-200|  messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Analyze this dataset'</span> }],
-201|  temperature: <span class="fn">0.7</span>,
-202|  max_tokens: <span class="fn">2048</span>
-203|});
-204|
-205|console.<span class="fn">log</span>(response.text);
-206|<span class="cm">// → "The dataset shows a 23% increase in..."</span></pre>
-207|  </div>
-208|</div>
-209|</section>
-210|
-211|<!-- STATS -->
-212|<section id="stats">
-213|<div class="container">
-214|  <div class="stats-grid">
-215|    <div class="stat-item reveal"><div class="stat-num" data-target="99.9" data-suffix="%">0</div><div class="stat-label">Uptime SLA</div></div>
-216|    <div class="stat-item reveal"><div class="stat-num" data-target="2" data-suffix="M+">0</div><div class="stat-label">API Calls / Day</div></div>
-217|    <div class="stat-item reveal"><div class="stat-num" data-target="47" data-suffix="ms">0</div><div class="stat-label">Avg Latency</div></div>
-218|    <div class="stat-item reveal"><div class="stat-num" data-target="12" data-suffix="K+">0</div><div class="stat-label">Developers</div></div>
-219|  </div>
-220|</div>
-221|</section>
-222|
-223|<!-- USE CASES -->
-224|<section id="usecases">
-225|<div class="container text-center">
-226|  <p class="section-label reveal">Use Cases</p>
-227|  <h2 class="section-title reveal">Powering industries</h2>
-228|  <p class="section-desc reveal">See how teams across sectors leverage NeuralAI to build transformative products.</p>
-229|</div>
-230|<div class="container">
-231|  <div class="uc-grid">
-232|    <div class="uc-card reveal"><div class="uc-icon">🏥</div><div><h3>Healthcare</h3><p>Clinical note analysis, patient triage assistance, and medical research acceleration — with HIPAA-compliant infrastructure.</p></div></div>
-233|    <div class="uc-card reveal"><div class="uc-icon">💬</div><div><h3>Conversational AI</h3><p>Build natural, context-aware chatbots and virtual agents that handle millions of concurrent conversations.</p></div></div>
-234|    <div class="uc-card reveal"><div class="uc-icon">📊</div><div><h3>Finance</h3><p>Risk assessment, fraud detection, and market analysis powered by real-time multi-model inference pipelines.</p></div></div>
-235|  </div>
-236|</div>
-237|</section>
-238|
-239|<!-- COMPARISON -->
-240|<section id="pricing">
-241|<div class="container text-center">
-242|  <p class="section-label reveal">Pricing</p>
-243|  <h2 class="section-title reveal">Choose your plan</h2>
-244|  <p class="section-desc reveal">Start free, scale as you grow. No hidden fees, no surprises.</p>
-245|</div>
-246|<div class="container">
-247|  <div class="reveal" style="overflow-x:auto">
-248|  <table class="comp-table">
-249|    <thead><tr><th style="text-align:left">Feature</th><th>Free</th><th>Pro</th><th>Enterprise</th></tr></thead>
-250|    <tbody>
-251|      <tr><td>Monthly API Calls</td><td>10K</td><td>500K</td><td>Unlimited</td></tr>
-252|      <tr><td>Models Available</td><td>3</td><td>All</td><td>All + Custom</td></tr>
-253|      <tr><td>Latency SLA</td><td><span class="cross">—</span></td><td><span class="check">✓</span> &lt;80ms</td><td><span class="check">✓</span> &lt;40ms</td></tr>
-254|      <tr><td>Team Members</td><td>1</td><td>10</td><td>Unlimited</td></tr>
-255|      <tr><td>Support</td><td>Community</td><td>Priority</td><td>24/7 Dedicated</td></tr>
-256|      <tr><td>Private Deployment</td><td><span class="cross">—</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
-257|      <tr><td>Price</td><td>Free</td><td>$49/mo</td><td>Contact Us</td></tr>
-258|    </tbody>
-259|  </table>
-260|  </div>
-261|</div>
-262|</section>
-263|
-264|<!-- FAQ -->
-265|<section id="faq">
-266|<div class="container text-center">
-267|  <p class="section-label reveal">FAQ</p>
-268|  <h2 class="section-title reveal">Common questions</h2>
-269|</div>
-270|<div class="container">
-271|  <div class="faq-list">
-272|    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">How do I get started?<span class="faq-arrow">▾</span></div><div class="faq-a">Sign up for free, grab your API key from the dashboard, and make your first API call in under a minute. Our quickstart guide walks you through everything.</div></div>
-273|    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Is my data safe?<span class="faq-arrow">▾</span></div><div class="faq-a">Absolutely. We're SOC 2 Type II certified, never train on your data, and offer end-to-end encryption. Enterprise customers get private deployments.</div></div>
-274|    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Can I use my own models?<span class="faq-arrow">▾</span></div><div class="faq-a">Yes. Enterprise plans support custom model hosting and fine-tuning. We also provide migration tools for popular open-source models.</div></div>
-275|    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">What languages do you support?<span class="faq-arrow">▾</span></div><div class="faq-a">Official SDKs for Python, Node.js, Go, Rust, and Java. Community-maintained libraries for Ruby, PHP, C# and more.</div></div>
-276|  </div>
-277|</div>
-278|</section>
-279|
-280|<!-- CTA -->
-281|<section class="cta-section">
-282|<div class="container">
-283|  <h2 class="section-title reveal">Ready to build the future?</h2>
-284|  <p class="section-desc reveal" style="margin:0 auto 36px">Join 12,000+ developers building smarter applications with NeuralAI.</p>
-285|  <div class="cta-group reveal">
-286|    <button class="btn-primary">Start Free Trial →</button>
-287|    <button class="btn-secondary">Talk to Sales</button>
-288|  </div>
-289|</div>
-290|</section>
-291|
-292|<!-- FOOTER -->
-293|<footer>
-294|<div class="container">
-295|  <span>© 2026 NeuralAI. All rights reserved.</span>
-296|  <div class="footer-links">
-297|    <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Docs</a><a href="#">GitHub</a>
-298|  </div>
-299|</div>
-300|</footer>
-301|
-302|<button id="btt" onclick="window.scrollTo({top:0})">↑</button>
-303|
-304|<script>
-305|/* Neural Network Canvas */
-306|(function(){
-307|  const c=document.getElementById('neuralCanvas'),ctx=c.getContext('2d');
-308|  let W,H,dots=[];
-309|  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
-310|  resize();window.addEventListener('resize',resize);
-311|  for(let i=0;i<80;i++)dots.push({x:Math.random()*2000,y:Math.random()*1200,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+1});
-312|  function draw(){
-313|    ctx.clearRect(0,0,W,H);
-314|    for(let i=0;i<dots.length;i++){
-315|      const d=dots[i];d.x+=d.vx;d.y+=d.vy;
-316|      if(d.x<0||d.x>W)d.vx*=-1;if(d.y<0||d.y>H)d.vy*=-1;
-317|      ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fillStyle='rgba(139,92,246,.6)';ctx.fill();
-318|      for(let j=i+1;j<dots.length;j++){
-319|        const dx=d.x-dots[j].x,dy=d.y-dots[j].y,dist=Math.sqrt(dx*dx+dy*dy);
-320|        if(dist<150){ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(dots[j].x,dots[j].y);ctx.strokeStyle=`rgba(139,92,246,${.25*(1-dist/150)})`;ctx.stroke()}
-321|      }
-322|    }
-323|    requestAnimationFrame(draw);
-324|  }
-325|  draw();
-326|})();
-327|
-328|/* Scroll Reveal */
-329|const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1,rootMargin:"0px 0px -20px 0px"});
-330|document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-331|
-332|/* Animated Counters */
-333|const cObs=new IntersectionObserver((entries)=>{
-334|  entries.forEach(e=>{
-335|    if(!e.isIntersecting)return;
-336|    const el=e.target;
-337|    if(el.dataset.counted)return;el.dataset.counted=1;
-338|    const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix,isFloat=String(target).includes('.');
-339|    let start=0;const dur=1800,startT=performance.now();
-340|    function tick(now){
-341|      const p=Math.min((now-startT)/dur,1),ease=1-Math.pow(1-p,3);
-342|      const val=ease*target;
-343|      el.textContent=(isFloat?val.toFixed(1):Math.floor(val))+suffix;
-344|      if(p<1)requestAnimationFrame(tick);
-345|    }
-346|    requestAnimationFrame(tick);
-347|  });
-348|},{threshold:.5});
-349|document.querySelectorAll('.stat-num').forEach(el=>cObs.observe(el));
-350|
-351|/* FAQ */
-352|function toggleFaq(el){
-353|  const item=el.parentElement;
-354|  const wasActive=item.classList.contains('active');
-355|  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('active'));
-356|  if(!wasActive)item.classList.add('active');
-357|}
-358|
-359|/* Mobile Nav */
-360|document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
-361|document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open')));
-362|
-363|/* Back to Top */
-364|const btt=document.getElementById('btt');
-365|window.addEventListener('scroll',()=>btt.classList.toggle('show',window.scrollY>400));
-366|// Fallback: ensure visibility after load
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuralAI — AI Product Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050510;--purple:#8B5CF6;--cyan:#06B6D4;--glow:rgba(139,92,246,0.15);--text:#e2e8f0;--text-dim:#94a3b8;--card:#0d0d1a;--border:rgba(139,92,246,0.2)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(139,92,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.container{max-width:1140px;margin:0 auto;padding:0 20px}
+a{color:var(--cyan);text-decoration:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:12px 0;background:rgba(5,5,16,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:background .3s}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.2rem;color:#fff}
+.logo svg{width:32px;height:32px}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--text-dim);font-size:.9rem;transition:color .3s}
+.nav-links a:hover{color:var(--cyan)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+.hamburger span{width:24px;height:2px;background:var(--text);transition:.3s}
+.nav-cta{background:var(--purple);color:#fff;padding:8px 20px;border-radius:8px;font-size:.85rem;font-weight:600;border:none;cursor:pointer}
+.nav-cta:hover{box-shadow:0 0 20px var(--glow)}
+
+/* HERO */
+.hero{position:relative;padding:160px 0 100px;text-align:center;overflow:hidden}
+#neuralCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:.6}
+.hero-content{position:relative;z-index:2}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;background:linear-gradient(135deg,#fff,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px;line-height:1.15}
+.hero p{font-size:1.15rem;color:var(--text-dim);max-width:600px;margin:0 auto 36px}
+.cta-group{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;border:none;cursor:pointer;transition:all .3s;box-shadow:0 4px 25px var(--glow)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 35px rgba(139,92,246,.35)}
+.btn-secondary{background:transparent;color:var(--text);padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:all .3s}
+.btn-secondary:hover{border-color:var(--purple);box-shadow:0 0 20px var(--glow)}
+
+/* SECTIONS */
+section{padding:90px 0;position:relative;z-index:1}
+.section-label{color:var(--purple);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:2.2rem;font-weight:800;margin-bottom:16px}
+.section-desc{color:var(--text-dim);max-width:600px;margin:0 auto 48px}
+.text-center{text-align:center}
+
+/* CAPABILITIES */
+.cap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.cap-card{position:relative;background:var(--card);border-radius:16px;padding:36px 28px;transition:transform .3s,box-shadow .3s}
+.cap-card::before{content:'';position:absolute;inset:-1px;border-radius:17px;padding:1px;background:linear-gradient(135deg,var(--purple),var(--cyan),var(--purple));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
+.cap-card:hover::before{opacity:1}
+.cap-card:hover{transform:translateY(-4px);box-shadow:0 10px 40px var(--glow)}
+.cap-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--glow),rgba(6,182,212,.12));display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:20px}
+.cap-card h3{font-size:1.2rem;margin-bottom:10px;color:#fff}
+.cap-card p{color:var(--text-dim);font-size:.92rem}
+
+/* CODE DEMO */
+.browser-mock{background:#0a0a1a;border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:740px;margin:0 auto}
+.browser-bar{background:rgba(139,92,246,.08);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.browser-bar span{width:10px;height:10px;border-radius:50%}
+.browser-bar .r{background:#ef4444}.browser-bar .y{background:#eab308}.browser-bar .g{background:#22c55e}
+.browser-url{margin-left:16px;background:rgba(255,255,255,.05);padding:3px 12px;border-radius:6px;font-size:.75rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
+.code-block{padding:24px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.8;overflow-x:auto;color:#e2e8f0}
+.code-block .kw{color:var(--purple)}.code-block .fn{color:var(--cyan)}.code-block .str{color:#22c55e}.code-block .cm{color:#64748b}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.stat-item{text-align:center;padding:32px 16px;background:var(--card);border-radius:16px;border:1px solid var(--border)}
+.stat-num{font-size:2.6rem;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{color:var(--text-dim);font-size:.9rem;margin-top:6px}
+
+/* USE CASES */
+.uc-grid{display:grid;gap:20px}
+.uc-card{display:flex;align-items:center;gap:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 32px;transition:all .3s}
+.uc-card:hover{border-color:var(--purple);box-shadow:0 0 25px var(--glow)}
+.uc-icon{font-size:2.2rem;min-width:56px;text-align:center}
+.uc-card h3{font-size:1.1rem;color:#fff;margin-bottom:6px}
+.uc-card p{color:var(--text-dim);font-size:.88rem}
+
+/* COMPARISON */
+.comp-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border)}
+.comp-table th,.comp-table td{padding:14px 20px;text-align:center;font-size:.88rem;border-bottom:1px solid rgba(139,92,246,.08)}
+.comp-table th{background:rgba(139,92,246,.1);font-weight:600;color:#fff}
+.comp-table td:first-child{text-align:left;color:var(--text-dim)}
+.comp-table tr:last-child td{border-bottom:none}
+.check{color:#22c55e}.cross{color:#64748b}
+
+/* FAQ */
+.faq-list{max-width:720px;margin:0 auto;display:grid;gap:12px}
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .3s}
+.faq-item.active{box-shadow:0 0 25px var(--glow);border-color:var(--purple)}
+.faq-q{padding:18px 24px;cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;color:#fff;transition:color .3s}
+.faq-q:hover{color:var(--cyan)}
+.faq-arrow{transition:transform .3s;font-size:1.2rem;color:var(--purple)}
+.faq-item.active .faq-arrow{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s,padding .3s;padding:0 24px;color:var(--text-dim);font-size:.9rem;line-height:1.7}
+.faq-item.active .faq-a{max-height:200px;padding:0 24px 18px}
+
+/* CTA */
+.cta-section{text-align:center;padding:100px 0;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--purple) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);opacity:.15;animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.2)}}
+.cta-section .section-title{font-size:2.8rem;margin-bottom:16px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:40px 0 28px;color:var(--text-dim);font-size:.85rem}
+footer .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-links{display:flex;gap:24px}
+
+/* BACK TO TOP */
+#btt{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:12px;background:var(--purple);color:#fff;border:none;font-size:1.2rem;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;z-index:999}
+#btt.show{opacity:1;pointer-events:auto}
+#btt:hover{box-shadow:0 0 25px var(--glow)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* MOBILE */
+@media(max-width:768px){
+  .nav-links{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:rgba(5,5,16,.95);padding:20px;gap:16px;border-bottom:1px solid var(--border)}
+  .nav-links.open{display:flex}
+  .hamburger{display:flex}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .uc-card{flex-direction:column;text-align:center}
+  .comp-table{font-size:.78rem}
+  .comp-table th,.comp-table td{padding:10px 8px}
+  .browser-url{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+<div class="container">
+  <a href="#" class="logo">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="4" fill="#8B5CF6"/><circle cx="16" cy="4" r="2.5" fill="#06B6D4"/><circle cx="16" cy="28" r="2.5" fill="#06B6D4"/><circle cx="4" cy="16" r="2.5" fill="#06B6D4"/><circle cx="28" cy="16" r="2.5" fill="#06B6D4"/><line x1="16" y1="6.5" x2="16" y2="12" stroke="#8B5CF6" stroke-width="1.2"/><line x1="16" y1="20" x2="16" y2="25.5" stroke="#8B5CF6" stroke-width="1.2"/><line x1="6.5" y1="16" x2="12" y2="16" stroke="#8B5CF6" stroke-width="1.2"/><line x1="20" y1="16" x2="25.5" y2="16" stroke="#8B5CF6" stroke-width="1.2"/></svg>
+    NeuralAI
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#capabilities">Capabilities</a></li>
+    <li><a href="#stats">Performance</a></li>
+    <li><a href="#usecases">Use Cases</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><button class="nav-cta">Get Started</button></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+<canvas id="neuralCanvas"></canvas>
+<div class="hero-content">
+  <h1>Intelligence That<br>Scales With You</h1>
+  <p>Deploy production-ready AI models with a single API call. Built for speed, designed for developers, trusted by millions.</p>
+  <div class="cta-group">
+    <button class="btn-primary">Start Building Free →</button>
+    <button class="btn-secondary">View Documentation</button>
+  </div>
+</div>
+</section>
+
+<!-- CAPABILITIES -->
+<section id="capabilities">
+<div class="container text-center">
+  <p class="section-label reveal">Capabilities</p>
+  <h2 class="section-title reveal">Built for the AI era</h2>
+  <p class="section-desc reveal">Everything you need to ship intelligent applications, from prototype to production.</p>
+</div>
+<div class="container">
+  <div class="cap-grid">
+    <div class="cap-card reveal"><div class="cap-icon">⚡</div><h3>Real-Time Inference</h3><p>Sub-50ms latency at scale. Stream responses token-by-token for fluid, interactive AI experiences your users will love.</p></div>
+    <div class="cap-card reveal"><div class="cap-icon">🧠</div><h3>Multi-Model Routing</h3><p>Intelligently route requests across specialized models. Auto-select the best model for cost, speed, or accuracy.</p></div>
+    <div class="cap-card reveal"><div class="cap-icon">🔒</div><h3>Enterprise Security</h3><p>SOC 2 Type II certified. End-to-end encryption, private deployments, and granular access controls built in.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- CODE DEMO -->
+<section>
+<div class="container text-center">
+  <p class="section-label reveal">Developer Experience</p>
+  <h2 class="section-title reveal">Ship AI in three lines</h2>
+</div>
+<div class="container">
+  <div class="browser-mock reveal">
+    <div class="browser-bar"><span class="r"></span><span class="y"></span><span class="g"></span><span class="browser-url">api.neuralai.dev/v1/completions</span></div>
+    <pre class="code-block"><span class="kw">import</span> { NeuralAI } <span class="kw">from</span> <span class="str">'@neuralai/sdk'</span>;
+
+<span class="kw">const</span> ai = <span class="kw">new</span> <span class="fn">NeuralAI</span>(<span class="str">'your-api-key'</span>);
+
+<span class="cm">// Generate intelligent responses</span>
+<span class="kw">const</span> response = <span class="kw">await</span> ai.<span class="fn">complete</span>({
+  model: <span class="str">'neural-pro-4'</span>,
+  messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Analyze this dataset'</span> }],
+  temperature: <span class="fn">0.7</span>,
+  max_tokens: <span class="fn">2048</span>
+});
+
+console.<span class="fn">log</span>(response.text);
+<span class="cm">// → "The dataset shows a 23% increase in..."</span></pre>
+  </div>
+</div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat-item reveal"><div class="stat-num" data-target="99.9" data-suffix="%">0</div><div class="stat-label">Uptime SLA</div></div>
+    <div class="stat-item reveal"><div class="stat-num" data-target="2" data-suffix="M+">0</div><div class="stat-label">API Calls / Day</div></div>
+    <div class="stat-item reveal"><div class="stat-num" data-target="47" data-suffix="ms">0</div><div class="stat-label">Avg Latency</div></div>
+    <div class="stat-item reveal"><div class="stat-num" data-target="12" data-suffix="K+">0</div><div class="stat-label">Developers</div></div>
+  </div>
+</div>
+</section>
+
+<!-- USE CASES -->
+<section id="usecases">
+<div class="container text-center">
+  <p class="section-label reveal">Use Cases</p>
+  <h2 class="section-title reveal">Powering industries</h2>
+  <p class="section-desc reveal">See how teams across sectors leverage NeuralAI to build transformative products.</p>
+</div>
+<div class="container">
+  <div class="uc-grid">
+    <div class="uc-card reveal"><div class="uc-icon">🏥</div><div><h3>Healthcare</h3><p>Clinical note analysis, patient triage assistance, and medical research acceleration — with HIPAA-compliant infrastructure.</p></div></div>
+    <div class="uc-card reveal"><div class="uc-icon">💬</div><div><h3>Conversational AI</h3><p>Build natural, context-aware chatbots and virtual agents that handle millions of concurrent conversations.</p></div></div>
+    <div class="uc-card reveal"><div class="uc-icon">📊</div><div><h3>Finance</h3><p>Risk assessment, fraud detection, and market analysis powered by real-time multi-model inference pipelines.</p></div></div>
+  </div>
+</div>
+</section>
+
+<!-- COMPARISON -->
+<section id="pricing">
+<div class="container text-center">
+  <p class="section-label reveal">Pricing</p>
+  <h2 class="section-title reveal">Choose your plan</h2>
+  <p class="section-desc reveal">Start free, scale as you grow. No hidden fees, no surprises.</p>
+</div>
+<div class="container">
+  <div class="reveal" style="overflow-x:auto">
+  <table class="comp-table">
+    <thead><tr><th style="text-align:left">Feature</th><th>Free</th><th>Pro</th><th>Enterprise</th></tr></thead>
+    <tbody>
+      <tr><td>Monthly API Calls</td><td>10K</td><td>500K</td><td>Unlimited</td></tr>
+      <tr><td>Models Available</td><td>3</td><td>All</td><td>All + Custom</td></tr>
+      <tr><td>Latency SLA</td><td><span class="cross">—</span></td><td><span class="check">✓</span> &lt;80ms</td><td><span class="check">✓</span> &lt;40ms</td></tr>
+      <tr><td>Team Members</td><td>1</td><td>10</td><td>Unlimited</td></tr>
+      <tr><td>Support</td><td>Community</td><td>Priority</td><td>24/7 Dedicated</td></tr>
+      <tr><td>Private Deployment</td><td><span class="cross">—</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
+      <tr><td>Price</td><td>Free</td><td>$49/mo</td><td>Contact Us</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+<div class="container text-center">
+  <p class="section-label reveal">FAQ</p>
+  <h2 class="section-title reveal">Common questions</h2>
+</div>
+<div class="container">
+  <div class="faq-list">
+    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">How do I get started?<span class="faq-arrow">▾</span></div><div class="faq-a">Sign up for free, grab your API key from the dashboard, and make your first API call in under a minute. Our quickstart guide walks you through everything.</div></div>
+    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Is my data safe?<span class="faq-arrow">▾</span></div><div class="faq-a">Absolutely. We're SOC 2 Type II certified, never train on your data, and offer end-to-end encryption. Enterprise customers get private deployments.</div></div>
+    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">Can I use my own models?<span class="faq-arrow">▾</span></div><div class="faq-a">Yes. Enterprise plans support custom model hosting and fine-tuning. We also provide migration tools for popular open-source models.</div></div>
+    <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)">What languages do you support?<span class="faq-arrow">▾</span></div><div class="faq-a">Official SDKs for Python, Node.js, Go, Rust, and Java. Community-maintained libraries for Ruby, PHP, C# and more.</div></div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+<div class="container">
+  <h2 class="section-title reveal">Ready to build the future?</h2>
+  <p class="section-desc reveal" style="margin:0 auto 36px">Join 12,000+ developers building smarter applications with NeuralAI.</p>
+  <div class="cta-group reveal">
+    <button class="btn-primary">Start Free Trial →</button>
+    <button class="btn-secondary">Talk to Sales</button>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="container">
+  <span>© 2026 NeuralAI. All rights reserved.</span>
+  <div class="footer-links">
+    <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Docs</a><a href="#">GitHub</a>
+  </div>
+</div>
+</footer>
+
+<button id="btt" onclick="window.scrollTo({top:0})">↑</button>
+
+<script>
+/* Neural Network Canvas */
+(function(){
+  const c=document.getElementById('neuralCanvas'),ctx=c.getContext('2d');
+  let W,H,dots=[];
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<80;i++)dots.push({x:Math.random()*2000,y:Math.random()*1200,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+1});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<dots.length;i++){
+      const d=dots[i];d.x+=d.vx;d.y+=d.vy;
+      if(d.x<0||d.x>W)d.vx*=-1;if(d.y<0||d.y>H)d.vy*=-1;
+      ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fillStyle='rgba(139,92,246,.6)';ctx.fill();
+      for(let j=i+1;j<dots.length;j++){
+        const dx=d.x-dots[j].x,dy=d.y-dots[j].y,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<150){ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(dots[j].x,dots[j].y);ctx.strokeStyle=`rgba(139,92,246,${.25*(1-dist/150)})`;ctx.stroke()}
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* Scroll Reveal */
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1,rootMargin:"0px 0px -20px 0px"});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* Animated Counters */
+const cObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target;
+    if(el.dataset.counted)return;el.dataset.counted=1;
+    const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix,isFloat=String(target).includes('.');
+    let start=0;const dur=1800,startT=performance.now();
+    function tick(now){
+      const p=Math.min((now-startT)/dur,1),ease=1-Math.pow(1-p,3);
+      const val=ease*target;
+      el.textContent=(isFloat?val.toFixed(1):Math.floor(val))+suffix;
+      if(p<1)requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+},{threshold:.5});
+document.querySelectorAll('.stat-num').forEach(el=>cObs.observe(el));
+
+/* FAQ */
+function toggleFaq(el){
+  const item=el.parentElement;
+  const wasActive=item.classList.contains('active');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('active'));
+  if(!wasActive)item.classList.add('active');
+}
+
+/* Mobile Nav */
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open')));
+
+/* Back to Top */
+const btt=document.getElementById('btt');
+window.addEventListener('scroll',()=>btt.classList.toggle('show',window.scrollY>400));
+// Fallback: ensure visibility after load
 setTimeout(()=>{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))},1500);
 </script>
-367|</body>
-368|</html>
-369|
+</body>
+</html>

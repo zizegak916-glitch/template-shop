@@ -1,336 +1,336 @@
-1|<!DOCTYPE html>
-2|<html lang="en">
-3|<head>
-4|<meta charset="UTF-8">
-5|<meta name="viewport" content="width=device-width,initial-scale=1">
-6|<title>VibeLaunch — Bold Gradient Template</title>
-7|<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-8|<style>
-9|*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-10|:root{--bg:#0a0a0f;--card:#12121a;--text:#e2e8f0;--muted:#94a3b8;--accent:#F59E0B;--grad:linear-gradient(135deg,#6366F1,#EC4899)}
-11|html{scroll-behavior:smooth}
-12|body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-13|a{color:inherit;text-decoration:none}
-14|.container{max-width:1140px;margin:0 auto;padding:0 24px}
-15|/* NAV */
-16|nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;transition:background .3s}
-17|nav.scrolled{background:rgba(10,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
-18|nav .container{display:flex;align-items:center;justify-content:space-between}
-19|.logo{font-size:1.4rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-20|.nav-links{display:flex;gap:32px;list-style:none}
-21|.nav-links a{font-size:.9rem;color:var(--muted);transition:color .3s}.nav-links a:hover{color:#fff}
-22|.nav-cta{padding:10px 24px;border-radius:9999px;background:var(--grad);color:#fff;font-weight:600;font-size:.9rem;border:none;cursor:pointer}
-23|.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
-24|.burger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:.3s}
-25|/* SECTIONS */
-26|section{padding:100px 0;position:relative}
-27|.section-label{font-size:.8rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;font-weight:600}
-28|.section-title{font-size:2.5rem;font-weight:900;margin-bottom:20px}
-29|.section-sub{color:var(--muted);max-width:560px;font-size:1.05rem}
-30|/* HERO */
-31|.hero{min-height:100vh;display:flex;align-items:center;padding-top:120px;text-align:center;flex-direction:column}
-32|.hero h1{font-size:clamp(2.5rem,6vw,4.2rem);font-weight:900;line-height:1.1;margin-bottom:20px}
-33|.hero h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-34|.hero p{color:var(--muted);max-width:540px;font-size:1.15rem;margin-bottom:36px}
-35|.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-36|.btn-primary{padding:14px 36px;border-radius:9999px;background:var(--grad);color:#fff;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:transform .2s}
-37|.btn-primary:hover{transform:translateY(-2px)}
-38|.btn-secondary{padding:14px 36px;border-radius:9999px;background:transparent;color:#fff;font-weight:700;font-size:1rem;border:1px solid rgba(255,255,255,.2);cursor:pointer;transition:border-color .3s}
-39|.btn-secondary:hover{border-color:rgba(255,255,255,.5)}
-40|.orbs{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-41|.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.35;animation:float 8s ease-in-out infinite}
-42|.orb-1{width:500px;height:500px;background:#6366F1;top:-10%;right:-10%;animation-delay:0s}
-43|.orb-2{width:400px;height:400px;background:#EC4899;bottom:5%;left:-8%;animation-delay:3s}
-44|.orb-3{width:300px;height:300px;background:var(--accent);top:30%;left:50%;animation-delay:5s}
-45|@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-40px)}}
-46|/* TRUST */
-47|.trust{text-align:center;padding:60px 0;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
-48|.trust p{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:24px}
-49|.trust-logos{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;opacity:.4;font-size:1.3rem;font-weight:700}
-50|/* FEATURES */
-51|.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:48px}
-52|.feature-card{background:var(--card);border-radius:16px;padding:36px;position:relative;border:1px solid transparent;background-clip:padding-box;transition:border-color .3s}
-53|.feature-card::before{content:'';position:absolute;inset:-1px;border-radius:16px;background:var(--grad);z-index:-1;opacity:0;transition:opacity .3s}
-54|.feature-card:hover::before{opacity:1}
-55|.feature-card:hover{border-color:transparent}
-56|.feature-card svg{width:44px;height:44px;margin-bottom:16px;stroke:url(#g1)}
-57|.feature-card h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
-58|.feature-card p{color:var(--muted);font-size:.95rem}
-59|/* SHOWCASE */
-60|.showcase{padding:100px 0;text-align:center}
-61|.browser{background:#1a1a2e;border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden;margin-top:48px;max-width:900px;margin-left:auto;margin-right:auto}
-62|.browser-bar{display:flex;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
-63|.browser-bar span{width:12px;height:12px;border-radius:50%}
-64|.browser-bar span:nth-child(1){background:#ef4444}.browser-bar span:nth-child(2){background:#F59E0B}.browser-bar span:nth-child(3){background:#22c55e}
-65|.browser-body{padding:40px 32px;min-height:300px;background:linear-gradient(160deg,rgba(99,102,241,.12),rgba(236,72,153,.08))}
-66|.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-67|.dash-card{background:rgba(255,255,255,.05);border-radius:12px;padding:24px;text-align:left}
-68|.dash-card .bar{height:8px;border-radius:4px;margin-top:12px}
-69|.dash-card:nth-child(1) .bar{width:70%;background:var(--grad)}
-70|.dash-card:nth-child(2) .bar{width:50%;background:var(--accent)}
-71|.dash-card:nth-child(3) .bar{width:85%;background:linear-gradient(90deg,#EC4899,#6366F1)}
-72|/* STATS */
-73|.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
-74|.stat h3{font-size:2.8rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-75|.stat p{color:var(--muted);font-size:.9rem;margin-top:4px}
-76|/* HOW IT WORKS */
-77|.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:48px;position:relative}
-78|.step{text-align:center}
-79|.step-num{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.3rem;margin:0 auto 20px;color:#fff}
-80|.step h3{font-size:1.1rem;margin-bottom:8px}
-81|.step p{color:var(--muted);font-size:.9rem}
-82|.connector{display:none}
-83|/* PRICING */
-84|.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
-85|.price-card{background:var(--card);border-radius:16px;padding:40px 32px;text-align:center;border:1px solid rgba(255,255,255,.08)}
-86|.price-card.highlighted{position:relative;border:1px solid transparent;background-clip:padding-box}
-87|.price-card.highlighted::before{content:'';position:absolute;inset:-1px;border-radius:16px;background:var(--grad);z-index:-1}
-88|.price-card h3{font-size:1.1rem;margin-bottom:8px}
-89|.price{font-size:3rem;font-weight:900;margin:16px 0 4px}
-90|.price span{font-size:1rem;font-weight:400;color:var(--muted)}
-91|.price-card ul{list-style:none;margin:24px 0;text-align:left;color:var(--muted);font-size:.9rem}
-92|.price-card ul li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-93|.price-card .btn-primary,.price-card .btn-secondary{width:100%}
-94|/* FAQ */
-95|.faq{max-width:720px;margin:0 auto}
-96|.faq-item{border-bottom:1px solid rgba(255,255,255,.08)}
-97|.faq-q{padding:20px 0;cursor:pointer;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-size:1rem}
-98|.faq-q::after{content:'+';font-size:1.4rem;transition:transform .3s;color:var(--accent)}
-99|.faq-item.open .faq-q::after{transform:rotate(45deg)}
-100|.faq-a{max-height:0;overflow:hidden;transition:max-height .4s,color .3s;color:var(--muted)}
-101|.faq-item.open .faq-a{max-height:200px;padding-bottom:20px}
-102|/* NEWSLETTER */
-103|.newsletter{text-align:center;background:var(--grad);border-radius:24px;padding:64px 32px;max-width:700px;margin:0 auto}
-104|.newsletter h2{font-size:2rem;font-weight:900;color:#fff;margin-bottom:8px}
-105|.newsletter p{color:rgba(255,255,255,.8);margin-bottom:24px}
-106|.nl-form{display:flex;gap:12px;max-width:420px;margin:0 auto}
-107|.nl-form input{flex:1;padding:14px 20px;border-radius:9999px;border:none;background:rgba(255,255,255,.9);font-size:1rem;font-family:inherit}
-108|.nl-form button{padding:14px 28px;border-radius:9999px;border:none;background:#0a0a0f;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap}
-109|/* CTA */
-110|.cta{text-align:center;padding:80px 0}
-111|.cta .btn-primary{font-size:1.2rem;padding:20px 56px}
-112|/* FOOTER */
-113|footer{border-top:1px solid rgba(255,255,255,.08);padding:60px 0 32px;text-align:center}
-114|.footer-grad{height:3px;background:var(--grad);margin-bottom:40px;border-radius:2px}
-115|footer .logo{display:inline-block;margin-bottom:16px}
-116|footer p{color:var(--muted);font-size:.85rem}
-117|/* REVEAL */
-118|.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
-119|.reveal.visible{opacity:1;transform:translateY(0)}
-120|/* BACK TO TOP */
-121|#btt{position:fixed;bottom:32px;right:32px;width:48px;height:48px;border-radius:50%;background:var(--grad);border:none;color:#fff;font-size:1.3rem;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s;z-index:999}
-122|#btt.show{opacity:1;pointer-events:all}
-123|/* MOBILE NAV */
-124|@media(max-width:768px){
-125|  .nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:rgba(10,10,15,.95);backdrop-filter:blur(20px);flex-direction:column;align-items:center;padding:32px 0;gap:24px}
-126|  .nav-links.open{display:flex}
-127|  .burger{display:flex}
-128|  .hero h1{font-size:2.2rem}
-129|  .stats{grid-template-columns:repeat(2,1fr)}
-130|  .steps{grid-template-columns:1fr}
-131|  .pricing-grid,.feature-grid{grid-template-columns:1fr}
-132|  .dash-grid{grid-template-columns:1fr}
-133|  .nl-form{flex-direction:column}
-134|}
-135|</style>
-136|</head>
-137|<body>
-138|
-139|<!-- SVG DEFS -->
-140|<svg style="position:absolute;width:0;height:0">
-141|<defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#EC4899"/></linearGradient></defs>
-142|</svg>
-143|
-144|<!-- NAV -->
-145|<nav id="navbar">
-146|  <div class="container">
-147|    <a href="#" class="logo">VibeLaunch</a>
-148|    <ul class="nav-links" id="navLinks">
-149|      <li><a href="#features">Features</a></li>
-150|      <li><a href="#pricing">Pricing</a></li>
-151|      <li><a href="#faq">FAQ</a></li>
-152|      <li><a href="#contact">Contact</a></li>
-153|    </ul>
-154|    <button class="nav-cta">Get Started</button>
-155|    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
-156|  </div>
-157|</nav>
-158|
-159|<!-- ORBS (hero bg) -->
-160|<div class="orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-161|
-162|<!-- HERO -->
-163|<section class="hero" id="hero">
-164|  <h1 class="reveal">Launch Boldly.<br><span>Scale Fearlessly.</span></h1>
-165|  <p class="reveal">The all-in-one platform that turns your bold ideas into shipped products. Analytics, payments, and growth — wired together.</p>
-166|  <div class="hero-btns reveal">
-167|    <button class="btn-primary">Start Free Trial</button>
-168|    <button class="btn-secondary">Watch Demo ▸</button>
-169|  </div>
-170|</section>
-171|
-172|<!-- TRUST BAR -->
-173|<div class="trust">
-174|  <div class="container">
-175|    <p>Trusted by forward-thinking teams</p>
-176|    <div class="trust-logos"><span>Acme Corp</span><span>Globex</span><span>Initech</span><span>Hooli</span><span>Piedmont</span></div>
-177|  </div>
-178|</div>
-179|
-180|<!-- FEATURES -->
-181|<section id="features">
-182|  <div class="container">
-183|    <div class="section-label reveal">Features</div>
-184|    <h2 class="section-title reveal">Everything you need to ship</h2>
-185|    <p class="section-sub reveal">Six powerful modules that work together seamlessly.</p>
-186|    <div class="feature-grid">
-187|      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><h3>Unified Dashboard</h3><p>One view for revenue, users, and health metrics.</p></div>
-188|      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg><h3>Built-in Payments</h3><p>Accept cards, crypto, and invoices without third-party tools.</p></div>
-189|      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><h3>Team Access</h3><p>Role-based permissions so everyone sees what they need.</p></div>
-190|      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><h3>Live Chat</h3><p>Talk to users in-app with real-time messaging.</p></div>
-191|      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><h3>Enterprise Security</h3><p>SOC 2, encryption at rest, and audit logs included.</p></div>
-192|      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><h3>Edge Performance</h3><p>Global CDN with sub-50 ms response times worldwide.</p></div>
-193|    </div>
-194|  </div>
-195|</section>
-196|
-197|<!-- SHOWCASE -->
-198|<section class="showcase">
-199|  <div class="container">
-200|    <div class="section-label reveal">Showcase</div>
-201|    <h2 class="section-title reveal">See it in action</h2>
-202|    <div class="browser reveal">
-203|      <div class="browser-bar"><span></span><span></span><span></span></div>
-204|      <div class="browser-body">
-205|        <div class="dash-grid">
-206|          <div class="dash-card"><small style="color:var(--muted)">Revenue</small><div style="font-size:1.8rem;font-weight:900;margin-top:4px">$48.2K</div><div class="bar"></div></div>
-207|          <div class="dash-card"><small style="color:var(--muted)">Users</small><div style="font-size:1.8rem;font-weight:900;margin-top:4px">12,847</div><div class="bar"></div></div>
-208|          <div class="dash-card"><small style="color:var(--muted)">Uptime</small><div style="font-size:1.8rem;font-weight:900;margin-top:4px">99.99%</div><div class="bar"></div></div>
-209|        </div>
-210|      </div>
-211|    </div>
-212|  </div>
-213|</section>
-214|
-215|<!-- STATS -->
-216|<section id="stats">
-217|  <div class="container stats">
-218|    <div class="stat reveal"><h3 data-target="12847">0</h3><p>Active Users</p></div>
-219|    <div class="stat reveal"><h3 data-target="320">0</h3><p>Countries Served</p></div>
-220|    <div class="stat reveal"><h3 data-target="99">0</h3><p>Uptime %</p></div>
-221|    <div class="stat reveal"><h3 data-target="48">0</h3><p>Avg Response ms</p></div>
-222|  </div>
-223|</section>
-224|
-225|<!-- HOW IT WORKS -->
-226|<section>
-227|  <div class="container">
-228|    <div style="text-align:center"><div class="section-label reveal">How It Works</div><h2 class="section-title reveal">Three steps to launch</h2></div>
-229|    <div class="steps">
-230|      <div class="step reveal"><div class="step-num">1</div><h3>Connect</h3><p>Link your existing tools and data sources in minutes.</p></div>
-231|      <div class="step reveal"><div class="step-num">2</div><h3>Configure</h3><p>Set your goals, dashboards, and team permissions.</p></div>
-232|      <div class="step reveal"><div class="step-num">3</div><h3>Launch</h3><p>Go live with confidence and watch your metrics grow.</p></div>
-233|    </div>
-234|  </div>
-235|</section>
-236|
-237|<!-- PRICING -->
-238|<section id="pricing">
-239|  <div class="container">
-240|    <div style="text-align:center"><div class="section-label reveal">Pricing</div><h2 class="section-title reveal">Simple, transparent plans</h2></div>
-241|    <div class="pricing-grid">
-242|      <div class="price-card reveal"><h3>Starter</h3><div class="price">$29<span>/mo</span></div><ul><li>5 team members</li><li>Basic analytics</li><li>Email support</li></ul><button class="btn-secondary">Get Started</button></div>
-243|      <div class="price-card highlighted reveal"><h3 style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Pro ★</h3><div class="price">$79<span>/mo</span></div><ul><li>Unlimited members</li><li>Advanced analytics</li><li>Priority support</li><li>Custom domains</li></ul><button class="btn-primary">Get Started</button></div>
-244|      <div class="price-card reveal"><h3>Enterprise</h3><div class="price">$199<span>/mo</span></div><ul><li>Everything in Pro</li><li>SSO & SAML</li><li>Dedicated account manager</li></ul><button class="btn-secondary">Contact Sales</button></div>
-245|    </div>
-246|  </div>
-247|</section>
-248|
-249|<!-- FAQ -->
-250|<section id="faq">
-251|  <div class="container">
-252|    <div style="text-align:center"><div class="section-label reveal">FAQ</div><h2 class="section-title reveal">Frequently asked questions</h2></div>
-253|    <div class="faq">
-254|      <div class="faq-item reveal"><div class="faq-q">How long is the free trial?</div><div class="faq-a">You get 14 days free — no credit card required. Upgrade anytime.</div></div>
-255|      <div class="faq-item reveal"><div class="faq-q">Can I change plans later?</div><div class="faq-a">Absolutely. Upgrade or downgrade from your dashboard instantly.</div></div>
-256|      <div class="faq-item reveal"><div class="faq-q">Is my data secure?</div><div class="faq-a">Yes. We're SOC 2 certified with AES-256 encryption at rest.</div></div>
-257|      <div class="faq-item reveal"><div class="faq-q">Do you offer refunds?</div><div class="faq-a">We offer a 30-day money-back guarantee on all paid plans.</div></div>
-258|    </div>
-259|  </div>
-260|</section>
-261|
-262|<!-- NEWSLETTER -->
-263|<section id="contact">
-264|  <div class="container">
-265|    <div class="newsletter reveal">
-266|      <h2>Stay in the loop</h2>
-267|      <p>Get product updates and startup tips delivered weekly.</p>
-268|      <div class="nl-form"><input type="email" placeholder="you@company.com"><button>Subscribe</button></div>
-269|    </div>
-270|  </div>
-271|</section>
-272|
-273|<!-- CTA -->
-274|<section class="cta">
-275|  <div class="container reveal">
-276|    <h2 class="section-title" style="margin-bottom:24px">Ready to launch bold?</h2>
-277|    <button class="btn-primary">Get Started Free →</button>
-278|  </div>
-279|</section>
-280|
-281|<!-- FOOTER -->
-282|<footer>
-283|  <div class="container">
-284|    <div class="footer-grad"></div>
-285|    <div class="logo">VibeLaunch</div>
-286|    <p style="margin-top:12px">© 2026 VibeLaunch. All rights reserved.</p>
-287|  </div>
-288|</footer>
-289|
-290|<!-- BACK TO TOP -->
-291|<button id="btt" aria-label="Back to top">↑</button>
-292|
-293|<script>
-294|// Mobile nav
-295|const burger=document.getElementById('burger'),navLinks=document.getElementById('navLinks');
-296|burger.addEventListener('click',()=>navLinks.classList.toggle('open'));
-297|
-298|// Navbar scroll
-299|const navbar=document.getElementById('navbar'),btt=document.getElementById('btt');
-300|window.addEventListener('scroll',()=>{
-301|  navbar.classList.toggle('scrolled',window.scrollY>50);
-302|  btt.classList.toggle('show',window.scrollY>600);
-303|});
-304|btt.addEventListener('click',()=>window.scrollTo({top:0}));
-305|
-306|// Reveal on scroll
-307|const reveals=document.querySelectorAll('.reveal');
-308|const revealObs=new IntersectionObserver((entries)=>{
-309|  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}});
-310|},{threshold:.1,rootMargin:"0px 0px -20px 0px"});
-311|reveals.forEach(r=>revealObs.observe(r));
-312|
-313|// Animated counters
-314|const statObs=new IntersectionObserver((entries)=>{
-315|  entries.forEach(e=>{if(e.isIntersecting){
-316|    document.querySelectorAll('.stat h3[data-target]').forEach(el=>{
-317|      const target=+el.dataset.target;let cur=0;
-318|      const step=target/60;
-319|      const timer=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(timer)}el.textContent=target>=100?Math.floor(cur).toLocaleString():Math.floor(cur)},25);
-320|    });
-321|    statObs.disconnect();
-322|  }});
-323|},{threshold:.4});
-324|statObs.observe(document.getElementById('stats'));
-325|
-326|// FAQ accordion
-327|document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
-328|  const item=q.parentElement;
-329|  document.querySelectorAll('.faq-item.open').forEach(i=>{if(i!==item)i.classList.remove('open')});
-330|  item.classList.toggle('open');
-331|}));
-332|// Fallback: ensure visibility after load
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VibeLaunch — Bold Gradient Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#12121a;--text:#e2e8f0;--muted:#94a3b8;--accent:#F59E0B;--grad:linear-gradient(135deg,#6366F1,#EC4899)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{max-width:1140px;margin:0 auto;padding:0 24px}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 0;transition:background .3s}
+nav.scrolled{background:rgba(10,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.4rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:.9rem;color:var(--muted);transition:color .3s}.nav-links a:hover{color:#fff}
+.nav-cta{padding:10px 24px;border-radius:9999px;background:var(--grad);color:#fff;font-weight:600;font-size:.9rem;border:none;cursor:pointer}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+.burger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:.3s}
+/* SECTIONS */
+section{padding:100px 0;position:relative}
+.section-label{font-size:.8rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;font-weight:600}
+.section-title{font-size:2.5rem;font-weight:900;margin-bottom:20px}
+.section-sub{color:var(--muted);max-width:560px;font-size:1.05rem}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding-top:120px;text-align:center;flex-direction:column}
+.hero h1{font-size:clamp(2.5rem,6vw,4.2rem);font-weight:900;line-height:1.1;margin-bottom:20px}
+.hero h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);max-width:540px;font-size:1.15rem;margin-bottom:36px}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.btn-primary{padding:14px 36px;border-radius:9999px;background:var(--grad);color:#fff;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:transform .2s}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{padding:14px 36px;border-radius:9999px;background:transparent;color:#fff;font-weight:700;font-size:1rem;border:1px solid rgba(255,255,255,.2);cursor:pointer;transition:border-color .3s}
+.btn-secondary:hover{border-color:rgba(255,255,255,.5)}
+.orbs{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.35;animation:float 8s ease-in-out infinite}
+.orb-1{width:500px;height:500px;background:#6366F1;top:-10%;right:-10%;animation-delay:0s}
+.orb-2{width:400px;height:400px;background:#EC4899;bottom:5%;left:-8%;animation-delay:3s}
+.orb-3{width:300px;height:300px;background:var(--accent);top:30%;left:50%;animation-delay:5s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-40px)}}
+/* TRUST */
+.trust{text-align:center;padding:60px 0;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.trust p{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:24px}
+.trust-logos{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;opacity:.4;font-size:1.3rem;font-weight:700}
+/* FEATURES */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:48px}
+.feature-card{background:var(--card);border-radius:16px;padding:36px;position:relative;border:1px solid transparent;background-clip:padding-box;transition:border-color .3s}
+.feature-card::before{content:'';position:absolute;inset:-1px;border-radius:16px;background:var(--grad);z-index:-1;opacity:0;transition:opacity .3s}
+.feature-card:hover::before{opacity:1}
+.feature-card:hover{border-color:transparent}
+.feature-card svg{width:44px;height:44px;margin-bottom:16px;stroke:url(#g1)}
+.feature-card h3{font-size:1.15rem;font-weight:700;margin-bottom:8px}
+.feature-card p{color:var(--muted);font-size:.95rem}
+/* SHOWCASE */
+.showcase{padding:100px 0;text-align:center}
+.browser{background:#1a1a2e;border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden;margin-top:48px;max-width:900px;margin-left:auto;margin-right:auto}
+.browser-bar{display:flex;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.browser-bar span{width:12px;height:12px;border-radius:50%}
+.browser-bar span:nth-child(1){background:#ef4444}.browser-bar span:nth-child(2){background:#F59E0B}.browser-bar span:nth-child(3){background:#22c55e}
+.browser-body{padding:40px 32px;min-height:300px;background:linear-gradient(160deg,rgba(99,102,241,.12),rgba(236,72,153,.08))}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.dash-card{background:rgba(255,255,255,.05);border-radius:12px;padding:24px;text-align:left}
+.dash-card .bar{height:8px;border-radius:4px;margin-top:12px}
+.dash-card:nth-child(1) .bar{width:70%;background:var(--grad)}
+.dash-card:nth-child(2) .bar{width:50%;background:var(--accent)}
+.dash-card:nth-child(3) .bar{width:85%;background:linear-gradient(90deg,#EC4899,#6366F1)}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.stat h3{font-size:2.8rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat p{color:var(--muted);font-size:.9rem;margin-top:4px}
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:48px;position:relative}
+.step{text-align:center}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.3rem;margin:0 auto 20px;color:#fff}
+.step h3{font-size:1.1rem;margin-bottom:8px}
+.step p{color:var(--muted);font-size:.9rem}
+.connector{display:none}
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.price-card{background:var(--card);border-radius:16px;padding:40px 32px;text-align:center;border:1px solid rgba(255,255,255,.08)}
+.price-card.highlighted{position:relative;border:1px solid transparent;background-clip:padding-box}
+.price-card.highlighted::before{content:'';position:absolute;inset:-1px;border-radius:16px;background:var(--grad);z-index:-1}
+.price-card h3{font-size:1.1rem;margin-bottom:8px}
+.price{font-size:3rem;font-weight:900;margin:16px 0 4px}
+.price span{font-size:1rem;font-weight:400;color:var(--muted)}
+.price-card ul{list-style:none;margin:24px 0;text-align:left;color:var(--muted);font-size:.9rem}
+.price-card ul li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.price-card .btn-primary,.price-card .btn-secondary{width:100%}
+/* FAQ */
+.faq{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.08)}
+.faq-q{padding:20px 0;cursor:pointer;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-size:1rem}
+.faq-q::after{content:'+';font-size:1.4rem;transition:transform .3s;color:var(--accent)}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s,color .3s;color:var(--muted)}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:20px}
+/* NEWSLETTER */
+.newsletter{text-align:center;background:var(--grad);border-radius:24px;padding:64px 32px;max-width:700px;margin:0 auto}
+.newsletter h2{font-size:2rem;font-weight:900;color:#fff;margin-bottom:8px}
+.newsletter p{color:rgba(255,255,255,.8);margin-bottom:24px}
+.nl-form{display:flex;gap:12px;max-width:420px;margin:0 auto}
+.nl-form input{flex:1;padding:14px 20px;border-radius:9999px;border:none;background:rgba(255,255,255,.9);font-size:1rem;font-family:inherit}
+.nl-form button{padding:14px 28px;border-radius:9999px;border:none;background:#0a0a0f;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap}
+/* CTA */
+.cta{text-align:center;padding:80px 0}
+.cta .btn-primary{font-size:1.2rem;padding:20px 56px}
+/* FOOTER */
+footer{border-top:1px solid rgba(255,255,255,.08);padding:60px 0 32px;text-align:center}
+.footer-grad{height:3px;background:var(--grad);margin-bottom:40px;border-radius:2px}
+footer .logo{display:inline-block;margin-bottom:16px}
+footer p{color:var(--muted);font-size:.85rem}
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+/* BACK TO TOP */
+#btt{position:fixed;bottom:32px;right:32px;width:48px;height:48px;border-radius:50%;background:var(--grad);border:none;color:#fff;font-size:1.3rem;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s;z-index:999}
+#btt.show{opacity:1;pointer-events:all}
+/* MOBILE NAV */
+@media(max-width:768px){
+  .nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:rgba(10,10,15,.95);backdrop-filter:blur(20px);flex-direction:column;align-items:center;padding:32px 0;gap:24px}
+  .nav-links.open{display:flex}
+  .burger{display:flex}
+  .hero h1{font-size:2.2rem}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr}
+  .pricing-grid,.feature-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .nl-form{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG DEFS -->
+<svg style="position:absolute;width:0;height:0">
+<defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#EC4899"/></linearGradient></defs>
+</svg>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="container">
+    <a href="#" class="logo">VibeLaunch</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-cta">Get Started</button>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- ORBS (hero bg) -->
+<div class="orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <h1 class="reveal">Launch Boldly.<br><span>Scale Fearlessly.</span></h1>
+  <p class="reveal">The all-in-one platform that turns your bold ideas into shipped products. Analytics, payments, and growth — wired together.</p>
+  <div class="hero-btns reveal">
+    <button class="btn-primary">Start Free Trial</button>
+    <button class="btn-secondary">Watch Demo ▸</button>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust">
+  <div class="container">
+    <p>Trusted by forward-thinking teams</p>
+    <div class="trust-logos"><span>Acme Corp</span><span>Globex</span><span>Initech</span><span>Hooli</span><span>Piedmont</span></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label reveal">Features</div>
+    <h2 class="section-title reveal">Everything you need to ship</h2>
+    <p class="section-sub reveal">Six powerful modules that work together seamlessly.</p>
+    <div class="feature-grid">
+      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><h3>Unified Dashboard</h3><p>One view for revenue, users, and health metrics.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg><h3>Built-in Payments</h3><p>Accept cards, crypto, and invoices without third-party tools.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><h3>Team Access</h3><p>Role-based permissions so everyone sees what they need.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><h3>Live Chat</h3><p>Talk to users in-app with real-time messaging.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><h3>Enterprise Security</h3><p>SOC 2, encryption at rest, and audit logs included.</p></div>
+      <div class="feature-card reveal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><h3>Edge Performance</h3><p>Global CDN with sub-50 ms response times worldwide.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="showcase">
+  <div class="container">
+    <div class="section-label reveal">Showcase</div>
+    <h2 class="section-title reveal">See it in action</h2>
+    <div class="browser reveal">
+      <div class="browser-bar"><span></span><span></span><span></span></div>
+      <div class="browser-body">
+        <div class="dash-grid">
+          <div class="dash-card"><small style="color:var(--muted)">Revenue</small><div style="font-size:1.8rem;font-weight:900;margin-top:4px">$48.2K</div><div class="bar"></div></div>
+          <div class="dash-card"><small style="color:var(--muted)">Users</small><div style="font-size:1.8rem;font-weight:900;margin-top:4px">12,847</div><div class="bar"></div></div>
+          <div class="dash-card"><small style="color:var(--muted)">Uptime</small><div style="font-size:1.8rem;font-weight:900;margin-top:4px">99.99%</div><div class="bar"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="container stats">
+    <div class="stat reveal"><h3 data-target="12847">0</h3><p>Active Users</p></div>
+    <div class="stat reveal"><h3 data-target="320">0</h3><p>Countries Served</p></div>
+    <div class="stat reveal"><h3 data-target="99">0</h3><p>Uptime %</p></div>
+    <div class="stat reveal"><h3 data-target="48">0</h3><p>Avg Response ms</p></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="container">
+    <div style="text-align:center"><div class="section-label reveal">How It Works</div><h2 class="section-title reveal">Three steps to launch</h2></div>
+    <div class="steps">
+      <div class="step reveal"><div class="step-num">1</div><h3>Connect</h3><p>Link your existing tools and data sources in minutes.</p></div>
+      <div class="step reveal"><div class="step-num">2</div><h3>Configure</h3><p>Set your goals, dashboards, and team permissions.</p></div>
+      <div class="step reveal"><div class="step-num">3</div><h3>Launch</h3><p>Go live with confidence and watch your metrics grow.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div style="text-align:center"><div class="section-label reveal">Pricing</div><h2 class="section-title reveal">Simple, transparent plans</h2></div>
+    <div class="pricing-grid">
+      <div class="price-card reveal"><h3>Starter</h3><div class="price">$29<span>/mo</span></div><ul><li>5 team members</li><li>Basic analytics</li><li>Email support</li></ul><button class="btn-secondary">Get Started</button></div>
+      <div class="price-card highlighted reveal"><h3 style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Pro ★</h3><div class="price">$79<span>/mo</span></div><ul><li>Unlimited members</li><li>Advanced analytics</li><li>Priority support</li><li>Custom domains</li></ul><button class="btn-primary">Get Started</button></div>
+      <div class="price-card reveal"><h3>Enterprise</h3><div class="price">$199<span>/mo</span></div><ul><li>Everything in Pro</li><li>SSO & SAML</li><li>Dedicated account manager</li></ul><button class="btn-secondary">Contact Sales</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div style="text-align:center"><div class="section-label reveal">FAQ</div><h2 class="section-title reveal">Frequently asked questions</h2></div>
+    <div class="faq">
+      <div class="faq-item reveal"><div class="faq-q">How long is the free trial?</div><div class="faq-a">You get 14 days free — no credit card required. Upgrade anytime.</div></div>
+      <div class="faq-item reveal"><div class="faq-q">Can I change plans later?</div><div class="faq-a">Absolutely. Upgrade or downgrade from your dashboard instantly.</div></div>
+      <div class="faq-item reveal"><div class="faq-q">Is my data secure?</div><div class="faq-a">Yes. We're SOC 2 certified with AES-256 encryption at rest.</div></div>
+      <div class="faq-item reveal"><div class="faq-q">Do you offer refunds?</div><div class="faq-a">We offer a 30-day money-back guarantee on all paid plans.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="contact">
+  <div class="container">
+    <div class="newsletter reveal">
+      <h2>Stay in the loop</h2>
+      <p>Get product updates and startup tips delivered weekly.</p>
+      <div class="nl-form"><input type="email" placeholder="you@company.com"><button>Subscribe</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container reveal">
+    <h2 class="section-title" style="margin-bottom:24px">Ready to launch bold?</h2>
+    <button class="btn-primary">Get Started Free →</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grad"></div>
+    <div class="logo">VibeLaunch</div>
+    <p style="margin-top:12px">© 2026 VibeLaunch. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button id="btt" aria-label="Back to top">↑</button>
+
+<script>
+// Mobile nav
+const burger=document.getElementById('burger'),navLinks=document.getElementById('navLinks');
+burger.addEventListener('click',()=>navLinks.classList.toggle('open'));
+
+// Navbar scroll
+const navbar=document.getElementById('navbar'),btt=document.getElementById('btt');
+window.addEventListener('scroll',()=>{
+  navbar.classList.toggle('scrolled',window.scrollY>50);
+  btt.classList.toggle('show',window.scrollY>600);
+});
+btt.addEventListener('click',()=>window.scrollTo({top:0}));
+
+// Reveal on scroll
+const reveals=document.querySelectorAll('.reveal');
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}});
+},{threshold:.1,rootMargin:"0px 0px -20px 0px"});
+reveals.forEach(r=>revealObs.observe(r));
+
+// Animated counters
+const statObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){
+    document.querySelectorAll('.stat h3[data-target]').forEach(el=>{
+      const target=+el.dataset.target;let cur=0;
+      const step=target/60;
+      const timer=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(timer)}el.textContent=target>=100?Math.floor(cur).toLocaleString():Math.floor(cur)},25);
+    });
+    statObs.disconnect();
+  }});
+},{threshold:.4});
+statObs.observe(document.getElementById('stats'));
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
+  const item=q.parentElement;
+  document.querySelectorAll('.faq-item.open').forEach(i=>{if(i!==item)i.classList.remove('open')});
+  item.classList.toggle('open');
+}));
+// Fallback: ensure visibility after load
 setTimeout(()=>{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))},1500);
 </script>
-333|</body>
-334|</html>
+</body>
+</html>

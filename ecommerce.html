@@ -1,345 +1,345 @@
-1|<!DOCTYPE html>
-2|<html lang="en">
-3|<head>
-4|<meta charset="UTF-8">
-5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
-6|<title>ShopWave — E-commerce Template</title>
-7|<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-8|<style>
-9|*{margin:0;padding:0;box-sizing:border-box}
-10|body{font-family:'Inter',sans-serif;background:#fafaf8;color:#1a1a2e;line-height:1.6}
-11|.container{max-width:1140px;margin:0 auto;padding:0 20px}
-12|a{text-decoration:none;color:inherit}
-13|/* NAV */
-14|nav{background:#fff;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-15|nav .container{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
-16|.nav-logo{font-size:1.5rem;font-weight:800;color:#DC2626}
-17|.nav-links{display:flex;gap:28px;align-items:center}
-18|.nav-links a{font-size:.9rem;font-weight:500;color:#444;transition:color .2s}
-19|.nav-links a:hover{color:#DC2626}
-20|.nav-cart{position:relative;cursor:pointer}
-21|.nav-cart svg{width:22px;height:22px}
-22|.nav-cta{background:#DC2626;color:#fff;padding:9px 22px;border-radius:8px;font-weight:600;font-size:.85rem;border:none;cursor:pointer;transition:background .2s}
-23|.nav-cta:hover{background:#b91c1c}
-24|.hamburger{display:none;cursor:pointer;flex-direction:column;gap:5px}
-25|.hamburger span{width:24px;height:2.5px;background:#333;border-radius:2px;transition:.3s}
-26|@media(max-width:768px){
-27|.nav-links{position:fixed;top:60px;left:0;right:0;background:#fff;flex-direction:column;padding:30px;gap:20px;box-shadow:0 8px 20px rgba(0,0,0,.1);transform:translateY(-120%);transition:.3s}
-28|.nav-links.open{transform:translateY(0)}
-29|.hamburger{display:flex}
-30|}
-31|/* HERO */
-32|.hero{padding:80px 0;display:flex;align-items:center;gap:50px}
-33|.hero-text{flex:1}
-34|.hero-text h1{font-size:3rem;font-weight:800;line-height:1.15;margin-bottom:16px;color:#1a1a2e}
-35|.hero-text h1 span{color:#DC2626}
-36|.hero-text p{font-size:1.1rem;color:#666;margin-bottom:28px;max-width:480px}
-37|.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
-38|.btn-primary{background:#DC2626;color:#fff;padding:14px 32px;border-radius:10px;font-weight:600;font-size:1rem;border:none;cursor:pointer;transition:.2s}
-39|.btn-primary:hover{background:#b91c1c;transform:translateY(-1px)}
-40|.btn-secondary{background:#fff;color:#DC2626;padding:14px 32px;border-radius:10px;font-weight:600;font-size:1rem;border:2px solid #DC2626;cursor:pointer;transition:.2s}
-41|.btn-secondary:hover{background:#fef2f2}
-42|.hero-visual{flex:1;display:flex;justify-content:center}
-43|.product-display{width:380px;height:380px;border-radius:24px;background:linear-gradient(135deg,#fecaca,#fca5a5,#f87171);display:flex;align-items:center;justify-content:center;font-size:5rem;box-shadow:0 20px 60px rgba(220,38,38,.15)}
-44|@media(max-width:768px){.hero{flex-direction:column;text-align:center;padding:50px 0}.hero-text h1{font-size:2rem}.hero-visual{width:100%}.product-display{width:280px;height:280px;font-size:4rem}}
-45|/* TRUST BAR */
-46|.trust-bar{background:#fff;padding:28px 0;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0}
-47|.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
-48|.trust-item svg{width:32px;height:32px;color:#059669;margin-bottom:8px}
-49|.trust-item h4{font-size:.85rem;font-weight:600;margin-bottom:2px}
-50|.trust-item p{font-size:.75rem;color:#888}
-51|@media(max-width:768px){.trust-grid{grid-template-columns:repeat(2,1fr)}}
-52|/* SECTIONS COMMON */
-53|section{padding:70px 0}
-54|.section-title{text-align:center;margin-bottom:50px}
-55|.section-title h2{font-size:2rem;font-weight:800;margin-bottom:10px}
-56|.section-title p{color:#666;max-width:520px;margin:0 auto}
-57|/* PRODUCTS */
-58|.products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-59|.product-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .25s,box-shadow .25s}
-60|.product-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,.1)}
-61|.product-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
-62|.product-info{padding:18px}
-63|.product-info h3{font-size:1rem;font-weight:600;margin-bottom:6px}
-64|.product-price{font-size:1.2rem;font-weight:700;color:#DC2626;margin-bottom:12px}
-65|.product-btn{width:100%;padding:10px;background:#059669;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.2s}
-66|.product-btn:hover{background:#047857}
-67|@media(max-width:768px){.products-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
-68|@media(max-width:480px){.products-grid{grid-template-columns:1fr}}
-69|/* FEATURES */
-70|.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;text-align:center}
-71|.feature-card{padding:36px 24px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
-72|.feature-card svg{width:44px;height:44px;color:#DC2626;margin-bottom:14px}
-73|.feature-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
-74|.feature-card p{font-size:.88rem;color:#666}
-75|@media(max-width:768px){.features-grid{grid-template-columns:1fr}}
-76|/* STATS */
-77|.stats{background:linear-gradient(135deg,#DC2626,#991b1b);color:#fff;padding:60px 0}
-78|.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
-79|.stat h3{font-size:2.2rem;font-weight:800}
-80|.stat p{font-size:.85rem;opacity:.85;margin-top:4px}
-81|@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
-82|/* TESTIMONIALS */
-83|.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-84|.testimonial{background:#fff;padding:28px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
-85|.stars{color:#f59e0b;font-size:1rem;margin-bottom:10px}
-86|.testimonial p{font-size:.9rem;color:#555;margin-bottom:14px;font-style:italic}
-87|.testimonial-author{font-weight:600;font-size:.85rem}
-88|@media(max-width:768px){.testimonials-grid{grid-template-columns:1fr}}
-89|/* FAQ */
-90|.faq-list{max-width:700px;margin:0 auto}
-91|.faq-item{background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.04);overflow:hidden}
-92|.faq-q{padding:18px 22px;font-weight:600;font-size:.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .2s}
-93|.faq-q:hover{color:#DC2626}
-94|.faq-q::after{content:'+';font-size:1.4rem;font-weight:300;transition:transform .3s}
-95|.faq-item.open .faq-q::after{transform:rotate(45deg)}
-96|.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;padding:0 22px;font-size:.88rem;color:#666}
-97|.faq-item.open .faq-a{max-height:200px;padding:0 22px 18px}
-98|/* NEWSLETTER */
-99|.newsletter{background:linear-gradient(135deg,#059669,#047857);color:#fff;text-align:center;border-radius:20px;margin:0 auto 70px;padding:50px 40px}
-100|.newsletter h2{font-size:1.8rem;font-weight:800;margin-bottom:8px}
-101|.newsletter p{opacity:.9;margin-bottom:24px;font-size:.95rem}
-102|.newsletter-form{display:flex;gap:10px;max-width:460px;margin:0 auto}
-103|.newsletter-form input{flex:1;padding:13px 18px;border:none;border-radius:10px;font-size:.9rem;font-family:inherit}
-104|.newsletter-form button{background:#DC2626;color:#fff;border:none;padding:13px 28px;border-radius:10px;font-weight:700;cursor:pointer;font-size:.9rem;transition:.2s}
-105|.newsletter-form button:hover{background:#b91c1c}
-106|@media(max-width:480px){.newsletter-form{flex-direction:column}}
-107|/* FOOTER */
-108|footer{background:#1a1a2e;color:#ccc;padding:50px 0 24px}
-109|.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
-110|.footer-brand h3{font-size:1.3rem;color:#fff;margin-bottom:10px}
-111|.footer-brand p{font-size:.85rem;line-height:1.7}
-112|footer h4{color:#fff;font-size:.95rem;margin-bottom:14px}
-113|footer ul{list-style:none}
-114|footer ul li{margin-bottom:8px}
-115|footer ul a{font-size:.85rem;transition:color .2s}
-116|footer ul a:hover{color:#DC2626}
-117|.footer-bottom{text-align:center;padding-top:24px;border-top:1px solid #2a2a3e;font-size:.8rem;color:#666}
-118|@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
-119|/* BACK TO TOP */
-120|.back-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:#DC2626;color:#fff;border:none;font-size:1.2rem;cursor:pointer;opacity:0;transform:translateY(20px);transition:.3s;z-index:99}
-121|.back-top.show{opacity:1;transform:translateY(0)}
-122|/* REVEAL */
-123|.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
-124|.reveal.visible{opacity:1;transform:translateY(0)}
-125|</style>
-126|</head>
-127|<body>
-128|
-129|<!-- NAV -->
-130|<nav>
-131|<div class="container">
-132|  <a href="#" class="nav-logo">ShopWave</a>
-133|  <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">
-134|    <span></span><span></span><span></span>
-135|  </div>
-136|  <div class="nav-links">
-137|    <a href="#products">Products</a><a href="#features">Features</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a>
-138|    <div class="nav-cart">
-139|      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-140|    </div>
-141|    <button class="nav-cta">Shop Now</button>
-142|  </div>
-143|</div>
-144|</nav>
-145|
-146|<!-- HERO -->
-147|<section class="hero">
-148|<div class="container" style="display:flex;align-items:center;gap:50px;flex-wrap:wrap">
-149|  <div class="hero-text" style="flex:1;min-width:280px">
-150|    <h1>Discover <span>Premium</span> Products for Your Lifestyle</h1>
-151|    <p>Curated collections designed to elevate your everyday experience. Quality you can feel, style you can see.</p>
-152|    <div class="hero-btns">
-153|      <button class="btn-primary">Explore Collection</button>
-154|      <button class="btn-secondary">View Catalog</button>
-155|    </div>
-156|  </div>
-157|  <div class="hero-visual" style="flex:1;min-width:280px;display:flex;justify-content:center">
-158|    <div class="product-display">🛍️</div>
-159|  </div>
-160|</div>
-161|</section>
-162|
-163|<!-- TRUST BAR -->
-164|<div class="trust-bar">
-165|<div class="container">
-166|  <div class="trust-grid">
-167|    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg><h4>Free Shipping</h4><p>On orders over $50</p></div>
-168|    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/><path d="M12 8v4l3 3"/></svg><h4>30-Day Returns</h4><p>Easy hassle-free returns</p></div>
-169|    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><h4>Secure Payment</h4><p>256-bit SSL encryption</p></div>
-170|    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.81.36 1.6.68 2.34a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.74.32 1.53.55 2.34.68A2 2 0 0122 16.92z"/></svg><h4>24/7 Support</h4><p>Always here to help</p></div>
-171|  </div>
-172|</div>
-173|</div>
-174|
-175|<!-- PRODUCTS -->
-176|<section id="products">
-177|<div class="container">
-178|  <div class="section-title reveal"><h2>Featured Products</h2><p>Hand-picked favorites that our customers love most</p></div>
-179|  <div class="products-grid">
-180|    <div class="product-card reveal">
-181|      <div class="product-img" style="background:linear-gradient(135deg,#c4b5fd,#818cf8)">👟</div>
-182|      <div class="product-info"><h3>Premium Sneakers</h3><div class="product-price">$129.99</div><button class="product-btn">Add to Cart</button></div>
-183|    </div>
-184|    <div class="product-card reveal">
-185|      <div class="product-img" style="background:linear-gradient(135deg,#a7f3d0,#34d399)">🎧</div>
-186|      <div class="product-info"><h3>Wireless Headphones</h3><div class="product-price">$89.99</div><button class="product-btn">Add to Cart</button></div>
-187|    </div>
-188|    <div class="product-card reveal">
-189|      <div class="product-img" style="background:linear-gradient(135deg,#fde68a,#f59e0b)">⌚</div>
-190|      <div class="product-info"><h3>Smart Watch Pro</h3><div class="product-price">$249.99</div><button class="product-btn">Add to Cart</button></div>
-191|    </div>
-192|    <div class="product-card reveal">
-193|      <div class="product-img" style="background:linear-gradient(135deg,#fecaca,#f87171)">🎒</div>
-194|      <div class="product-info"><h3>Travel Backpack</h3><div class="product-price">$69.99</div><button class="product-btn">Add to Cart</button></div>
-195|    </div>
-196|  </div>
-197|</div>
-198|</section>
-199|
-200|<!-- FEATURES -->
-201|<section id="features" style="background:#fff">
-202|<div class="container">
-203|  <div class="section-title reveal"><h2>Why Choose Us</h2><p>We go above and beyond to deliver excellence</p></div>
-204|  <div class="features-grid">
-205|    <div class="feature-card reveal">
-206|      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-207|      <h3>Premium Quality</h3><p>Every product undergoes rigorous quality checks before reaching your doorstep.</p>
-208|    </div>
-209|    <div class="feature-card reveal">
-210|      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
-211|      <h3>Happy Customers</h3><p>Over 10,000 satisfied customers across 50+ countries worldwide.</p>
-212|    </div>
-213|    <div class="feature-card reveal">
-214|      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-215|      <h3>Lightning Fast</h3><p>Next-day delivery available. Get what you love, when you want it.</p>
-216|    </div>
-217|  </div>
-218|</div>
-219|</section>
-220|
-221|<!-- STATS -->
-222|<section class="stats">
-223|<div class="container">
-224|  <div class="stats-grid">
-225|    <div class="stat reveal"><h3 data-target="10000">0</h3><p>Happy Customers</p></div>
-226|    <div class="stat reveal"><h3 data-target="500">0</h3><p>Products Available</p></div>
-227|    <div class="stat reveal"><h3 data-target="98" data-suffix="%">0</h3><p>Satisfaction Rate</p></div>
-228|    <div class="stat reveal"><h3 data-target="4.9" data-suffix="★" data-decimal="true">0</h3><p>Average Rating</p></div>
-229|  </div>
-230|</div>
-231|</section>
-232|
-233|<!-- TESTIMONIALS -->
-234|<section id="reviews">
-235|<div class="container">
-236|  <div class="section-title reveal"><h2>What Our Customers Say</h2><p>Real reviews from real people</p></div>
-237|  <div class="testimonials-grid">
-238|    <div class="testimonial reveal">
-239|      <div class="stars">★★★★★</div>
-240|      <p>"Absolutely love the quality! The sneakers exceeded my expectations. Will definitely order again."</p>
-241|      <div class="testimonial-author">— Sarah M.</div>
-242|    </div>
-243|    <div class="testimonial reveal">
-244|      <div class="stars">★★★★★</div>
-245|      <p>"Fast shipping and amazing customer service. The headphones sound incredible for the price."</p>
-246|      <div class="testimonial-author">— James K.</div>
-247|    </div>
-248|    <div class="testimonial reveal">
-249|      <div class="stars">★★★★★</div>
-250|      <p>"Best online shopping experience I've had. The backpack is durable and looks fantastic."</p>
-251|      <div class="testimonial-author">— Emily R.</div>
-252|    </div>
-253|  </div>
-254|</div>
-255|</section>
-256|
-257|<!-- FAQ -->
-258|<section id="faq" style="background:#fff">
-259|<div class="container">
-260|  <div class="section-title reveal"><h2>Frequently Asked Questions</h2><p>Everything you need to know</p></div>
-261|  <div class="faq-list">
-262|    <div class="faq-item reveal"><div class="faq-q">How long does shipping take?</div><div class="faq-a">Standard shipping takes 3-5 business days. Express shipping delivers within 1-2 business days. Free shipping is available on orders over $50.</div></div>
-263|    <div class="faq-item reveal"><div class="faq-q">What is your return policy?</div><div class="faq-a">We offer a 30-day hassle-free return policy. Simply contact our support team and we'll guide you through the process. Full refund guaranteed.</div></div>
-264|    <div class="faq-item reveal"><div class="faq-q">Are the products authentic?</div><div class="faq-a">Yes, all products are 100% authentic and sourced directly from authorized distributors. We stand behind every item we sell.</div></div>
-265|    <div class="faq-item reveal"><div class="faq-q">How can I track my order?</div><div class="faq-a">Once your order ships, you'll receive an email with a tracking number. You can also track your order through your account dashboard on our website.</div></div>
-266|  </div>
-267|</div>
-268|</section>
-269|
-270|<!-- NEWSLETTER -->
-271|<div class="container">
-272|<div class="newsletter reveal">
-273|  <h2>Get 15% Off Your First Order</h2>
-274|  <p>Subscribe to our newsletter for exclusive deals and new arrivals</p>
-275|  <div class="newsletter-form">
-276|    <input type="email" placeholder="Enter your email address">
-277|    <button>Subscribe</button>
-278|  </div>
-279|</div>
-280|</div>
-281|
-282|<!-- FOOTER -->
-283|<footer>
-284|<div class="container">
-285|  <div class="footer-grid">
-286|    <div class="footer-brand"><h3>ShopWave</h3><p>Curated premium products for the modern lifestyle. Quality, style, and satisfaction — guaranteed.</p></div>
-287|    <div><h4>Shop</h4><ul><li><a href="#">New Arrivals</a></li><li><a href="#">Best Sellers</a></li><li><a href="#">Sale</a></li><li><a href="#">Collections</a></li></ul></div>
-288|    <div><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Returns</a></li><li><a href="#">Shipping Info</a></li></ul></div>
-289|    <div><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul></div>
-290|  </div>
-291|  <div class="footer-bottom">© 2026 ShopWave. All rights reserved.</div>
-292|</div>
-293|</footer>
-294|
-295|<!-- BACK TO TOP -->
-296|<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-297|
-298|<script>
-299|// Mobile nav close on link click
-300|document.querySelectorAll('.nav-links a').forEach(l=>l.addEventListener('click',()=>document.querySelector('.nav-links').classList.remove('open')));
-301|
-302|// FAQ accordion
-303|document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
-304|  const item=q.parentElement;
-305|  const wasOpen=item.classList.contains('open');
-306|  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-307|  if(!wasOpen)item.classList.add('open');
-308|}));
-309|
-310|// Back to top visibility
-311|window.addEventListener('scroll',()=>{
-312|  document.getElementById('backTop').classList.toggle('show',window.scrollY>400);
-313|});
-314|
-315|// Reveal on scroll
-316|const reveals=document.querySelectorAll('.reveal');
-317|const revealObs=new IntersectionObserver((entries)=>{
-318|  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}});
-319|},{threshold:0.15});
-320|reveals.forEach(el=>revealObs.observe(el));
-321|
-322|// Animated counters
-323|const statsObs=new IntersectionObserver((entries)=>{
-324|  entries.forEach(e=>{
-325|    if(!e.isIntersecting)return;
-326|    const h3=e.target.querySelector('h3');
-327|    const target=parseFloat(h3.dataset.target);
-328|    const suffix=h3.dataset.suffix||'+';
-329|    const isDecimal=h3.dataset.decimal==='true';
-330|    let current=0;
-331|    const step=target/60;
-332|    const timer=setInterval(()=>{
-333|      current+=step;
-334|      if(current>=target){current=target;clearInterval(timer)}
-335|      h3.textContent=(isDecimal?current.toFixed(1):Math.floor(current).toLocaleString())+suffix;
-336|    },25);
-337|    statsObs.unobserve(e.target);
-338|  });
-339|},{threshold:0.5});
-340|document.querySelectorAll('.stat').forEach(s=>statsObs.observe(s));
-341|// Fallback: ensure visibility after load
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopWave — E-commerce Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fafaf8;color:#1a1a2e;line-height:1.6}
+.container{max-width:1140px;margin:0 auto;padding:0 20px}
+a{text-decoration:none;color:inherit}
+/* NAV */
+nav{background:#fff;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+nav .container{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+.nav-logo{font-size:1.5rem;font-weight:800;color:#DC2626}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:.9rem;font-weight:500;color:#444;transition:color .2s}
+.nav-links a:hover{color:#DC2626}
+.nav-cart{position:relative;cursor:pointer}
+.nav-cart svg{width:22px;height:22px}
+.nav-cta{background:#DC2626;color:#fff;padding:9px 22px;border-radius:8px;font-weight:600;font-size:.85rem;border:none;cursor:pointer;transition:background .2s}
+.nav-cta:hover{background:#b91c1c}
+.hamburger{display:none;cursor:pointer;flex-direction:column;gap:5px}
+.hamburger span{width:24px;height:2.5px;background:#333;border-radius:2px;transition:.3s}
+@media(max-width:768px){
+.nav-links{position:fixed;top:60px;left:0;right:0;background:#fff;flex-direction:column;padding:30px;gap:20px;box-shadow:0 8px 20px rgba(0,0,0,.1);transform:translateY(-120%);transition:.3s}
+.nav-links.open{transform:translateY(0)}
+.hamburger{display:flex}
+}
+/* HERO */
+.hero{padding:80px 0;display:flex;align-items:center;gap:50px}
+.hero-text{flex:1}
+.hero-text h1{font-size:3rem;font-weight:800;line-height:1.15;margin-bottom:16px;color:#1a1a2e}
+.hero-text h1 span{color:#DC2626}
+.hero-text p{font-size:1.1rem;color:#666;margin-bottom:28px;max-width:480px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{background:#DC2626;color:#fff;padding:14px 32px;border-radius:10px;font-weight:600;font-size:1rem;border:none;cursor:pointer;transition:.2s}
+.btn-primary:hover{background:#b91c1c;transform:translateY(-1px)}
+.btn-secondary{background:#fff;color:#DC2626;padding:14px 32px;border-radius:10px;font-weight:600;font-size:1rem;border:2px solid #DC2626;cursor:pointer;transition:.2s}
+.btn-secondary:hover{background:#fef2f2}
+.hero-visual{flex:1;display:flex;justify-content:center}
+.product-display{width:380px;height:380px;border-radius:24px;background:linear-gradient(135deg,#fecaca,#fca5a5,#f87171);display:flex;align-items:center;justify-content:center;font-size:5rem;box-shadow:0 20px 60px rgba(220,38,38,.15)}
+@media(max-width:768px){.hero{flex-direction:column;text-align:center;padding:50px 0}.hero-text h1{font-size:2rem}.hero-visual{width:100%}.product-display{width:280px;height:280px;font-size:4rem}}
+/* TRUST BAR */
+.trust-bar{background:#fff;padding:28px 0;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0}
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.trust-item svg{width:32px;height:32px;color:#059669;margin-bottom:8px}
+.trust-item h4{font-size:.85rem;font-weight:600;margin-bottom:2px}
+.trust-item p{font-size:.75rem;color:#888}
+@media(max-width:768px){.trust-grid{grid-template-columns:repeat(2,1fr)}}
+/* SECTIONS COMMON */
+section{padding:70px 0}
+.section-title{text-align:center;margin-bottom:50px}
+.section-title h2{font-size:2rem;font-weight:800;margin-bottom:10px}
+.section-title p{color:#666;max-width:520px;margin:0 auto}
+/* PRODUCTS */
+.products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.product-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .25s,box-shadow .25s}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,.1)}
+.product-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.product-info{padding:18px}
+.product-info h3{font-size:1rem;font-weight:600;margin-bottom:6px}
+.product-price{font-size:1.2rem;font-weight:700;color:#DC2626;margin-bottom:12px}
+.product-btn{width:100%;padding:10px;background:#059669;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.2s}
+.product-btn:hover{background:#047857}
+@media(max-width:768px){.products-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+@media(max-width:480px){.products-grid{grid-template-columns:1fr}}
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;text-align:center}
+.feature-card{padding:36px 24px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.feature-card svg{width:44px;height:44px;color:#DC2626;margin-bottom:14px}
+.feature-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.feature-card p{font-size:.88rem;color:#666}
+@media(max-width:768px){.features-grid{grid-template-columns:1fr}}
+/* STATS */
+.stats{background:linear-gradient(135deg,#DC2626,#991b1b);color:#fff;padding:60px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.stat h3{font-size:2.2rem;font-weight:800}
+.stat p{font-size:.85rem;opacity:.85;margin-top:4px}
+@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+/* TESTIMONIALS */
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.testimonial{background:#fff;padding:28px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.stars{color:#f59e0b;font-size:1rem;margin-bottom:10px}
+.testimonial p{font-size:.9rem;color:#555;margin-bottom:14px;font-style:italic}
+.testimonial-author{font-weight:600;font-size:.85rem}
+@media(max-width:768px){.testimonials-grid{grid-template-columns:1fr}}
+/* FAQ */
+.faq-list{max-width:700px;margin:0 auto}
+.faq-item{background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.04);overflow:hidden}
+.faq-q{padding:18px 22px;font-weight:600;font-size:.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .2s}
+.faq-q:hover{color:#DC2626}
+.faq-q::after{content:'+';font-size:1.4rem;font-weight:300;transition:transform .3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;padding:0 22px;font-size:.88rem;color:#666}
+.faq-item.open .faq-a{max-height:200px;padding:0 22px 18px}
+/* NEWSLETTER */
+.newsletter{background:linear-gradient(135deg,#059669,#047857);color:#fff;text-align:center;border-radius:20px;margin:0 auto 70px;padding:50px 40px}
+.newsletter h2{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.newsletter p{opacity:.9;margin-bottom:24px;font-size:.95rem}
+.newsletter-form{display:flex;gap:10px;max-width:460px;margin:0 auto}
+.newsletter-form input{flex:1;padding:13px 18px;border:none;border-radius:10px;font-size:.9rem;font-family:inherit}
+.newsletter-form button{background:#DC2626;color:#fff;border:none;padding:13px 28px;border-radius:10px;font-weight:700;cursor:pointer;font-size:.9rem;transition:.2s}
+.newsletter-form button:hover{background:#b91c1c}
+@media(max-width:480px){.newsletter-form{flex-direction:column}}
+/* FOOTER */
+footer{background:#1a1a2e;color:#ccc;padding:50px 0 24px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand h3{font-size:1.3rem;color:#fff;margin-bottom:10px}
+.footer-brand p{font-size:.85rem;line-height:1.7}
+footer h4{color:#fff;font-size:.95rem;margin-bottom:14px}
+footer ul{list-style:none}
+footer ul li{margin-bottom:8px}
+footer ul a{font-size:.85rem;transition:color .2s}
+footer ul a:hover{color:#DC2626}
+.footer-bottom{text-align:center;padding-top:24px;border-top:1px solid #2a2a3e;font-size:.8rem;color:#666}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
+/* BACK TO TOP */
+.back-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:#DC2626;color:#fff;border:none;font-size:1.2rem;cursor:pointer;opacity:0;transform:translateY(20px);transition:.3s;z-index:99}
+.back-top.show{opacity:1;transform:translateY(0)}
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+<div class="container">
+  <a href="#" class="nav-logo">ShopWave</a>
+  <div class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#products">Products</a><a href="#features">Features</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a>
+    <div class="nav-cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+    </div>
+    <button class="nav-cta">Shop Now</button>
+  </div>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<div class="container" style="display:flex;align-items:center;gap:50px;flex-wrap:wrap">
+  <div class="hero-text" style="flex:1;min-width:280px">
+    <h1>Discover <span>Premium</span> Products for Your Lifestyle</h1>
+    <p>Curated collections designed to elevate your everyday experience. Quality you can feel, style you can see.</p>
+    <div class="hero-btns">
+      <button class="btn-primary">Explore Collection</button>
+      <button class="btn-secondary">View Catalog</button>
+    </div>
+  </div>
+  <div class="hero-visual" style="flex:1;min-width:280px;display:flex;justify-content:center">
+    <div class="product-display">🛍️</div>
+  </div>
+</div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+<div class="container">
+  <div class="trust-grid">
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg><h4>Free Shipping</h4><p>On orders over $50</p></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/><path d="M12 8v4l3 3"/></svg><h4>30-Day Returns</h4><p>Easy hassle-free returns</p></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><h4>Secure Payment</h4><p>256-bit SSL encryption</p></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.81.36 1.6.68 2.34a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.74.32 1.53.55 2.34.68A2 2 0 0122 16.92z"/></svg><h4>24/7 Support</h4><p>Always here to help</p></div>
+  </div>
+</div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+<div class="container">
+  <div class="section-title reveal"><h2>Featured Products</h2><p>Hand-picked favorites that our customers love most</p></div>
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <div class="product-img" style="background:linear-gradient(135deg,#c4b5fd,#818cf8)">👟</div>
+      <div class="product-info"><h3>Premium Sneakers</h3><div class="product-price">$129.99</div><button class="product-btn">Add to Cart</button></div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img" style="background:linear-gradient(135deg,#a7f3d0,#34d399)">🎧</div>
+      <div class="product-info"><h3>Wireless Headphones</h3><div class="product-price">$89.99</div><button class="product-btn">Add to Cart</button></div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img" style="background:linear-gradient(135deg,#fde68a,#f59e0b)">⌚</div>
+      <div class="product-info"><h3>Smart Watch Pro</h3><div class="product-price">$249.99</div><button class="product-btn">Add to Cart</button></div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img" style="background:linear-gradient(135deg,#fecaca,#f87171)">🎒</div>
+      <div class="product-info"><h3>Travel Backpack</h3><div class="product-price">$69.99</div><button class="product-btn">Add to Cart</button></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background:#fff">
+<div class="container">
+  <div class="section-title reveal"><h2>Why Choose Us</h2><p>We go above and beyond to deliver excellence</p></div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <h3>Premium Quality</h3><p>Every product undergoes rigorous quality checks before reaching your doorstep.</p>
+    </div>
+    <div class="feature-card reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+      <h3>Happy Customers</h3><p>Over 10,000 satisfied customers across 50+ countries worldwide.</p>
+    </div>
+    <div class="feature-card reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <h3>Lightning Fast</h3><p>Next-day delivery available. Get what you love, when you want it.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat reveal"><h3 data-target="10000">0</h3><p>Happy Customers</p></div>
+    <div class="stat reveal"><h3 data-target="500">0</h3><p>Products Available</p></div>
+    <div class="stat reveal"><h3 data-target="98" data-suffix="%">0</h3><p>Satisfaction Rate</p></div>
+    <div class="stat reveal"><h3 data-target="4.9" data-suffix="★" data-decimal="true">0</h3><p>Average Rating</p></div>
+  </div>
+</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="reviews">
+<div class="container">
+  <div class="section-title reveal"><h2>What Our Customers Say</h2><p>Real reviews from real people</p></div>
+  <div class="testimonials-grid">
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <p>"Absolutely love the quality! The sneakers exceeded my expectations. Will definitely order again."</p>
+      <div class="testimonial-author">— Sarah M.</div>
+    </div>
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <p>"Fast shipping and amazing customer service. The headphones sound incredible for the price."</p>
+      <div class="testimonial-author">— James K.</div>
+    </div>
+    <div class="testimonial reveal">
+      <div class="stars">★★★★★</div>
+      <p>"Best online shopping experience I've had. The backpack is durable and looks fantastic."</p>
+      <div class="testimonial-author">— Emily R.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:#fff">
+<div class="container">
+  <div class="section-title reveal"><h2>Frequently Asked Questions</h2><p>Everything you need to know</p></div>
+  <div class="faq-list">
+    <div class="faq-item reveal"><div class="faq-q">How long does shipping take?</div><div class="faq-a">Standard shipping takes 3-5 business days. Express shipping delivers within 1-2 business days. Free shipping is available on orders over $50.</div></div>
+    <div class="faq-item reveal"><div class="faq-q">What is your return policy?</div><div class="faq-a">We offer a 30-day hassle-free return policy. Simply contact our support team and we'll guide you through the process. Full refund guaranteed.</div></div>
+    <div class="faq-item reveal"><div class="faq-q">Are the products authentic?</div><div class="faq-a">Yes, all products are 100% authentic and sourced directly from authorized distributors. We stand behind every item we sell.</div></div>
+    <div class="faq-item reveal"><div class="faq-q">How can I track my order?</div><div class="faq-a">Once your order ships, you'll receive an email with a tracking number. You can also track your order through your account dashboard on our website.</div></div>
+  </div>
+</div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="container">
+<div class="newsletter reveal">
+  <h2>Get 15% Off Your First Order</h2>
+  <p>Subscribe to our newsletter for exclusive deals and new arrivals</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="Enter your email address">
+    <button>Subscribe</button>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+<div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand"><h3>ShopWave</h3><p>Curated premium products for the modern lifestyle. Quality, style, and satisfaction — guaranteed.</p></div>
+    <div><h4>Shop</h4><ul><li><a href="#">New Arrivals</a></li><li><a href="#">Best Sellers</a></li><li><a href="#">Sale</a></li><li><a href="#">Collections</a></li></ul></div>
+    <div><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Returns</a></li><li><a href="#">Shipping Info</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">© 2026 ShopWave. All rights reserved.</div>
+</div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Mobile nav close on link click
+document.querySelectorAll('.nav-links a').forEach(l=>l.addEventListener('click',()=>document.querySelector('.nav-links').classList.remove('open')));
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>{
+  const item=q.parentElement;
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}));
+
+// Back to top visibility
+window.addEventListener('scroll',()=>{
+  document.getElementById('backTop').classList.toggle('show',window.scrollY>400);
+});
+
+// Reveal on scroll
+const reveals=document.querySelectorAll('.reveal');
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}});
+},{threshold:0.15});
+reveals.forEach(el=>revealObs.observe(el));
+
+// Animated counters
+const statsObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const h3=e.target.querySelector('h3');
+    const target=parseFloat(h3.dataset.target);
+    const suffix=h3.dataset.suffix||'+';
+    const isDecimal=h3.dataset.decimal==='true';
+    let current=0;
+    const step=target/60;
+    const timer=setInterval(()=>{
+      current+=step;
+      if(current>=target){current=target;clearInterval(timer)}
+      h3.textContent=(isDecimal?current.toFixed(1):Math.floor(current).toLocaleString())+suffix;
+    },25);
+    statsObs.unobserve(e.target);
+  });
+},{threshold:0.5});
+document.querySelectorAll('.stat').forEach(s=>statsObs.observe(s));
+// Fallback: ensure visibility after load
 setTimeout(()=>{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))},1500);
 </script>
-342|</body>
-343|</html>
+</body>
+</html>
