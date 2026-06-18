@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Template Shop — 落地页模板合集</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -79,14 +80,94 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
 
 .page-footer{text-align:center;padding:40px 0;border-top:1px solid var(--bd);font-size:13px;color:var(--td)}
 
+/* AUTH WALL */
+#auth-wall{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(6,6,14,.92);backdrop-filter:blur(24px);transition:opacity .35s,transform .35s}
+.auth-card{background:var(--s1);border:1px solid var(--bd);border-radius:24px;padding:48px 40px;max-width:440px;width:90%;text-align:center;position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--p),var(--acc))}
+.auth-icon{font-size:48px;margin-bottom:16px}
+.auth-card h2{font-size:24px;font-weight:800;margin-bottom:8px}
+.auth-card .auth-sub{color:var(--td);font-size:14px;margin-bottom:28px;line-height:1.6}
+.auth-tabs{display:flex;gap:0;margin-bottom:24px;border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
+.auth-tab{flex:1;padding:12px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--td);font-family:inherit;transition:all .2s}
+.auth-tab.active{background:rgba(108,92,231,.15);color:var(--p)}
+.auth-tab:hover:not(.active){background:rgba(255,255,255,.04)}
+.auth-panel{display:none}
+.auth-panel.active{display:block}
+.key-input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--tx);font-size:15px;font-family:monospace;letter-spacing:1px;text-transform:uppercase;text-align:center;outline:none;transition:border-color .2s}
+.key-input:focus{border-color:var(--p)}
+.key-input::placeholder{color:rgba(120,120,160,.5);text-transform:none;letter-spacing:0}
+.auth-btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:12px}
+.auth-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 20px rgba(108,92,231,.3)}
+.auth-btn.primary:hover{background:#5b4bcf;transform:translateY(-1px)}
+.auth-btn.primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.auth-btn.ghost{background:transparent;color:var(--td);border:1px solid var(--bd);margin-top:8px}
+.auth-btn.ghost:hover{background:rgba(255,255,255,.06);color:var(--tx)}
+.auth-msg{font-size:13px;margin-top:12px;display:none;padding:8px 12px;border-radius:8px}
+.auth-msg.error{color:#f87171;background:rgba(248,113,113,.08)}
+.auth-msg.success{color:#34d399;background:rgba(52,211,153,.08)}
+.guest-hint{text-align:left;margin-top:16px;padding:16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--bd)}
+.guest-hint p{font-size:13px;color:var(--td);line-height:1.7;margin:0}
+.guest-hint strong{color:var(--tx)}
+
+/* GUEST NOTICE */
+#guest-notice{position:fixed;bottom:0;left:0;right:0;z-index:100;padding:14px 24px;background:linear-gradient(135deg,rgba(108,92,231,.15),rgba(0,206,201,.1));border-top:1px solid rgba(108,92,231,.2);display:none;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(12px)}
+#guest-notice span{font-size:13px;color:var(--td)}
+#guest-notice .notice-btn{padding:6px 16px;border-radius:8px;background:var(--p);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+#guest-notice .notice-btn:hover{background:#5b4bcf}
+
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
 @media(max-width:900px){.tpl-grid{grid-template-columns:1fr}}
-@media(max-width:640px){header{padding:100px 0 40px}.tpl-preview{height:180px}.cta-banner{padding:32px 20px}}
+@media(max-width:640px){header{padding:100px 0 40px}.tpl-preview{height:180px}.cta-banner{padding:32px 20px}.auth-card{padding:32px 24px}}
 </style>
 </head>
 <body>
+
+<!-- AUTH WALL -->
+<div id="auth-wall">
+  <div class="auth-card">
+    <div class="auth-icon">🔐</div>
+    <h2>访问验证</h2>
+    <p class="auth-sub">使用密钥登录解锁全部功能<br>或以游客身份浏览预览</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('key')">🔑 密钥登录</button>
+      <button class="auth-tab" onclick="switchAuthTab('guest')">👤 游客进入</button>
+    </div>
+
+    <div class="auth-panel active" id="panel-key">
+      <input type="text" id="key-input" class="key-input" placeholder="TMPL-XXXX-XXXX-XXXX" maxlength="18" autocomplete="off" spellcheck="false">
+      <button id="key-submit" class="auth-btn primary">验证并登录</button>
+      <div id="key-error" class="auth-msg error"></div>
+      <div id="key-success" class="auth-msg success">✅ 验证通过，正在进入...</div>
+    </div>
+
+    <div class="auth-panel" id="panel-guest">
+      <p class="auth-sub" style="margin-bottom:20px">游客模式可以<strong style="color:var(--acc)">预览</strong>所有模板<br>但<strong style="color:#f87171">无法下载</strong>源码文件</p>
+      <button id="guest-btn" class="auth-btn primary" style="background:rgba(255,255,255,.08);box-shadow:none;border:1px solid var(--bd)">游客浏览</button>
+      <div class="guest-hint">
+        <p>💡 <strong>想要下载源码？</strong><br>购买密钥后输入即可解锁下载权限，密钥一次验证永久有效。</p>
+      </div>
+    </div>
+
+    <script>
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach((t,i)=>{
+        t.classList.toggle('active', (tab==='key'&&i===0)||(tab==='guest'&&i===1));
+      });
+      document.getElementById('panel-key').classList.toggle('active', tab==='key');
+      document.getElementById('panel-guest').classList.toggle('active', tab==='guest');
+    }
+    </script>
+  </div>
+</div>
+
+<!-- GUEST NOTICE BAR -->
+<div id="guest-notice">
+  <span>🔒 游客模式 — 下载功能已锁定，使用密钥解锁</span>
+  <button class="notice-btn" onclick="document.getElementById('auth-wall').style.display='flex';document.getElementById('auth-wall').style.opacity='1';document.getElementById('auth-wall').style.transform='';switchAuthTab('key');document.body.style.overflow='hidden'">输入密钥</button>
+</div>
 
 <div class="grid-bg"></div>
 <div class="orb orb-1"></div>
@@ -241,6 +322,8 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
 
 </div>
 
+<script src="keys.js"></script>
+<script src="auth.js"></script>
 <script>
 // Scroll reveal
 const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
