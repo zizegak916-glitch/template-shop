@@ -98,8 +98,8 @@ export default {
 // ─── Login Handler ───────────────────────────────────────────────
 
 async function handleLogin(env, key, clientFingerprint, request) {
-  if (!key || !fingerprint) {
-    return jsonResponse({ success: false, message: '请输入密钥' }, 400);
+  if (!key || !clientFingerprint) {
+    return jsonResponse({ success: false, message: '请输入密钥和设备信息' }, 400);
   }
 
   const normalizedKey = key.trim().toUpperCase();

@@ -12,7 +12,7 @@
 
   // Cloudflare Worker URL (部署后填入, 留空=本地模式)
   // 例如: 'https://template-shop-auth.YOUR_SUBDOMAIN.workers.dev'
-  const WORKER_URL = window.__AUTH_API__ || '';
+  const WORKER_URL = window.__AUTH_API__ || 'https://template-shop-auth.zizegak916.workers.dev';
 
   // ─── Device Fingerprint ────────────────────────────────────────
 

@@ -2,20 +2,13 @@ name = "template-shop-auth"
 main = "worker.js"
 compatibility_date = "2024-12-01"
 
-# KV Namespace 绑定
-# 部署前需要创建 KV namespace:
-#   npx wrangler kv namespace create KEY_BINDINGS
-#   npx wrangler kv namespace create KEY_STORE
-# 然后把生成的 ID 填入下面
-
 [[kv_namespaces]]
 binding = "KEY_BINDINGS"
-id = "YOUR_KEY_BINDINGS_KV_ID"
+id = "d9506c098eda4702978c2298fcc3810d"
 
 [[kv_namespaces]]
 binding = "KEY_STORE"
-id = "YOUR_KEY_STORE_KV_ID"
+id = "a805d5fd6bf44be9a030e33afb7529c6"
 
-# 环境变量
 [vars]
 ENVIRONMENT = "production"
