@@ -8,118 +8,179 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a12;--s1:#12121e;--s2:#1a1a2e;--tx:#e4e4f0;--td:#7878a0;--bd:rgba(255,255,255,.06);--r:20px;--p:#6C5CE7;--acc:#00cec9}
+:root{--bg:#07070e;--s1:#0e0e1a;--s2:#161625;--tx:#e8e8f4;--td:#6e6e96;--bd:rgba(255,255,255,.06);--r:20px;--p:#6C5CE7;--acc:#00cec9;--p-glow:rgba(108,92,231,.25);--acc-glow:rgba(0,206,201,.2)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-::selection{background:rgba(108,92,231,.3)}
-.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.03) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
-.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(108,92,231,.08);top:-150px;right:-100px;animation:float 12s ease-in-out infinite}
-.orb-2{width:400px;height:400px;background:rgba(0,206,201,.06);bottom:-100px;left:-100px;animation:float 12s ease-in-out infinite -6s}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(108,92,231,.35)}
+
+/* ─── Background Effects ──────────────────────────────── */
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.025) 1px,transparent 1px);background-size:72px 72px;pointer-events:none;z-index:0}
+.bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;will-change:transform}
+.bg-orb.purple{width:600px;height:600px;background:rgba(108,92,231,.07);top:-200px;right:-150px;animation:orbFloat 18s ease-in-out infinite}
+.bg-orb.teal{width:500px;height:500px;background:rgba(0,206,201,.05);bottom:-150px;left:-120px;animation:orbFloat 18s ease-in-out infinite -9s}
+.bg-orb.pink{width:350px;height:350px;background:rgba(236,72,153,.04);top:40%;left:50%;animation:orbFloat 14s ease-in-out infinite -4s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-50px) scale(1.05)}66%{transform:translate(-30px,30px) scale(.95)}}
+
+/* Floating particles via canvas */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+
 .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
 
-/* HEADER */
-header{text-align:center;padding:120px 0 60px}
-.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);padding:6px 16px;border-radius:999px;font-size:13px;font-weight:500;color:var(--p);margin-bottom:24px}
-.badge .dot{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,206,201,.4)}50%{box-shadow:0 0 0 6px rgba(0,206,201,0)}}
-h1{font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.1;letter-spacing:-.04em;margin-bottom:16px}
-h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sub{font-size:18px;color:var(--td);max-width:560px;margin:0 auto 40px;line-height:1.7}
+/* ─── Header ───────────────────────────────────────────── */
+header{text-align:center;padding:100px 0 50px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;color:var(--p);margin-bottom:28px;backdrop-filter:blur(8px);transition:all .3s}
+.badge:hover{background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)}
+.badge .dot{width:7px;height:7px;background:var(--acc);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--acc-glow)}50%{box-shadow:0 0 0 8px rgba(0,206,201,0)}}
+h1{font-size:clamp(38px,6vw,68px);font-weight:800;line-height:1.08;letter-spacing:-.04em;margin-bottom:20px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:17px;color:var(--td);max-width:520px;margin:0 auto 36px;line-height:1.75}
 .tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.tag{background:rgba(255,255,255,.04);border:1px solid var(--bd);padding:6px 14px;border-radius:8px;font-size:12px;color:var(--td)}
+.tag{background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:7px 14px;border-radius:10px;font-size:12px;color:var(--td);transition:all .25s}
+.tag:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:var(--tx)}
 
-/* FILTER */
-.filters{display:flex;justify-content:center;gap:8px;margin:40px 0 32px;flex-wrap:wrap}
-.fbtn{background:rgba(255,255,255,.04);border:1px solid var(--bd);padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;color:var(--td);cursor:pointer;transition:all .2s;font-family:inherit}
-.fbtn:hover,.fbtn.active{background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25);color:var(--p)}
+/* ─── Filters ──────────────────────────────────────────── */
+.filters{display:flex;justify-content:center;gap:6px;margin:36px 0 28px;flex-wrap:wrap}
+.fbtn{background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:8px 18px;border-radius:10px;font-size:13px;font-weight:500;color:var(--td);cursor:pointer;transition:all .25s;font-family:inherit;backdrop-filter:blur(4px)}
+.fbtn:hover{background:rgba(108,92,231,.08);border-color:rgba(108,92,231,.2);color:var(--p)}
+.fbtn.active{background:rgba(108,92,231,.14);border-color:rgba(108,92,231,.3);color:var(--p);box-shadow:0 0 20px rgba(108,92,231,.1)}
 
-/* GRID */
-.tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;padding-bottom:80px}
-.tpl-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .35s cubic-bezier(.22,1,.36,1);position:relative}
-.tpl-card:hover{transform:translateY(-6px);border-color:rgba(108,92,231,.25);box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 0 1px rgba(108,92,231,.1)}
-.tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),var(--acc),transparent);opacity:0;transition:opacity .3s;z-index:2}
+/* ─── Template Grid ────────────────────────────────────── */
+.tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding-bottom:60px}
+.tpl-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .4s cubic-bezier(.22,1,.36,1);position:relative}
+.tpl-card:hover{transform:translateY(-8px);border-color:rgba(108,92,231,.2);box-shadow:0 24px 64px rgba(0,0,0,.35),0 0 0 1px rgba(108,92,231,.08),0 0 80px rgba(108,92,231,.06)}
+.tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),var(--acc),transparent);opacity:0;transition:opacity .4s;z-index:2}
 .tpl-card:hover::before{opacity:1}
 
-/* PREVIEW */
-.tpl-preview{height:220px;position:relative;overflow:hidden;border-bottom:1px solid var(--bd)}
+/* ─── Preview ──────────────────────────────────────────── */
+.tpl-preview{height:200px;position:relative;overflow:hidden;border-bottom:1px solid var(--bd)}
 .tpl-preview iframe{width:200%;height:400%;transform:scale(.5);transform-origin:top left;border:none;pointer-events:none}
-.tpl-preview .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,var(--s1));pointer-events:none;z-index:1}
+.tpl-preview .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,var(--s1) 100%);pointer-events:none;z-index:1}
 
-/* INFO */
-.tpl-info{padding:24px 28px 28px}
-.tpl-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:12px}
-.tpl-name{font-size:20px;font-weight:700;white-space:nowrap}
+/* ─── Card Info ────────────────────────────────────────── */
+.tpl-info{padding:20px 24px 24px}
+.tpl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
+.tpl-name{font-size:18px;font-weight:700;white-space:nowrap}
 .tpl-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0}
-.tag-dark{background:rgba(139,92,246,.12);color:#a78bfa}
-.tag-light{background:rgba(37,99,235,.1);color:#60a5fa}
-.tag-gradient{background:rgba(236,72,153,.1);color:#f472b6}
-.tag-ai{background:rgba(6,182,212,.1);color:#22d3ee}
-.tag-mobile{background:rgba(249,115,22,.1);color:#fb923c}
-.tag-ecom{background:rgba(220,38,38,.1);color:#f87171}
-.tag-agency{background:rgba(212,175,55,.12);color:#d4af37}
-.tag-finance{background:rgba(59,130,246,.1);color:#60a5fa}
-.tpl-desc{font-size:14px;color:var(--td);line-height:1.6;margin-bottom:16px}
-.tpl-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
-.tpl-feat{font-size:11px;color:var(--td);background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:4px 10px;border-radius:6px}
-.tpl-btns{display:flex;gap:10px}
-.tpl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;cursor:pointer;border:none;font-family:inherit}
-.tpl-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 16px rgba(108,92,231,.3)}
-.tpl-btn.primary:hover{background:#5b4bcf;transform:translateY(-1px)}
+.tag-dark{background:rgba(139,92,246,.1);color:#a78bfa}
+.tag-light{background:rgba(37,99,235,.08);color:#60a5fa}
+.tag-gradient{background:rgba(236,72,153,.08);color:#f472b6}
+.tag-ai{background:rgba(6,182,212,.08);color:#22d3ee}
+.tag-mobile{background:rgba(249,115,22,.08);color:#fb923c}
+.tag-ecom{background:rgba(220,38,38,.08);color:#f87171}
+.tag-agency{background:rgba(212,175,55,.1);color:#d4af37}
+.tag-finance{background:rgba(59,130,246,.08);color:#60a5fa}
+.tpl-desc{font-size:13px;color:var(--td);line-height:1.6;margin-bottom:14px}
+.tpl-features{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.tpl-feat{font-size:10px;color:var(--td);background:rgba(255,255,255,.025);border:1px solid var(--bd);padding:4px 9px;border-radius:6px;letter-spacing:.02em}
+.tpl-btns{display:flex;gap:8px}
+.tpl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;transition:all .25s;cursor:pointer;border:none;font-family:inherit}
+.tpl-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 16px var(--p-glow)}
+.tpl-btn.primary:hover{background:#5b4bcf;transform:translateY(-2px);box-shadow:0 8px 24px var(--p-glow)}
 .tpl-btn.secondary{background:rgba(255,255,255,.04);color:var(--tx);border:1px solid var(--bd)}
 .tpl-btn.secondary:hover{background:rgba(255,255,255,.08)}
-.tpl-btn svg{width:16px;height:16px}
+.tpl-btn svg{width:15px;height:15px;flex-shrink:0}
 
-/* CTA BANNER */
-.cta-banner{background:linear-gradient(135deg,rgba(108,92,231,.12),rgba(0,206,201,.08));border:1px solid rgba(108,92,231,.15);border-radius:var(--r);padding:48px;text-align:center;margin-bottom:80px}
-.cta-banner h2{font-size:clamp(24px,3vw,32px);font-weight:800;margin-bottom:12px}
-.cta-banner p{color:var(--td);margin-bottom:24px}
-.cta-banner .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;background:var(--p);color:#fff;font-weight:600;font-size:16px;text-decoration:none;transition:all .2s}
-.cta-banner .btn:hover{background:#5b4bcf;transform:translateY(-2px)}
+/* ─── CTA Banner ───────────────────────────────────────── */
+.cta-banner{background:linear-gradient(135deg,rgba(108,92,231,.1),rgba(0,206,201,.06));border:1px solid rgba(108,92,231,.12);border-radius:var(--r);padding:44px;text-align:center;margin-bottom:60px;position:relative;overflow:hidden}
+.cta-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(108,92,231,.06),transparent 70%);pointer-events:none}
+.cta-banner h2{font-size:clamp(22px,3vw,30px);font-weight:800;margin-bottom:10px;position:relative}
+.cta-banner p{color:var(--td);margin-bottom:20px;font-size:15px;position:relative}
+.cta-banner .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:12px;background:var(--p);color:#fff;font-weight:600;font-size:15px;text-decoration:none;transition:all .25s;position:relative}
+.cta-banner .btn:hover{background:#5b4bcf;transform:translateY(-2px);box-shadow:0 8px 24px var(--p-glow)}
 
-.page-footer{text-align:center;padding:40px 0;border-top:1px solid var(--bd);font-size:13px;color:var(--td)}
+.page-footer{text-align:center;padding:36px 0;border-top:1px solid var(--bd);font-size:12px;color:var(--td);letter-spacing:.02em}
 
-/* AUTH WALL */
-#auth-wall{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(6,6,14,.92);backdrop-filter:blur(24px);transition:opacity .35s,transform .35s}
-.auth-card{background:var(--s1);border:1px solid var(--bd);border-radius:24px;padding:48px 40px;max-width:440px;width:90%;text-align:center;position:relative;overflow:hidden}
-.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--p),var(--acc))}
-.auth-icon{font-size:48px;margin-bottom:16px}
-.auth-card h2{font-size:24px;font-weight:800;margin-bottom:8px}
-.auth-card .auth-sub{color:var(--td);font-size:14px;margin-bottom:28px;line-height:1.6}
-.auth-tabs{display:flex;gap:0;margin-bottom:24px;border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
-.auth-tab{flex:1;padding:12px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--td);font-family:inherit;transition:all .2s}
-.auth-tab.active{background:rgba(108,92,231,.15);color:var(--p)}
-.auth-tab:hover:not(.active){background:rgba(255,255,255,.04)}
-.auth-panel{display:none}
+/* ─── AUTH WALL ─────────────────────────────────────────── */
+#auth-wall{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(4,4,10,.88);backdrop-filter:blur(32px) saturate(1.2);opacity:0;transform:scale(.97);transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1)}
+#auth-wall.show{opacity:1;transform:scale(1)}
+
+.auth-card{background:linear-gradient(180deg,var(--s1),var(--s2));border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:44px 36px;max-width:420px;width:92%;text-align:center;position:relative;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 0 1px rgba(108,92,231,.06)}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--p),var(--acc),var(--p));background-size:200% 100%;animation:gradientShift 4s linear infinite}
+@keyframes gradientShift{0%{background-position:0% 0}100%{background-position:200% 0}}
+
+.auth-icon{font-size:44px;margin-bottom:14px;display:inline-block;animation:iconBounce 2s ease-in-out infinite}
+@keyframes iconBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.auth-card h2{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.02em}
+.auth-card .auth-sub{color:var(--td);font-size:13px;margin-bottom:24px;line-height:1.65}
+
+.auth-tabs{display:flex;margin-bottom:22px;border-radius:12px;overflow:hidden;border:1px solid var(--bd);background:rgba(255,255,255,.02)}
+.auth-tab{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--td);font-family:inherit;transition:all .25s;position:relative}
+.auth-tab.active{color:var(--p)}
+.auth-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--p);border-radius:2px}
+.auth-tab:hover:not(.active){color:var(--tx);background:rgba(255,255,255,.03)}
+
+.auth-panel{display:none;animation:panelIn .3s ease}
 .auth-panel.active{display:block}
-.key-input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--tx);font-size:15px;font-family:monospace;letter-spacing:1px;text-transform:uppercase;text-align:center;outline:none;transition:border-color .2s}
-.key-input:focus{border-color:var(--p)}
-.key-input::placeholder{color:rgba(120,120,160,.5);text-transform:none;letter-spacing:0}
-.auth-btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:12px}
-.auth-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 20px rgba(108,92,231,.3)}
-.auth-btn.primary:hover{background:#5b4bcf;transform:translateY(-1px)}
-.auth-btn.primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.auth-btn.ghost{background:transparent;color:var(--td);border:1px solid var(--bd);margin-top:8px}
-.auth-btn.ghost:hover{background:rgba(255,255,255,.06);color:var(--tx)}
-.auth-msg{font-size:13px;margin-top:12px;display:none;padding:8px 12px;border-radius:8px}
-.auth-msg.error{color:#f87171;background:rgba(248,113,113,.08)}
-.auth-msg.success{color:#34d399;background:rgba(52,211,153,.08)}
-.guest-hint{text-align:left;margin-top:16px;padding:16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--bd)}
-.guest-hint p{font-size:13px;color:var(--td);line-height:1.7;margin:0}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.key-input{width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid var(--bd);background:rgba(255,255,255,.03);color:var(--tx);font-size:16px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:2px;text-transform:uppercase;text-align:center;outline:none;transition:all .3s}
+.key-input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(108,92,231,.1),0 0 30px rgba(108,92,231,.06)}
+.key-input::placeholder{color:rgba(110,110,150,.5);text-transform:none;letter-spacing:0;font-size:14px}
+.key-input.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+
+.auth-btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;margin-top:14px;position:relative;overflow:hidden}
+.auth-btn.primary{background:linear-gradient(135deg,var(--p),#5b4bcf);color:#fff;box-shadow:0 4px 20px var(--p-glow)}
+.auth-btn.primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px var(--p-glow)}
+.auth-btn.primary:active{transform:translateY(0)}
+.auth-btn.primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-btn.ghost{background:rgba(255,255,255,.05);color:var(--td);border:1px solid var(--bd);margin-top:8px}
+.auth-btn.ghost:hover{background:rgba(255,255,255,.08);color:var(--tx)}
+
+.auth-msg{font-size:13px;margin-top:12px;display:none;padding:10px 14px;border-radius:10px;line-height:1.5}
+.auth-msg.error{color:#f87171;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.1)}
+.auth-msg.success{color:#34d399;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.1)}
+
+.guest-hint{text-align:left;margin-top:16px;padding:16px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--bd)}
+.guest-hint p{font-size:12px;color:var(--td);line-height:1.7;margin:0}
 .guest-hint strong{color:var(--tx)}
 
-/* GUEST NOTICE */
-#guest-notice{position:fixed;bottom:0;left:0;right:0;z-index:100;padding:14px 24px;background:linear-gradient(135deg,rgba(108,92,231,.15),rgba(0,206,201,.1));border-top:1px solid rgba(108,92,231,.2);display:none;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(12px)}
-#guest-notice span{font-size:13px;color:var(--td)}
-#guest-notice .notice-btn{padding:6px 16px;border-radius:8px;background:var(--p);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
-#guest-notice .notice-btn:hover{background:#5b4bcf}
+/* ─── Spinner ──────────────────────────────────────────── */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+/* ─── Shake ────────────────────────────────────────────── */
+@keyframes shake{0%,100%{transform:translateX(0)}15%,45%,75%{transform:translateX(-6px)}30%,60%,90%{transform:translateX(6px)}}
+
+/* ─── Toast ────────────────────────────────────────────── */
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:10000;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:500;opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);pointer-events:none;backdrop-filter:blur(16px);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast-success{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:#34d399}
+.toast-error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2);color:#f87171}
+.toast-info{background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.2);color:#a78bfa}
+
+/* ─── Guest Notice ─────────────────────────────────────── */
+#guest-notice{position:fixed;bottom:0;left:0;right:0;z-index:100;padding:14px 20px;background:linear-gradient(135deg,rgba(14,14,26,.9),rgba(22,22,37,.9));border-top:1px solid rgba(108,92,231,.15);display:none;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(20px);animation:slideUp .4s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#guest-notice span{font-size:12px;color:var(--td)}
+.notice-btn{padding:7px 18px;border-radius:8px;background:linear-gradient(135deg,var(--p),#5b4bcf);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.notice-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--p-glow)}
+
+/* ─── Scroll Reveal ────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
 
+/* ─── Responsive ───────────────────────────────────────── */
 @media(max-width:900px){.tpl-grid{grid-template-columns:1fr}}
-@media(max-width:640px){header{padding:100px 0 40px}.tpl-preview{height:180px}.cta-banner{padding:32px 20px}.auth-card{padding:32px 24px}}
+@media(max-width:640px){
+  header{padding:80px 0 30px}
+  h1{font-size:32px}
+  .sub{font-size:15px}
+  .tpl-preview{height:160px}
+  .tpl-info{padding:16px 18px 20px}
+  .tpl-name{font-size:16px}
+  .cta-banner{padding:28px 18px;margin-bottom:40px}
+  .auth-card{padding:32px 22px;border-radius:22px}
+  .auth-icon{font-size:36px}
+  #guest-notice{padding:12px 16px}
+  .tags{gap:6px}
+  .tag{padding:5px 10px;font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -129,11 +190,11 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
   <div class="auth-card">
     <div class="auth-icon">🔐</div>
     <h2>访问验证</h2>
-    <p class="auth-sub">使用密钥登录解锁全部功能<br>或以游客身份浏览预览</p>
+    <p class="auth-sub">输入密钥解锁全部功能，或以游客身份浏览</p>
 
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchAuthTab('key')">🔑 密钥登录</button>
-      <button class="auth-tab" onclick="switchAuthTab('guest')">👤 游客进入</button>
+      <button class="auth-tab" onclick="switchAuthTab('guest')">👤 游客浏览</button>
     </div>
 
     <div class="auth-panel active" id="panel-key">
@@ -144,42 +205,36 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
 
     <div class="auth-panel" id="panel-guest">
-      <p class="auth-sub" style="margin-bottom:20px">游客模式可以<strong style="color:var(--acc)">预览</strong>所有模板<br>但<strong style="color:#f87171">无法下载</strong>源码文件</p>
-      <button id="guest-btn" class="auth-btn primary" style="background:rgba(255,255,255,.08);box-shadow:none;border:1px solid var(--bd)">游客浏览</button>
+      <p class="auth-sub" style="margin-bottom:18px">游客模式可<strong style="color:var(--acc)">预览</strong>全部模板<br>但<strong style="color:#f87171">无法下载</strong>源码文件</p>
+      <button id="guest-btn" class="auth-btn ghost">进入预览 →</button>
       <div class="guest-hint">
-        <p>💡 <strong>想要下载源码？</strong><br>购买密钥后输入即可解锁下载权限，密钥一次验证永久有效。</p>
+        <p>💡 <strong>需要源码？</strong><br>购买密钥后输入即可解锁下载，一个密钥限一台设备。</p>
       </div>
     </div>
-
-    <script>
-    function switchAuthTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach((t,i)=>{
-        t.classList.toggle('active', (tab==='key'&&i===0)||(tab==='guest'&&i===1));
-      });
-      document.getElementById('panel-key').classList.toggle('active', tab==='key');
-      document.getElementById('panel-guest').classList.toggle('active', tab==='guest');
-    }
-    </script>
   </div>
 </div>
 
-<!-- GUEST NOTICE BAR -->
+<!-- GUEST NOTICE -->
 <div id="guest-notice">
-  <span>🔒 游客模式 — 下载功能已锁定，使用密钥解锁</span>
-  <button class="notice-btn" onclick="document.getElementById('auth-wall').style.display='flex';document.getElementById('auth-wall').style.opacity='1';document.getElementById('auth-wall').style.transform='';switchAuthTab('key');document.body.style.overflow='hidden'">输入密钥</button>
+  <span>🔒 游客模式 — 源码下载已锁定</span>
+  <button class="notice-btn" id="open-auth-btn">输入密钥</button>
 </div>
 
-<div class="grid-bg"></div>
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
+<!-- BACKGROUND -->
+<div class="bg-grid"></div>
+<div class="bg-orb purple"></div>
+<div class="bg-orb teal"></div>
+<div class="bg-orb pink"></div>
+<canvas id="particles"></canvas>
 
+<!-- CONTENT -->
 <div class="wrap">
 
 <header>
-  <div class="badge"><span class="dot"></span> 8 套模板 · 持续更新</div>
-  <h1>SaaS 落地页<br><em>模板合集</em></h1>
-  <p class="sub">精选 8 套不同风格的落地页模板，即买即用。纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
-  <div class="tags">
+  <div class="badge reveal"><span class="dot"></span> 8 套模板 · 持续更新</div>
+  <h1 class="reveal">SaaS 落地页<br><em>模板合集</em></h1>
+  <p class="sub reveal">精选 8 套不同风格的落地页模板，即买即用。<br>纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
+  <div class="tags reveal">
     <span class="tag">✨ 纯 HTML 单文件</span>
     <span class="tag">📱 完全响应式</span>
     <span class="tag">🎨 CSS 变量换色</span>
@@ -188,7 +243,7 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
   </div>
 </header>
 
-<div class="filters">
+<div class="filters reveal">
   <button class="fbtn active" data-filter="all">全部 (8)</button>
   <button class="fbtn" data-filter="dark">暗色系 (3)</button>
   <button class="fbtn" data-filter="light">亮色系 (2)</button>
@@ -197,12 +252,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
 
 <div class="tpl-grid" id="tpl-grid">
 
-  <!-- 1. Dark SaaS -->
+  <!-- 1. Starter -->
   <div class="tpl-card reveal" data-cat="dark">
     <div class="tpl-preview"><iframe src="dark-saas.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">Starter</div><span class="tpl-tag tag-dark">暗黑科技风</span></div>
-      <div class="tpl-desc">深空蓝底色 + 紫/青渐变，适合 AI 产品、开发者工具、技术型 SaaS。含代码预览和仪表盘。</div>
+      <div class="tpl-desc">深空蓝底色 + 紫/青渐变，适合 AI 产品、开发者工具、技术型 SaaS。</div>
       <div class="tpl-features"><span class="tpl-feat">Bento Grid</span><span class="tpl-feat">代码预览</span><span class="tpl-feat">玻璃态导航</span><span class="tpl-feat">柱状图</span></div>
       <div class="tpl-btns">
         <a href="dark-saas.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -211,12 +266,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 2. Light Clean -->
+  <!-- 2. CleanSaaS -->
   <div class="tpl-card reveal" data-cat="light">
     <div class="tpl-preview" style="background:#f5f5f5"><iframe src="light-clean.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">CleanSaaS</div><span class="tpl-tag tag-light">白色极简风</span></div>
-      <div class="tpl-desc">白底 + 蓝绿配色，干净专业。适合企业级 SaaS、B2B 产品、效率工具。含用户评价。</div>
+      <div class="tpl-desc">白底 + 蓝绿配色，干净专业。适合企业级 SaaS、B2B 产品、效率工具。</div>
       <div class="tpl-features"><span class="tpl-feat">极简排版</span><span class="tpl-feat">用户评价</span><span class="tpl-feat">渐变 CTA</span><span class="tpl-feat">步骤流程</span></div>
       <div class="tpl-btns">
         <a href="light-clean.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -225,12 +280,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 3. Gradient Bold -->
+  <!-- 3. VibeLaunch -->
   <div class="tpl-card reveal" data-cat="dark">
     <div class="tpl-preview"><iframe src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">VibeLaunch</div><span class="tpl-tag tag-gradient">渐变潮流风</span></div>
-      <div class="tpl-desc">靛蓝→粉红渐变 + 暗色背景，视觉冲击力强。适合初创品牌、产品发布、创意工具。</div>
+      <div class="tpl-desc">靛蓝→粉红渐变 + 暗色背景，视觉冲击力强。适合初创品牌、产品发布。</div>
       <div class="tpl-features"><span class="tpl-feat">渐变边框</span><span class="tpl-feat">产品展示</span><span class="tpl-feat">浮动光晕</span><span class="tpl-feat">邮件订阅</span></div>
       <div class="tpl-btns">
         <a href="gradient-bold.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -239,12 +294,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 4. AI Product -->
+  <!-- 4. NeuralAI -->
   <div class="tpl-card reveal" data-cat="dark">
     <div class="tpl-preview"><iframe src="ai-product.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">NeuralAI</div><span class="tpl-tag tag-ai">AI 产品专用</span></div>
-      <div class="tpl-desc">紫/青霓虹色 + 神经网络动画，专为 AI 产品打造。含 API 代码演示和功能对比表。</div>
+      <div class="tpl-desc">紫/青霓虹色 + 神经网络动画，专为 AI 产品打造。含 API 代码演示。</div>
       <div class="tpl-features"><span class="tpl-feat">神经网络动画</span><span class="tpl-feat">API 演示</span><span class="tpl-feat">发光边框</span><span class="tpl-feat">对比表</span></div>
       <div class="tpl-btns">
         <a href="ai-product.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -253,12 +308,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 5. Mobile App -->
+  <!-- 5. AppLaunch -->
   <div class="tpl-card reveal" data-cat="industry">
     <div class="tpl-preview"><iframe src="mobile-app.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">AppLaunch</div><span class="tpl-tag tag-mobile">App 专属</span></div>
-      <div class="tpl-desc">暗色背景 + 蓝/橙配色，专为移动端 App 设计。含 CSS 手机模型、应用商店按钮和三屏展示。</div>
+      <div class="tpl-desc">暗色背景 + 蓝/橙配色，专为移动端 App 设计。含 CSS 手机模型。</div>
       <div class="tpl-features"><span class="tpl-feat">手机模型</span><span class="tpl-feat">应用商店按钮</span><span class="tpl-feat">三屏展示</span><span class="tpl-feat">下载统计</span></div>
       <div class="tpl-btns">
         <a href="mobile-app.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -267,12 +322,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 6. E-commerce -->
+  <!-- 6. ShopWave -->
   <div class="tpl-card reveal" data-cat="light">
     <div class="tpl-preview" style="background:#fafaf8"><iframe src="ecommerce.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">ShopWave</div><span class="tpl-tag tag-ecom">电商产品</span></div>
-      <div class="tpl-desc">暖白底 + 红/绿配色，适合电商产品展示、单品落地页、独立站。含产品卡片和用户评价。</div>
+      <div class="tpl-desc">暖白底 + 红/绿配色，适合电商产品展示、单品落地页、独立站。</div>
       <div class="tpl-features"><span class="tpl-feat">产品卡片</span><span class="tpl-feat">星级评价</span><span class="tpl-feat">购物车</span><span class="tpl-feat">邮件订阅</span></div>
       <div class="tpl-btns">
         <a href="ecommerce.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -281,12 +336,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 7. Agency -->
+  <!-- 7. Atelier -->
   <div class="tpl-card reveal" data-cat="dark">
     <div class="tpl-preview"><iframe src="agency.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">Atelier</div><span class="tpl-tag tag-agency">创意工作室</span></div>
-      <div class="tpl-desc">近黑底 + 金色点缀，高级感排版。适合设计公司、创意代理、个人作品集。大量留白，编辑式布局。</div>
+      <div class="tpl-desc">近黑底 + 金色点缀，高级感排版。适合设计公司、创意代理、作品集。</div>
       <div class="tpl-features"><span class="tpl-feat">编辑式排版</span><span class="tpl-feat">作品集网格</span><span class="tpl-feat">团队展示</span><span class="tpl-feat">金色点缀</span></div>
       <div class="tpl-btns">
         <a href="agency.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -295,12 +350,12 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
     </div>
   </div>
 
-  <!-- 8. Fintech -->
+  <!-- 8. FinFlow -->
   <div class="tpl-card reveal" data-cat="industry">
     <div class="tpl-preview"><iframe src="fintech.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">FinFlow</div><span class="tpl-tag tag-finance">金融科技</span></div>
-      <div class="tpl-desc">深海军蓝底 + 蓝/绿配色，专业可信。适合金融产品、支付平台、加密货币。含合规徽章和金融仪表盘。</div>
+      <div class="tpl-desc">深海军蓝底 + 蓝/绿配色，专业可信。适合金融产品、支付平台。</div>
       <div class="tpl-features"><span class="tpl-feat">合规徽章</span><span class="tpl-feat">金融仪表盘</span><span class="tpl-feat">交易列表</span><span class="tpl-feat">定价对比</span></div>
       <div class="tpl-btns">
         <a href="fintech.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
@@ -325,11 +380,60 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
 <script src="keys.js"></script>
 <script src="auth.js"></script>
 <script>
-// Scroll reveal
-const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+/* ─── Particles ───────────────────────────────────────── */
+(function(){
+  const c=document.getElementById('particles');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let w,h,particles=[];
+  function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+  resize();
+  addEventListener('resize',resize);
+  for(let i=0;i<40;i++){
+    particles.push({
+      x:Math.random()*w,y:Math.random()*h,
+      vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+      r:Math.random()*1.5+.5,
+      a:Math.random()*.3+.1
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;
+      if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(108,92,231,${p.a})`;
+      ctx.fill();
+    });
+    // Draw lines between nearby particles
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x;
+        const dy=particles[i].y-particles[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<150){
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle=`rgba(108,92,231,${.06*(1-d/150)})`;
+          ctx.lineWidth=.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ─── Scroll Reveal ───────────────────────────────────── */
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-// Filter
+/* ─── Filter ──────────────────────────────────────────── */
 document.querySelectorAll('.fbtn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
