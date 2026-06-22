@@ -2,215 +2,79 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f3ede3">
-  <meta name="description" content="山河入墨——以东方笔意，重写数字世界。">
-  <title>山河入墨 · 东方数字体验</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#eee9df">
+  <meta name="description" content="问剑山河——一卷会呼吸的东方水墨江湖。">
+  <title>问剑山河 · 水墨江湖</title>
   <style>
-    :root { --paper:#f3ede3; --ink:#120f0c; --red:#be2332; --serif:"FZKai-Z03","STKaiti","KaiTi","Songti SC",serif; --sans:"PingFang SC","Microsoft YaHei",sans-serif; }
-    * { box-sizing:border-box; }
-    html { scroll-behavior:smooth; background:var(--paper); }
-    body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:var(--sans); }
-    body::after { content:""; position:fixed; inset:0; z-index:999; pointer-events:none; box-shadow:inset 0 0 12vw rgba(77,55,31,.08); }
-    a { color:inherit; text-decoration:none; }
-    button { font:inherit; }
-    .paper { position:fixed; inset:0; z-index:-3; width:100%; height:100%; }
-    .trail { position:fixed; inset:0; z-index:90; width:100%; height:100%; pointer-events:none; mix-blend-mode:multiply; }
-    .nav { position:absolute; top:0; left:0; z-index:20; display:flex; align-items:center; justify-content:space-between; width:100%; padding:28px clamp(22px,5vw,80px); }
-    .brand { display:flex; align-items:center; gap:11px; font-family:var(--serif); font-size:18px; letter-spacing:.22em; }
-    .seal { display:grid; width:34px; height:38px; place-items:center; color:var(--paper); background:var(--red); border:2px solid #991725; font-size:18px; line-height:1; transform:rotate(-2deg); clip-path:polygon(4% 5%,95% 1%,100% 92%,7% 100%); }
-    .nav-links { display:flex; gap:clamp(20px,3vw,48px); margin:0; padding:0; list-style:none; font-family:var(--serif); font-size:14px; letter-spacing:.18em; }
-    .nav-links a { position:relative; padding:8px 0; }
-    .nav-links a::after { content:""; position:absolute; right:0; bottom:0; left:0; height:2px; background:var(--ink); transform:scaleX(0); transform-origin:right; transition:transform .35s; }
-    .nav-links a:hover::after,.nav-links a:focus-visible::after { transform:scaleX(1); transform-origin:left; }
-    .hero { position:relative; min-height:100svh; overflow:hidden; }
-    #mountains { position:absolute; inset:0; width:100%; height:100%; }
-    .hero-copy { position:absolute; z-index:5; top:20%; left:clamp(28px,8vw,145px); display:flex; align-items:flex-start; gap:clamp(20px,3vw,48px); }
-    .eyebrow { margin:8px 0 0; writing-mode:vertical-rl; font-family:var(--serif); font-size:12px; letter-spacing:.35em; opacity:.58; }
-    h1 { margin:0; writing-mode:vertical-rl; font-family:var(--serif); font-size:clamp(54px,7vw,108px); font-weight:700; letter-spacing:.1em; line-height:.95; text-shadow:1px 0 0 var(--ink); }
-    h1 span { display:block; margin-top:.46em; font-size:.29em; font-weight:400; letter-spacing:.25em; opacity:.72; }
-    .hero-note { position:absolute; z-index:5; bottom:8.5%; left:clamp(28px,8vw,145px); max-width:370px; }
-    .hero-note p { margin:0 0 22px; font-family:var(--serif); font-size:clamp(15px,1.3vw,19px); line-height:2; letter-spacing:.12em; }
-    .cta { display:inline-flex; align-items:center; gap:20px; min-height:50px; padding:0 22px; color:#fff9ef; background:var(--red); border:0; cursor:pointer; box-shadow:3px 4px 0 rgba(18,15,12,.18); font-family:var(--serif); letter-spacing:.18em; clip-path:polygon(2% 5%,98% 0,100% 92%,4% 100%); transition:transform .2s; }
-    .cta:hover { transform:translate(-2px,-2px); }
-    .scroll-mark { position:absolute; right:3.4%; bottom:7%; z-index:6; writing-mode:vertical-rl; font-family:var(--serif); font-size:11px; letter-spacing:.3em; opacity:.5; }
-    .scroll-mark::after { content:""; display:block; width:2px; height:72px; margin-top:12px; background:var(--ink); transform:scaleY(.65); transform-origin:top; animation:breathe 1.8s ease-in-out infinite; }
-    @keyframes breathe { 50% { transform:scaleY(1); } }
-    .section { position:relative; max-width:1240px; margin:auto; padding:clamp(90px,12vw,170px) clamp(22px,5vw,72px); }
-    .section-head { display:grid; grid-template-columns:110px 1fr; gap:28px; align-items:start; margin-bottom:70px; }
-    .number { font-family:Georgia,serif; font-size:13px; letter-spacing:.2em; opacity:.45; }
-    h2 { margin:0; font-family:var(--serif); font-size:clamp(36px,5vw,68px); font-weight:600; letter-spacing:.12em; line-height:1.2; }
-    .lead { max-width:580px; margin:22px 0 0; font-family:var(--serif); line-height:2; letter-spacing:.08em; opacity:.66; }
-    .brush-divider { display:block; width:100%; height:34px; margin:0; }
-    .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
-    .card { position:relative; min-height:310px; padding:42px 34px; background:rgba(243,237,227,.44); }
-    .card-border { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-    .card .glyph { font-family:var(--serif); font-size:60px; line-height:1; opacity:.9; }
-    .card h3 { margin:30px 0 14px; font-family:var(--serif); font-size:22px; letter-spacing:.16em; }
-    .card p { margin:0; font-size:14px; line-height:2; letter-spacing:.06em; opacity:.63; }
-    .statement { min-height:68vh; display:grid; place-items:center; text-align:center; }
-    .statement blockquote { max-width:900px; margin:0; font-family:var(--serif); font-size:clamp(30px,4.5vw,65px); line-height:1.7; letter-spacing:.12em; }
-    .statement small { display:block; margin-top:32px; font-size:13px; letter-spacing:.35em; opacity:.45; }
-    footer { display:flex; justify-content:space-between; align-items:end; max-width:1240px; margin:auto; padding:65px clamp(22px,5vw,72px) 48px; border-top:1px solid rgba(18,15,12,.22); font-family:var(--serif); font-size:13px; letter-spacing:.12em; }
-    .footer-mark { font-size:28px; }
-    @media (max-width:760px) {
-      .nav-links li:not(:last-child) { display:none; }
-      .hero-copy { top:16%; left:25px; gap:14px; }
-      h1 { font-size:56px; }
-      .hero-note { bottom:9%; left:25px; max-width:280px; }
-      .hero-note p { font-size:14px; }
-      .section-head { grid-template-columns:1fr; gap:15px; }
-      .cards { grid-template-columns:1fr; }
-      .card { min-height:250px; }
-      footer { align-items:start; flex-direction:column; gap:22px; }
-    }
-    @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .scroll-mark::after { animation:none; transform:none; } }
+    :root{--paper:#eee9df;--paper-hi:#f8f5ed;--ink:#11110f;--ash:#68675f;--seal:#a6241d;--ease:cubic-bezier(.16,.76,.2,1);--pad:clamp(20px,5vw,80px)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--paper)}body{margin:0;color:var(--ink);background:var(--paper);font-family:"Songti SC","STSong","SimSun",serif;overflow-x:hidden;cursor:crosshair}button,a{color:inherit}a{text-decoration:none}button{font:inherit}
+    body:before{content:"";position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.32;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.66' numOctaves='4' seed='19'/%3E%3CfeColorMatrix values='.34 0 0 0 .42 .28 0 0 0 .37 .22 0 0 0 .28 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.23'/%3E%3C/svg%3E")}
+    ::selection{background:var(--seal);color:var(--paper-hi)}
+    .skip{position:fixed;left:1rem;top:1rem;z-index:200;background:#111;color:#fff;padding:.6rem 1rem;transform:translateY(-200%)}.skip:focus{transform:none}
+    nav{position:fixed;z-index:50;inset:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:22px var(--pad);transition:.5s var(--ease)}nav.scrolled{padding-block:12px;background:rgba(238,233,223,.82);backdrop-filter:blur(12px);border-bottom:1px solid rgba(17,17,15,.1)}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.22em}.seal{display:grid;place-items:center;width:36px;height:36px;color:#f7efe4;background:var(--seal);border:2px solid #8d1c17;box-shadow:inset 0 0 0 2px rgba(255,255,255,.28);font-size:17px;transform:rotate(-3deg);clip-path:polygon(4% 5%,94% 0,100% 92%,9% 100%,0 12%)}
+    .navlinks{display:flex;gap:clamp(20px,3vw,48px);list-style:none;margin:0;padding:0;font-size:13px;letter-spacing:.22em}.navlinks a{position:relative;padding:8px 0}.navlinks a:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:2px;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:.45s var(--ease)}.navlinks a:hover:after,.navlinks a:focus-visible:after{transform:scaleX(1);transform-origin:left}
+    .menu{display:none;border:0;background:none;font-size:25px}
+    .hero{height:100svh;min-height:650px;position:relative;overflow:hidden;background:linear-gradient(#f8f5ed 0%,#eee9df 76%,#d8d1c5);isolation:isolate}.hero canvas{position:absolute;inset:0;width:100%;height:100%}.mountains{z-index:-2}.inkfx{z-index:4;pointer-events:none;mix-blend-mode:multiply}
+    .hero-copy{position:absolute;z-index:3;left:clamp(7%,10vw,15%);top:50%;transform:translateY(-51%);width:min(600px,75vw)}.eyebrow{display:flex;align-items:center;gap:14px;color:#514f49;font-size:12px;letter-spacing:.5em}.eyebrow:before{content:"";width:52px;height:1px;background:#333}
+    h1{font-family:"FZKai-Z03","KaiTi","STKaiti",serif;font-size:clamp(70px,11vw,158px);font-weight:700;line-height:.83;letter-spacing:.03em;margin:32px 0 30px;text-shadow:1px 2px 0 rgba(0,0,0,.08)}h1 span{display:block;margin-left:.58em}.hero-copy p{width:min(430px,85%);font-size:clamp(14px,1.25vw,18px);line-height:2.05;letter-spacing:.15em;color:#474640}
+    .actions{display:flex;gap:18px;margin-top:36px}.btn{position:relative;display:inline-flex;justify-content:center;align-items:center;min-width:142px;padding:13px 25px;border:1px solid #161614;background:transparent;letter-spacing:.22em;font-size:13px;overflow:hidden;transition:.35s}.btn:before{content:"";position:absolute;inset:-2px;background:#111;transform:translateX(-102%) skewX(-12deg);transition:.5s var(--ease);z-index:-1}.btn:hover{color:var(--paper-hi)}.btn:hover:before{transform:translateX(0) skewX(0)}.btn.primary{color:#fff;background:#171715}.btn.primary:hover{background:#393832}
+    .vertical{position:absolute;right:clamp(24px,5vw,72px);top:25%;z-index:3;writing-mode:vertical-rl;letter-spacing:.52em;font-size:12px;color:#595750}.vertical b{font-size:17px;color:#171715;margin-bottom:1.2em}.scroll{position:absolute;z-index:5;bottom:30px;left:50%;writing-mode:vertical-rl;font-size:10px;letter-spacing:.35em;color:#4e4d48}.scroll:after{content:"";display:block;width:1px;height:54px;margin:12px auto 0;background:linear-gradient(#222,transparent);animation:scroll 1.8s ease-in-out infinite}@keyframes scroll{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+    main{position:relative}.chapter{position:relative;padding:clamp(100px,14vw,190px) var(--pad)}.chapter:before{content:attr(data-no);position:absolute;left:2vw;top:3vw;color:rgba(20,20,18,.035);font:bold clamp(100px,22vw,330px)/1 Georgia,serif;pointer-events:none}.inner{max-width:1180px;margin:auto;position:relative}.intro{display:grid;grid-template-columns:.7fr 1.3fr;gap:clamp(50px,9vw,140px);align-items:start}.kicker{writing-mode:vertical-rl;font-size:12px;letter-spacing:.6em;color:var(--seal);border-right:1px solid var(--seal);padding-right:13px}.title-wrap{display:flex;gap:30px}.title{font-family:"KaiTi","STKaiti",serif;font-size:clamp(40px,6vw,78px);line-height:1.15;margin:0 0 38px;font-weight:500;letter-spacing:.08em}.lead{max-width:670px;font-size:clamp(15px,1.45vw,19px);line-height:2.15;letter-spacing:.1em;color:#4b4943}.quote{margin:50px 0 0;padding:25px 0 25px 30px;border-left:4px solid var(--ink);font-family:"KaiTi","STKaiti",serif;font-size:clamp(19px,2vw,27px);letter-spacing:.13em}
+    .brush-line{height:15px;width:100%;margin-top:50px;position:relative;overflow:hidden}.brush-line:before{content:"";position:absolute;inset:5px 0;background:linear-gradient(90deg,transparent,#161614 3%,#161614 88%,transparent);clip-path:polygon(0 44%,7% 31%,17% 55%,29% 27%,43% 64%,58% 32%,74% 56%,91% 20%,100% 58%,100% 72%,82% 65%,66% 81%,50% 54%,31% 80%,12% 52%,0 72%);transform:scaleX(0);transform-origin:left;transition:1.4s var(--ease)}.revealed .brush-line:before{transform:scaleX(1)}
+    .realms{background:#171715;color:#e8e2d8;overflow:hidden}.realms:after{content:"山";position:absolute;right:-.08em;bottom:-.35em;color:rgba(255,255,255,.025);font:700 36vw/1 "KaiTi",serif}.realms .inner{z-index:1}.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:70px}.section-head small{letter-spacing:.45em;color:#9f9a90}.section-head h2{font:500 clamp(42px,6vw,78px)/1.1 "KaiTi",serif;letter-spacing:.12em;margin:12px 0 0}.section-head p{max-width:350px;color:#aaa59d;line-height:1.9;letter-spacing:.08em}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #4d4b46}.card{position:relative;padding:44px 34px 50px;border-right:1px solid #4d4b46;min-height:330px;overflow:hidden;transition:.5s var(--ease)}.card:first-child{border-left:1px solid #4d4b46}.card:before{content:"";position:absolute;width:230px;height:230px;left:50%;top:45%;border-radius:50%;background:radial-gradient(circle,rgba(232,226,216,.14),transparent 67%);transform:translate(-50%,-50%) scale(0);filter:blur(6px);transition:.7s var(--ease)}.card:hover{background:#22221f;transform:translateY(-10px)}.card:hover:before{transform:translate(-50%,-50%) scale(1.4)}.card-no{font:italic 13px Georgia;color:#8e8980}.card h3{font:400 33px "KaiTi",serif;letter-spacing:.17em;margin:62px 0 20px}.card p{color:#aaa69e;font-size:14px;line-height:1.9;letter-spacing:.08em}.sword{position:absolute;right:28px;bottom:25px;font:90px/1 "KaiTi",serif;color:rgba(255,255,255,.05);transform:rotate(-10deg);transition:.5s}.card:hover .sword{color:rgba(255,255,255,.11);transform:rotate(0) scale(1.12)}
+    .journey{min-height:760px;background:linear-gradient(90deg,rgba(238,233,223,.96) 0 48%,rgba(238,233,223,.62)),radial-gradient(ellipse at 78% 52%,#6b6b65,transparent 2%),linear-gradient(150deg,transparent 55%,rgba(28,28,25,.2));overflow:hidden}.journey .inner{display:grid;grid-template-columns:1fr 1fr;gap:10vw}.path{margin-top:60px}.step{display:grid;grid-template-columns:50px 1fr;gap:25px;position:relative;padding-bottom:44px}.step:after{content:"";position:absolute;left:17px;top:33px;bottom:8px;width:1px;background:#a09b91}.step:last-child:after{display:none}.dot{width:35px;height:35px;border:1px solid #333;display:grid;place-items:center;border-radius:50%;font-size:11px;background:var(--paper);transition:.3s}.step:hover .dot{background:var(--seal);color:#fff;border-color:var(--seal);transform:scale(1.12)}.step h3{margin:3px 0 8px;font:400 22px "KaiTi",serif;letter-spacing:.15em}.step p{margin:0;color:#66635c;font-size:13px;line-height:1.8}.big-char{display:grid;place-items:center;font:700 min(34vw,460px)/1 "KaiTi",serif;color:rgba(18,18,16,.07);transform:rotate(-7deg);user-select:none}
+    footer{position:relative;background:#10100f;color:#d8d2c8;padding:80px var(--pad) 35px;overflow:hidden}footer:before{content:"";position:absolute;left:-5%;right:-5%;top:-30px;height:80px;background:var(--paper);clip-path:polygon(0 0,100% 0,100% 28%,91% 54%,81% 30%,68% 63%,55% 35%,42% 68%,29% 31%,18% 59%,7% 35%,0 66%)}.footer-inner{max-width:1180px;margin:auto}.footer-top{display:flex;justify-content:space-between;align-items:center;padding:45px 0 70px}.footer-top h2{font:400 clamp(35px,5vw,68px) "KaiTi",serif;letter-spacing:.12em;margin:0}.circle-btn{width:105px;height:105px;border-radius:50%;border:1px solid #777;background:none;color:#eee;letter-spacing:.2em;transition:.4s}.circle-btn:hover{border-color:var(--seal);background:var(--seal);transform:rotate(-8deg) scale(1.06)}.footer-bottom{border-top:1px solid #383835;padding-top:25px;display:flex;justify-content:space-between;color:#777;font-size:11px;letter-spacing:.22em}
+    [data-reveal]{opacity:0;transform:translateY(42px);transition:1s var(--ease)}[data-reveal].revealed{opacity:1;transform:none}.ink-ring{position:fixed;z-index:110;width:26px;height:26px;border:1px solid rgba(15,15,13,.5);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;mix-blend-mode:multiply}.ink-ring.hot{width:52px;height:52px;background:rgba(17,17,15,.08)}
+    @media(max-width:760px){body{cursor:auto}.ink-ring{display:none}nav{padding:15px 20px}.navlinks{position:absolute;top:66px;right:18px;display:none;flex-direction:column;gap:4px;padding:18px 25px;background:rgba(238,233,223,.95);border:1px solid #aaa}.navlinks.open{display:flex}.menu{display:block}.hero-copy{left:8%;top:48%;width:84vw}.hero-copy p{font-size:13px}.vertical{display:none}h1{font-size:clamp(66px,25vw,110px)}.actions{gap:10px}.btn{min-width:125px;padding:12px 16px}.intro{grid-template-columns:1fr}.intro>div:first-child{display:none}.section-head{display:block}.section-head p{margin-top:25px}.cards{grid-template-columns:1fr}.card,.card:first-child{border-left:1px solid #4d4b46;border-bottom:1px solid #4d4b46;min-height:250px}.card h3{margin-top:35px}.journey .inner{grid-template-columns:1fr}.big-char{display:none}.footer-top{align-items:flex-start;gap:30px}.circle-btn{width:82px;height:82px;flex:none}.footer-bottom{gap:20px;line-height:1.7}.scroll{left:auto;right:22px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
-  <canvas class="paper" id="paper" aria-hidden="true"></canvas>
-  <canvas class="trail" id="trail" aria-hidden="true"></canvas>
-  <nav class="nav" aria-label="主导航">
-    <a class="brand" href="#top"><span class="seal">墨</span><span>山河造物</span></a>
-    <ul class="nav-links"><li><a href="#craft">造境</a></li><li><a href="#work">作品</a></li><li><a href="#about">关于</a></li></ul>
-  </nav>
-
-  <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <canvas id="mountains" aria-hidden="true"></canvas>
-      <div class="hero-copy">
-        <p class="eyebrow">东方数字美学</p>
-        <h1 id="hero-title">山河入墨<span>心有万象 · 笔下生风</span></h1>
-      </div>
-      <div class="hero-note">
-        <p>以一笔的决断，造一方天地。<br>为有远见者，写下不可复制的数字篇章。</p>
-        <a class="cta" href="#craft">入境一观 <span>→</span></a>
-      </div>
-      <div class="scroll-mark">向下观山</div>
-    </section>
-
-    <canvas class="brush-divider" data-divider aria-hidden="true"></canvas>
-
-    <section class="section" id="craft">
-      <header class="section-head"><span class="number">壹 · 造境</span><div><h2>笔有骨，墨有韵</h2><p class="lead">我们相信真正的东方表达，不是符号的堆砌。它始于留白，成于气韵，最终落在每一次真实的交互之中。</p></div></header>
-      <div class="cards">
-        <article class="card"><canvas class="card-border" aria-hidden="true"></canvas><span class="glyph">骨</span><h3>风骨为先</h3><p>清晰、果断的视觉骨架，如山脊落笔。每一处信息都有来路，也有去处。</p></article>
-        <article class="card"><canvas class="card-border" aria-hidden="true"></canvas><span class="glyph">气</span><h3>气韵贯通</h3><p>节奏不藏在装饰里，而在疏密、轻重与动静之间。浏览，如行于山水。</p></article>
-        <article class="card"><canvas class="card-border" aria-hidden="true"></canvas><span class="glyph">意</span><h3>意在言外</h3><p>保留恰到好处的空白，让内容呼吸，让品牌拥有被感知与被记住的余地。</p></article>
-      </div>
-    </section>
-
-    <canvas class="brush-divider" data-divider aria-hidden="true"></canvas>
-
-    <section class="section statement" id="work"><blockquote>“远山不必画尽，<br>余下的，交给观者心中。”<small>山河造物 · 数字体验与品牌叙事</small></blockquote></section>
-
-    <footer id="about"><div><div class="footer-mark">山河造物</div><p>以当代技术，续写东方气象。</p></div><div>© 二〇二六 · SHANHE STUDIO</div></footer>
+  <a class="skip" href="#main">跳至正文</a>
+  <div class="ink-ring" aria-hidden="true"></div>
+  <nav aria-label="主导航"><a class="brand" href="#top"><span class="seal">剑</span><span>问剑山河</span></a><button class="menu" aria-label="打开菜单" aria-expanded="false">☰</button><ul class="navlinks"><li><a href="#story">缘起</a></li><li><a href="#realms">境界</a></li><li><a href="#journey">山河</a></li><li><a href="#join">入局</a></li></ul></nav>
+  <header class="hero" id="top">
+    <canvas class="mountains" aria-hidden="true"></canvas><canvas class="inkfx" aria-hidden="true"></canvas>
+    <div class="hero-copy">
+      <div class="eyebrow">天地有正气</div>
+      <h1>问剑<span>山河</span></h1>
+      <p>人间路远，且以三尺青锋，叩问天地。此去山高水长，愿你心中一剑，出鞘仍是少年。</p>
+      <div class="actions"><a class="btn primary" href="#story">踏入江湖</a><a class="btn" href="#realms">观万千境</a></div>
+    </div>
+    <div class="vertical"><b>甲辰 · 新卷</b>一剑光寒十四州</div><div class="scroll">向下 · 展卷</div>
+  </header>
+  <main id="main">
+    <section class="chapter" id="story" data-no="壹"><div class="inner intro" data-reveal><div class="title-wrap"><span class="kicker">THE BEGINNING</span></div><div><h2 class="title">一念起，<br>万水千山皆有回响</h2><p class="lead">小镇少年，背剑远游。走过荒山古庙，也见过大江倒悬。世间道理万千，不过是守住心中那一点清明，在该出剑的时候，递出自己的那一剑。</p><blockquote class="quote">“言念君子，温其如玉。仗剑远游，不问归期。”</blockquote><div class="brush-line"></div></div></div></section>
+    <section class="chapter realms" id="realms" data-no="贰"><div class="inner" data-reveal><div class="section-head"><div><small>THREE REALMS</small><h2>天地 · 人心 · 剑道</h2></div><p>修行不只在山巅。每一次取舍，每一场相逢，都是问心，也是问剑。</p></div><div class="cards"><article class="card"><span class="card-no">01 / HEAVEN</span><h3>观 天 地</h3><p>山河浩荡，云海无涯。以一颗澄明之心，观照万物生灭。</p><span class="sword">天</span></article><article class="card"><span class="card-no">02 / HEART</span><h3>守 本 心</h3><p>世路崎岖，众声喧哗。真正的强大，是从未丢掉来时的自己。</p><span class="sword">心</span></article><article class="card"><span class="card-no">03 / SWORD</span><h3>出 一 剑</h3><p>剑可斩山，也可护人。心有所向，锋芒便有了意义。</p><span class="sword">剑</span></article></div></div></section>
+    <section class="chapter journey" id="journey" data-no="叁"><div class="inner" data-reveal><div><div class="section-head"><div><small>THE JOURNEY</small><h2>此去山河</h2></div></div><div class="path"><article class="step"><span class="dot">一</span><div><h3>骊珠洞天</h3><p>故事从一条泥瓶巷开始，少年第一次抬头看见远方。</p></div></article><article class="step"><span class="dot">二</span><div><h3>大隋书院</h3><p>读万卷书，行万里路。道理要从书上学，也要在世间走。</p></div></article><article class="step"><span class="dot">三</span><div><h3>剑气长城</h3><p>城头万年风霜，有人守一座城，也有人守心中一方天地。</p></div></article></div></div><div class="big-char" aria-hidden="true">道</div></div></section>
   </main>
-
+  <footer id="join"><div class="footer-inner"><div class="footer-top"><h2>江湖路远，<br>我们山巅再见。</h2><button class="circle-btn" type="button">启 程 ↗</button></div><div class="footer-bottom"><span>问剑山河 · 东方幻想数字画卷</span><span>心有所向 · 剑必有归</span></div></div></footer>
   <script>
-    (() => {
-      'use strict';
-      const PAPER = [243,237,227], INK = '18,15,12';
-      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const DPR = () => Math.min(devicePixelRatio || 1, 2);
-      const mulberry = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-      const clamp = (v,a=0,b=1) => Math.max(a,Math.min(b,v));
-      const ease = t => 1 - Math.pow(1-clamp(t),3);
-
-      function fit(canvas, cssW=canvas.clientWidth, cssH=canvas.clientHeight) {
-        const d=DPR(), w=Math.max(1,Math.round(cssW*d)), h=Math.max(1,Math.round(cssH*d));
-        if(canvas.width!==w || canvas.height!==h){ canvas.width=w; canvas.height=h; }
-        const c=canvas.getContext('2d'); c.setTransform(d,0,0,d,0,0); return [c,cssW,cssH,d];
-      }
-
-      function paintPaper() {
-        const canvas=document.querySelector('#paper'), d=DPR(), w=Math.ceil(innerWidth*d), h=Math.ceil(innerHeight*d);
-        canvas.width=w; canvas.height=h;
-        const c=canvas.getContext('2d'), img=c.createImageData(w,h), p=img.data, rnd=mulberry(1703);
-        const coarse=new Float32Array(Math.ceil(w/7)*Math.ceil(h/7)), cw=Math.ceil(w/7);
-        for(let i=0;i<coarse.length;i++) coarse[i]=rnd()-.5;
-        for(let y=0;y<h;y++) for(let x=0;x<w;x++) {
-          const i=(y*w+x)*4, grain=(rnd()-.5)*7, fiber=coarse[(y/7|0)*cw+(x/7|0)]*5, thread=Math.sin(y*.085+x*.007)*.7;
-          p[i]=clamp(PAPER[0]+grain+fiber+thread,0,255); p[i+1]=clamp(PAPER[1]+grain+fiber+thread,0,255); p[i+2]=clamp(PAPER[2]+grain+fiber,0,255); p[i+3]=255;
-        }
-        c.putImageData(img,0,0);
-      }
-
-      const mountainCanvas=document.querySelector('#mountains');
-      function path(c, pts, close=false) { c.beginPath(); c.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) c.lineTo(pts[i][0],pts[i][1]); if(close)c.closePath(); }
-      function partialPath(c, pts, t) {
-        if(t<=0)return; let lengths=[],total=0;
-        for(let i=1;i<pts.length;i++){ const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); lengths.push(l); total+=l; }
-        let left=total*clamp(t); c.beginPath(); c.moveTo(...pts[0]);
-        for(let i=1;i<pts.length&&left>0;i++){ const l=lengths[i-1],q=Math.min(1,left/l); c.lineTo(pts[i-1][0]+(pts[i][0]-pts[i-1][0])*q,pts[i-1][1]+(pts[i][1]-pts[i-1][1])*q); left-=l; }
-      }
-      function outline(c,pts,t,width,rnd){
-        c.save(); c.lineCap='round'; c.lineJoin='miter'; c.strokeStyle=`rgba(${INK},.98)`;
-        partialPath(c,pts,t); c.lineWidth=width; c.stroke();
-        for(let k=0;k<4;k++){ c.strokeStyle=`rgba(${INK},${.13+rnd()*.12})`; c.lineWidth=Math.max(.5,width*(.15+rnd()*.2)); c.translate((rnd()-.5)*width*.8,(rnd()-.5)*width*.6); partialPath(c,pts,t); c.stroke(); }
-        c.restore();
-      }
-      function wash(c,pts,alpha,rnd,baseY){
-        c.save(); path(c,pts,true); c.clip();
-        for(let i=0;i<85;i++){
-          const x=pts.reduce((a,p)=>a+p[0],0)/pts.length + (rnd()-.5)*c.canvas.clientWidth*.65;
-          const y=baseY-(rnd()*rnd())*c.canvas.clientHeight*.55;
-          const rx=25+rnd()*150, ry=18+rnd()*110;
-          c.fillStyle=`rgba(${INK},${alpha*(.12+rnd()*.88)})`; c.beginPath(); c.ellipse(x,y,rx,ry,rnd()*.5,0,Math.PI*2); c.fill();
-        }
-        c.restore();
-      }
-      function rock(c,x,y,len,angle,width,alpha,rnd){
-        c.save(); c.translate(x,y); c.rotate(angle); c.strokeStyle=`rgba(${INK},${alpha})`; c.lineCap='butt';
-        c.beginPath(); c.moveTo(0,0); const seg=5; for(let i=1;i<=seg;i++)c.lineTo(len*i/seg,(rnd()-.5)*4); c.lineWidth=width; c.stroke();
-        c.globalCompositeOperation='destination-out'; c.strokeStyle='rgba(0,0,0,.8)'; c.setLineDash([1+rnd()*4,2+rnd()*5]); c.lineWidth=Math.max(1,width*.2); c.stroke(); c.restore();
-      }
-      function paintMountains(time=1){
-        const [c,w,h]=fit(mountainCanvas); c.clearRect(0,0,w,h); const rnd=mulberry(9321);
-        const sx=w<760?.76:.42, right=w*1.04, base=h*.92;
-        const far=[[w*.54,h*.54],[w*.61,h*.39],[w*.66,h*.49],[w*.72,h*.29],[w*.78,h*.45],[w*.86,h*.24],[w*.93,h*.39],[right,h*.31],[right,base],[w*.52,base]];
-        const mid=[[w*sx,h*.72],[w*.56,h*.58],[w*.62,h*.65],[w*.69,h*.43],[w*.74,h*.59],[w*.81,h*.38],[w*.87,h*.57],[w*.94,h*.42],[right,h*.52],[right,base],[w*sx,base]];
-        const near=[[w*(w<760?.61:.5),base],[w*.58,h*.75],[w*.63,h*.79],[w*.7,h*.61],[w*.75,h*.72],[w*.81,h*.54],[w*.86,h*.7],[w*.93,h*.58],[right,h*.66],[right,h],[w*.48,h]];
-        const outlineP=ease(time/.34), washP=ease((time-.25)/.28), detailP=clamp((time-.49)/.43);
-        if(washP>0){ wash(c,far,.11*washP,rnd,base); wash(c,mid,.20*washP,rnd,base); wash(c,near,.34*washP,rnd,h); }
-        outline(c,far.slice(0,8),outlineP,2.4,rnd); outline(c,mid.slice(0,9),ease((time-.05)/.32),4.3,rnd); outline(c,near.slice(1,9),ease((time-.11)/.32),7.5,rnd);
-        const strokes=[];
-        for(let i=0;i<60;i++){ const layer=i<18?far:i<39?mid:near; const minX=layer[0][0], x=minX+rnd()*(right-minX); const yy=(i<18?h*.38:i<39?h*.51:h*.67)+rnd()*h*.21; strokes.push([x,yy,18+rnd()*75,-.95+rnd()*.45,1+rnd()*(i<39?3:6),i<18?.35:i<39?.56:.76]); }
-        const shown=Math.floor(strokes.length*detailP);
-        for(let i=0;i<shown;i++)rock(c,...strokes[i],rnd);
-        const dots=Math.floor(44*clamp((detailP-.42)/.58));
-        c.fillStyle=`rgba(${INK},.82)`;
-        for(let i=0;i<dots;i++){ const x=w*(.69+rnd()*.28), y=h*(.38+rnd()*.22), r=.8+rnd()*3.2; c.beginPath(); c.arc(x,y,r,0,7); c.fill(); }
-        // Mist is untouched paper; only sparse airborne ink marks define its boundary.
-        c.fillStyle=`rgba(${INK},.09)`;
-        for(let i=0;i<32*washP;i++){ c.beginPath(); c.arc(w*(.47+rnd()*.5),h*(.56+rnd()*.11),rnd()*1.8,0,7); c.fill(); }
-      }
-
-      function frameBorders(){
-        document.querySelectorAll('.card-border').forEach((cv,n)=>{ const [c,w,h]=fit(cv),r=mulberry(80+n); c.clearRect(0,0,w,h); c.strokeStyle=`rgba(${INK},.78)`; c.lineCap='square';
-          [[7,8,w-5,5],[w-7,5,w-4,h-8],[w-5,h-7,6,h-4],[5,h-5,7,8]].forEach((a,i)=>{ c.beginPath(); c.moveTo(a[0]+(r()-.5)*4,a[1]+(r()-.5)*4); c.quadraticCurveTo((a[0]+a[2])/2+(r()-.5)*8,(a[1]+a[3])/2+(r()-.5)*8,a[2],a[3]); c.lineWidth=i===0?2.4:1.3+r()*1.5; c.stroke(); });
-        });
-        document.querySelectorAll('[data-divider]').forEach((cv,n)=>{ const [c,w,h]=fit(cv),r=mulberry(900+n); c.clearRect(0,0,w,h); const y=h/2; for(let i=0;i<8;i++){ c.beginPath(); c.moveTo(-10,y+(r()-.5)*7); c.bezierCurveTo(w*.25,y+(r()-.5)*9,w*.72,y+(r()-.5)*6,w+10,y+(r()-.5)*5); c.strokeStyle=`rgba(${INK},${.07+r()*.13})`; c.lineWidth=1+r()*3; c.stroke(); } });
-      }
-
-      const trail=document.querySelector('#trail'); let tc,last=null, points=0;
-      function fitTrail(){ [tc]=fit(trail,innerWidth,innerHeight); tc.clearRect(0,0,innerWidth,innerHeight); last=null; }
-      function pointer(e){
-        const now=performance.now(), p={x:e.clientX,y:e.clientY,t:now}; if(!last){last=p;return;}
-        const dist=Math.hypot(p.x-last.x,p.y-last.y); if(dist<2)return; const speed=dist/Math.max(8,now-last.t), width=clamp(18-speed*8,3,18), r=mulberry(++points*97);
-        tc.save(); tc.lineCap='round'; tc.lineJoin='round';
-        for(let i=0;i<9;i++){ const off=(i-4)*width*.07+(r()-.5)*1.5; tc.beginPath(); tc.moveTo(last.x+off,last.y+off*.25); tc.lineTo(p.x+off,p.y+off*.25); tc.strokeStyle=`rgba(${INK},${.025+r()*.055})`; tc.lineWidth=Math.max(.4,width*(.16+r()*.14)); tc.stroke(); }
-        for(let i=0;i<Math.min(10,dist/2);i++){ const q=r(),x=last.x+(p.x-last.x)*q+(r()-.5)*width,y=last.y+(p.y-last.y)*q+(r()-.5)*width*.45; tc.fillStyle=`rgba(${INK},${.03+r()*.08})`; tc.fillRect(x,y,.5+r()*1.4,.5+r()*1.4); }
-        tc.restore(); last=p;
-      }
-      addEventListener('pointermove',pointer,{passive:true}); addEventListener('pointerleave',()=>last=null);
-
-      let start=performance.now();
-      function animate(now){ const t=reduced?1:clamp((now-start)/3900); paintMountains(t); if(t<1)requestAnimationFrame(animate); }
-      let resizeTimer;
-      function resize(){ clearTimeout(resizeTimer); resizeTimer=setTimeout(()=>{paintPaper();fitTrail();paintMountains(1);frameBorders();},100); }
-      paintPaper(); fitTrail(); frameBorders(); requestAnimationFrame(animate); addEventListener('resize',resize,{passive:true});
-    })();
+  (()=>{
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches, hero=document.querySelector('.hero'), mountain=document.querySelector('.mountains'), ink=document.querySelector('.inkfx'), mc=mountain.getContext('2d'), ic=ink.getContext('2d'); let w,h,dpr=Math.min(devicePixelRatio||1,2),scrollY=0,pointer={x:-100,y:-100},drops=[],raf=0;
+    function size(){w=hero.clientWidth;h=hero.clientHeight;for(const c of [mountain,ink]){c.width=w*dpr;c.height=h*dpr;c.getContext('2d').setTransform(dpr,0,0,dpr,0,0)}drawMountains()}
+    function ridge(ctx,pts,fill,rough=3){ctx.beginPath();ctx.moveTo(0,h);ctx.lineTo(0,pts[0][1]);for(let i=0;i<pts.length-1;i++){let [x,y]=pts[i],[nx,ny]=pts[i+1],mx=(x+nx)/2,my=(y+ny)/2+Math.sin(i*8.3)*rough;ctx.quadraticCurveTo(x,y,mx,my)}ctx.lineTo(w,h);ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
+    function drawMountains(){mc.clearRect(0,0,w,h);const s=w/1440;
+      const back=[[0,.56*h],[130*s,.45*h],[260*s,.58*h],[410*s,.31*h],[520*s,.55*h],[670*s,.42*h],[820*s,.57*h],[970*s,.3*h],[1120*s,.53*h],[1300*s,.39*h],[1440*s,.56*h]];ridge(mc,back,'rgba(45,46,43,.13)',8);
+      const mid=[[0,.75*h],[120*s,.61*h],[250*s,.68*h],[390*s,.38*h],[530*s,.65*h],[690*s,.52*h],[830*s,.7*h],[980*s,.46*h],[1130*s,.61*h],[1280*s,.5*h],[1440*s,.66*h]];ridge(mc,mid,'rgba(28,29,27,.3)',11);
+      mc.save();mc.globalAlpha=.22;mc.filter='blur(7px)';for(let i=0;i<9;i++){mc.beginPath();mc.ellipse(w*(.1+i*.12),h*(.68+Math.sin(i)*.035),w*.16,h*.035,0,0,Math.PI*2);mc.fillStyle='#f8f5ed';mc.fill()}mc.restore();
+      const front=[[0,.9*h],[160*s,.72*h],[290*s,.83*h],[440*s,.58*h],[590*s,.8*h],[750*s,.66*h],[900*s,.85*h],[1050*s,.7*h],[1190*s,.8*h],[1320*s,.63*h],[1440*s,.76*h]];ridge(mc,front,'rgba(14,15,14,.77)',15);
+      mc.save();mc.globalCompositeOperation='destination-out';mc.globalAlpha=.24;for(let i=0;i<90;i++){let x=Math.random()*w,y=h*(.6+Math.random()*.4);mc.beginPath();mc.ellipse(x,y,1+Math.random()*14,1+Math.random()*3,Math.random(),0,7);mc.fill()}mc.restore();
+      mc.save();mc.strokeStyle='rgba(10,10,9,.72)';mc.lineCap='round';for(let i=0;i<8;i++){let x=w*(.55+i*.052),y=h*(.68+Math.sin(i*2)*.025);mc.lineWidth=Math.max(1,3-i*.22);mc.beginPath();mc.moveTo(x,y+50);mc.quadraticCurveTo(x-6,y+20,x+2,y);mc.stroke();for(let j=0;j<3;j++){mc.beginPath();mc.moveTo(x,y+15+j*9);mc.lineTo(x+(j%2?15:-13),y+5+j*7);mc.stroke()}}mc.restore();
+    }
+    function addDrop(x,y,burst=false){if(drops.length>45)drops.shift();drops.push({x,y,r:burst?3:1,a:.22+Math.random()*.2,v:.15+Math.random()*.35,max:burst?32+Math.random()*35:12+Math.random()*15})}
+    function animate(){ic.clearRect(0,0,w,h);if(!reduce){const t=performance.now()*.0001;ic.save();ic.globalAlpha=.07;ic.fillStyle='#fff';for(let i=0;i<5;i++){ic.beginPath();ic.ellipse(w*(.15+i*.21)+Math.sin(t*7+i)*40,h*(.64+i%2*.05),w*.13,h*.025,0,0,7);ic.fill()}ic.restore();}
+      ic.save();ic.globalCompositeOperation='multiply';for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.r+=d.v;d.a*=.975;if(d.r>d.max||d.a<.008){drops.splice(i,1);continue}ic.beginPath();ic.arc(d.x,d.y,d.r,0,7);ic.fillStyle=`rgba(15,15,13,${d.a*.12})`;ic.fill();ic.strokeStyle=`rgba(15,15,13,${d.a})`;ic.lineWidth=Math.max(.3,2-d.r/d.max*1.5);ic.stroke()}ic.restore();raf=requestAnimationFrame(animate)}
+    hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;if(Math.random()>.45)addDrop(pointer.x,pointer.y,false)},{passive:true});hero.addEventListener('pointerdown',e=>{const r=hero.getBoundingClientRect();for(let i=0;i<6;i++)addDrop(e.clientX-r.left+(Math.random()-.5)*30,e.clientY-r.top+(Math.random()-.5)*30,true)});
+    const ring=document.querySelector('.ink-ring');addEventListener('pointermove',e=>{ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'},{passive:true});document.querySelectorAll('a,button,.card,.step').forEach(el=>{el.addEventListener('mouseenter',()=>ring.classList.add('hot'));el.addEventListener('mouseleave',()=>ring.classList.remove('hot'))});
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('revealed')}),{threshold:.15});document.querySelectorAll('[data-reveal]').forEach(x=>io.observe(x));
+    addEventListener('scroll',()=>{scrollY=scrollY||0;if(!scrollY){requestAnimationFrame(()=>{document.querySelector('nav').classList.toggle('scrolled',scrollY>50);if(!reduce)mountain.style.transform=`translateY(${Math.min(scrollY*.12,90)}px)`;scrollY=0})}scrollY=window.scrollY},{passive:true});
+    const menu=document.querySelector('.menu'),links=document.querySelector('.navlinks');menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',open);menu.textContent=open?'×':'☰'});links.addEventListener('click',()=>{links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.textContent='☰'});
+    document.querySelector('.circle-btn').addEventListener('click',()=>scrollTo({top:0,behavior:reduce?'auto':'smooth'}));addEventListener('resize',size,{passive:true});size();animate();
+  })();
   </script>
 </body>
 </html>
