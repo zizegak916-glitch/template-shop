@@ -2,367 +2,215 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f0e8">
-  <meta name="description" content="墨山——以真实像素扩散模拟宣纸上的浓淡枯润。">
-  <title>墨山 · 像素水墨画卷</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f3ede3">
+  <meta name="description" content="山河入墨——以东方笔意，重写数字世界。">
+  <title>山河入墨 · 东方数字体验</title>
   <style>
-    :root {
-      --paper: rgb(245, 240, 232);
-      --paper-deep: rgb(235, 228, 216);
-      --ink: rgb(15, 12, 10);
-      --ink-mid: rgb(73, 67, 61);
-      --ink-light: rgb(136, 128, 118);
-      --vermillion: rgb(196, 30, 58);
-      --serif: STKaiti, "FZQingKeBenYueSongS-R-GB", "Songti SC", SimSun, serif;
-      --gutter: clamp(1.25rem, 5vw, 6rem);
+    :root { --paper:#f3ede3; --ink:#120f0c; --red:#be2332; --serif:"FZKai-Z03","STKaiti","KaiTi","Songti SC",serif; --sans:"PingFang SC","Microsoft YaHei",sans-serif; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; background:var(--paper); }
+    body { margin:0; overflow-x:hidden; color:var(--ink); background:var(--paper); font-family:var(--sans); }
+    body::after { content:""; position:fixed; inset:0; z-index:999; pointer-events:none; box-shadow:inset 0 0 12vw rgba(77,55,31,.08); }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+    .paper { position:fixed; inset:0; z-index:-3; width:100%; height:100%; }
+    .trail { position:fixed; inset:0; z-index:90; width:100%; height:100%; pointer-events:none; mix-blend-mode:multiply; }
+    .nav { position:absolute; top:0; left:0; z-index:20; display:flex; align-items:center; justify-content:space-between; width:100%; padding:28px clamp(22px,5vw,80px); }
+    .brand { display:flex; align-items:center; gap:11px; font-family:var(--serif); font-size:18px; letter-spacing:.22em; }
+    .seal { display:grid; width:34px; height:38px; place-items:center; color:var(--paper); background:var(--red); border:2px solid #991725; font-size:18px; line-height:1; transform:rotate(-2deg); clip-path:polygon(4% 5%,95% 1%,100% 92%,7% 100%); }
+    .nav-links { display:flex; gap:clamp(20px,3vw,48px); margin:0; padding:0; list-style:none; font-family:var(--serif); font-size:14px; letter-spacing:.18em; }
+    .nav-links a { position:relative; padding:8px 0; }
+    .nav-links a::after { content:""; position:absolute; right:0; bottom:0; left:0; height:2px; background:var(--ink); transform:scaleX(0); transform-origin:right; transition:transform .35s; }
+    .nav-links a:hover::after,.nav-links a:focus-visible::after { transform:scaleX(1); transform-origin:left; }
+    .hero { position:relative; min-height:100svh; overflow:hidden; }
+    #mountains { position:absolute; inset:0; width:100%; height:100%; }
+    .hero-copy { position:absolute; z-index:5; top:20%; left:clamp(28px,8vw,145px); display:flex; align-items:flex-start; gap:clamp(20px,3vw,48px); }
+    .eyebrow { margin:8px 0 0; writing-mode:vertical-rl; font-family:var(--serif); font-size:12px; letter-spacing:.35em; opacity:.58; }
+    h1 { margin:0; writing-mode:vertical-rl; font-family:var(--serif); font-size:clamp(54px,7vw,108px); font-weight:700; letter-spacing:.1em; line-height:.95; text-shadow:1px 0 0 var(--ink); }
+    h1 span { display:block; margin-top:.46em; font-size:.29em; font-weight:400; letter-spacing:.25em; opacity:.72; }
+    .hero-note { position:absolute; z-index:5; bottom:8.5%; left:clamp(28px,8vw,145px); max-width:370px; }
+    .hero-note p { margin:0 0 22px; font-family:var(--serif); font-size:clamp(15px,1.3vw,19px); line-height:2; letter-spacing:.12em; }
+    .cta { display:inline-flex; align-items:center; gap:20px; min-height:50px; padding:0 22px; color:#fff9ef; background:var(--red); border:0; cursor:pointer; box-shadow:3px 4px 0 rgba(18,15,12,.18); font-family:var(--serif); letter-spacing:.18em; clip-path:polygon(2% 5%,98% 0,100% 92%,4% 100%); transition:transform .2s; }
+    .cta:hover { transform:translate(-2px,-2px); }
+    .scroll-mark { position:absolute; right:3.4%; bottom:7%; z-index:6; writing-mode:vertical-rl; font-family:var(--serif); font-size:11px; letter-spacing:.3em; opacity:.5; }
+    .scroll-mark::after { content:""; display:block; width:2px; height:72px; margin-top:12px; background:var(--ink); transform:scaleY(.65); transform-origin:top; animation:breathe 1.8s ease-in-out infinite; }
+    @keyframes breathe { 50% { transform:scaleY(1); } }
+    .section { position:relative; max-width:1240px; margin:auto; padding:clamp(90px,12vw,170px) clamp(22px,5vw,72px); }
+    .section-head { display:grid; grid-template-columns:110px 1fr; gap:28px; align-items:start; margin-bottom:70px; }
+    .number { font-family:Georgia,serif; font-size:13px; letter-spacing:.2em; opacity:.45; }
+    h2 { margin:0; font-family:var(--serif); font-size:clamp(36px,5vw,68px); font-weight:600; letter-spacing:.12em; line-height:1.2; }
+    .lead { max-width:580px; margin:22px 0 0; font-family:var(--serif); line-height:2; letter-spacing:.08em; opacity:.66; }
+    .brush-divider { display:block; width:100%; height:34px; margin:0; }
+    .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+    .card { position:relative; min-height:310px; padding:42px 34px; background:rgba(243,237,227,.44); }
+    .card-border { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+    .card .glyph { font-family:var(--serif); font-size:60px; line-height:1; opacity:.9; }
+    .card h3 { margin:30px 0 14px; font-family:var(--serif); font-size:22px; letter-spacing:.16em; }
+    .card p { margin:0; font-size:14px; line-height:2; letter-spacing:.06em; opacity:.63; }
+    .statement { min-height:68vh; display:grid; place-items:center; text-align:center; }
+    .statement blockquote { max-width:900px; margin:0; font-family:var(--serif); font-size:clamp(30px,4.5vw,65px); line-height:1.7; letter-spacing:.12em; }
+    .statement small { display:block; margin-top:32px; font-size:13px; letter-spacing:.35em; opacity:.45; }
+    footer { display:flex; justify-content:space-between; align-items:end; max-width:1240px; margin:auto; padding:65px clamp(22px,5vw,72px) 48px; border-top:1px solid rgba(18,15,12,.22); font-family:var(--serif); font-size:13px; letter-spacing:.12em; }
+    .footer-mark { font-size:28px; }
+    @media (max-width:760px) {
+      .nav-links li:not(:last-child) { display:none; }
+      .hero-copy { top:16%; left:25px; gap:14px; }
+      h1 { font-size:56px; }
+      .hero-note { bottom:9%; left:25px; max-width:280px; }
+      .hero-note p { font-size:14px; }
+      .section-head { grid-template-columns:1fr; gap:15px; }
+      .cards { grid-template-columns:1fr; }
+      .card { min-height:250px; }
+      footer { align-items:start; flex-direction:column; gap:22px; }
     }
-
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; background: var(--paper); }
-    body {
-      margin: 0;
-      overflow-x: hidden;
-      color: var(--ink);
-      background: var(--paper);
-      font-family: var(--serif);
-      line-height: 2.2;
-      letter-spacing: .08em;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: inherit; text-decoration: none; }
-    button, a { -webkit-tap-highlight-color: transparent; }
-    :focus-visible { outline: 2px solid var(--vermillion); outline-offset: 5px; }
-    ::selection { color: var(--paper); background: var(--vermillion); }
-
-    .skip-link {
-      position: fixed; top: .8rem; left: .8rem; z-index: 100;
-      padding: .35rem .8rem; color: var(--paper); background: var(--ink);
-      transform: translateY(-180%);
-    }
-    .skip-link:focus { transform: none; }
-
-    .nav {
-      position: absolute; inset: 0 0 auto; z-index: 10;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.5rem var(--gutter); font-size: .78rem; letter-spacing: .22em;
-    }
-    .brand { display: flex; align-items: center; gap: .7rem; font-size: 1.05rem; font-weight: 700; }
-    .seal {
-      display: grid; width: 2.25rem; aspect-ratio: 1; place-items: center;
-      color: var(--paper); background: var(--vermillion); line-height: 1;
-      border-radius: 3px 5px 2px 4px; transform: rotate(-2deg);
-      box-shadow: inset 0 0 0 2px rgba(245,240,232,.28);
-    }
-    .nav ul { display: flex; gap: clamp(1rem, 3vw, 2.7rem); margin: 0; padding: 0; list-style: none; }
-    .nav a { position: relative; }
-    .nav li a::after {
-      position: absolute; right: 0; bottom: -.3rem; left: 0; height: 1px;
-      content: ""; background: var(--ink); transform: scaleX(0); transform-origin: right;
-      transition: transform .45s ease;
-    }
-    .nav li a:hover::after { transform: scaleX(1); transform-origin: left; }
-
-    .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; }
-    #ink-landscape, #ink-interaction { position: absolute; inset: 0; width: 100%; height: 100%; }
-    #ink-landscape { z-index: -2; }
-    #ink-interaction { z-index: 3; pointer-events: none; }
-    .hero-copy {
-      position: absolute; top: clamp(7rem, 17vh, 11rem); left: clamp(7%, 10vw, 13%); z-index: 2;
-      display: flex; align-items: flex-start; gap: clamp(1.1rem, 2.5vw, 2.4rem);
-    }
-    h1 {
-      margin: 0; color: var(--ink); font-size: clamp(3.8rem, 8vw, 8.5rem);
-      font-weight: 800; line-height: 1; letter-spacing: .12em; writing-mode: vertical-rl;
-      text-shadow: 0 0 1px rgba(15,12,10,.16);
-    }
-    .hero-intro { max-width: 13rem; margin-top: 4.8rem; color: var(--ink-mid); font-size: .8rem; writing-mode: vertical-rl; }
-    .hero-intro strong { color: var(--ink); font-size: 1rem; font-weight: 700; }
-    .hero-note {
-      position: absolute; right: var(--gutter); bottom: 2rem; z-index: 4;
-      color: var(--ink-light); font-size: .65rem; letter-spacing: .18em;
-    }
-    .scroll-cue {
-      position: absolute; bottom: 2rem; left: var(--gutter); z-index: 4;
-      display: flex; align-items: center; gap: .75rem; color: var(--ink-light);
-      font-size: .62rem; letter-spacing: .22em; writing-mode: vertical-rl;
-    }
-    .scroll-cue::before { width: 1px; height: 3.2rem; content: ""; background: var(--ink-light); opacity: .45; }
-
-    .brush-divider { height: clamp(80px, 11vw, 150px); overflow: hidden; }
-    .brush-divider svg { display: block; width: 100%; height: 100%; }
-    .brush-divider path { fill: none; stroke: var(--ink); stroke-linecap: round; }
-
-    .section { padding: clamp(5rem, 12vh, 10rem) var(--gutter); }
-    .section-head { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 3rem; max-width: 1180px; margin: 0 auto 5rem; }
-    .eyebrow { margin: 0 0 .6rem; color: var(--vermillion); font-size: .68rem; letter-spacing: .3em; }
-    h2 { margin: 0; font-size: clamp(2.4rem, 5vw, 5rem); line-height: 1.25; letter-spacing: .12em; }
-    .section-lead { max-width: 32rem; margin: 0 0 .4rem auto; color: var(--ink-mid); font-size: .9rem; }
-
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 3.5rem); max-width: 1180px; margin: auto; }
-    .ink-card {
-      position: relative; min-height: 27rem; padding: 2.25rem 2rem; overflow: hidden;
-      background: rgba(245,240,232,.62); transition: transform .5s ease;
-    }
-    .ink-card:nth-child(2) { margin-top: 3.5rem; }
-    .ink-card:hover { transform: translateY(-6px) rotate(-.15deg); }
-    .border-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-    .card-index { color: var(--ink-light); font-size: .68rem; letter-spacing: .2em; }
-    .card-mark { height: 8rem; margin: 2.3rem 0 2rem; }
-    .card-mark canvas { width: 100%; height: 100%; }
-    .ink-card h3 { margin: 0 0 .8rem; font-size: 1.35rem; letter-spacing: .16em; }
-    .ink-card p { margin: 0; color: var(--ink-mid); font-size: .8rem; line-height: 2.15; }
-
-    .manifesto { position: relative; display: grid; min-height: 82vh; place-items: center; overflow: hidden; padding: 8rem var(--gutter); text-align: center; }
-    #wash-canvas { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; }
-    blockquote { max-width: 880px; margin: 0; }
-    blockquote p { margin: 0; font-size: clamp(2rem, 4.5vw, 4.8rem); font-weight: 700; line-height: 1.7; letter-spacing: .13em; }
-    blockquote footer { margin-top: 2.2rem; color: var(--ink-mid); font-size: .72rem; letter-spacing: .28em; }
-
-    .process { max-width: 1050px; margin: auto; }
-    .process-row { display: grid; grid-template-columns: 6rem 1fr 1fr; gap: 2rem; padding: 2.3rem 0; border-bottom: 1px solid rgba(15,12,10,.14); }
-    .process-row span { color: var(--ink-light); font-size: .7rem; }
-    .process-row h3 { margin: 0; font-size: 1.25rem; letter-spacing: .14em; }
-    .process-row p { margin: 0; color: var(--ink-mid); font-size: .8rem; }
-
-    .cta { display: grid; min-height: 65vh; place-items: center; padding: 8rem var(--gutter); text-align: center; }
-    .cta h2 { margin-bottom: 2.5rem; }
-    .seal-button {
-      display: inline-grid; min-width: 10rem; min-height: 4.5rem; padding: 1rem 2rem; place-items: center;
-      color: var(--paper); background: var(--vermillion); font-weight: 700; letter-spacing: .24em;
-      clip-path: polygon(3% 7%, 96% 1%, 100% 91%, 91% 100%, 4% 96%, 0 20%);
-      transition: transform .35s ease;
-    }
-    .seal-button:hover { transform: translateY(-4px) rotate(-1deg); }
-    footer.site-footer { display: flex; justify-content: space-between; padding: 2.5rem var(--gutter); color: var(--ink-light); font-size: .65rem; }
-
-    @media (max-width: 760px) {
-      .nav li:not(:last-child) { display: none; }
-      .hero-copy { top: 16%; left: 8%; }
-      .hero-intro { margin-top: 3rem; }
-      .hero-note { display: none; }
-      .section-head, .cards { grid-template-columns: 1fr; }
-      .section-lead { margin: 0; }
-      .ink-card:nth-child(2) { margin-top: 0; }
-      .process-row { grid-template-columns: 3rem 1fr; }
-      .process-row p { grid-column: 2; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { transition-duration: .01ms !important; }
-    }
+    @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .scroll-mark::after { animation:none; transform:none; } }
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">跳至正文</a>
+  <canvas class="paper" id="paper" aria-hidden="true"></canvas>
+  <canvas class="trail" id="trail" aria-hidden="true"></canvas>
   <nav class="nav" aria-label="主导航">
-    <a class="brand" href="#top"><span class="seal">墨</span><span>墨山集</span></a>
-    <ul><li><a href="#works">画境</a></li><li><a href="#method">笔法</a></li><li><a href="#contact">入卷</a></li></ul>
+    <a class="brand" href="#top"><span class="seal">墨</span><span>山河造物</span></a>
+    <ul class="nav-links"><li><a href="#craft">造境</a></li><li><a href="#work">作品</a></li><li><a href="#about">关于</a></li></ul>
   </nav>
 
-  <main id="main">
-    <header class="hero" id="top">
-      <canvas id="ink-landscape" aria-hidden="true"></canvas>
-      <canvas id="ink-interaction" aria-hidden="true"></canvas>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <canvas id="mountains" aria-hidden="true"></canvas>
       <div class="hero-copy">
-        <h1>墨山</h1>
-        <p class="hero-intro"><strong>以水行墨，以墨见心。</strong><br>一笔浓淡，万里云山。</p>
+        <p class="eyebrow">东方数字美学</p>
+        <h1 id="hero-title">山河入墨<span>心有万象 · 笔下生风</span></h1>
       </div>
-      <span class="scroll-cue">向下入卷</span>
-      <span class="hero-note">像素扩散 · 宣纸吸墨 · 浓淡相生</span>
-    </header>
-
-    <div class="brush-divider" aria-hidden="true">
-      <svg viewBox="0 0 1200 130" preserveAspectRatio="none"><path d="M-30 77 C145 66 278 79 441 63 S768 52 1235 69" stroke-width="7" opacity=".52"/><path d="M-20 82 C214 70 375 83 598 66 S948 64 1225 72" stroke-width="2" opacity=".25"/></svg>
-    </div>
-
-    <section class="section" id="works">
-      <div class="section-head">
-        <div><p class="eyebrow">三远法 · THREE DISTANCES</p><h2>山水有境</h2></div>
-        <p class="section-lead">高远观其势，深远察其幽，平远见其阔。每一道墨痕，都由纸纹、含水与运笔共同决定。</p>
+      <div class="hero-note">
+        <p>以一笔的决断，造一方天地。<br>为有远见者，写下不可复制的数字篇章。</p>
+        <a class="cta" href="#craft">入境一观 <span>→</span></a>
       </div>
+      <div class="scroll-mark">向下观山</div>
+    </section>
+
+    <canvas class="brush-divider" data-divider aria-hidden="true"></canvas>
+
+    <section class="section" id="craft">
+      <header class="section-head"><span class="number">壹 · 造境</span><div><h2>笔有骨，墨有韵</h2><p class="lead">我们相信真正的东方表达，不是符号的堆砌。它始于留白，成于气韵，最终落在每一次真实的交互之中。</p></div></header>
       <div class="cards">
-        <article class="ink-card"><canvas class="border-canvas"></canvas><span class="card-index">壹 · 高远</span><div class="card-mark"><canvas data-mark="peak"></canvas></div><h3>骨法用笔</h3><p>中锋立骨，侧锋取势。速度改变笔锋宽窄，停驻之处墨色自然沉积。</p></article>
-        <article class="ink-card"><canvas class="border-canvas"></canvas><span class="card-index">贰 · 深远</span><div class="card-mark"><canvas data-mark="wash"></canvas></div><h3>墨分五色</h3><p>焦、浓、重、淡、清，不靠透明叠层，而以像素含墨量呈现真实浓淡。</p></article>
-        <article class="ink-card"><canvas class="border-canvas"></canvas><span class="card-index">叁 · 平远</span><div class="card-mark"><canvas data-mark="bamboo"></canvas></div><h3>气韵生动</h3><p>纤维吸水各不相同，墨粒沿湿润纸面游走，边缘因此生出不可复制的毛涩。</p></article>
+        <article class="card"><canvas class="card-border" aria-hidden="true"></canvas><span class="glyph">骨</span><h3>风骨为先</h3><p>清晰、果断的视觉骨架，如山脊落笔。每一处信息都有来路，也有去处。</p></article>
+        <article class="card"><canvas class="card-border" aria-hidden="true"></canvas><span class="glyph">气</span><h3>气韵贯通</h3><p>节奏不藏在装饰里，而在疏密、轻重与动静之间。浏览，如行于山水。</p></article>
+        <article class="card"><canvas class="card-border" aria-hidden="true"></canvas><span class="glyph">意</span><h3>意在言外</h3><p>保留恰到好处的空白，让内容呼吸，让品牌拥有被感知与被记住的余地。</p></article>
       </div>
     </section>
 
-    <div class="brush-divider" aria-hidden="true">
-      <svg viewBox="0 0 1200 130" preserveAspectRatio="none"><path d="M710 -18 C688 24 671 54 646 79 C625 101 600 118 570 149" stroke-width="9" opacity=".58"/><path d="M717 -12 C692 40 678 72 638 105" stroke-width="2" opacity=".28"/></svg>
-    </div>
+    <canvas class="brush-divider" data-divider aria-hidden="true"></canvas>
 
-    <section class="manifesto">
-      <canvas id="wash-canvas" aria-hidden="true"></canvas>
-      <blockquote><p>墨非黑，水非白。<br>有无之间，山河自生。</p><footer>— 林泉高致 · 数字新解</footer></blockquote>
-    </section>
+    <section class="section statement" id="work"><blockquote>“远山不必画尽，<br>余下的，交给观者心中。”<small>山河造物 · 数字体验与品牌叙事</small></blockquote></section>
 
-    <div class="brush-divider" aria-hidden="true">
-      <svg viewBox="0 0 1200 130" preserveAspectRatio="none"><path d="M1000 -25 C885 22 759 58 604 86 C451 114 287 129 167 158" stroke-width="8" opacity=".56"/><path d="M1007 -19 C798 60 564 99 203 151" stroke-width="2" opacity=".24"/></svg>
-    </div>
-
-    <section class="section" id="method">
-      <div class="section-head"><div><p class="eyebrow">笔墨之内 · THE METHOD</p><h2>落笔成山</h2></div><p class="section-lead">不是预制纹理，也不是模糊滤镜。画面在你的设备上逐像素生成。</p></div>
-      <div class="process">
-        <div class="process-row"><span>01</span><h3>纸先受水</h3><p>分形噪声形成纸纤维吸收场，决定每个像素能容纳多少墨。</p></div>
-        <div class="process-row"><span>02</span><h3>墨随水行</h3><p>粒子从山脊向外随机游走；距离越远，含墨量越低，边缘越松。</p></div>
-        <div class="process-row"><span>03</span><h3>浓淡相破</h3><p>远山、重峦与近峰依次生长，留白不是覆盖，而是没有落墨的呼吸。</p></div>
-      </div>
-    </section>
-
-    <section class="cta" id="contact"><div><p class="eyebrow">展开下一卷</p><h2>与山水相逢</h2><a class="seal-button" href="#top">重游此卷</a></div></section>
+    <footer id="about"><div><div class="footer-mark">山河造物</div><p>以当代技术，续写东方气象。</p></div><div>© 二〇二六 · SHANHE STUDIO</div></footer>
   </main>
-  <footer class="site-footer"><span>墨山集 · 二〇二六</span><span>一纸 · 一墨 · 一世界</span></footer>
 
   <script>
-  (() => {
-    'use strict';
-    const PAPER = [245, 240, 232], INK = [15, 12, 10];
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const landscape = document.querySelector('#ink-landscape');
-    const interaction = document.querySelector('#ink-interaction');
-    const hero = document.querySelector('.hero');
-    let W = 0, H = 0, absorption, scene, revealBuckets, started = 0, raf = 0;
+    (() => {
+      'use strict';
+      const PAPER = [243,237,227], INK = '18,15,12';
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const DPR = () => Math.min(devicePixelRatio || 1, 2);
+      const mulberry = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+      const clamp = (v,a=0,b=1) => Math.max(a,Math.min(b,v));
+      const ease = t => 1 - Math.pow(1-clamp(t),3);
 
-    function mulberry32(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-    const fade = t => t * t * (3 - 2 * t);
-    function makeNoise(seed) {
-      const rnd = mulberry32(seed), grid = new Map();
-      const grad = (x, y) => { const k = x + ',' + y; if (!grid.has(k)) { const a = rnd() * Math.PI * 2; grid.set(k, [Math.cos(a), Math.sin(a)]); } return grid.get(k); };
-      return (x, y) => { const x0 = Math.floor(x), y0 = Math.floor(y), tx = x-x0, ty = y-y0, u=fade(tx), v=fade(ty); const d=(ix,iy)=>{const g=grad(ix,iy); return g[0]*(x-ix)+g[1]*(y-iy);}; return (1-v)*((1-u)*d(x0,y0)+u*d(x0+1,y0))+v*((1-u)*d(x0,y0+1)+u*d(x0+1,y0+1)); };
-    }
-    const paperNoise = makeNoise(91), landNoise = makeNoise(307), detailNoise = makeNoise(701);
-    function fbm(noise, x, y, oct=4) { let value=0, amp=.55, freq=1; for(let i=0;i<oct;i++){ value += amp*noise(x*freq,y*freq); freq*=2.03; amp*=.5; } return value; }
-
-    function setupCanvas(canvas, width, height) { canvas.width=width; canvas.height=height; return canvas.getContext('2d', { alpha: true }); }
-    function buildPaper() {
-      absorption = new Float32Array(W*H);
-      const out = new ImageData(W,H), d=out.data, rnd=mulberry32(17);
-      for(let y=0;y<H;y++) for(let x=0;x<W;x++) {
-        const i=y*W+x, fiber=fbm(paperNoise,x/115,y/34,4), longFiber=Math.sin(y*.31+x*.012)*.9, speck=(rnd()-.5)*2.2;
-        absorption[i]=Math.max(.58,Math.min(1.18,.91+fiber*.23+Math.sin(x*.019+y*.006)*.035));
-        const tone=Math.round(fiber*3.2+longFiber+speck);
-        d[i*4]=PAPER[0]+tone; d[i*4+1]=PAPER[1]+tone; d[i*4+2]=PAPER[2]+tone; d[i*4+3]=255;
+      function fit(canvas, cssW=canvas.clientWidth, cssH=canvas.clientHeight) {
+        const d=DPR(), w=Math.max(1,Math.round(cssW*d)), h=Math.max(1,Math.round(cssH*d));
+        if(canvas.width!==w || canvas.height!==h){ canvas.width=w; canvas.height=h; }
+        const c=canvas.getContext('2d'); c.setTransform(d,0,0,d,0,0); return [c,cssW,cssH,d];
       }
-      return out;
-    }
 
-    function ridge(layer, x) {
-      const configs=[
-        {base:.61, amp:.16, scale:310, peaks:[[.69,-.17,.12],[.87,-.09,.09]]},
-        {base:.72, amp:.20, scale:225, peaks:[[.58,-.24,.105],[.79,-.14,.12],[.96,-.12,.08]]},
-        {base:.88, amp:.29, scale:165, peaks:[[.49,-.34,.08],[.72,-.22,.10],[.91,-.30,.075],[1.05,-.19,.08]]}
-      ][layer];
-      const nx=x/W, c=configs; let y=c.base+fbm(landNoise,x/c.scale,layer*4.7,5)*c.amp;
-      c.peaks.forEach(([p,h,s]) => y += h*Math.exp(-Math.pow((nx-p)/s,2)));
-      return y*H;
-    }
-
-    function deposit(data, x, y, concentration, radius, rnd) {
-      const r=Math.ceil(radius), x0=Math.max(0,Math.floor(x-r)), x1=Math.min(W-1,Math.ceil(x+r)), y0=Math.max(0,Math.floor(y-r)), y1=Math.min(H-1,Math.ceil(y+r));
-      for(let py=y0;py<=y1;py++) for(let px=x0;px<=x1;px++) {
-        const dx=(px-x)/radius, dy=(py-y)/radius, dist=dx*dx+dy*dy;
-        if(dist>1) continue;
-        const i=py*W+px, edge=Math.pow(1-dist,.72), grain=.72+absorption[i]*.28;
-        if(rnd() > Math.min(1, edge*1.45*grain)) continue;
-        const amount=concentration*edge*grain, old=data[i*4+3]/255, next=1-(1-old)*(1-amount);
-        data[i*4]=INK[0]; data[i*4+1]=INK[1]; data[i*4+2]=INK[2]; data[i*4+3]=Math.min(255,Math.round(next*255));
-      }
-    }
-
-    function paintLayer(layer) {
-      const img=new ImageData(W,H), d=img.data, rnd=mulberry32(1000+layer*97);
-      const concentration=[.19,.38,.72][layer], step=[5,4,3][layer];
-      for(let x=0;x<W;x+=step) {
-        const top=ridge(layer,x), floor=Math.min(H, top + H*[.30,.35,.42][layer]);
-        for(let y=top;y<floor;y+=step) {
-          const depth=(y-top)/(floor-top), texture=fbm(detailNoise,x/47+layer*3,y/61,4);
-          const wash=concentration*(.34+.66*Math.pow(1-depth,.5))*(.78+texture*.42);
-          if(rnd() < .88-depth*.28) deposit(d,x+(rnd()-.5)*step,y+(rnd()-.5)*step,wash,step*(1.1+rnd()*.75),rnd);
+      function paintPaper() {
+        const canvas=document.querySelector('#paper'), d=DPR(), w=Math.ceil(innerWidth*d), h=Math.ceil(innerHeight*d);
+        canvas.width=w; canvas.height=h;
+        const c=canvas.getContext('2d'), img=c.createImageData(w,h), p=img.data, rnd=mulberry(1703);
+        const coarse=new Float32Array(Math.ceil(w/7)*Math.ceil(h/7)), cw=Math.ceil(w/7);
+        for(let i=0;i<coarse.length;i++) coarse[i]=rnd()-.5;
+        for(let y=0;y<h;y++) for(let x=0;x<w;x++) {
+          const i=(y*w+x)*4, grain=(rnd()-.5)*7, fiber=coarse[(y/7|0)*cw+(x/7|0)]*5, thread=Math.sin(y*.085+x*.007)*.7;
+          p[i]=clamp(PAPER[0]+grain+fiber+thread,0,255); p[i+1]=clamp(PAPER[1]+grain+fiber+thread,0,255); p[i+2]=clamp(PAPER[2]+grain+fiber,0,255); p[i+3]=255;
         }
-        // Capillary edge: particles random-walk away from the wet ridge and lose ink each step.
-        if(x% (step*2)===0) for(let p=0;p<3+layer;p++) {
-          let px=x+(rnd()-.5)*4, py=top+(rnd()-.5)*3, ink=concentration*.58;
-          const walks=3+Math.floor(rnd()*7);
-          for(let s=0;s<walks;s++){ px+=(rnd()-.5)*(3+layer); py+=(rnd()-.58)*(3.2+layer); deposit(d,px,py,ink,1.1+rnd()*2.1,rnd); ink*=.83; }
+        c.putImageData(img,0,0);
+      }
+
+      const mountainCanvas=document.querySelector('#mountains');
+      function path(c, pts, close=false) { c.beginPath(); c.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) c.lineTo(pts[i][0],pts[i][1]); if(close)c.closePath(); }
+      function partialPath(c, pts, t) {
+        if(t<=0)return; let lengths=[],total=0;
+        for(let i=1;i<pts.length;i++){ const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); lengths.push(l); total+=l; }
+        let left=total*clamp(t); c.beginPath(); c.moveTo(...pts[0]);
+        for(let i=1;i<pts.length&&left>0;i++){ const l=lengths[i-1],q=Math.min(1,left/l); c.lineTo(pts[i-1][0]+(pts[i][0]-pts[i-1][0])*q,pts[i-1][1]+(pts[i][1]-pts[i-1][1])*q); left-=l; }
+      }
+      function outline(c,pts,t,width,rnd){
+        c.save(); c.lineCap='round'; c.lineJoin='miter'; c.strokeStyle=`rgba(${INK},.98)`;
+        partialPath(c,pts,t); c.lineWidth=width; c.stroke();
+        for(let k=0;k<4;k++){ c.strokeStyle=`rgba(${INK},${.13+rnd()*.12})`; c.lineWidth=Math.max(.5,width*(.15+rnd()*.2)); c.translate((rnd()-.5)*width*.8,(rnd()-.5)*width*.6); partialPath(c,pts,t); c.stroke(); }
+        c.restore();
+      }
+      function wash(c,pts,alpha,rnd,baseY){
+        c.save(); path(c,pts,true); c.clip();
+        for(let i=0;i<85;i++){
+          const x=pts.reduce((a,p)=>a+p[0],0)/pts.length + (rnd()-.5)*c.canvas.clientWidth*.65;
+          const y=baseY-(rnd()*rnd())*c.canvas.clientHeight*.55;
+          const rx=25+rnd()*150, ry=18+rnd()*110;
+          c.fillStyle=`rgba(${INK},${alpha*(.12+rnd()*.88)})`; c.beginPath(); c.ellipse(x,y,rx,ry,rnd()*.5,0,Math.PI*2); c.fill();
         }
+        c.restore();
       }
-      // Dry-brush texture and contour strokes on near layers.
-      if(layer>0) for(let k=0;k<(layer===2?85:35);k++) {
-        const x=W*(.38+rnd()*.65), top=ridge(layer,x), len=8+rnd()*42, pressure=.7+rnd()*2.6;
-        for(let s=0;s<len;s+=1.8){ const y=top+s, drift=s*(rnd()-.46)*.18; if(rnd()>.22) deposit(d,x+drift,y,concentration*.72,pressure*(1-s/len*.55),rnd); }
+      function rock(c,x,y,len,angle,width,alpha,rnd){
+        c.save(); c.translate(x,y); c.rotate(angle); c.strokeStyle=`rgba(${INK},${alpha})`; c.lineCap='butt';
+        c.beginPath(); c.moveTo(0,0); const seg=5; for(let i=1;i<=seg;i++)c.lineTo(len*i/seg,(rnd()-.5)*4); c.lineWidth=width; c.stroke();
+        c.globalCompositeOperation='destination-out'; c.strokeStyle='rgba(0,0,0,.8)'; c.setLineDash([1+rnd()*4,2+rnd()*5]); c.lineWidth=Math.max(1,width*.2); c.stroke(); c.restore();
       }
-      return img;
-    }
-
-    function mergeLayers(paper, layers) {
-      const out=new ImageData(new Uint8ClampedArray(paper.data),W,H), d=out.data;
-      layers.forEach((img,layer)=>{
-        for(let i=0;i<W*H;i++) { const a=img.data[i*4+3]/255; if(a<=0) continue; const mist=layer<2 && ((i/W|0)>H*(layer? .66:.57) && (i/W|0)<H*(layer?.71:.625)); const aa=mist?a*.15:a; d[i*4]=Math.round(d[i*4]*(1-aa)+INK[0]*aa); d[i*4+1]=Math.round(d[i*4+1]*(1-aa)+INK[1]*aa); d[i*4+2]=Math.round(d[i*4+2]*(1-aa)+INK[2]*aa); }
-      });
-      return out;
-    }
-
-    function makeReveal(finalImage) {
-      const paper=buildPaper(), buckets=Array.from({length:240},()=>[]), origins=[[.72,.50],[.62,.58],[.54,.69]];
-      for(let i=0;i<W*H;i++) {
-        const x=i%W, y=i/W|0, changed=Math.abs(finalImage.data[i*4]-paper.data[i*4])>2;
-        if(!changed) continue;
-        let best=1; origins.forEach((o,j)=>{ const dx=(x/W-o[0])*.78, dy=(y/H-o[1]); best=Math.min(best,Math.hypot(dx,dy)+j*.035); });
-        const turbulence=fbm(landNoise,x/95,y/95,3)*.11, order=Math.max(0,Math.min(239,Math.floor((best*.92+turbulence+.02)*220)));
-        buckets[order].push(i);
+      function paintMountains(time=1){
+        const [c,w,h]=fit(mountainCanvas); c.clearRect(0,0,w,h); const rnd=mulberry(9321);
+        const sx=w<760?.76:.42, right=w*1.04, base=h*.92;
+        const far=[[w*.54,h*.54],[w*.61,h*.39],[w*.66,h*.49],[w*.72,h*.29],[w*.78,h*.45],[w*.86,h*.24],[w*.93,h*.39],[right,h*.31],[right,base],[w*.52,base]];
+        const mid=[[w*sx,h*.72],[w*.56,h*.58],[w*.62,h*.65],[w*.69,h*.43],[w*.74,h*.59],[w*.81,h*.38],[w*.87,h*.57],[w*.94,h*.42],[right,h*.52],[right,base],[w*sx,base]];
+        const near=[[w*(w<760?.61:.5),base],[w*.58,h*.75],[w*.63,h*.79],[w*.7,h*.61],[w*.75,h*.72],[w*.81,h*.54],[w*.86,h*.7],[w*.93,h*.58],[right,h*.66],[right,h],[w*.48,h]];
+        const outlineP=ease(time/.34), washP=ease((time-.25)/.28), detailP=clamp((time-.49)/.43);
+        if(washP>0){ wash(c,far,.11*washP,rnd,base); wash(c,mid,.20*washP,rnd,base); wash(c,near,.34*washP,rnd,h); }
+        outline(c,far.slice(0,8),outlineP,2.4,rnd); outline(c,mid.slice(0,9),ease((time-.05)/.32),4.3,rnd); outline(c,near.slice(1,9),ease((time-.11)/.32),7.5,rnd);
+        const strokes=[];
+        for(let i=0;i<60;i++){ const layer=i<18?far:i<39?mid:near; const minX=layer[0][0], x=minX+rnd()*(right-minX); const yy=(i<18?h*.38:i<39?h*.51:h*.67)+rnd()*h*.21; strokes.push([x,yy,18+rnd()*75,-.95+rnd()*.45,1+rnd()*(i<39?3:6),i<18?.35:i<39?.56:.76]); }
+        const shown=Math.floor(strokes.length*detailP);
+        for(let i=0;i<shown;i++)rock(c,...strokes[i],rnd);
+        const dots=Math.floor(44*clamp((detailP-.42)/.58));
+        c.fillStyle=`rgba(${INK},.82)`;
+        for(let i=0;i<dots;i++){ const x=w*(.69+rnd()*.28), y=h*(.38+rnd()*.22), r=.8+rnd()*3.2; c.beginPath(); c.arc(x,y,r,0,7); c.fill(); }
+        // Mist is untouched paper; only sparse airborne ink marks define its boundary.
+        c.fillStyle=`rgba(${INK},.09)`;
+        for(let i=0;i<32*washP;i++){ c.beginPath(); c.arc(w*(.47+rnd()*.5),h*(.56+rnd()*.11),rnd()*1.8,0,7); c.fill(); }
       }
-      return {paper,buckets};
-    }
 
-    function drawTrees(ctx) {
-      ctx.save(); ctx.strokeStyle='rgba(15,12,10,.70)'; ctx.fillStyle='rgba(15,12,10,.58)'; ctx.lineCap='round';
-      const trees=[[.79,.71,1],[.83,.735,.72],[.89,.72,.88],[.94,.75,.58]];
-      trees.forEach(([nx,ny,s],n)=>{ const x=nx*W,y=ny*H; ctx.lineWidth=Math.max(1,s*1.7); ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x-3*s,y-25*s,x+2*s,y-48*s); ctx.stroke(); const rnd=mulberry32(50+n); for(let i=0;i<18;i++){ const yy=y-(18+rnd()*34)*s, side=(rnd()-.5)*26*s, r=(1+rnd()*2.4)*s; ctx.beginPath(); ctx.ellipse(x+side,yy,r*1.8,r,.2,0,Math.PI*2); ctx.fill(); } });
-      ctx.restore();
-    }
+      function frameBorders(){
+        document.querySelectorAll('.card-border').forEach((cv,n)=>{ const [c,w,h]=fit(cv),r=mulberry(80+n); c.clearRect(0,0,w,h); c.strokeStyle=`rgba(${INK},.78)`; c.lineCap='square';
+          [[7,8,w-5,5],[w-7,5,w-4,h-8],[w-5,h-7,6,h-4],[5,h-5,7,8]].forEach((a,i)=>{ c.beginPath(); c.moveTo(a[0]+(r()-.5)*4,a[1]+(r()-.5)*4); c.quadraticCurveTo((a[0]+a[2])/2+(r()-.5)*8,(a[1]+a[3])/2+(r()-.5)*8,a[2],a[3]); c.lineWidth=i===0?2.4:1.3+r()*1.5; c.stroke(); });
+        });
+        document.querySelectorAll('[data-divider]').forEach((cv,n)=>{ const [c,w,h]=fit(cv),r=mulberry(900+n); c.clearRect(0,0,w,h); const y=h/2; for(let i=0;i<8;i++){ c.beginPath(); c.moveTo(-10,y+(r()-.5)*7); c.bezierCurveTo(w*.25,y+(r()-.5)*9,w*.72,y+(r()-.5)*6,w+10,y+(r()-.5)*5); c.strokeStyle=`rgba(${INK},${.07+r()*.13})`; c.lineWidth=1+r()*3; c.stroke(); } });
+      }
 
-    function render(ts) {
-      const ctx=landscape.getContext('2d'), elapsed=ts-started, progress=reduced?1:Math.min(1,elapsed/3800), upto=Math.floor(progress*239);
-      if(!scene.current) scene.current=new ImageData(new Uint8ClampedArray(revealBuckets.paper.data),W,H);
-      while(scene.bucket<=upto){ const bucket=revealBuckets.buckets[scene.bucket]||[]; for(const i of bucket){ const p=i*4; scene.current.data[p]=scene.final.data[p]; scene.current.data[p+1]=scene.final.data[p+1]; scene.current.data[p+2]=scene.final.data[p+2]; } scene.bucket++; }
-      ctx.putImageData(scene.current,0,0); if(progress===1){ drawTrees(ctx); return; }
-      raf=requestAnimationFrame(render);
-    }
+      const trail=document.querySelector('#trail'); let tc,last=null, points=0;
+      function fitTrail(){ [tc]=fit(trail,innerWidth,innerHeight); tc.clearRect(0,0,innerWidth,innerHeight); last=null; }
+      function pointer(e){
+        const now=performance.now(), p={x:e.clientX,y:e.clientY,t:now}; if(!last){last=p;return;}
+        const dist=Math.hypot(p.x-last.x,p.y-last.y); if(dist<2)return; const speed=dist/Math.max(8,now-last.t), width=clamp(18-speed*8,3,18), r=mulberry(++points*97);
+        tc.save(); tc.lineCap='round'; tc.lineJoin='round';
+        for(let i=0;i<9;i++){ const off=(i-4)*width*.07+(r()-.5)*1.5; tc.beginPath(); tc.moveTo(last.x+off,last.y+off*.25); tc.lineTo(p.x+off,p.y+off*.25); tc.strokeStyle=`rgba(${INK},${.025+r()*.055})`; tc.lineWidth=Math.max(.4,width*(.16+r()*.14)); tc.stroke(); }
+        for(let i=0;i<Math.min(10,dist/2);i++){ const q=r(),x=last.x+(p.x-last.x)*q+(r()-.5)*width,y=last.y+(p.y-last.y)*q+(r()-.5)*width*.45; tc.fillStyle=`rgba(${INK},${.03+r()*.08})`; tc.fillRect(x,y,.5+r()*1.4,.5+r()*1.4); }
+        tc.restore(); last=p;
+      }
+      addEventListener('pointermove',pointer,{passive:true}); addEventListener('pointerleave',()=>last=null);
 
-    function rebuild() {
-      cancelAnimationFrame(raf);
-      const rect=hero.getBoundingClientRect(), scale=Math.min(devicePixelRatio||1,1.35,1100/rect.width);
-      W=Math.max(360,Math.round(rect.width*scale)); H=Math.max(520,Math.round(rect.height*scale));
-      setupCanvas(landscape,W,H); setupCanvas(interaction,W,H);
-      const paper=buildPaper(), layers=[paintLayer(0),paintLayer(1),paintLayer(2)], final=mergeLayers(paper,layers);
-      revealBuckets=makeReveal(final); scene={final,current:null,bucket:0}; started=performance.now(); raf=requestAnimationFrame(render);
-    }
-
-    // Transient wet-ink droplets. Each drop expands in irregular particle rings as its water evaporates.
-    const drops=[]; let pointerLast=0;
-    function addDrop(clientX,clientY,force=.55){ const r=hero.getBoundingClientRect(); if(clientY<r.top||clientY>r.bottom) return; drops.push({x:(clientX-r.left)/r.width*W,y:(clientY-r.top)/r.height*H,born:performance.now(),seed:Math.random()*999,size:(2.5+force*6)*(W/r.width)}); }
-    hero.addEventListener('pointermove',e=>{ const now=performance.now(); if(now-pointerLast<38||reduced)return; const speed=Math.hypot(e.movementX,e.movementY), pressure=e.pressure||Math.max(.18,1-Math.min(speed,35)/42); addDrop(e.clientX,e.clientY,pressure); pointerLast=now; },{passive:true});
-    let lastScroll=scrollY;
-    addEventListener('scroll',()=>{ if(innerWidth>760||reduced)return; const dir=scrollY>lastScroll?1:-1; addDrop(dir>0?8:innerWidth-8,innerHeight*(.25+Math.random()*.5),.45); lastScroll=scrollY; },{passive:true});
-    function animateDrops(now){ const ctx=interaction.getContext('2d'); ctx.clearRect(0,0,W,H); for(let k=drops.length-1;k>=0;k--){ const d=drops[k], age=(now-d.born)/2000; if(age>=1){drops.splice(k,1);continue;} const rnd=mulberry32(d.seed|0), alpha=(1-age)*.28, spread=d.size*(1+age*2.8); ctx.fillStyle=`rgba(15,12,10,${alpha})`; for(let p=0;p<16;p++){ const a=rnd()*Math.PI*2, rr=spread*(.2+rnd()*.9)*age; ctx.beginPath(); ctx.ellipse(d.x+Math.cos(a)*rr,d.y+Math.sin(a)*rr,d.size*(.2+rnd()*.55),d.size*(.15+rnd()*.42),a,0,Math.PI*2); ctx.fill(); } } requestAnimationFrame(animateDrops); }
-
-    function drawBrushCanvas(canvas, type, seed) {
-      const rect=canvas.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2), w=Math.max(1,Math.round(rect.width*dpr)), h=Math.max(1,Math.round(rect.height*dpr)), ctx=setupCanvas(canvas,w,h), rnd=mulberry32(seed);
-      ctx.strokeStyle='rgba(15,12,10,.55)'; ctx.fillStyle='rgba(15,12,10,.42)'; ctx.lineCap='round';
-      if(type==='border') { const pts=[[5,8,w-8,4],[w-6,5,w-3,h-9],[w-5,h-6,7,h-3],[5,h-5,3,9]]; pts.forEach((p,side)=>{ for(let f=0;f<5;f++){ctx.beginPath();ctx.lineWidth=(.45+rnd()*1.25)*dpr;ctx.moveTo(p[0]+(rnd()-.5)*5,p[1]+(rnd()-.5)*5);const mx=(p[0]+p[2])/2+(rnd()-.5)*8,my=(p[1]+p[3])/2+(rnd()-.5)*8;ctx.quadraticCurveTo(mx,my,p[2]+(rnd()-.5)*5,p[3]+(rnd()-.5)*5);ctx.stroke();} }); return; }
-      const stroke=(x1,y1,x2,y2,width)=>{ const steps=34; for(let i=0;i<steps;i++){const t=i/(steps-1), pressure=Math.sin(t*Math.PI)*.72+.2, x=x1+(x2-x1)*t+(rnd()-.5)*2,y=y1+(y2-y1)*t+(rnd()-.5)*2;ctx.beginPath();ctx.ellipse(x,y,width*pressure*(.7+rnd()*.4),width*pressure*.36,rnd()*.4,0,Math.PI*2);ctx.fill();} };
-      if(type==='peak'){stroke(w*.12,h*.83,w*.48,h*.18,8*dpr);stroke(w*.48,h*.18,w*.86,h*.82,11*dpr);stroke(w*.42,h*.36,w*.66,h*.82,5*dpr);}
-      if(type==='wash'){for(let i=0;i<7;i++)stroke(w*.12,h*(.22+i*.09),w*.88,h*(.18+i*.08),(8-i*.6)*dpr);}
-      if(type==='bamboo'){stroke(w*.37,h*.9,w*.49,h*.1,5*dpr);stroke(w*.65,h*.9,w*.60,h*.27,4*dpr);for(let i=0;i<8;i++){const x=(i%2?w*.6:w*.47),y=h*(.22+i*.075);stroke(x,y,x+(i%2?1:-1)*w*.18,y-h*.11,3*dpr);}}
-    }
-
-    function paintSupportingCanvases(){ document.querySelectorAll('.border-canvas').forEach((c,i)=>drawBrushCanvas(c,'border',210+i)); document.querySelectorAll('[data-mark]').forEach((c,i)=>drawBrushCanvas(c,c.dataset.mark,330+i)); const wash=document.querySelector('#wash-canvas'), r=wash.getBoundingClientRect(), ctx=setupCanvas(wash,Math.round(r.width),Math.round(r.height)), rnd=mulberry32(505); ctx.fillStyle='rgba(15,12,10,.035)'; for(let i=0;i<380;i++){const x=r.width*(.1+rnd()*.8),y=r.height*(.22+rnd()*.57),rx=12+rnd()*90,ry=3+rnd()*18;ctx.beginPath();ctx.ellipse(x,y,rx,ry,rnd()*.3,0,Math.PI*2);ctx.fill();} }
-
-    const ro=new ResizeObserver(()=>{ clearTimeout(ro.timer); ro.timer=setTimeout(()=>{rebuild();paintSupportingCanvases();},120); });
-    ro.observe(hero); document.querySelectorAll('.ink-card, .manifesto').forEach(el=>ro.observe(el));
-    rebuild(); paintSupportingCanvases(); requestAnimationFrame(animateDrops);
-  })();
+      let start=performance.now();
+      function animate(now){ const t=reduced?1:clamp((now-start)/3900); paintMountains(t); if(t<1)requestAnimationFrame(animate); }
+      let resizeTimer;
+      function resize(){ clearTimeout(resizeTimer); resizeTimer=setTimeout(()=>{paintPaper();fitTrail();paintMountains(1);frameBorders();},100); }
+      paintPaper(); fitTrail(); frameBorders(); requestAnimationFrame(animate); addEventListener('resize',resize,{passive:true});
+    })();
   </script>
 </body>
 </html>
