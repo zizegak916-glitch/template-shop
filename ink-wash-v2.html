@@ -3,21 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f3ec">
-  <meta name="description" content="墨序——一页如水墨动画般展开的数字叙事。">
-  <title>墨序 · 水墨动画式数字叙事</title>
+  <meta name="theme-color" content="#f5f0e8">
+  <meta name="description" content="墨山——以真实像素扩散模拟宣纸上的浓淡枯润。">
+  <title>墨山 · 像素水墨画卷</title>
   <style>
     :root {
-      --paper: #f7f3ec;
-      --dense: #121010;
-      --heavy: #2a2525;
-      --medium: #5c5555;
-      --light: #9e9595;
-      --faint: #d4cfca;
-      --seal: #c41e3a;
-      --serif: STKaiti, "FZQingKeBenYueSongS-R-GB", "Noto Serif SC", "Songti SC", SimSun, serif;
-      --ease-ink: cubic-bezier(.16, .76, .3, 1);
-      --gutter: clamp(1.4rem, 5vw, 6rem);
+      --paper: rgb(245, 240, 232);
+      --paper-deep: rgb(235, 228, 216);
+      --ink: rgb(15, 12, 10);
+      --ink-mid: rgb(73, 67, 61);
+      --ink-light: rgb(136, 128, 118);
+      --vermillion: rgb(196, 30, 58);
+      --serif: STKaiti, "FZQingKeBenYueSongS-R-GB", "Songti SC", SimSun, serif;
+      --gutter: clamp(1.25rem, 5vw, 6rem);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -25,448 +23,346 @@
     body {
       margin: 0;
       overflow-x: hidden;
-      color: var(--heavy);
+      color: var(--ink);
       background: var(--paper);
       font-family: var(--serif);
-      line-height: 2.05;
-      letter-spacing: .06em;
+      line-height: 2.2;
+      letter-spacing: .08em;
       -webkit-font-smoothing: antialiased;
     }
-    body::after {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      pointer-events: none;
-      content: "";
-      opacity: .16;
-      mix-blend-mode: multiply;
-      background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' seed='19'/%3E%3CfeColorMatrix values='.45 0 0 0 .18 .35 0 0 0 .15 .28 0 0 0 .12 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-    }
-    ::selection { color: var(--paper); background: var(--heavy); }
     a { color: inherit; text-decoration: none; }
-    svg { display: block; }
     button, a { -webkit-tap-highlight-color: transparent; }
-    :focus-visible { outline: 1px solid var(--heavy); outline-offset: 5px; }
+    :focus-visible { outline: 2px solid var(--vermillion); outline-offset: 5px; }
+    ::selection { color: var(--paper); background: var(--vermillion); }
 
     .skip-link {
-      position: fixed; top: 1rem; left: 1rem; z-index: 1100;
-      padding: .4rem 1rem; color: var(--paper); background: var(--heavy);
-      transform: translateY(-180%); transition: transform .2s;
+      position: fixed; top: .8rem; left: .8rem; z-index: 100;
+      padding: .35rem .8rem; color: var(--paper); background: var(--ink);
+      transform: translateY(-180%);
     }
     .skip-link:focus { transform: none; }
 
-    .site-nav {
-      position: absolute; inset: 0 0 auto; z-index: 20;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1.5rem var(--gutter); font-size: .8rem; letter-spacing: .24em;
+    .nav {
+      position: absolute; inset: 0 0 auto; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem var(--gutter); font-size: .78rem; letter-spacing: .22em;
     }
-    .brand { font-weight: 700; font-size: 1rem; color: var(--dense); }
-    .nav-links { display: flex; gap: clamp(1rem, 3vw, 2.8rem); margin: 0; padding: 0; list-style: none; }
-    .nav-links a { position: relative; padding-block: .25rem; }
-    .nav-links a::after {
-      position: absolute; right: 3%; bottom: 0; left: 0; height: 1px;
-      content: ""; background: var(--medium); transform: scaleX(0) rotate(-1deg);
-      transform-origin: right; transition: transform .55s var(--ease-ink);
+    .brand { display: flex; align-items: center; gap: .7rem; font-size: 1.05rem; font-weight: 700; }
+    .seal {
+      display: grid; width: 2.25rem; aspect-ratio: 1; place-items: center;
+      color: var(--paper); background: var(--vermillion); line-height: 1;
+      border-radius: 3px 5px 2px 4px; transform: rotate(-2deg);
+      box-shadow: inset 0 0 0 2px rgba(245,240,232,.28);
     }
-    .nav-links a:hover::after { transform: scaleX(1) rotate(-1deg); transform-origin: left; }
+    .nav ul { display: flex; gap: clamp(1rem, 3vw, 2.7rem); margin: 0; padding: 0; list-style: none; }
+    .nav a { position: relative; }
+    .nav li a::after {
+      position: absolute; right: 0; bottom: -.3rem; left: 0; height: 1px;
+      content: ""; background: var(--ink); transform: scaleX(0); transform-origin: right;
+      transition: transform .45s ease;
+    }
+    .nav li a:hover::after { transform: scaleX(1); transform-origin: left; }
 
     .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; }
+    #ink-landscape, #ink-interaction { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #ink-landscape { z-index: -2; }
+    #ink-interaction { z-index: 3; pointer-events: none; }
     .hero-copy {
-      position: absolute; top: 20%; left: clamp(8%, 10vw, 13%); z-index: 4;
-      display: flex; align-items: flex-start; gap: 2.1rem;
+      position: absolute; top: clamp(7rem, 17vh, 11rem); left: clamp(7%, 10vw, 13%); z-index: 2;
+      display: flex; align-items: flex-start; gap: clamp(1.1rem, 2.5vw, 2.4rem);
     }
-    .hero h1 {
-      margin: 0; color: var(--dense); font-size: clamp(3.3rem, 7vw, 7.4rem);
-      line-height: 1.02; letter-spacing: .12em; writing-mode: vertical-rl;
-      font-weight: 800;
+    h1 {
+      margin: 0; color: var(--ink); font-size: clamp(3.8rem, 8vw, 8.5rem);
+      font-weight: 800; line-height: 1; letter-spacing: .12em; writing-mode: vertical-rl;
+      text-shadow: 0 0 1px rgba(15,12,10,.16);
     }
-    .hero-kicker {
-      margin: 4.7rem 0 0; color: var(--medium); font-size: .78rem;
-      letter-spacing: .3em; writing-mode: vertical-rl;
+    .hero-intro { max-width: 13rem; margin-top: 4.8rem; color: var(--ink-mid); font-size: .8rem; writing-mode: vertical-rl; }
+    .hero-intro strong { color: var(--ink); font-size: 1rem; font-weight: 700; }
+    .hero-note {
+      position: absolute; right: var(--gutter); bottom: 2rem; z-index: 4;
+      color: var(--ink-light); font-size: .65rem; letter-spacing: .18em;
     }
-    .hero-landscape {
-      position: absolute; right: -4vw; bottom: -2%; z-index: 1;
-      width: min(78vw, 1180px); height: 82%; overflow: visible;
-      will-change: clip-path, opacity, transform;
-      clip-path: polygon(47% 50%, 52% 48%, 55% 52%, 50% 55%);
-      opacity: 0;
-      transform: translate3d(1.5%, 2%, 0) scale(.98);
-      animation: mountain-bleed 2.8s .15s var(--ease-ink) forwards;
-    }
-    @keyframes mountain-bleed {
-      0% { opacity: .08; clip-path: polygon(49% 51%, 52% 48%, 54% 52%, 51% 55%); transform: translate3d(1.5%, 2%, 0) scale(.96); filter: blur(5px); }
-      42% { opacity: .7; clip-path: polygon(25% 42%, 49% 5%, 69% 20%, 98% 63%, 90% 99%, 34% 94%, 3% 72%); }
-      100% { opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-    }
-    .hero-caption {
-      position: absolute; right: var(--gutter); bottom: 2.2rem; z-index: 5;
-      color: var(--medium); font-size: .67rem; letter-spacing: .22em;
-    }
-    .scroll-mark {
+    .scroll-cue {
       position: absolute; bottom: 2rem; left: var(--gutter); z-index: 4;
-      display: flex; align-items: center; gap: .8rem; color: var(--light);
-      font-size: .65rem; letter-spacing: .24em; writing-mode: vertical-rl;
+      display: flex; align-items: center; gap: .75rem; color: var(--ink-light);
+      font-size: .62rem; letter-spacing: .22em; writing-mode: vertical-rl;
     }
-    .scroll-mark::before { width: 1px; height: 3rem; content: ""; background: var(--faint); transform: rotate(1deg); }
+    .scroll-cue::before { width: 1px; height: 3.2rem; content: ""; background: var(--ink-light); opacity: .45; }
 
-    .divider { position: relative; height: clamp(90px, 13vw, 170px); overflow: hidden; }
-    .divider svg { width: 100%; height: 100%; overflow: visible; }
-    .brush-path {
-      fill: none; stroke: var(--heavy); stroke-linecap: round; opacity: .76;
-      stroke-dasharray: 1300; stroke-dashoffset: 1300;
-      filter: url(#brush-bleed); transition: stroke-dashoffset 1.8s var(--ease-ink);
-    }
-    .divider.visible .brush-path { stroke-dashoffset: 0; }
+    .brush-divider { height: clamp(80px, 11vw, 150px); overflow: hidden; }
+    .brush-divider svg { display: block; width: 100%; height: 100%; }
+    .brush-divider path { fill: none; stroke: var(--ink); stroke-linecap: round; }
 
-    .section { position: relative; padding-inline: var(--gutter); }
-    .section-label { margin: 0; color: var(--light); font-size: .68rem; letter-spacing: .28em; text-transform: uppercase; }
-    .section-title { margin: .3rem 0 0; color: var(--dense); font-size: clamp(2.4rem, 5vw, 5.2rem); line-height: 1.2; letter-spacing: .12em; }
+    .section { padding: clamp(5rem, 12vh, 10rem) var(--gutter); }
+    .section-head { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 3rem; max-width: 1180px; margin: 0 auto 5rem; }
+    .eyebrow { margin: 0 0 .6rem; color: var(--vermillion); font-size: .68rem; letter-spacing: .3em; }
+    h2 { margin: 0; font-size: clamp(2.4rem, 5vw, 5rem); line-height: 1.25; letter-spacing: .12em; }
+    .section-lead { max-width: 32rem; margin: 0 0 .4rem auto; color: var(--ink-mid); font-size: .9rem; }
 
-    .bold-section { min-height: 115vh; padding-top: 6vh; padding-bottom: 8vh; }
-    .bold-heading { margin-left: 5vw; }
-    .cards { position: relative; max-width: 1160px; min-height: 760px; margin: 1.5rem auto 0; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 3.5rem); max-width: 1180px; margin: auto; }
     .ink-card {
-      position: absolute; width: min(48%, 520px); padding: clamp(1rem, 2vw, 1.6rem);
-      isolation: isolate; background: rgba(247, 243, 236, .58); cursor: default;
-      filter: url(#card-edge); transform: translate3d(0, 0, 0); will-change: transform;
-      transition: transform .7s var(--ease-ink);
+      position: relative; min-height: 27rem; padding: 2.25rem 2rem; overflow: hidden;
+      background: rgba(245,240,232,.62); transition: transform .5s ease;
     }
-    .ink-card::before {
-      position: absolute; inset: 0; z-index: -1; content: "";
-      background: var(--faint); opacity: .38;
-      clip-path: polygon(1% 3%, 99% 1%, 98% 96%, 81% 99%, 4% 97%, 0 72%);
-    }
-    .ink-card:hover { transform: translate3d(0, -7px, 0) rotate(.2deg); }
-    .card-one { top: 10%; left: 2%; transform: rotate(-.8deg); }
-    .card-two { top: 36%; right: 0; transform: rotate(.55deg); }
-    .card-art { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: var(--faint); }
-    .card-art svg { width: 100%; height: 100%; filter: grayscale(1) contrast(1.2) sepia(.1); }
-    .card-copy { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; padding: 1.25rem .4rem .4rem; }
-    .card-number { color: var(--light); font-size: .75rem; }
-    .ink-card h3 { margin: 0 0 .4rem; color: var(--dense); font-size: 1.3rem; letter-spacing: .13em; }
-    .ink-card p { max-width: 33em; margin: 0; color: var(--medium); font-size: .82rem; line-height: 2; }
-    .splatter { position: absolute; z-index: 4; width: var(--s); height: var(--s); pointer-events: none; border-radius: 47% 53% 38% 62%; background: var(--heavy); animation: splat .72s ease-out forwards; }
-    @keyframes splat { to { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) scale(.25); } }
+    .ink-card:nth-child(2) { margin-top: 3.5rem; }
+    .ink-card:hover { transform: translateY(-6px) rotate(-.15deg); }
+    .border-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .card-index { color: var(--ink-light); font-size: .68rem; letter-spacing: .2em; }
+    .card-mark { height: 8rem; margin: 2.3rem 0 2rem; }
+    .card-mark canvas { width: 100%; height: 100%; }
+    .ink-card h3 { margin: 0 0 .8rem; font-size: 1.35rem; letter-spacing: .16em; }
+    .ink-card p { margin: 0; color: var(--ink-mid); font-size: .8rem; line-height: 2.15; }
 
-    .wash-section {
-      position: relative; min-height: 88vh; display: grid; place-items: center;
-      overflow: hidden; padding-block: 12vh; isolation: isolate;
-    }
-    .wash-bg { position: absolute; inset: -15%; z-index: -1; width: 130%; height: 130%; }
-    .quote { width: min(80vw, 860px); margin: 0; text-align: center; color: var(--heavy); }
-    .quote p {
-      margin: 0; font-size: clamp(2rem, 4.7vw, 5rem); font-weight: 700;
-      line-height: 1.65; letter-spacing: .14em; opacity: .78;
-      animation: ink-dry 5s ease-in-out infinite alternate;
-    }
-    .quote footer { margin-top: 2.4rem; color: var(--medium); font-size: .75rem; letter-spacing: .3em; }
-    @keyframes ink-dry { to { opacity: 1; filter: contrast(1.05); } }
+    .manifesto { position: relative; display: grid; min-height: 82vh; place-items: center; overflow: hidden; padding: 8rem var(--gutter); text-align: center; }
+    #wash-canvas { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; }
+    blockquote { max-width: 880px; margin: 0; }
+    blockquote p { margin: 0; font-size: clamp(2rem, 4.5vw, 4.8rem); font-weight: 700; line-height: 1.7; letter-spacing: .13em; }
+    blockquote footer { margin-top: 2.2rem; color: var(--ink-mid); font-size: .72rem; letter-spacing: .28em; }
 
-    .pause-section { position: relative; min-height: 105vh; overflow: hidden; }
-    .pause-label { position: absolute; top: 13%; right: 14%; text-align: right; }
-    .pause-mark { position: absolute; top: 57%; left: 24%; width: 88px; height: 70px; opacity: .58; }
-    .pause-note { position: absolute; top: 65%; left: calc(24% + 110px); color: var(--light); font-size: .7rem; letter-spacing: .26em; }
+    .process { max-width: 1050px; margin: auto; }
+    .process-row { display: grid; grid-template-columns: 6rem 1fr 1fr; gap: 2rem; padding: 2.3rem 0; border-bottom: 1px solid rgba(15,12,10,.14); }
+    .process-row span { color: var(--ink-light); font-size: .7rem; }
+    .process-row h3 { margin: 0; font-size: 1.25rem; letter-spacing: .14em; }
+    .process-row p { margin: 0; color: var(--ink-mid); font-size: .8rem; }
 
-    .cta-section { min-height: 70vh; display: grid; place-items: center; padding: 12vh var(--gutter); text-align: center; }
-    .cta-wrap h2 { margin: 0 0 2.7rem; color: var(--dense); font-size: clamp(1.8rem, 4vw, 3.7rem); letter-spacing: .12em; }
+    .cta { display: grid; min-height: 65vh; place-items: center; padding: 8rem var(--gutter); text-align: center; }
+    .cta h2 { margin-bottom: 2.5rem; }
     .seal-button {
-      position: relative; display: inline-grid; min-width: 9.2rem; min-height: 4.2rem;
-      padding: .9rem 1.8rem; place-items: center; overflow: hidden;
-      color: var(--paper); background: var(--seal); font-weight: 700; letter-spacing: .22em;
-      clip-path: polygon(3% 8%, 96% 1%, 100% 89%, 91% 100%, 4% 95%, 0 22%);
-      filter: url(#seal-edge); transition: transform .5s var(--ease-ink);
+      display: inline-grid; min-width: 10rem; min-height: 4.5rem; padding: 1rem 2rem; place-items: center;
+      color: var(--paper); background: var(--vermillion); font-weight: 700; letter-spacing: .24em;
+      clip-path: polygon(3% 7%, 96% 1%, 100% 91%, 91% 100%, 4% 96%, 0 20%);
+      transition: transform .35s ease;
     }
-    .seal-button:hover { transform: translate3d(0, -4px, 0) rotate(-.6deg); }
-    .seal-button::after {
-      position: absolute; inset: 4px; content: ""; border: 1px solid rgba(247, 243, 236, .38);
-      clip-path: polygon(1% 4%, 97% 1%, 100% 93%, 3% 98%);
-    }
-
-    .site-footer {
-      display: flex; justify-content: space-between; align-items: flex-end;
-      min-height: 24vh; padding: 3rem var(--gutter); color: var(--light);
-      font-size: .68rem; letter-spacing: .2em;
-    }
-    .footer-mark { color: var(--heavy); font-size: 1.1rem; letter-spacing: .3em; }
-
-    #ink-trail { position: fixed; inset: 0; z-index: 900; pointer-events: none; overflow: hidden; }
-    .ink-dot {
-      position: absolute; width: var(--size); height: var(--size); margin: calc(var(--size) / -2);
-      border-radius: 43% 57% 64% 36%; background: var(--heavy); opacity: .24;
-      filter: blur(var(--blur)); transform: rotate(var(--turn));
-      animation: dot-fade 1s ease-out forwards; will-change: opacity, transform;
-    }
-    @keyframes dot-fade { to { opacity: 0; transform: scale(1.8) rotate(calc(var(--turn) + 28deg)); } }
-
-    .reveal { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 1s ease, transform 1.2s var(--ease-ink); }
-    .reveal.visible { opacity: 1; transform: translate3d(0, 0, 0); }
+    .seal-button:hover { transform: translateY(-4px) rotate(-1deg); }
+    footer.site-footer { display: flex; justify-content: space-between; padding: 2.5rem var(--gutter); color: var(--ink-light); font-size: .65rem; }
 
     @media (max-width: 760px) {
-      .site-nav { padding-top: 1.1rem; }
-      .nav-links li:nth-child(2) { display: none; }
-      .hero-copy { top: 18%; left: 10%; gap: 1rem; }
-      .hero h1 { font-size: clamp(3rem, 16vw, 5rem); }
-      .hero-kicker { margin-top: 2.5rem; }
-      .hero-landscape { right: -30%; bottom: 0; width: 125vw; height: 67%; }
-      .hero-caption { display: none; }
-      .bold-section { min-height: auto; padding-bottom: 5rem; }
-      .bold-heading { margin-left: 0; }
-      .cards { display: grid; gap: 5rem; min-height: auto; margin-top: 4rem; }
-      .ink-card { position: relative; inset: auto; width: 94%; }
-      .card-two { margin-left: 6%; }
-      .wash-section { min-height: 75vh; }
-      .quote { width: 88vw; }
-      .quote p { font-size: clamp(1.65rem, 8vw, 2.6rem); }
-      .pause-label { top: 10%; right: 9%; }
-      .pause-mark { left: 16%; }
-      .pause-note { top: 68%; left: 16%; }
-      .site-footer { min-height: 19vh; }
-      #ink-trail { display: none; }
+      .nav li:not(:last-child) { display: none; }
+      .hero-copy { top: 16%; left: 8%; }
+      .hero-intro { margin-top: 3rem; }
+      .hero-note { display: none; }
+      .section-head, .cards { grid-template-columns: 1fr; }
+      .section-lead { margin: 0; }
+      .ink-card:nth-child(2) { margin-top: 0; }
+      .process-row { grid-template-columns: 3rem 1fr; }
+      .process-row p { grid-column: 2; }
     }
-
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-      .hero-landscape { opacity: 1; clip-path: none; transform: none; }
-      .brush-path { stroke-dashoffset: 0; }
-      .reveal { opacity: 1; transform: none; }
-      #ink-trail { display: none; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main">跳至正文</a>
-
-  <svg width="0" height="0" aria-hidden="true" focusable="false">
-    <defs>
-      <filter id="ink-wash" x="-20%" y="-20%" width="140%" height="140%">
-        <feTurbulence type="fractalNoise" baseFrequency=".018 .055" numOctaves="4" seed="8" result="noise"/>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" result="displaced"/>
-        <feGaussianBlur in="displaced" stdDeviation="5.5"/>
-      </filter>
-      <filter id="ink-wash-soft" x="-25%" y="-25%" width="150%" height="150%">
-        <feTurbulence type="fractalNoise" baseFrequency=".012 .04" numOctaves="3" seed="21" result="noise"/>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" result="moved"/>
-        <feGaussianBlur in="moved" stdDeviation="12"/>
-      </filter>
-      <filter id="brush-bleed" x="-10%" y="-100%" width="120%" height="300%">
-        <feTurbulence type="fractalNoise" baseFrequency=".025 .2" numOctaves="3" seed="14" result="grain"/>
-        <feDisplacementMap in="SourceGraphic" in2="grain" scale="5"/>
-        <feGaussianBlur stdDeviation=".6"/>
-      </filter>
-      <filter id="card-edge" x="-8%" y="-8%" width="116%" height="116%">
-        <feTurbulence type="fractalNoise" baseFrequency=".015 .04" numOctaves="3" seed="6" result="rough"/>
-        <feDisplacementMap in="SourceGraphic" in2="rough" scale="4"/>
-      </filter>
-      <filter id="seal-edge" x="-12%" y="-12%" width="124%" height="124%">
-        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="3" seed="31" result="rough"/>
-        <feDisplacementMap in="SourceGraphic" in2="rough" scale="3"/>
-      </filter>
-    </defs>
-  </svg>
-
-  <header class="hero" id="top">
-    <nav class="site-nav" aria-label="主导航">
-      <a class="brand" href="#top">墨序</a>
-      <ul class="nav-links">
-        <li><a href="#bold">浓墨</a></li>
-        <li><a href="#wash">渲染</a></li>
-        <li><a href="#space">留白</a></li>
-      </ul>
-    </nav>
-
-    <div class="hero-copy">
-      <h1>墨随心生</h1>
-      <p class="hero-kicker">一笔入境 · 万象无声</p>
-    </div>
-
-    <svg class="hero-landscape" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMax meet" aria-label="层叠于云雾中的水墨山景" role="img">
-      <g filter="url(#ink-wash-soft)" opacity=".38" fill="#5c5555">
-        <path d="M80 650 C180 550 220 410 315 325 C350 292 382 232 420 174 C461 251 514 299 570 373 C631 303 681 235 741 117 C793 212 828 287 907 347 C996 415 1080 532 1200 595 L1200 760 L18 760 Z"/>
-        <path d="M330 630 C450 518 500 458 580 394 C662 328 703 261 754 186 C809 301 867 383 960 455 C1052 527 1120 596 1200 630 L1200 760 L260 760 Z" opacity=".55"/>
-      </g>
-      <g opacity=".72" fill="#2a2525" filter="url(#ink-wash)">
-        <path d="M191 725 C248 665 309 613 353 515 C388 436 435 397 478 316 C513 389 549 427 607 481 C648 421 695 373 751 251 C803 381 853 472 940 529 C1017 580 1066 651 1182 700 L1200 760 L131 760 Z"/>
-        <path d="M510 728 C586 650 630 587 681 524 C727 467 752 410 781 343 C821 447 877 515 947 565 C1015 614 1087 675 1200 711 L1200 760 L451 760 Z" opacity=".56"/>
-      </g>
-      <path d="M0 740 C116 682 180 625 251 580 C299 548 327 478 365 409 C410 502 457 555 533 596 C589 626 620 659 686 689 C790 736 893 699 995 718 C1060 729 1111 741 1200 749 L1200 760 L0 760 Z" fill="#121010" filter="url(#ink-wash)" opacity=".94"/>
-      <g fill="#f7f3ec" opacity=".74" filter="url(#ink-wash-soft)">
-        <path d="M67 585 C194 520 308 557 413 528 C523 497 604 526 705 501 C812 474 921 513 1068 491 L1180 571 C1010 609 864 573 731 611 C580 654 445 597 327 636 C216 673 118 641 25 664 Z"/>
-        <path d="M184 670 C316 630 422 648 536 629 C662 608 778 643 895 619 C1004 597 1081 621 1200 609 L1200 692 C1080 713 971 687 855 711 C738 735 625 700 506 724 C384 749 286 718 157 740 Z" opacity=".58"/>
-      </g>
-      <g fill="none" stroke="#d4cfca" stroke-width="3" opacity=".35">
-        <path d="M466 317 C489 362 512 394 535 418"/>
-        <path d="M751 252 C770 319 790 362 822 405"/>
-      </g>
-    </svg>
-    <span class="scroll-mark">向下</span>
-    <span class="hero-caption">山无定形 · 墨有余韵</span>
-  </header>
+  <nav class="nav" aria-label="主导航">
+    <a class="brand" href="#top"><span class="seal">墨</span><span>墨山集</span></a>
+    <ul><li><a href="#works">画境</a></li><li><a href="#method">笔法</a></li><li><a href="#contact">入卷</a></li></ul>
+  </nav>
 
   <main id="main">
-    <div class="divider" aria-hidden="true">
-      <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path class="brush-path" stroke-width="11" d="M-40 97 C184 66 339 105 522 79 C716 51 891 87 1083 69 C1228 55 1344 71 1490 42"/></svg>
+    <header class="hero" id="top">
+      <canvas id="ink-landscape" aria-hidden="true"></canvas>
+      <canvas id="ink-interaction" aria-hidden="true"></canvas>
+      <div class="hero-copy">
+        <h1>墨山</h1>
+        <p class="hero-intro"><strong>以水行墨，以墨见心。</strong><br>一笔浓淡，万里云山。</p>
+      </div>
+      <span class="scroll-cue">向下入卷</span>
+      <span class="hero-note">像素扩散 · 宣纸吸墨 · 浓淡相生</span>
+    </header>
+
+    <div class="brush-divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 130" preserveAspectRatio="none"><path d="M-30 77 C145 66 278 79 441 63 S768 52 1235 69" stroke-width="7" opacity=".52"/><path d="M-20 82 C214 70 375 83 598 66 S948 64 1225 72" stroke-width="2" opacity=".25"/></svg>
     </div>
 
-    <section class="section bold-section" id="bold">
-      <header class="bold-heading reveal">
-        <p class="section-label">01 — Bold strokes</p>
-        <h2 class="section-title">浓墨</h2>
-      </header>
+    <section class="section" id="works">
+      <div class="section-head">
+        <div><p class="eyebrow">三远法 · THREE DISTANCES</p><h2>山水有境</h2></div>
+        <p class="section-lead">高远观其势，深远察其幽，平远见其阔。每一道墨痕，都由纸纹、含水与运笔共同决定。</p>
+      </div>
       <div class="cards">
-        <article class="ink-card card-one reveal">
-          <div class="card-art" aria-hidden="true">
-            <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice">
-              <rect width="640" height="360" fill="#d4cfca"/>
-              <g filter="url(#ink-wash-soft)" fill="#9e9595"><path d="M0 290 C86 214 143 185 211 98 C264 182 307 224 367 261 C424 212 459 137 518 79 C555 158 595 221 660 257 L660 380 L0 380Z"/></g>
-              <g filter="url(#ink-wash)" fill="#2a2525" opacity=".8"><path d="M-20 337 C109 292 141 202 225 159 C267 235 329 292 408 305 C474 316 521 269 569 219 C595 263 622 295 670 319 L670 380 L-20 380Z"/></g>
-              <path d="M474 202 Q480 169 481 121 M462 151 Q481 163 500 143" fill="none" stroke="#5c5555" stroke-width="3" opacity=".7"/>
-            </svg>
-          </div>
-          <div class="card-copy"><span class="card-number">壹</span><div><h3>落笔有势</h3><p>以最少的形，留下最深的意。每一次显现，都像湿墨触纸，迅疾而有重量。</p></div></div>
-        </article>
-
-        <article class="ink-card card-two reveal">
-          <div class="card-art" aria-hidden="true">
-            <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice">
-              <rect width="640" height="360" fill="#f7f3ec"/>
-              <g filter="url(#ink-wash-soft)" fill="#9e9595" opacity=".75"><path d="M-30 319 C94 247 190 266 267 178 C331 105 405 72 491 108 C552 134 595 196 681 223 L681 380 L-30 380Z"/></g>
-              <g filter="url(#ink-wash)" fill="#121010" opacity=".73"><path d="M239 350 C278 284 309 226 338 134 C370 214 408 254 453 289 C493 320 543 326 610 345 L640 380 L209 380Z"/></g>
-              <g fill="#5c5555" opacity=".65"><ellipse cx="109" cy="283" rx="5" ry="18"/><ellipse cx="124" cy="290" rx="3" ry="12"/><path d="M109 282 Q124 256 141 272" fill="none" stroke="#5c5555" stroke-width="2"/></g>
-            </svg>
-          </div>
-          <div class="card-copy"><span class="card-number">贰</span><div><h3>随形而化</h3><p>不追求机械的齐整。边缘会呼吸，层次会游移，让秩序与偶然共同完成画面。</p></div></div>
-        </article>
+        <article class="ink-card"><canvas class="border-canvas"></canvas><span class="card-index">壹 · 高远</span><div class="card-mark"><canvas data-mark="peak"></canvas></div><h3>骨法用笔</h3><p>中锋立骨，侧锋取势。速度改变笔锋宽窄，停驻之处墨色自然沉积。</p></article>
+        <article class="ink-card"><canvas class="border-canvas"></canvas><span class="card-index">贰 · 深远</span><div class="card-mark"><canvas data-mark="wash"></canvas></div><h3>墨分五色</h3><p>焦、浓、重、淡、清，不靠透明叠层，而以像素含墨量呈现真实浓淡。</p></article>
+        <article class="ink-card"><canvas class="border-canvas"></canvas><span class="card-index">叁 · 平远</span><div class="card-mark"><canvas data-mark="bamboo"></canvas></div><h3>气韵生动</h3><p>纤维吸水各不相同，墨粒沿湿润纸面游走，边缘因此生出不可复制的毛涩。</p></article>
       </div>
     </section>
 
-    <div class="divider" aria-hidden="true">
-      <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path class="brush-path" stroke-width="8" d="M-50 52 C183 84 348 46 529 76 C710 105 868 63 1052 87 C1207 107 1348 68 1490 82"/></svg>
+    <div class="brush-divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 130" preserveAspectRatio="none"><path d="M710 -18 C688 24 671 54 646 79 C625 101 600 118 570 149" stroke-width="9" opacity=".58"/><path d="M717 -12 C692 40 678 72 638 105" stroke-width="2" opacity=".28"/></svg>
     </div>
 
-    <section class="wash-section" id="wash">
-      <svg class="wash-bg" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
-        <g filter="url(#ink-wash-soft)">
-          <path fill="#d4cfca" opacity=".78" d="M-80 242 C182 118 390 207 568 143 C790 64 1030 189 1520 83 L1520 742 C1265 681 1073 788 832 717 C568 640 343 791 -80 681Z"/>
-          <path fill="#9e9595" opacity=".38" d="M-100 364 C140 242 361 377 605 268 C813 176 1008 355 1540 209 L1540 643 C1242 768 1050 581 812 681 C586 775 336 596 -100 779Z"/>
-          <path fill="#5c5555" opacity=".16" d="M-90 506 C196 351 413 475 623 404 C853 326 1072 463 1530 338 L1530 584 C1209 677 1011 539 780 617 C539 698 296 549 -90 705Z"/>
-        </g>
-      </svg>
-      <blockquote class="quote reveal">
-        <p>计白当黑，知止而后有余韵。</p>
-        <footer>— 在未落墨处，故事仍在继续</footer>
-      </blockquote>
+    <section class="manifesto">
+      <canvas id="wash-canvas" aria-hidden="true"></canvas>
+      <blockquote><p>墨非黑，水非白。<br>有无之间，山河自生。</p><footer>— 林泉高致 · 数字新解</footer></blockquote>
     </section>
 
-    <div class="divider" aria-hidden="true">
-      <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path class="brush-path" stroke-width="5" d="M-30 83 C156 65 319 96 484 75 C650 54 818 86 970 71 C1168 52 1304 89 1470 63"/></svg>
+    <div class="brush-divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 130" preserveAspectRatio="none"><path d="M1000 -25 C885 22 759 58 604 86 C451 114 287 129 167 158" stroke-width="8" opacity=".56"/><path d="M1007 -19 C798 60 564 99 203 151" stroke-width="2" opacity=".24"/></svg>
     </div>
 
-    <section class="section pause-section" id="space">
-      <header class="pause-label reveal">
-        <p class="section-label">03 — The unspoken</p>
-        <h2 class="section-title">留白</h2>
-      </header>
-      <svg class="pause-mark reveal" viewBox="0 0 100 80" aria-hidden="true">
-        <path d="M2 68 C21 57 31 43 43 20 C52 38 59 46 72 53 C79 45 84 34 90 20 C93 38 97 50 104 59 L104 80 L0 80Z" fill="#5c5555" filter="url(#ink-wash)"/>
-      </svg>
-      <span class="pause-note reveal">静，亦是叙事。</span>
-    </section>
-
-    <section class="cta-section">
-      <div class="cta-wrap reveal">
-        <h2>让下一笔，由你落下</h2>
-        <a class="seal-button" href="#top">入 境</a>
+    <section class="section" id="method">
+      <div class="section-head"><div><p class="eyebrow">笔墨之内 · THE METHOD</p><h2>落笔成山</h2></div><p class="section-lead">不是预制纹理，也不是模糊滤镜。画面在你的设备上逐像素生成。</p></div>
+      <div class="process">
+        <div class="process-row"><span>01</span><h3>纸先受水</h3><p>分形噪声形成纸纤维吸收场，决定每个像素能容纳多少墨。</p></div>
+        <div class="process-row"><span>02</span><h3>墨随水行</h3><p>粒子从山脊向外随机游走；距离越远，含墨量越低，边缘越松。</p></div>
+        <div class="process-row"><span>03</span><h3>浓淡相破</h3><p>远山、重峦与近峰依次生长，留白不是覆盖，而是没有落墨的呼吸。</p></div>
       </div>
     </section>
+
+    <section class="cta" id="contact"><div><p class="eyebrow">展开下一卷</p><h2>与山水相逢</h2><a class="seal-button" href="#top">重游此卷</a></div></section>
   </main>
-
-  <footer class="site-footer">
-    <span class="footer-mark">墨序</span>
-    <span>一纸 · 一境 · 一念</span>
-  </footer>
-
-  <div id="ink-trail" aria-hidden="true"></div>
+  <footer class="site-footer"><span>墨山集 · 二〇二六</span><span>一纸 · 一墨 · 一世界</span></footer>
 
   <script>
-    (() => {
-      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const revealables = document.querySelectorAll('.reveal, .divider');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
-      revealables.forEach((el) => observer.observe(el));
+  (() => {
+    'use strict';
+    const PAPER = [245, 240, 232], INK = [15, 12, 10];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const landscape = document.querySelector('#ink-landscape');
+    const interaction = document.querySelector('#ink-interaction');
+    const hero = document.querySelector('.hero');
+    let W = 0, H = 0, absorption, scene, revealBuckets, started = 0, raf = 0;
 
-      if (!reduceMotion && matchMedia('(pointer: fine)').matches) {
-        const trail = document.querySelector('#ink-trail');
-        let lastX = -100, lastY = -100, lastTime = 0;
-        addEventListener('pointermove', (event) => {
-          const now = performance.now();
-          const distance = Math.hypot(event.clientX - lastX, event.clientY - lastY);
-          if (distance < 12 || now - lastTime < 24) return;
-          lastX = event.clientX; lastY = event.clientY; lastTime = now;
-          const dot = document.createElement('i');
-          const size = 4 + Math.random() * 10;
-          dot.className = 'ink-dot';
-          dot.style.left = event.clientX + 'px';
-          dot.style.top = event.clientY + 'px';
-          dot.style.setProperty('--size', size + 'px');
-          dot.style.setProperty('--blur', (Math.random() * 1.4) + 'px');
-          dot.style.setProperty('--turn', (Math.random() * 180) + 'deg');
-          trail.appendChild(dot);
-          dot.addEventListener('animationend', () => dot.remove(), { once: true });
-        }, { passive: true });
-      }
+    function mulberry32(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    const fade = t => t * t * (3 - 2 * t);
+    function makeNoise(seed) {
+      const rnd = mulberry32(seed), grid = new Map();
+      const grad = (x, y) => { const k = x + ',' + y; if (!grid.has(k)) { const a = rnd() * Math.PI * 2; grid.set(k, [Math.cos(a), Math.sin(a)]); } return grid.get(k); };
+      return (x, y) => { const x0 = Math.floor(x), y0 = Math.floor(y), tx = x-x0, ty = y-y0, u=fade(tx), v=fade(ty); const d=(ix,iy)=>{const g=grad(ix,iy); return g[0]*(x-ix)+g[1]*(y-iy);}; return (1-v)*((1-u)*d(x0,y0)+u*d(x0+1,y0))+v*((1-u)*d(x0,y0+1)+u*d(x0+1,y0+1)); };
+    }
+    const paperNoise = makeNoise(91), landNoise = makeNoise(307), detailNoise = makeNoise(701);
+    function fbm(noise, x, y, oct=4) { let value=0, amp=.55, freq=1; for(let i=0;i<oct;i++){ value += amp*noise(x*freq,y*freq); freq*=2.03; amp*=.5; } return value; }
 
-      if (!reduceMotion) {
-        document.querySelectorAll('.ink-card').forEach((card) => {
-          let ready = true;
-          card.addEventListener('pointermove', (event) => {
-            if (!ready || Math.random() > .12) return;
-            ready = false;
-            const rect = card.getBoundingClientRect();
-            for (let i = 0; i < 5; i++) {
-              const dot = document.createElement('i');
-              const angle = Math.random() * Math.PI * 2;
-              const distance = 18 + Math.random() * 42;
-              dot.className = 'splatter';
-              dot.style.left = (event.clientX - rect.left) + 'px';
-              dot.style.top = (event.clientY - rect.top) + 'px';
-              dot.style.setProperty('--s', (2 + Math.random() * 5) + 'px');
-              dot.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
-              dot.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
-              card.appendChild(dot);
-              dot.addEventListener('animationend', () => dot.remove(), { once: true });
-            }
-            setTimeout(() => { ready = true; }, 320);
-          }, { passive: true });
-        });
+    function setupCanvas(canvas, width, height) { canvas.width=width; canvas.height=height; return canvas.getContext('2d', { alpha: true }); }
+    function buildPaper() {
+      absorption = new Float32Array(W*H);
+      const out = new ImageData(W,H), d=out.data, rnd=mulberry32(17);
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++) {
+        const i=y*W+x, fiber=fbm(paperNoise,x/115,y/34,4), longFiber=Math.sin(y*.31+x*.012)*.9, speck=(rnd()-.5)*2.2;
+        absorption[i]=Math.max(.58,Math.min(1.18,.91+fiber*.23+Math.sin(x*.019+y*.006)*.035));
+        const tone=Math.round(fiber*3.2+longFiber+speck);
+        d[i*4]=PAPER[0]+tone; d[i*4+1]=PAPER[1]+tone; d[i*4+2]=PAPER[2]+tone; d[i*4+3]=255;
       }
+      return out;
+    }
 
-      if (!reduceMotion && matchMedia('(pointer: coarse)').matches) {
-        let lastScroll = 0;
-        addEventListener('scroll', () => {
-          const y = scrollY;
-          if (Math.abs(y - lastScroll) < 90) return;
-          lastScroll = y;
-          const trail = document.querySelector('#ink-trail');
-          trail.style.display = 'block';
-          const dot = document.createElement('i');
-          const edge = Math.random() > .5 ? 9 : innerWidth - 9;
-          dot.className = 'ink-dot'; dot.style.left = edge + 'px';
-          dot.style.top = (innerHeight * (.25 + Math.random() * .5)) + 'px';
-          dot.style.setProperty('--size', (7 + Math.random() * 8) + 'px');
-          dot.style.setProperty('--blur', '1px'); dot.style.setProperty('--turn', '0deg');
-          trail.appendChild(dot);
-          dot.addEventListener('animationend', () => dot.remove(), { once: true });
-        }, { passive: true });
+    function ridge(layer, x) {
+      const configs=[
+        {base:.61, amp:.16, scale:310, peaks:[[.69,-.17,.12],[.87,-.09,.09]]},
+        {base:.72, amp:.20, scale:225, peaks:[[.58,-.24,.105],[.79,-.14,.12],[.96,-.12,.08]]},
+        {base:.88, amp:.29, scale:165, peaks:[[.49,-.34,.08],[.72,-.22,.10],[.91,-.30,.075],[1.05,-.19,.08]]}
+      ][layer];
+      const nx=x/W, c=configs; let y=c.base+fbm(landNoise,x/c.scale,layer*4.7,5)*c.amp;
+      c.peaks.forEach(([p,h,s]) => y += h*Math.exp(-Math.pow((nx-p)/s,2)));
+      return y*H;
+    }
+
+    function deposit(data, x, y, concentration, radius, rnd) {
+      const r=Math.ceil(radius), x0=Math.max(0,Math.floor(x-r)), x1=Math.min(W-1,Math.ceil(x+r)), y0=Math.max(0,Math.floor(y-r)), y1=Math.min(H-1,Math.ceil(y+r));
+      for(let py=y0;py<=y1;py++) for(let px=x0;px<=x1;px++) {
+        const dx=(px-x)/radius, dy=(py-y)/radius, dist=dx*dx+dy*dy;
+        if(dist>1) continue;
+        const i=py*W+px, edge=Math.pow(1-dist,.72), grain=.72+absorption[i]*.28;
+        if(rnd() > Math.min(1, edge*1.45*grain)) continue;
+        const amount=concentration*edge*grain, old=data[i*4+3]/255, next=1-(1-old)*(1-amount);
+        data[i*4]=INK[0]; data[i*4+1]=INK[1]; data[i*4+2]=INK[2]; data[i*4+3]=Math.min(255,Math.round(next*255));
       }
-    })();
+    }
+
+    function paintLayer(layer) {
+      const img=new ImageData(W,H), d=img.data, rnd=mulberry32(1000+layer*97);
+      const concentration=[.19,.38,.72][layer], step=[5,4,3][layer];
+      for(let x=0;x<W;x+=step) {
+        const top=ridge(layer,x), floor=Math.min(H, top + H*[.30,.35,.42][layer]);
+        for(let y=top;y<floor;y+=step) {
+          const depth=(y-top)/(floor-top), texture=fbm(detailNoise,x/47+layer*3,y/61,4);
+          const wash=concentration*(.34+.66*Math.pow(1-depth,.5))*(.78+texture*.42);
+          if(rnd() < .88-depth*.28) deposit(d,x+(rnd()-.5)*step,y+(rnd()-.5)*step,wash,step*(1.1+rnd()*.75),rnd);
+        }
+        // Capillary edge: particles random-walk away from the wet ridge and lose ink each step.
+        if(x% (step*2)===0) for(let p=0;p<3+layer;p++) {
+          let px=x+(rnd()-.5)*4, py=top+(rnd()-.5)*3, ink=concentration*.58;
+          const walks=3+Math.floor(rnd()*7);
+          for(let s=0;s<walks;s++){ px+=(rnd()-.5)*(3+layer); py+=(rnd()-.58)*(3.2+layer); deposit(d,px,py,ink,1.1+rnd()*2.1,rnd); ink*=.83; }
+        }
+      }
+      // Dry-brush texture and contour strokes on near layers.
+      if(layer>0) for(let k=0;k<(layer===2?85:35);k++) {
+        const x=W*(.38+rnd()*.65), top=ridge(layer,x), len=8+rnd()*42, pressure=.7+rnd()*2.6;
+        for(let s=0;s<len;s+=1.8){ const y=top+s, drift=s*(rnd()-.46)*.18; if(rnd()>.22) deposit(d,x+drift,y,concentration*.72,pressure*(1-s/len*.55),rnd); }
+      }
+      return img;
+    }
+
+    function mergeLayers(paper, layers) {
+      const out=new ImageData(new Uint8ClampedArray(paper.data),W,H), d=out.data;
+      layers.forEach((img,layer)=>{
+        for(let i=0;i<W*H;i++) { const a=img.data[i*4+3]/255; if(a<=0) continue; const mist=layer<2 && ((i/W|0)>H*(layer? .66:.57) && (i/W|0)<H*(layer?.71:.625)); const aa=mist?a*.15:a; d[i*4]=Math.round(d[i*4]*(1-aa)+INK[0]*aa); d[i*4+1]=Math.round(d[i*4+1]*(1-aa)+INK[1]*aa); d[i*4+2]=Math.round(d[i*4+2]*(1-aa)+INK[2]*aa); }
+      });
+      return out;
+    }
+
+    function makeReveal(finalImage) {
+      const paper=buildPaper(), buckets=Array.from({length:240},()=>[]), origins=[[.72,.50],[.62,.58],[.54,.69]];
+      for(let i=0;i<W*H;i++) {
+        const x=i%W, y=i/W|0, changed=Math.abs(finalImage.data[i*4]-paper.data[i*4])>2;
+        if(!changed) continue;
+        let best=1; origins.forEach((o,j)=>{ const dx=(x/W-o[0])*.78, dy=(y/H-o[1]); best=Math.min(best,Math.hypot(dx,dy)+j*.035); });
+        const turbulence=fbm(landNoise,x/95,y/95,3)*.11, order=Math.max(0,Math.min(239,Math.floor((best*.92+turbulence+.02)*220)));
+        buckets[order].push(i);
+      }
+      return {paper,buckets};
+    }
+
+    function drawTrees(ctx) {
+      ctx.save(); ctx.strokeStyle='rgba(15,12,10,.70)'; ctx.fillStyle='rgba(15,12,10,.58)'; ctx.lineCap='round';
+      const trees=[[.79,.71,1],[.83,.735,.72],[.89,.72,.88],[.94,.75,.58]];
+      trees.forEach(([nx,ny,s],n)=>{ const x=nx*W,y=ny*H; ctx.lineWidth=Math.max(1,s*1.7); ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x-3*s,y-25*s,x+2*s,y-48*s); ctx.stroke(); const rnd=mulberry32(50+n); for(let i=0;i<18;i++){ const yy=y-(18+rnd()*34)*s, side=(rnd()-.5)*26*s, r=(1+rnd()*2.4)*s; ctx.beginPath(); ctx.ellipse(x+side,yy,r*1.8,r,.2,0,Math.PI*2); ctx.fill(); } });
+      ctx.restore();
+    }
+
+    function render(ts) {
+      const ctx=landscape.getContext('2d'), elapsed=ts-started, progress=reduced?1:Math.min(1,elapsed/3800), upto=Math.floor(progress*239);
+      if(!scene.current) scene.current=new ImageData(new Uint8ClampedArray(revealBuckets.paper.data),W,H);
+      while(scene.bucket<=upto){ const bucket=revealBuckets.buckets[scene.bucket]||[]; for(const i of bucket){ const p=i*4; scene.current.data[p]=scene.final.data[p]; scene.current.data[p+1]=scene.final.data[p+1]; scene.current.data[p+2]=scene.final.data[p+2]; } scene.bucket++; }
+      ctx.putImageData(scene.current,0,0); if(progress===1){ drawTrees(ctx); return; }
+      raf=requestAnimationFrame(render);
+    }
+
+    function rebuild() {
+      cancelAnimationFrame(raf);
+      const rect=hero.getBoundingClientRect(), scale=Math.min(devicePixelRatio||1,1.35,1100/rect.width);
+      W=Math.max(360,Math.round(rect.width*scale)); H=Math.max(520,Math.round(rect.height*scale));
+      setupCanvas(landscape,W,H); setupCanvas(interaction,W,H);
+      const paper=buildPaper(), layers=[paintLayer(0),paintLayer(1),paintLayer(2)], final=mergeLayers(paper,layers);
+      revealBuckets=makeReveal(final); scene={final,current:null,bucket:0}; started=performance.now(); raf=requestAnimationFrame(render);
+    }
+
+    // Transient wet-ink droplets. Each drop expands in irregular particle rings as its water evaporates.
+    const drops=[]; let pointerLast=0;
+    function addDrop(clientX,clientY,force=.55){ const r=hero.getBoundingClientRect(); if(clientY<r.top||clientY>r.bottom) return; drops.push({x:(clientX-r.left)/r.width*W,y:(clientY-r.top)/r.height*H,born:performance.now(),seed:Math.random()*999,size:(2.5+force*6)*(W/r.width)}); }
+    hero.addEventListener('pointermove',e=>{ const now=performance.now(); if(now-pointerLast<38||reduced)return; const speed=Math.hypot(e.movementX,e.movementY), pressure=e.pressure||Math.max(.18,1-Math.min(speed,35)/42); addDrop(e.clientX,e.clientY,pressure); pointerLast=now; },{passive:true});
+    let lastScroll=scrollY;
+    addEventListener('scroll',()=>{ if(innerWidth>760||reduced)return; const dir=scrollY>lastScroll?1:-1; addDrop(dir>0?8:innerWidth-8,innerHeight*(.25+Math.random()*.5),.45); lastScroll=scrollY; },{passive:true});
+    function animateDrops(now){ const ctx=interaction.getContext('2d'); ctx.clearRect(0,0,W,H); for(let k=drops.length-1;k>=0;k--){ const d=drops[k], age=(now-d.born)/2000; if(age>=1){drops.splice(k,1);continue;} const rnd=mulberry32(d.seed|0), alpha=(1-age)*.28, spread=d.size*(1+age*2.8); ctx.fillStyle=`rgba(15,12,10,${alpha})`; for(let p=0;p<16;p++){ const a=rnd()*Math.PI*2, rr=spread*(.2+rnd()*.9)*age; ctx.beginPath(); ctx.ellipse(d.x+Math.cos(a)*rr,d.y+Math.sin(a)*rr,d.size*(.2+rnd()*.55),d.size*(.15+rnd()*.42),a,0,Math.PI*2); ctx.fill(); } } requestAnimationFrame(animateDrops); }
+
+    function drawBrushCanvas(canvas, type, seed) {
+      const rect=canvas.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2), w=Math.max(1,Math.round(rect.width*dpr)), h=Math.max(1,Math.round(rect.height*dpr)), ctx=setupCanvas(canvas,w,h), rnd=mulberry32(seed);
+      ctx.strokeStyle='rgba(15,12,10,.55)'; ctx.fillStyle='rgba(15,12,10,.42)'; ctx.lineCap='round';
+      if(type==='border') { const pts=[[5,8,w-8,4],[w-6,5,w-3,h-9],[w-5,h-6,7,h-3],[5,h-5,3,9]]; pts.forEach((p,side)=>{ for(let f=0;f<5;f++){ctx.beginPath();ctx.lineWidth=(.45+rnd()*1.25)*dpr;ctx.moveTo(p[0]+(rnd()-.5)*5,p[1]+(rnd()-.5)*5);const mx=(p[0]+p[2])/2+(rnd()-.5)*8,my=(p[1]+p[3])/2+(rnd()-.5)*8;ctx.quadraticCurveTo(mx,my,p[2]+(rnd()-.5)*5,p[3]+(rnd()-.5)*5);ctx.stroke();} }); return; }
+      const stroke=(x1,y1,x2,y2,width)=>{ const steps=34; for(let i=0;i<steps;i++){const t=i/(steps-1), pressure=Math.sin(t*Math.PI)*.72+.2, x=x1+(x2-x1)*t+(rnd()-.5)*2,y=y1+(y2-y1)*t+(rnd()-.5)*2;ctx.beginPath();ctx.ellipse(x,y,width*pressure*(.7+rnd()*.4),width*pressure*.36,rnd()*.4,0,Math.PI*2);ctx.fill();} };
+      if(type==='peak'){stroke(w*.12,h*.83,w*.48,h*.18,8*dpr);stroke(w*.48,h*.18,w*.86,h*.82,11*dpr);stroke(w*.42,h*.36,w*.66,h*.82,5*dpr);}
+      if(type==='wash'){for(let i=0;i<7;i++)stroke(w*.12,h*(.22+i*.09),w*.88,h*(.18+i*.08),(8-i*.6)*dpr);}
+      if(type==='bamboo'){stroke(w*.37,h*.9,w*.49,h*.1,5*dpr);stroke(w*.65,h*.9,w*.60,h*.27,4*dpr);for(let i=0;i<8;i++){const x=(i%2?w*.6:w*.47),y=h*(.22+i*.075);stroke(x,y,x+(i%2?1:-1)*w*.18,y-h*.11,3*dpr);}}
+    }
+
+    function paintSupportingCanvases(){ document.querySelectorAll('.border-canvas').forEach((c,i)=>drawBrushCanvas(c,'border',210+i)); document.querySelectorAll('[data-mark]').forEach((c,i)=>drawBrushCanvas(c,c.dataset.mark,330+i)); const wash=document.querySelector('#wash-canvas'), r=wash.getBoundingClientRect(), ctx=setupCanvas(wash,Math.round(r.width),Math.round(r.height)), rnd=mulberry32(505); ctx.fillStyle='rgba(15,12,10,.035)'; for(let i=0;i<380;i++){const x=r.width*(.1+rnd()*.8),y=r.height*(.22+rnd()*.57),rx=12+rnd()*90,ry=3+rnd()*18;ctx.beginPath();ctx.ellipse(x,y,rx,ry,rnd()*.3,0,Math.PI*2);ctx.fill();} }
+
+    const ro=new ResizeObserver(()=>{ clearTimeout(ro.timer); ro.timer=setTimeout(()=>{rebuild();paintSupportingCanvases();},120); });
+    ro.observe(hero); document.querySelectorAll('.ink-card, .manifesto').forEach(el=>ro.observe(el));
+    rebuild(); paintSupportingCanvases(); requestAnimationFrame(animateDrops);
+  })();
   </script>
 </body>
 </html>
