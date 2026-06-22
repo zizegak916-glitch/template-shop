@@ -136,10 +136,21 @@
   }
 
   function setDownloadState(enabled) {
-    document.querySelectorAll('.tpl-btn.secondary').forEach(btn => {
+    // Lock both card-bottom and hover-overlay download buttons
+    document.querySelectorAll('.tpl-btn.secondary, .preview-hover-btn.secondary').forEach(btn => {
       btn.style.opacity = enabled ? '1' : '0.3';
       btn.style.pointerEvents = enabled ? 'auto' : 'none';
       btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+      // Remove/restore download attribute to block direct file save
+      if (enabled) {
+        btn.removeAttribute('data-locked');
+        if (btn.dataset.origHref) { btn.href = btn.dataset.origHref; }
+      } else {
+        if (!btn.dataset.origHref) btn.dataset.origHref = btn.href;
+        btn.removeAttribute('download');
+        btn.setAttribute('data-locked', '1');
+        btn.href = '#';
+      }
       const lock = btn.querySelector('.lock-icon');
       if (enabled && lock) lock.remove();
       if (!enabled && !lock) {
