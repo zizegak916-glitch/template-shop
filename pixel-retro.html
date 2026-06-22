@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>像素工坊 — 8位复古游戏化SaaS平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1a1a2e;
+  --navy-light: #222244;
+  --navy-dark: #0f0f1e;
+  --green: #00ff41;
+  --red: #ff004d;
+  --yellow: #ffec27;
+  --blue: #29adff;
+  --white: #fff1e8;
+  --purple: #a05cff;
+  --orange: #ffa724;
+  --gray: #5f574f;
+  --dark-gray: #2c2137;
+  --panel-bg: #16213e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Press Start 2P', cursive;
+  line-height: 1.4;
+}
+
+a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--yellow);
+}
+
+/* ===== SCANLINE OVERLAY ===== */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+/* ===== PIXEL BORDER UTILITY ===== */
+.pixel-border {
+  box-shadow:
+    2px 0 0 0 var(--white),
+    -2px 0 0 0 var(--white),
+    0 2px 0 0 var(--white),
+    0 -2px 0 0 var(--white),
+    2px 2px 0 0 var(--white),
+    -2px 2px 0 0 var(--white),
+    2px -2px 0 0 var(--white),
+    -2px -2px 0 0 var(--white);
+}
+
+.pixel-border-blue {
+  box-shadow:
+    2px 0 0 0 var(--blue),
+    -2px 0 0 0 var(--blue),
+    0 2px 0 0 var(--blue),
+    0 -2px 0 0 var(--blue),
+    2px 2px 0 0 var(--blue),
+    -2px 2px 0 0 var(--blue),
+    2px -2px 0 0 var(--blue),
+    -2px -2px 0 0 var(--blue);
+}
+
+.pixel-border-green {
+  box-shadow:
+    2px 0 0 0 var(--green),
+    -2px 0 0 0 var(--green),
+    0 2px 0 0 var(--green),
+    0 -2px 0 0 var(--green),
+    2px 2px 0 0 var(--green),
+    -2px 2px 0 0 var(--green),
+    2px -2px 0 0 var(--green),
+    -2px -2px 0 0 var(--green);
+}
+
+.pixel-border-yellow {
+  box-shadow:
+    2px 0 0 0 var(--yellow),
+    -2px 0 0 0 var(--yellow),
+    0 2px 0 0 var(--yellow),
+    0 -2px 0 0 var(--yellow),
+    2px 2px 0 0 var(--yellow),
+    -2px 2px 0 0 var(--yellow),
+    2px -2px 0 0 var(--yellow),
+    -2px -2px 0 0 var(--yellow);
+}
+
+.pixel-border-red {
+  box-shadow:
+    2px 0 0 0 var(--red),
+    -2px 0 0 0 var(--red),
+    0 2px 0 0 var(--red),
+    0 -2px 0 0 var(--red),
+    2px 2px 0 0 var(--red),
+    -2px 2px 0 0 var(--red),
+    2px -2px 0 0 var(--red),
+    -2px -2px 0 0 var(--red);
+}
+
+.pixel-border-purple {
+  box-shadow:
+    2px 0 0 0 var(--purple),
+    -2px 0 0 0 var(--purple),
+    0 2px 0 0 var(--purple),
+    0 -2px 0 0 var(--purple),
+    2px 2px 0 0 var(--purple),
+    -2px 2px 0 0 var(--purple),
+    2px -2px 0 0 var(--purple),
+    -2px -2px 0 0 var(--purple);
+}
+
+/* ===== STAR FIELD ===== */
+.star-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  background: var(--white);
+  width: 2px;
+  height: 2px;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes twinkle2 {
+  0%, 100% { opacity: 0.8; }
+  33% { opacity: 0.1; }
+  66% { opacity: 0.6; }
+}
+
+.star.twinkle-1 {
+  animation: twinkle 3s steps(2) infinite;
+}
+
+.star.twinkle-2 {
+  animation: twinkle2 4s steps(3) infinite;
+}
+
+.star.twinkle-3 {
+  animation: twinkle 2.5s steps(2) infinite;
+}
+
+.star.big {
+  width: 4px;
+  height: 4px;
+  background: var(--yellow);
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(15, 15, 30, 0.95);
+  border-bottom: 2px solid var(--green);
+  padding: 12px 0;
+  backdrop-filter: blur(2px);
+}
+
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 14px;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pixel-heart-icon {
+  display: inline-block;
+  width: 16px;
+  height: 14px;
+  background: transparent;
+  box-shadow:
+    2px 0 0 0 var(--red),
+    4px 0 0 0 var(--red),
+    10px 0 0 0 var(--red),
+    12px 0 0 0 var(--red),
+    0px 2px 0 0 var(--red),
+    2px 2px 0 0 var(--red),
+    4px 2px 0 0 var(--red),
+    6px 2px 0 0 var(--red),
+    8px 2px 0 0 var(--red),
+    10px 2px 0 0 var(--red),
+    12px 2px 0 0 var(--red),
+    14px 2px 0 0 var(--red),
+    0px 4px 0 0 var(--red),
+    2px 4px 0 0 var(--red),
+    4px 4px 0 0 var(--red),
+    6px 4px 0 0 var(--red),
+    8px 4px 0 0 var(--red),
+    10px 4px 0 0 var(--red),
+    12px 4px 0 0 var(--red),
+    14px 4px 0 0 var(--red),
+    2px 6px 0 0 var(--red),
+    4px 6px 0 0 var(--red),
+    6px 6px 0 0 var(--red),
+    8px 6px 0 0 var(--red),
+    10px 6px 0 0 var(--red),
+    12px 6px 0 0 var(--red),
+    4px 8px 0 0 var(--red),
+    6px 8px 0 0 var(--red),
+    8px 8px 0 0 var(--red),
+    10px 8px 0 0 var(--red),
+    6px 10px 0 0 var(--red),
+    8px 10px 0 0 var(--red);
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  color: var(--white);
+  text-transform: uppercase;
+  transition: color 0.1s steps(1);
+}
+
+.nav-links a:hover {
+  color: var(--yellow);
+}
+
+.nav-cta {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  background: var(--green);
+  color: var(--navy);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.1s steps(1);
+}
+
+.nav-cta:hover {
+  background: var(--yellow);
+  color: var(--navy);
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: 2px solid var(--green);
+  color: var(--green);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== SECTION BASE ===== */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-title h2 {
+  font-size: 20px;
+  color: var(--yellow);
+  margin-bottom: 16px;
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+
+.section-title p {
+  font-size: 22px;
+  color: var(--white);
+  opacity: 0.8;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-badge {
+  display: inline-block;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  color: var(--navy);
+  background: var(--green);
+  padding: 6px 16px;
+  margin-bottom: 32px;
+  animation: pulse-pixel 2s steps(1) infinite;
+}
+
+@keyframes pulse-pixel {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.hero h1 {
+  font-size: 36px;
+  color: var(--white);
+  margin-bottom: 24px;
+  text-shadow:
+    4px 4px 0 var(--blue),
+    8px 8px 0 rgba(0,0,0,0.2);
+  line-height: 1.6;
+}
+
+.hero h1 .highlight-green {
+  color: var(--green);
+}
+
+.hero h1 .highlight-yellow {
+  color: var(--yellow);
+}
+
+.hero-sub {
+  font-size: 26px;
+  color: var(--white);
+  opacity: 0.8;
+  margin-bottom: 48px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-pixel {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  padding: 16px 32px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  position: relative;
+  transition: all 0.1s steps(1);
+}
+
+.btn-primary {
+  background: var(--green);
+  color: var(--navy);
+  box-shadow:
+    4px 0 0 0 #00cc33,
+    -4px 0 0 0 #00cc33,
+    0 4px 0 0 #00cc33,
+    0 -4px 0 0 #00cc33,
+    4px 4px 0 0 #00cc33,
+    -4px 4px 0 0 #00cc33,
+    4px -4px 0 0 #00cc33,
+    -4px -4px 0 0 #00cc33,
+    4px 0 0 0 #00cc33,
+    0 4px 0 0 #00cc33;
+  border: 4px solid #00cc33;
+}
+
+.btn-primary:hover {
+  background: var(--yellow);
+  color: var(--navy);
+  border-color: #ccbb00;
+  box-shadow:
+    4px 0 0 0 #ccbb00,
+    -4px 0 0 0 #ccbb00,
+    0 4px 0 0 #ccbb00,
+    0 -4px 0 0 #ccbb00,
+    4px 4px 0 0 #ccbb00,
+    -4px 4px 0 0 #ccbb00,
+    4px -4px 0 0 #ccbb00,
+    -4px -4px 0 0 #ccbb00;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--white);
+  border: 4px solid var(--white);
+}
+
+.btn-secondary:hover {
+  background: var(--white);
+  color: var(--navy);
+}
+
+/* Floating pixel characters */
+.pixel-char {
+  position: absolute;
+  z-index: 1;
+}
+
+.pixel-char-1 {
+  top: 20%;
+  left: 8%;
+  animation: float-1 4s steps(2) infinite;
+}
+
+.pixel-char-2 {
+  top: 60%;
+  right: 6%;
+  animation: float-2 5s steps(3) infinite;
+}
+
+.pixel-char-3 {
+  bottom: 15%;
+  left: 12%;
+  animation: float-1 3.5s steps(2) infinite;
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(5deg); }
+  66% { transform: translateY(-8px) rotate(-3deg); }
+}
+
+/* Pixel Art Characters via box-shadow */
+.pixel-sprite {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  display: block;
+}
+
+.pixel-character {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  position: relative;
+}
+
+/* ===== FEATURES SECTION ===== */
+.features {
+  background: var(--navy-dark);
+  border-top: 4px solid var(--green);
+  border-bottom: 4px solid var(--green);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.feature-card {
+  background: var(--panel-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--green);
+}
+
+.feature-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(0, 255, 65, 0.1);
+  border-bottom: 2px solid rgba(0, 255, 65, 0.2);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: var(--green);
+}
+
+.status-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--red);
+}
+
+.status-dot:nth-child(2) {
+  background: var(--yellow);
+}
+
+.status-dot:nth-child(3) {
+  background: var(--green);
+}
+
+.feature-card-body {
+  padding: 24px;
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: rgba(0, 255, 65, 0.1);
+  border: 2px solid var(--green);
+}
+
+.feature-card h3 {
+  font-size: 12px;
+  color: var(--yellow);
+  margin-bottom: 16px;
+}
+
+.feature-card p {
+  font-size: 20px;
+  color: var(--white);
+  opacity: 0.85;
+}
+
+.feature-stats {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+}
+
+.stat-label {
+  color: var(--gray);
+}
+
+.stat-value {
+  color: var(--green);
+}
+
+/* ===== PRICING SECTION ===== */
+.pricing {
+  background: var(--navy);
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.pricing-card {
+  background: var(--panel-bg);
+  position: relative;
+  transition: transform 0.1s steps(1);
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+}
+
+.pricing-difficulty {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 14px;
+  text-align: center;
+  padding: 16px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.pricing-card.easy .pricing-difficulty {
+  background: rgba(0, 255, 65, 0.15);
+  color: var(--green);
+  border-bottom: 3px solid var(--green);
+}
+
+.pricing-card.normal .pricing-difficulty {
+  background: rgba(255, 236, 39, 0.15);
+  color: var(--yellow);
+  border-bottom: 3px solid var(--yellow);
+}
+
+.pricing-card.hard .pricing-difficulty {
+  background: rgba(255, 0, 77, 0.15);
+  color: var(--red);
+  border-bottom: 3px solid var(--red);
+}
+
+.pricing-card-body {
+  padding: 32px 24px;
+}
+
+.pricing-name {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px;
+  color: var(--white);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.pricing-desc {
+  text-align: center;
+  font-size: 20px;
+  color: var(--white);
+  opacity: 0.7;
+  margin-bottom: 24px;
+}
+
+.pricing-price {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.pricing-currency {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 14px;
+  color: var(--yellow);
+}
+
+.pricing-amount {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 32px;
+  color: var(--white);
+}
+
+.pricing-period {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  color: var(--gray);
+}
+
+/* HP Bar */
+.hp-bar-container {
+  margin-bottom: 24px;
+}
+
+.hp-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.hp-bar {
+  height: 16px;
+  background: var(--dark-gray);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--gray);
+}
+
+.hp-bar-fill {
+  height: 100%;
+  transition: width 1s steps(8);
+}
+
+.pricing-card.easy .hp-bar-fill {
+  background: var(--green);
+  width: 33%;
+}
+
+.pricing-card.normal .hp-bar-fill {
+  background: var(--yellow);
+  width: 66%;
+}
+
+.pricing-card.hard .hp-bar-fill {
+  background: var(--red);
+  width: 100%;
+}
+
+.hp-bar-label-top {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: var(--green);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.pricing-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+
+.pricing-features li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 20px;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pricing-features .check {
+  color: var(--green);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+}
+
+.pricing-features .cross {
+  color: var(--red);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+}
+
+.pricing-btn {
+  width: 100%;
+  padding: 14px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.1s steps(1);
+}
+
+.pricing-card.easy .pricing-btn {
+  background: var(--green);
+  color: var(--navy);
+  border: 3px solid #00cc33;
+}
+
+.pricing-card.easy .pricing-btn:hover {
+  background: var(--yellow);
+  border-color: #ccbb00;
+}
+
+.pricing-card.normal .pricing-btn {
+  background: var(--yellow);
+  color: var(--navy);
+  border: 3px solid #ccbb00;
+}
+
+.pricing-card.normal .pricing-btn:hover {
+  background: var(--green);
+  border-color: #00cc33;
+}
+
+.pricing-card.hard .pricing-btn {
+  background: var(--red);
+  color: var(--white);
+  border: 3px solid #cc003e;
+}
+
+.pricing-card.hard .pricing-btn:hover {
+  background: var(--purple);
+  border-color: #8844cc;
+}
+
+/* ===== ACHIEVEMENTS SECTION ===== */
+.achievements {
+  background: var(--navy-dark);
+  border-top: 4px solid var(--yellow);
+  border-bottom: 4px solid var(--yellow);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.achievement-card {
+  background: var(--panel-bg);
+  text-align: center;
+  padding: 24px 16px;
+  position: relative;
+  transition: transform 0.1s steps(1);
+}
+
+.achievement-card:hover {
+  transform: scale(1.05);
+}
+
+.achievement-card.locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.achievement-card.locked:hover {
+  transform: scale(1);
+}
+
+.achievement-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--yellow);
+  background: rgba(255, 236, 39, 0.1);
+  font-size: 24px;
+}
+
+.achievement-card.locked .achievement-icon {
+  border-color: var(--gray);
+  background: rgba(95, 87, 79, 0.2);
+}
+
+.achievement-name {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 9px;
+  color: var(--yellow);
+  margin-bottom: 8px;
+}
+
+.achievement-card.locked .achievement-name {
+  color: var(--gray);
+}
+
+.achievement-desc {
+  font-size: 16px;
+  color: var(--white);
+  opacity: 0.7;
+}
+
+.achievement-status {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  margin-top: 12px;
+  padding: 4px 8px;
+  display: inline-block;
+}
+
+.achievement-status.unlocked {
+  background: rgba(0, 255, 65, 0.2);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.achievement-status.locked-status {
+  background: rgba(95, 87, 79, 0.2);
+  color: var(--gray);
+  border: 1px solid var(--gray);
+}
+
+@keyframes shimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+.achievement-card:not(.locked) .achievement-icon {
+  animation: shimmer 3s steps(2) infinite;
+}
+
+/* ===== LEADERBOARD SECTION ===== */
+.leaderboard {
+  background: var(--navy);
+}
+
+.leaderboard-table {
+  width: 100%;
+  background: var(--panel-bg);
+  overflow: hidden;
+}
+
+.leaderboard-header {
+  display: grid;
+  grid-template-columns: 60px 1fr 120px 120px 100px;
+  padding: 16px 24px;
+  background: rgba(0, 255, 65, 0.1);
+  border-bottom: 3px solid var(--green);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  color: var(--green);
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 120px 120px 100px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: center;
+  transition: background 0.1s steps(1);
+}
+
+.leaderboard-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.leaderboard-row.rank-1 {
+  background: rgba(255, 236, 39, 0.05);
+  border-left: 4px solid var(--yellow);
+}
+
+.leaderboard-row.rank-2 {
+  background: rgba(192, 192, 192, 0.05);
+  border-left: 4px solid #c0c0c0;
+}
+
+.leaderboard-row.rank-3 {
+  background: rgba(205, 127, 50, 0.05);
+  border-left: 4px solid #cd7f32;
+}
+
+.rank-number {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 14px;
+  color: var(--yellow);
+}
+
+.rank-2 .rank-number { color: #c0c0c0; }
+.rank-3 .rank-number { color: #cd7f32; }
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--dark-gray);
+  border: 2px solid var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+}
+
+.player-name {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  color: var(--white);
+}
+
+.player-level {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+.score {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  color: var(--green);
+}
+
+.games-played {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  color: var(--white);
+  opacity: 0.7;
+}
+
+.win-rate {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+}
+
+.win-rate.high { color: var(--green); }
+.win-rate.medium { color: var(--yellow); }
+.win-rate.low { color: var(--red); }
+
+/* ===== CTA SECTION ===== */
+.cta {
+  background: var(--navy-dark);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-top: 4px solid var(--red);
+  border-bottom: 4px solid var(--red);
+}
+
+.cta-banner {
+  position: relative;
+  padding: 64px 32px;
+}
+
+.cta-pixel-decoration {
+  position: absolute;
+  font-size: 48px;
+  opacity: 0.15;
+}
+
+.cta-pixel-decoration.left {
+  left: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.cta-pixel-decoration.right {
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.cta h2 {
+  font-size: 24px;
+  color: var(--white);
+  margin-bottom: 16px;
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+
+.cta h2 .glow-green {
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+}
+
+.cta p {
+  font-size: 24px;
+  color: var(--white);
+  opacity: 0.8;
+  margin-bottom: 40px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@keyframes blink-pixel {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink-pixel 1s steps(1) infinite;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #000;
+  border-top: 2px solid var(--green);
+  padding: 48px 0 24px;
+  font-family: 'VT323', monospace;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.footer-brand .footer-logo {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+
+.footer-brand p {
+  font-size: 20px;
+  color: var(--green);
+  opacity: 0.7;
+  max-width: 300px;
+}
+
+.footer h4 {
+  font-size: 10px;
+  color: var(--green);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  font-size: 20px;
+  color: var(--green);
+  opacity: 0.6;
+  transition: opacity 0.1s steps(1);
+}
+
+.footer-links a:hover {
+  opacity: 1;
+  color: var(--yellow);
+}
+
+.footer-terminal {
+  background: #000;
+  border: 2px solid var(--green);
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.terminal-line {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.terminal-line .prompt {
+  color: var(--yellow);
+}
+
+.terminal-line .cmd {
+  color: var(--white);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(0, 255, 65, 0.2);
+  padding-top: 24px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: var(--green);
+  opacity: 0.5;
+}
+
+/* ===== SCROLL ANIMATIONS ===== */
+.pixel-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s steps(4), transform 0.3s steps(4);
+}
+
+.pixel-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pixel-reveal-delay-1 { transition-delay: 0.1s; }
+.pixel-reveal-delay-2 { transition-delay: 0.2s; }
+.pixel-reveal-delay-3 { transition-delay: 0.3s; }
+.pixel-reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .features-grid,
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .leaderboard-header,
+  .leaderboard-row {
+    grid-template-columns: 50px 1fr 100px 100px;
+  }
+
+  .leaderboard-header > *:nth-child(5),
+  .leaderboard-row > *:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(15, 15, 30, 0.98);
+    flex-direction: column;
+    padding: 24px;
+    gap: 16px;
+    border-bottom: 2px solid var(--green);
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .hero h1 {
+    font-size: 22px;
+  }
+
+  .hero-sub {
+    font-size: 22px;
+  }
+
+  .features-grid,
+  .pricing-grid,
+  .achievements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .section-title h2 {
+    font-size: 14px;
+  }
+
+  .leaderboard-header,
+  .leaderboard-row {
+    grid-template-columns: 40px 1fr 80px;
+    padding: 12px 16px;
+    font-size: 10px;
+  }
+
+  .leaderboard-header > *:nth-child(4),
+  .leaderboard-row > *:nth-child(4),
+  .leaderboard-header > *:nth-child(5),
+  .leaderboard-row > *:nth-child(5) {
+    display: none;
+  }
+
+  .pixel-char {
+    display: none;
+  }
+
+  .cta h2 {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 16px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-pixel {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
+
+/* ===== STATS BAR ===== */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  background: var(--green);
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item {
+  background: var(--navy-dark);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 24px;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.stat-label-text {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+
+
+
+/* ===== GAME UI ELEMENT ===== */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--green);
+  margin-bottom: 48px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+}
+
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-lives {
+  color: var(--red);
+}
+
+.hud-coins {
+  color: var(--yellow);
+}
+
+.hud-level {
+  color: var(--blue);
+}
+
+.hud-score {
+  color: var(--green);
+}
+
+/* ===== SCROLL INDICATOR ===== */
+.scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.scroll-arrow {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  display: block;
+  margin: 0 auto;
+  box-shadow:
+    0 0 0 var(--white),
+    2px 2px 0 var(--white),
+    4px 4px 0 var(--white),
+    6px 6px 0 var(--white),
+    -2px 2px 0 var(--white),
+    -4px 4px 0 var(--white),
+    -6px 6px 0 var(--white);
+  animation: bounce-arrow 1.5s steps(2) infinite;
+}
+
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ===== COUNTER ANIMATION ===== */
+.counter {
+  font-family: 'Press Start 2P', cursive;
+}
+</style>
+</head>
+<body>
+
+<!-- Scanlines -->
+<div class="scanlines"></div>
+
+<!-- Star Field -->
+<div class="star-field" id="starField"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="#" class="navbar-logo">
+      <span class="pixel-heart-icon"></span>
+      像素工坊
+    </a>
+    <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">MENU</button>
+    <ul class="nav-links">
+      <li><a href="#features">功能</a></li>
+      <li><a href="#pricing">价格</a></li>
+      <li><a href="#achievements">成就</a></li>
+      <li><a href="#leaderboard">排行榜</a></li>
+    </ul>
+    <button class="nav-cta">开始冒险</button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="pixel-char pixel-char-1">
+    <div style="width:4px;height:4px;background:transparent;box-shadow:0 0 0 var(--blue),4px 0 0 var(--blue),8px 0 0 var(--blue),0 4px 0 var(--white),4px 4px 0 var(--white),8px 4px 0 var(--white),0 8px 0 var(--blue),4px 8px 0 var(--blue),8px 8px 0 var(--blue),0 12px 0 var(--green),4px 12px 0 var(--green),8px 12px 0 var(--green),4px 16px 0 var(--blue),0 16px 0 var(--blue),8px 16px 0 var(--blue);"></div>
+  </div>
+  <div class="pixel-char pixel-char-2">
+    <div style="width:4px;height:4px;background:transparent;box-shadow:4px 0 0 var(--yellow),8px 0 0 var(--yellow),0 4px 0 var(--yellow),4px 4px 0 var(--white),8px 4px 0 var(--white),12px 4px 0 var(--yellow),0 8px 0 var(--orange),4px 8px 0 var(--orange),8px 8px 0 var(--orange),12px 8px 0 var(--orange),4px 12px 0 var(--red),8px 12px 0 var(--red),4px 16px 0 var(--red),8px 16px 0 var(--red);"></div>
+  </div>
+  <div class="pixel-char pixel-char-3">
+    <div style="width:4px;height:4px;background:transparent;box-shadow:0 0 0 var(--green),4px 0 0 var(--green),8px 0 0 var(--green),12px 0 0 var(--green),0 4px 0 var(--green),4px 4px 0 var(--white),8px 4px 0 var(--white),12px 4px 0 var(--green),0 8px 0 var(--green),4px 8px 0 var(--green),8px 8px 0 var(--green),12px 8px 0 var(--green),4px 12px 0 var(--green),8px 12px 0 var(--green);"></div>
+  </div>
+
+  <div class="hero-content container">
+    <div class="hero-badge">★ 新赛季已开启 ★</div>
+    <h1>
+      用 <span class="highlight-green">像素</span> 构建<br>
+      你的 <span class="highlight-yellow">SaaS 帝国</span>
+    </h1>
+    <p class="hero-sub">
+      将游戏化机制融入产品，让用户上瘾增长。8位美学 × 现代增长引擎。
+    </p>
+    <div class="hero-buttons">
+      <button class="btn-pixel btn-primary">▶ 免费开始</button>
+      <button class="btn-pixel btn-secondary">◆ 查看演示</button>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span class="scroll-arrow"></span>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-number counter" data-target="98765">0</div>
+    <div class="stat-label-text">活跃玩家</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number counter" data-target="2341">0</div>
+    <div class="stat-label-text">企业客户</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number counter" data-target="156">0</div>
+    <div class="stat-label-text">集成接口</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number counter" data-target="9999">0</div>
+    <div class="stat-label-text">五星好评</div>
+  </div>
+</div>
+
+
+
+<!-- Features Section -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-title pixel-reveal">
+      <h2>◆ 核心技能树 ◆</h2>
+      <p>解锁强大功能，助力产品飞速增长</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card pixel-border pixel-reveal pixel-reveal-delay-1">
+        <div class="feature-status-bar">
+          <div class="status-dots">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+          </div>
+          MODULE_01.SYS
+        </div>
+        <div class="feature-card-body">
+          <div class="feature-icon">⚔️</div>
+          <h3>游戏化任务系统</h3>
+          <p>将用户操作转化为经验值和金币奖励。每日签到、连续登录、里程碑挑战——让每个用户都成为你的忠实玩家。</p>
+          <div class="feature-stats">
+            <div><span class="stat-label">提升率</span></div>
+            <div><span class="stat-value">+340%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card pixel-border pixel-reveal pixel-reveal-delay-2">
+        <div class="feature-status-bar">
+          <div class="status-dots">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+          </div>
+          MODULE_02.SYS
+        </div>
+        <div class="feature-card-body">
+          <div class="feature-icon">🏆</div>
+          <h3>成就与排行榜</h3>
+          <p>自定义成就徽章体系，全球实时排行榜。激发竞争心理，用户留存率飙升至前所未有的高度。</p>
+          <div class="feature-stats">
+            <div><span class="stat-label">留存率</span></div>
+            <div><span class="stat-value">+280%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card pixel-border pixel-reveal pixel-reveal-delay-3">
+        <div class="feature-status-bar">
+          <div class="status-dots">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+          </div>
+          MODULE_03.SYS
+        </div>
+        <div class="feature-card-body">
+          <div class="feature-icon">🎮</div>
+          <h3>实时数据分析</h3>
+          <p>像素级精准的数据看板，追踪每一个用户行为。热力图、漏斗分析、A/B测试——用数据驱动增长决策。</p>
+          <div class="feature-stats">
+            <div><span class="stat-label">精准度</span></div>
+            <div><span class="stat-value">99.7%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card pixel-border pixel-reveal pixel-reveal-delay-1">
+        <div class="feature-status-bar">
+          <div class="status-dots">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+          </div>
+          MODULE_04.SYS
+        </div>
+        <div class="feature-card-body">
+          <div class="feature-icon">💎</div>
+          <h3>虚拟经济系统</h3>
+          <p>内置虚拟货币、道具商城、积分兑换。搭建完整的虚拟经济循环，让用户沉浸在你的产品世界中。</p>
+          <div class="feature-stats">
+            <div><span class="stat-label">转化率</span></div>
+            <div><span class="stat-value">+520%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card pixel-border pixel-reveal pixel-reveal-delay-2">
+        <div class="feature-status-bar">
+          <div class="status-dots">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+          </div>
+          MODULE_05.SYS
+        </div>
+        <div class="feature-card-body">
+          <div class="feature-icon">📡</div>
+          <h3>社交分享引擎</h3>
+          <p>一键生成像素风分享卡片，内置邀请奖励机制。病毒式传播系数提升10倍，获客成本直降80%。</p>
+          <div class="feature-stats">
+            <div><span class="stat-label">传播系数</span></div>
+            <div><span class="stat-value">×12.8</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-card pixel-border pixel-reveal pixel-reveal-delay-3">
+        <div class="feature-status-bar">
+          <div class="status-dots">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+          </div>
+          MODULE_06.SYS
+        </div>
+        <div class="feature-card-body">
+          <div class="feature-icon">🔧</div>
+          <h3>无代码集成平台</h3>
+          <p>可视化拖拽配置，5分钟接入任何产品。支持Webhook、REST API、SDK——开发者友好，零门槛上手。</p>
+          <div class="feature-stats">
+            <div><span class="stat-label">接入速度</span></div>
+            <div><span class="stat-value">5MIN</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-title pixel-reveal">
+      <h2>◆ 选择难度 ◆</h2>
+      <p>从新手村到地狱模式，总有一款适合你</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Easy -->
+      <div class="pricing-card easy pixel-reveal pixel-reveal-delay-1">
+        <div class="pricing-difficulty">
+          <span style="color: var(--green);">★</span> EASY MODE
+        </div>
+        <div class="pricing-card-body">
+          <div class="pricing-name">新手村</div>
+          <div class="pricing-desc">适合个人开发者和小团队</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">¥</span>
+            <span class="pricing-amount">0</span>
+            <span class="pricing-period">/月</span>
+          </div>
+          <div class="hp-bar-container">
+            <div class="hp-bar-label-top">
+              <span>HP</span>
+              <span>333/1000</span>
+            </div>
+            <div class="hp-bar">
+              <div class="hp-bar-fill"></div>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li><span class="check">■</span> 1000 活跃用户</li>
+            <li><span class="check">■</span> 基础成就系统</li>
+            <li><span class="check">■</span> 简易排行榜</li>
+            <li><span class="cross">□</span> <span style="opacity:0.5">虚拟经济系统</span></li>
+            <li><span class="cross">□</span> <span style="opacity:0.5">高级数据分析</span></li>
+            <li><span class="cross">□</span> <span style="opacity:0.5">专属客服支持</span></li>
+          </ul>
+          <button class="pricing-btn">选择此难度</button>
+        </div>
+      </div>
+
+      <!-- Normal -->
+      <div class="pricing-card normal pixel-reveal pixel-reveal-delay-2">
+        <div class="pricing-difficulty">
+          <span style="color: var(--yellow);">★★</span> NORMAL MODE
+        </div>
+        <div class="pricing-card-body">
+          <div class="pricing-name">冒险者</div>
+          <div class="pricing-desc">适合成长期SaaS产品</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">¥</span>
+            <span class="pricing-amount">299</span>
+            <span class="pricing-period">/月</span>
+          </div>
+          <div class="hp-bar-container">
+            <div class="hp-bar-label-top">
+              <span>HP</span>
+              <span>666/1000</span>
+            </div>
+            <div class="hp-bar">
+              <div class="hp-bar-fill"></div>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li><span class="check">■</span> 50000 活跃用户</li>
+            <li><span class="check">■</span> 高级成就体系</li>
+            <li><span class="check">■</span> 实时全球排行榜</li>
+            <li><span class="check">■</span> 虚拟经济系统</li>
+            <li><span class="check">■</span> 数据分析看板</li>
+            <li><span class="cross">□</span> <span style="opacity:0.5">专属客服支持</span></li>
+          </ul>
+          <button class="pricing-btn">选择此难度</button>
+        </div>
+      </div>
+
+      <!-- Hard -->
+      <div class="pricing-card hard pixel-reveal pixel-reveal-delay-3">
+        <div class="pricing-difficulty">
+          <span style="color: var(--red);">★★★</span> HARD MODE
+        </div>
+        <div class="pricing-card-body">
+          <div class="pricing-name">传说级</div>
+          <div class="pricing-desc">适合企业级大规模部署</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">¥</span>
+            <span class="pricing-amount">999</span>
+            <span class="pricing-period">/月</span>
+          </div>
+          <div class="hp-bar-container">
+            <div class="hp-bar-label-top">
+              <span>HP</span>
+              <span>999/1000</span>
+            </div>
+            <div class="hp-bar">
+              <div class="hp-bar-fill"></div>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li><span class="check">■</span> 无限活跃用户</li>
+            <li><span class="check">■</span> 完整游戏化套件</li>
+            <li><span class="check">■</span> 自定义排行榜</li>
+            <li><span class="check">■</span> 高级虚拟经济</li>
+            <li><span class="check">■</span> AI智能分析</li>
+            <li><span class="check">■</span> 7×24专属支持</li>
+          </ul>
+          <button class="pricing-btn">选择此难度</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Achievements Section -->
+<section class="achievements" id="achievements">
+  <div class="container">
+    <div class="section-title pixel-reveal">
+      <h2>◆ 成就殿堂 ◆</h2>
+      <p>解锁里程碑，展示你的荣耀</p>
+    </div>
+
+    <div class="achievements-grid">
+      <div class="achievement-card pixel-border-yellow pixel-reveal pixel-reveal-delay-1">
+        <div class="achievement-icon">🌟</div>
+        <div class="achievement-name">初次登录</div>
+        <div class="achievement-desc">完成账号注册并首次登录</div>
+        <div class="achievement-status unlocked">✓ 已解锁</div>
+      </div>
+
+      <div class="achievement-card pixel-border-yellow pixel-reveal pixel-reveal-delay-2">
+        <div class="achievement-icon">🔥</div>
+        <div class="achievement-name">连续七天</div>
+        <div class="achievement-desc">连续7天登录平台</div>
+        <div class="achievement-status unlocked">✓ 已解锁</div>
+      </div>
+
+      <div class="achievement-card pixel-border-yellow pixel-reveal pixel-reveal-delay-3">
+        <div class="achievement-icon">💎</div>
+        <div class="achievement-name">百万玩家</div>
+        <div class="achievement-desc">产品累计用户突破100万</div>
+        <div class="achievement-status unlocked">✓ 已解锁</div>
+      </div>
+
+      <div class="achievement-card pixel-border-yellow pixel-reveal pixel-reveal-delay-4">
+        <div class="achievement-icon">⚡</div>
+        <div class="achievement-name">闪电集成</div>
+        <div class="achievement-desc">5分钟内完成首次集成</div>
+        <div class="achievement-status unlocked">✓ 已解锁</div>
+      </div>
+
+      <div class="achievement-card locked pixel-border pixel-reveal pixel-reveal-delay-1">
+        <div class="achievement-icon">🛡️</div>
+        <div class="achievement-name">安全卫士</div>
+        <div class="achievement-desc">通过所有安全审计</div>
+        <div class="achievement-status locked-status">🔒 未解锁</div>
+      </div>
+
+      <div class="achievement-card locked pixel-border pixel-reveal pixel-reveal-delay-2">
+        <div class="achievement-icon">👑</div>
+        <div class="achievement-name">王者归来</div>
+        <div class="achievement-desc">连续30天活跃使用</div>
+        <div class="achievement-status locked-status">🔒 未解锁</div>
+      </div>
+
+      <div class="achievement-card locked pixel-border pixel-reveal pixel-reveal-delay-3">
+        <div class="achievement-icon">🚀</div>
+        <div class="achievement-name">火箭发射</div>
+        <div class="achievement-desc">单日新增用户超10万</div>
+        <div class="achievement-status locked-status">🔒 未解锁</div>
+      </div>
+
+      <div class="achievement-card locked pixel-border pixel-reveal pixel-reveal-delay-4">
+        <div class="achievement-icon">🎖️</div>
+        <div class="achievement-name">终极传说</div>
+        <div class="achievement-desc">解锁所有其他成就</div>
+        <div class="achievement-status locked-status">🔒 未解锁</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Leaderboard Section -->
+<section class="leaderboard" id="leaderboard">
+  <div class="container">
+    <div class="section-title pixel-reveal">
+      <h2>◆ 全球排行榜 ◆</h2>
+      <p>谁是真正的像素之王？</p>
+    </div>
+
+    <div class="game-hud pixel-reveal">
+      <div class="hud-item hud-lives">
+        <span>♥♥♥</span>
+        <span>LIVES: 3</span>
+      </div>
+      <div class="hud-item hud-coins">
+        <span>◆</span>
+        <span>COINS: 8888</span>
+      </div>
+      <div class="hud-item hud-level">
+        <span>★</span>
+        <span>LVL: 42</span>
+      </div>
+      <div class="hud-item hud-score">
+        <span>▶</span>
+        <span>SCORE: 999999</span>
+      </div>
+    </div>
+
+    <div class="leaderboard-table pixel-reveal">
+      <div class="leaderboard-header">
+        <div>排名</div>
+        <div>玩家</div>
+        <div>积分</div>
+        <div>场次</div>
+        <div>胜率</div>
+      </div>
+
+      <div class="leaderboard-row rank-1">
+        <div class="rank-number">#1</div>
+        <div class="player-info">
+          <div class="player-avatar" style="color:var(--yellow);">★</div>
+          <div>
+            <div class="player-name">像素大师Pro</div>
+            <div class="player-level">LV.99 传说级</div>
+          </div>
+        </div>
+        <div class="score">9,999,999</div>
+        <div class="games-played">2,847</div>
+        <div class="win-rate high">98.2%</div>
+      </div>
+
+      <div class="leaderboard-row rank-2">
+        <div class="rank-number">#2</div>
+        <div class="player-info">
+          <div class="player-avatar" style="color:#c0c0c0;">◆</div>
+          <div>
+            <div class="player-name">8位勇者</div>
+            <div class="player-level">LV.87 钻石级</div>
+          </div>
+        </div>
+        <div class="score">8,765,432</div>
+        <div class="games-played">2,103</div>
+        <div class="win-rate high">95.7%</div>
+      </div>
+
+      <div class="leaderboard-row rank-3">
+        <div class="rank-number">#3</div>
+        <div class="player-info">
+          <div class="player-avatar" style="color:#cd7f32;">▲</div>
+          <div>
+            <div class="player-name">复古骑士</div>
+            <div class="player-level">LV.76 黄金级</div>
+          </div>
+        </div>
+        <div class="score">7,654,321</div>
+        <div class="games-played">1,876</div>
+        <div class="win-rate medium">89.4%</div>
+      </div>
+
+      <div class="leaderboard-row">
+        <div class="rank-number">#4</div>
+        <div class="player-info">
+          <div class="player-avatar" style="color:var(--blue);">◇</div>
+          <div>
+            <div class="player-name">代码忍者</div>
+            <div class="player-level">LV.65 白银级</div>
+          </div>
+        </div>
+        <div class="score">6,543,210</div>
+        <div class="games-played">1,542</div>
+        <div class="win-rate medium">82.1%</div>
+      </div>
+
+      <div class="leaderboard-row">
+        <div class="rank-number">#5</div>
+        <div class="player-info">
+          <div class="player-avatar" style="color:var(--green);">●</div>
+          <div>
+            <div class="player-name">像素猎人</div>
+            <div class="player-level">LV.54 青铜级</div>
+          </div>
+        </div>
+        <div class="score">5,432,109</div>
+        <div class="games-played">1,234</div>
+        <div class="win-rate low">74.8%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+  <div class="cta-banner container">
+    <div class="cta-pixel-decoration left">
+      <div style="width:4px;height:4px;background:transparent;display:inline-block;box-shadow:0 0 0 var(--red),4px 0 0 var(--red),8px 0 0 var(--red),12px 0 0 var(--red),16px 0 0 var(--red),0 4px 0 var(--red),4px 4px 0 var(--red),8px 4px 0 var(--red),12px 4px 0 var(--red),16px 4px 0 var(--red),4px 8px 0 var(--red),8px 8px 0 var(--red),12px 8px 0 var(--red),8px 12px 0 var(--red);"></div>
+    </div>
+    <div class="cta-pixel-decoration right">
+      <div style="width:4px;height:4px;background:transparent;display:inline-block;box-shadow:0 0 0 var(--red),4px 0 0 var(--red),8px 0 0 var(--red),12px 0 0 var(--red),16px 0 0 var(--red),0 4px 0 var(--red),4px 4px 0 var(--red),8px 4px 0 var(--red),12px 4px 0 var(--red),16px 4px 0 var(--red),4px 8px 0 var(--red),8px 8px 0 var(--red),12px 8px 0 var(--red),8px 12px 0 var(--red);"></div>
+    </div>
+
+    <h2 class="pixel-reveal">
+      准备好开始你的<br>
+      <span class="glow-green">像素冒险</span>了吗？
+    </h2>
+    <p class="pixel-reveal">
+      加入2,341家企业，用游戏化驱动增长。免费开始，无需信用卡。
+    </p>
+    <div class="cta-buttons pixel-reveal">
+      <button class="btn-pixel btn-primary">▶ 立即免费试用</button>
+      <button class="btn-pixel btn-secondary">◆ 预约产品演示</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">♥ 像素工坊</div>
+        <p>将8位美学融入现代SaaS，用游戏化机制驱动产品增长。让每个用户都成为你的忠实玩家。</p>
+      </div>
+
+      <div>
+        <h4>// 产品</h4>
+        <ul class="footer-links">
+          <li><a href="#">游戏化引擎</a></li>
+          <li><a href="#">成就系统</a></li>
+          <li><a href="#">排行榜</a></li>
+          <li><a href="#">数据分析</a></li>
+          <li><a href="#">API文档</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>// 资源</h4>
+        <ul class="footer-links">
+          <li><a href="#">开发文档</a></li>
+          <li><a href="#">集成指南</a></li>
+          <li><a href="#">案例展示</a></li>
+          <li><a href="#">更新日志</a></li>
+          <li><a href="#">社区论坛</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>// 关于</h4>
+        <ul class="footer-links">
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">加入团队</a></li>
+          <li><a href="#">联系我们</a></li>
+          <li><a href="#">隐私政策</a></li>
+          <li><a href="#">服务条款</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-terminal">
+      <div class="terminal-line"><span class="prompt">pixel-workshop@saas:~$</span> <span class="cmd">cat /etc/motto.txt</span></div>
+      <div class="terminal-line">用像素构建世界，用游戏改变增长。</div>
+      <div class="terminal-line"><span class="prompt">pixel-workshop@saas:~$</span> <span class="cmd">echo $STATUS</span></div>
+      <div class="terminal-line">ALL SYSTEMS OPERATIONAL ■</div>
+      <div class="terminal-line"><span class="prompt">pixel-workshop@saas:~$</span> <span class="cursor-blink">_</span></div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 像素工坊 PIXEL WORKSHOP. ALL RIGHTS RESERVED. MADE WITH ♥ AND PIXELS.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== Star Field Generator =====
+(function generateStars() {
+  const field = document.getElementById('starField');
+  const count = 120;
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    const r = Math.random();
+    if (r < 0.3) star.classList.add('twinkle-1');
+    else if (r < 0.6) star.classList.add('twinkle-2');
+    else if (r < 0.8) star.classList.add('twinkle-3');
+    if (Math.random() < 0.08) star.classList.add('big');
+    field.appendChild(star);
+  }
+})();
+
+// ===== IntersectionObserver for pixel reveal =====
+(function initReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  document.querySelectorAll('.pixel-reveal').forEach(el => observer.observe(el));
+})();
+
+// ===== Counter Animation =====
+(function initCounters() {
+  const counters = document.querySelectorAll('.counter');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.target);
+        const duration = 2000;
+        const steps = 20;
+        const stepTime = duration / steps;
+        let current = 0;
+        const increment = target / steps;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          el.textContent = Math.floor(current).toLocaleString();
+        }, stepTime);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(c => observer.observe(c));
+})();
+
+// ===== Mobile menu toggle =====
+document.querySelector('.menu-toggle')?.addEventListener('click', function() {
+  const links = document.querySelector('.nav-links');
+  this.textContent = links.classList.contains('active') ? 'MENU' : 'CLOSE';
+});
+
+// ===== Smooth scroll for nav links =====
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelector('.nav-links').classList.remove('active');
+      document.querySelector('.menu-toggle').textContent = 'MENU';
+    }
+  });
+});
+
+// ===== Button hover sound effect (visual) =====
+document.querySelectorAll('.btn-pixel, .pricing-btn, .nav-cta').forEach(btn => {
+  btn.addEventListener('mouseenter', function() {
+    this.style.transform = 'scale(0.96)';
+  });
+  btn.addEventListener('mouseleave', function() {
+    this.style.transform = 'scale(1)';
+  });
+});
+
+// ===== Parallax star field on scroll =====
+let ticking = false;
+window.addEventListener('scroll', function() {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const scrollY = window.scrollY;
+      const stars = document.getElementById('starField');
+      if (stars) {
+        stars.style.transform = 'translateY(' + (scrollY * 0.15) + 'px)';
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+</script>
+</body>
+</html>

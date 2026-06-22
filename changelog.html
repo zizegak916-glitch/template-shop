@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>更新日志 — Template Shop</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --p: #6C5CE7;
+  --acc: #00cec9;
+  --p-glow: rgba(108, 92, 231, 0.25);
+  --acc-glow: rgba(0, 206, 201, 0.2);
+  --r: 20px;
+  --transition-theme: 0.3s ease;
+}
+[data-theme="dark"] {
+  --bg: #07070e;
+  --s1: #0e0e1a;
+  --s2: #161625;
+  --s3: #1c1c30;
+  --tx: #e8e8f4;
+  --td: #6e6e96;
+  --bd: rgba(255, 255, 255, 0.06);
+  --bd-hover: rgba(255, 255, 255, 0.12);
+  --card-bg: #0e0e1a;
+  --card-hover-bg: #14142a;
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-border: rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 24px 64px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(108, 92, 231, 0.1);
+  --orb1: rgba(108, 92, 231, 0.07);
+  --orb2: rgba(0, 206, 201, 0.05);
+  --orb3: rgba(236, 72, 153, 0.04);
+  --grid-line: rgba(108, 92, 231, 0.025);
+  --scroll-top-bg: rgba(14, 14, 26, 0.9);
+  --scroll-top-border: rgba(255, 255, 255, 0.08);
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --s1: #f8f9fa;
+  --s2: #f1f3f5;
+  --s3: #e9ecef;
+  --tx: #111111;
+  --td: #6c757d;
+  --bd: rgba(0, 0, 0, 0.08);
+  --bd-hover: rgba(0, 0, 0, 0.15);
+  --card-bg: #ffffff;
+  --card-hover-bg: #f8f9fa;
+  --input-bg: #f8f9fa;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 16px 48px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(108, 92, 231, 0.12);
+  --orb1: rgba(108, 92, 231, 0.04);
+  --orb2: rgba(0, 206, 201, 0.03);
+  --orb3: rgba(236, 72, 153, 0.03);
+  --grid-line: rgba(108, 92, 231, 0.03);
+  --scroll-top-bg: rgba(255, 255, 255, 0.95);
+  --scroll-top-border: rgba(0, 0, 0, 0.08);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition-theme), color var(--transition-theme);
+}
+::selection { background: rgba(108, 92, 231, 0.3); }
+a { color: inherit; text-decoration: none; }
+
+.bg-grid {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  pointer-events: none; z-index: 0;
+  transition: background var(--transition-theme);
+}
+.bg-orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(140px); pointer-events: none; z-index: 0;
+  will-change: transform;
+  transition: background var(--transition-theme);
+}
+.bg-orb.purple { width: 600px; height: 600px; background: var(--orb1); top: -200px; right: -150px; animation: orbFloat 18s ease-in-out infinite; }
+.bg-orb.teal { width: 500px; height: 500px; background: var(--orb2); bottom: -150px; left: -120px; animation: orbFloat 18s ease-in-out infinite -9s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -50px) scale(1.05); }
+  66% { transform: translate(-30px, 30px) scale(0.95); }
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+/* ─── Top Bar ──────────────────────────────────────────────── */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  background: transparent;
+  transition: background 0.3s, backdrop-filter 0.3s, box-shadow 0.3s;
+}
+.top-bar.scrolled {
+  background: rgba(7, 7, 14, 0.75);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: 0 1px 0 var(--bd);
+}
+[data-theme="light"] .top-bar.scrolled {
+  background: rgba(255, 255, 255, 0.8);
+}
+.top-bar .nav-left {
+  display: flex; align-items: center; gap: 12px;
+}
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 500; color: var(--td);
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--p); }
+.back-link i { width: 16px; height: 16px; }
+.nav-title {
+  font-size: 16px; font-weight: 800; letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-title span { background: linear-gradient(135deg, var(--p), var(--acc)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.theme-toggle {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--bd);
+  background: var(--input-bg); color: var(--td); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s; font-size: 0;
+}
+.theme-toggle:hover { border-color: var(--bd-hover); color: var(--tx); background: var(--s2); }
+.theme-toggle i { width: 18px; height: 18px; }
+
+/* ─── Page Header ──────────────────────────────────────────── */
+.page-header {
+  padding: 140px 0 60px;
+  text-align: center;
+}
+.page-header .badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  padding: 8px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--p);
+  margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+}
+.page-header .badge .dot { width: 7px; height: 7px; background: var(--acc); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--acc-glow); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 206, 201, 0); }
+}
+.page-header h1 {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.04em;
+  margin-bottom: 16px;
+}
+.page-header h1 .gradient-text {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--p), var(--acc), #ec4899, var(--p));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 8s ease infinite;
+}
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.page-header .sub {
+  font-size: 16px; color: var(--td); max-width: 520px;
+  margin: 0 auto; line-height: 1.7;
+}
+
+/* ─── Stats Bar ────────────────────────────────────────────── */
+.stats-bar {
+  display: flex; justify-content: center; gap: 40px;
+  margin-top: 40px; flex-wrap: wrap;
+}
+.stat-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.stat-num {
+  font-size: 28px; font-weight: 800; letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--p), var(--acc));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  font-size: 12px; color: var(--td); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* ─── Timeline ─────────────────────────────────────────────── */
+.timeline-section {
+  padding: 0 0 80px;
+}
+.timeline {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto;
+  padding-left: 48px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--p), var(--acc), transparent);
+  opacity: 0.3;
+}
+
+.timeline-entry {
+  position: relative;
+  margin-bottom: 56px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.timeline-entry.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.timeline-entry:nth-child(1) { transition-delay: 0s; }
+.timeline-entry:nth-child(2) { transition-delay: 0.12s; }
+.timeline-entry:nth-child(3) { transition-delay: 0.24s; }
+
+.timeline-dot {
+  position: absolute;
+  left: -41px; top: 24px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--p);
+  background: var(--bg);
+  z-index: 2;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.timeline-dot.green { border-color: #10b981; }
+.timeline-dot.blue { border-color: #3b82f6; }
+.timeline-dot.purple { border-color: var(--p); }
+.timeline-entry:hover .timeline-dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 12px var(--p-glow);
+}
+.timeline-entry:hover .timeline-dot.green {
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+.timeline-entry:hover .timeline-dot.blue {
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
+}
+
+.timeline-card {
+  background: var(--card-bg);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 32px;
+  transition: all 0.3s;
+  position: relative;
+}
+.timeline-card:hover {
+  background: var(--card-hover-bg);
+  border-color: var(--bd-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.timeline-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.timeline-date {
+  font-size: 13px; color: var(--td); font-weight: 500;
+  display: flex; align-items: center; gap: 6px;
+}
+.timeline-date i { width: 14px; height: 14px; }
+.version-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+}
+.version-badge.new {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.version-badge.fix {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+.version-badge.improve {
+  background: rgba(108, 92, 231, 0.1);
+  color: var(--p);
+  border: 1px solid rgba(108, 92, 231, 0.2);
+}
+.version-badge i { width: 12px; height: 12px; }
+
+.timeline-title {
+  font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.timeline-changes {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.timeline-changes li {
+  font-size: 14px; color: var(--td); line-height: 1.6;
+  padding-left: 18px;
+  position: relative;
+}
+.timeline-changes li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--td);
+  opacity: 0.4;
+}
+.timeline-changes li .tag {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px;
+  margin-right: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.tag.new { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.tag.fix { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.tag.improve { background: rgba(108, 92, 231, 0.12); color: var(--p); }
+
+/* ─── Footer ───────────────────────────────────────────────── */
+.page-footer {
+  text-align: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--bd);
+}
+.footer-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  padding: 8px 18px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--p);
+  margin-bottom: 16px;
+}
+.footer-badge i { width: 14px; height: 14px; }
+.footer-links {
+  display: flex; justify-content: center; gap: 24px;
+  margin-bottom: 16px;
+}
+.footer-links a {
+  font-size: 13px; color: var(--td);
+  display: flex; align-items: center; gap: 6px;
+  transition: color 0.2s;
+}
+.footer-links a i { width: 14px; height: 14px; }
+.footer-links a:hover { color: var(--p); }
+.footer-copy { font-size: 12px; color: var(--td); opacity: 0.6; }
+
+/* ─── Scroll to Top ────────────────────────────────────────── */
+.scroll-top {
+  position: fixed; bottom: 32px; right: 32px; z-index: 90;
+  width: 44px; height: 44px; border-radius: 12px;
+  border: 1px solid var(--scroll-top-border);
+  background: var(--scroll-top-bg);
+  backdrop-filter: blur(16px);
+  color: var(--td); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(16px);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.scroll-top.visible {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+.scroll-top:hover { color: var(--p); border-color: rgba(108, 92, 231, 0.3); box-shadow: 0 4px 16px var(--p-glow); }
+.scroll-top i { width: 18px; height: 18px; }
+
+/* ─── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .top-bar { padding: 12px 16px; }
+  .back-link span { display: none; }
+  .page-header { padding: 120px 0 40px; }
+  .page-header h1 { font-size: 32px; }
+  .stats-bar { gap: 24px; margin-top: 32px; }
+  .stat-num { font-size: 22px; }
+  .stat-label { font-size: 11px; }
+  .timeline { padding-left: 36px; }
+  .timeline::before { left: 11px; }
+  .timeline-dot { left: -33px; }
+  .timeline-card { padding: 24px; }
+  .timeline-title { font-size: 17px; }
+  .scroll-top { bottom: 20px; right: 20px; }
+}
+@media (max-width: 480px) {
+  .stats-bar { gap: 20px; }
+  .stat-num { font-size: 20px; }
+  .page-header h1 { font-size: 28px; }
+  .page-header .sub { font-size: 14px; }
+  .timeline { padding-left: 28px; }
+  .timeline::before { left: 7px; }
+  .timeline-dot { left: -25px; width: 10px; height: 10px; }
+  .timeline-card { padding: 20px; }
+  .timeline-changes li { font-size: 13px; }
+  .version-badge { font-size: 11px; padding: 3px 10px; }
+  .timeline-meta { gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb purple"></div>
+<div class="bg-orb teal"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar" id="topBar">
+  <div class="nav-left">
+    <a href="index.html" class="back-link"><i data-lucide="arrow-left"></i> <span>返回模板商店</span></a>
+    <div class="nav-title"><i data-lucide="file-text" style="width:18px;height:18px;color:var(--p)"></i> <span>更新日志</span></div>
+  </div>
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <i data-lucide="sun" id="themeIcon"></i>
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="wrap">
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <div class="badge"><span class="dot"></span> 更新日志 · Changelog</div>
+  <h1>版本<span class="gradient-text">更新记录</span></h1>
+  <p class="sub">记录 Template Shop 的每一次迭代，从首发上线到持续进化。</p>
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-num">3</span>
+      <span class="stat-label">版本发布</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">24</span>
+      <span class="stat-label">模板总数</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">23</span>
+      <span class="stat-label">更新条目</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">5</span>
+      <span class="stat-label">天迭代周期</span>
+    </div>
+  </div>
+</header>
+
+<!-- TIMELINE -->
+<section class="timeline-section">
+  <div class="timeline">
+
+    <!-- v2.0 -->
+    <article class="timeline-entry">
+      <div class="timeline-dot green"></div>
+      <div class="timeline-card">
+        <div class="timeline-meta">
+          <span class="timeline-date"><i data-lucide="calendar"></i> 2026-06-22</span>
+          <span class="version-badge new"><i data-lucide="rocket"></i> v2.0 大版本更新</span>
+        </div>
+        <h3 class="timeline-title">全新模板体系 · 主题系统 · 搜索与筛选</h3>
+        <ul class="timeline-changes">
+          <li><span class="tag new">新增</span> 10 套全新风格模板（水墨国风、包豪斯极简、轻奢风格、赛博朋克、日式侘寂、玻璃拟态、新粗野主义、极光渐变、杂志编辑、温暖有机）</li>
+          <li><span class="tag new">新增</span> 暗色 / 亮色主题切换，跟随系统偏好</li>
+          <li><span class="tag new">新增</span> Lucide 图标库替代内联 SVG</li>
+          <li><span class="tag new">新增</span> 实时搜索过滤功能</li>
+          <li><span class="tag new">新增</span> 分类筛选（全部 / 暗色系 / 亮色系 / 行业专属 / 国风文化）</li>
+          <li><span class="tag new">新增</span> 统计数据展示区</li>
+          <li><span class="tag new">新增</span> 回到顶部按钮</li>
+          <li><span class="tag improve">改进</span> 模板卡片 UI 全面升级，悬停预览 + 下载双按钮</li>
+          <li><span class="tag improve">改进</span> 登录墙视觉重设计</li>
+          <li><span class="tag fix">修复</span> 游客模式下 hover 层下载按钮未锁定的问题</li>
+          <li><span class="tag fix">修复</span> Chrome 手机切换桌面模式需重新登录（指纹算法改为 UUID）</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- v1.5 -->
+    <article class="timeline-entry">
+      <div class="timeline-dot blue"></div>
+      <div class="timeline-card">
+        <div class="timeline-meta">
+          <span class="timeline-date"><i data-lucide="calendar"></i> 2026-06-22</span>
+          <span class="version-badge fix"><i data-lucide="shield"></i> v1.5 安全更新</span>
+        </div>
+        <h3 class="timeline-title">设备指纹 · 密钥校验 · 安全增强</h3>
+        <ul class="timeline-changes">
+          <li><span class="tag new">新增</span> 设备指纹绑定系统（Cloudflare Worker 后端）</li>
+          <li><span class="tag new">新增</span> 密钥格式自动补全（TMPL-XXXX-XXXX-XXXX）</li>
+          <li><span class="tag new">新增</span> 密钥验证 SHA-256 哈希校验</li>
+          <li><span class="tag new">新增</span> 设备变更自动登出</li>
+          <li><span class="tag improve">改进</span> 登录动画和错误提示</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- v1.0 -->
+    <article class="timeline-entry">
+      <div class="timeline-dot purple"></div>
+      <div class="timeline-card">
+        <div class="timeline-meta">
+          <span class="timeline-date"><i data-lucide="calendar"></i> 2026-06-18</span>
+          <span class="version-badge new"><i data-lucide="star"></i> v1.0 首发</span>
+        </div>
+        <h3 class="timeline-title">Template Shop 正式上线</h3>
+        <ul class="timeline-changes">
+          <li><span class="tag new">新增</span> 首批 8 套落地页模板上线</li>
+          <li><span class="tag new">新增</span> 暗黑科技风（Starter）· 白色极简风（CleanSaaS）· 渐变潮流风（VibeLaunch）· AI 产品专用（NeuralAI）</li>
+          <li><span class="tag new">新增</span> App 专属（AppLaunch）· 电商产品（ShopWave）· 创意工作室（Atelier）· 金融科技（FinFlow）</li>
+          <li><span class="tag new">新增</span> 密钥登录墙 + 游客模式</li>
+          <li><span class="tag new">新增</span> 纯 HTML / CSS / JS 单文件，零依赖</li>
+          <li><span class="tag new">新增</span> 完全响应式设计</li>
+          <li><span class="tag new">新增</span> Cloudflare Pages + GitHub Pages 双部署</li>
+        </ul>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTop" aria-label="回到顶部">
+  <i data-lucide="arrow-up"></i>
+</button>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="footer-badge"><i data-lucide="sparkles"></i> 18 套模板 · 持续更新</div>
+  <div class="footer-links">
+    <a href="#"><i data-lucide="github"></i> GitHub</a>
+    <a href="#"><i data-lucide="mail"></i> 联系我们</a>
+  </div>
+  <div class="footer-copy">© 2026 Template Shop · 单文件 · 零依赖 · 即买即用</div>
+</footer>
+
+<script>
+/* ─── Lucide Icons ──────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+});
+
+/* ─── Theme Toggle ─────────────────────────────────────────── */
+(function() {
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateThemeIcon(theme);
+  }
+
+  function updateThemeIcon(theme) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    lucide.createIcons();
+  }
+
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    setTheme(saved);
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
+  }
+
+  toggle.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+})();
+
+/* ─── Top Bar Scroll ───────────────────────────────────────── */
+(function() {
+  const bar = document.getElementById('topBar');
+  window.addEventListener('scroll', () => {
+    bar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+})();
+
+/* ─── Scroll Reveal ────────────────────────────────────────── */
+(function() {
+  const entries = document.querySelectorAll('.timeline-entry');
+  const observer = new IntersectionObserver((items) => {
+    items.forEach(item => {
+      if (item.isIntersecting) {
+        item.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  entries.forEach(e => observer.observe(e));
+})();
+
+/* ─── Scroll to Top ────────────────────────────────────────── */
+(function() {
+  const btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

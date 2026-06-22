@@ -1332,7 +1332,8 @@ h1 {
 <footer class="page-footer">
   <div class="footer-badge"><i data-lucide="sparkles"></i> 18 套模板 · 持续更新</div>
   <div class="footer-links">
-    <a href="#"><i data-lucide="github"></i> GitHub</a>
+    <a href="changelog.html"><i data-lucide="scroll-text"></i> 更新日志</a>
+    <a href="https://github.com/zizegak916-glitch/template-shop" target="_blank"><i data-lucide="github"></i> GitHub</a>
     <a href="#"><i data-lucide="mail"></i> 联系我们</a>
   </div>
   <div class="footer-copy">© 2026 Template Shop · 单文件 · 零依赖 · 即买即用</div>
@@ -1541,6 +1542,16 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
   btn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+})();
+
+/* ─── Visitor Tracking ─────────────────────────────────────── */
+(function(){
+  try {
+    var img = new Image();
+    img.src = 'https://template-shop.pages.dev/pixel.gif?page=' + encodeURIComponent(location.pathname) + '&ref=' + encodeURIComponent(document.referrer || '');
+    img.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none';
+    document.body.appendChild(img);
+  } catch(e) {}
 })();
 </script>
 

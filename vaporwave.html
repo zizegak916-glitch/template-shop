@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAPORWAVE// - 复古未来主义SaaS平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep-purple: #1a0a2e;
+      --bg-darker: #0d0519;
+      --neon-pink: #ff00ff;
+      --neon-pink-light: #ff6ec7;
+      --neon-cyan: #00ffff;
+      --sunset-orange: #ff6b35;
+      --chrome-silver: #c0c0c0;
+      --chrome-light: #e8e8e8;
+      --chrome-dark: #808080;
+      --text-white: #ffffff;
+      --text-gray: #b0b0b0;
+      --border-neon: #ff00ff;
+      --glow-pink: rgba(255, 0, 255, 0.6);
+      --glow-cyan: rgba(0, 255, 255, 0.6);
+      --glow-purple: rgba(128, 0, 255, 0.6);
+      --glow-orange: rgba(255, 107, 53, 0.6);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background-color: var(--bg-deep-purple);
+      color: var(--text-white);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Press Start 2P', cursive;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Chrome Text Effect */
+    .chrome-text {
+      background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #e8e8e8 25%,
+        #a0a0a0 50%,
+        #e8e8e8 75%,
+        #ffffff 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 10px rgba(255, 0, 255, 0.5));
+    }
+
+    /* Neon Glow Text */
+    .neon-glow {
+      text-shadow:
+        0 0 5px var(--neon-pink),
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 40px var(--neon-pink);
+    }
+
+    .neon-glow-cyan {
+      text-shadow:
+        0 0 5px var(--neon-cyan),
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan);
+    }
+
+    /* Scanline Overlay */
+    .scanline-overlay {
+      position: relative;
+    }
+
+    .scanline-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Sunset Gradient Strip */
+    .sunset-strip {
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b35, #ff00ff, #1a0a2e);
+      width: 100%;
+    }
+
+    .sunset-strip-vertical {
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(180deg, #ff6b35 0%, #ff00ff 50%, #1a0a2e 100%);
+    }
+
+    /* Flicker Animation */
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      92% { opacity: 1; }
+      93% { opacity: 0.8; }
+      94% { opacity: 1; }
+      96% { opacity: 0.9; }
+      97% { opacity: 1; }
+    }
+
+    /* Neon Pulse Animation */
+    @keyframes neonPulse {
+      0%, 100% {
+        box-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+      }
+      50% {
+        box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink), 0 0 60px var(--neon-pink);
+      }
+    }
+
+    @keyframes neonPulseCyan {
+      0%, 100% {
+        box-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+      }
+      50% {
+        box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan), 0 0 60px var(--neon-cyan);
+      }
+    }
+
+    /* Float Animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+
+    /* Grid Animation */
+    @keyframes gridScroll {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 50px; }
+    }
+
+    /* ============================================
+       NAVIGATION
+    ============================================ */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(13, 5, 25, 0.95);
+      border-bottom: 2px solid var(--neon-pink);
+      padding: 15px 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      color: var(--neon-pink);
+      text-shadow: 0 0 10px var(--neon-pink);
+      animation: flicker 4s infinite;
+    }
+
+    .nav-logo span {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-white);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-links a:hover {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .nav-cta {
+      background: transparent;
+      border: 2px solid var(--neon-pink);
+      color: var(--neon-pink);
+      padding: 10px 20px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .nav-cta:hover {
+      background: var(--neon-pink);
+      color: var(--bg-deep-purple);
+      box-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .mobile-menu-btn span {
+      width: 25px;
+      height: 3px;
+      background: var(--neon-pink);
+      box-shadow: 0 0 5px var(--neon-pink);
+    }
+
+    /* ============================================
+       HERO SECTION
+    ============================================ */
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1a0a2e 0%, #0d0519 100%);
+    }
+
+    /* Perspective Grid Floor */
+    .grid-floor {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60%;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 0, 255, 0.3) 0px,
+          rgba(255, 0, 255, 0.3) 1px,
+          transparent 1px,
+          transparent 50px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 0, 255, 0.3) 0px,
+          rgba(255, 0, 255, 0.3) 1px,
+          transparent 1px,
+          transparent 50px
+        );
+      transform: perspective(500px) rotateX(60deg);
+      transform-origin: bottom center;
+      animation: gridScroll 2s linear infinite;
+    }
+
+    .grid-floor::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(26, 10, 46, 0) 0%,
+        rgba(26, 10, 46, 0.5) 30%,
+        rgba(26, 10, 46, 0.9) 100%
+      );
+    }
+
+    /* Sunset Horizon */
+    .sunset-horizon {
+      position: absolute;
+      bottom: 30%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        #ff6b35 10%,
+        #ff00ff 30%,
+        #ff00ff 70%,
+        #ff6b35 90%,
+        transparent 100%
+      );
+      box-shadow:
+        0 0 20px #ff6b35,
+        0 0 40px #ff00ff,
+        0 -20px 60px rgba(255, 0, 255, 0.5),
+        0 20px 60px rgba(255, 107, 53, 0.5);
+    }
+
+    /* Sunset Glow */
+    .sunset-glow {
+      position: absolute;
+      bottom: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(255, 0, 255, 0.4) 0%,
+        rgba(255, 107, 53, 0.3) 30%,
+        rgba(26, 10, 46, 0) 70%
+      );
+      pointer-events: none;
+    }
+
+    /* Floating Decorative Elements */
+    .floating-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 24px;
+      opacity: 0.3;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-1 {
+      top: 15%;
+      left: 10%;
+      color: var(--neon-cyan);
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      top: 25%;
+      right: 15%;
+      color: var(--neon-pink);
+      animation-delay: 1s;
+      font-size: 32px;
+    }
+
+    .shape-3 {
+      top: 60%;
+      left: 5%;
+      color: var(--sunset-orange);
+      animation-delay: 2s;
+      font-size: 18px;
+    }
+
+    .shape-4 {
+      top: 70%;
+      right: 10%;
+      color: var(--neon-pink);
+      animation-delay: 3s;
+    }
+
+    .shape-5 {
+      top: 40%;
+      left: 20%;
+      color: var(--neon-cyan);
+      animation-delay: 4s;
+      font-size: 20px;
+      animation: floatSlow 8s ease-in-out infinite;
+    }
+
+    .shape-6 {
+      top: 20%;
+      right: 25%;
+      color: var(--sunset-orange);
+      animation-delay: 2.5s;
+      font-size: 16px;
+    }
+
+    /* Hero Content */
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 120px 20px 80px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 0, 255, 0.2);
+      border: 1px solid var(--neon-pink);
+      padding: 8px 20px;
+      font-size: 12px;
+      margin-bottom: 30px;
+      animation: flicker 4s infinite;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 8vw, 72px);
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .hero h1 .bracket {
+      color: var(--neon-pink);
+      text-shadow:
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 40px var(--neon-pink);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(16px, 2vw, 24px);
+      color: var(--text-gray);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      font-weight: 500;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-pink-light));
+      border: none;
+      color: var(--bg-deep-purple);
+      padding: 18px 40px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      text-transform: uppercase;
+      box-shadow:
+        0 0 20px var(--neon-pink),
+        0 0 40px rgba(255, 0, 255, 0.5);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 0 30px var(--neon-pink),
+        0 0 60px var(--neon-pink),
+        0 0 100px rgba(255, 0, 255, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      padding: 16px 40px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .btn-secondary:hover {
+      background: var(--neon-cyan);
+      color: var(--bg-deep-purple);
+      box-shadow:
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan);
+      transform: translateY(-3px);
+    }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .scroll-indicator span {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 8px;
+      color: var(--text-gray);
+      letter-spacing: 2px;
+    }
+
+    .scroll-arrow {
+      width: 20px;
+      height: 20px;
+      border-right: 2px solid var(--neon-pink);
+      border-bottom: 2px solid var(--neon-pink);
+      transform: rotate(45deg);
+      box-shadow: 2px 2px 5px var(--neon-pink);
+    }
+
+    /* ============================================
+       FEATURES SECTION
+    ============================================ */
+    .features {
+      padding: 120px 0;
+      background: var(--bg-darker);
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(24px, 4vw, 40px);
+      margin-bottom: 20px;
+    }
+
+    .section-header p {
+      color: var(--text-gray);
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 40px;
+    }
+
+    .feature-card {
+      position: relative;
+      background: rgba(26, 10, 46, 0.8);
+      border: 2px solid;
+      padding: 40px 30px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .feature-card.pink {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+    }
+
+    .feature-card.pink:hover {
+      box-shadow: 0 0 40px rgba(255, 0, 255, 0.6);
+    }
+
+    .feature-card.cyan {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .feature-card.cyan:hover {
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    }
+
+    .feature-card.purple {
+      border-color: #8000ff;
+      box-shadow: 0 0 20px rgba(128, 0, 255, 0.3);
+    }
+
+    .feature-card.purple:hover {
+      box-shadow: 0 0 40px rgba(128, 0, 255, 0.6);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .feature-card.pink .feature-icon {
+      color: var(--neon-pink);
+      text-shadow: 0 0 20px var(--neon-pink);
+    }
+
+    .feature-card.cyan .feature-icon {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px var(--neon-cyan);
+    }
+
+    .feature-card.purple .feature-icon {
+      color: #8000ff;
+      text-shadow: 0 0 20px #8000ff;
+    }
+
+    .feature-card h3 {
+      font-size: 14px;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .feature-card.pink h3 { color: var(--neon-pink); }
+    .feature-card.cyan h3 { color: var(--neon-cyan); }
+    .feature-card.purple h3 { color: #8000ff; }
+
+    .feature-card p {
+      color: var(--text-gray);
+      font-size: 16px;
+      line-height: 1.8;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ============================================
+       PRICING SECTION
+    ============================================ */
+    .pricing {
+      padding: 120px 0;
+      background: var(--bg-deep-purple);
+      position: relative;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      align-items: start;
+    }
+
+    .pricing-card {
+      background: var(--bg-darker);
+      border: 3px solid var(--chrome-silver);
+      padding: 0;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    /* Pixel corners */
+    .pricing-card::before,
+    .pricing-card::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--chrome-silver);
+    }
+
+    .pricing-card::before {
+      top: -10px;
+      left: -10px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .pricing-card::after {
+      bottom: -10px;
+      right: -10px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .pricing-card.recommended {
+      border-color: var(--neon-pink);
+      transform: scale(1.05);
+      animation: neonPulse 2s ease-in-out infinite;
+    }
+
+    .pricing-card.recommended::before,
+    .pricing-card.recommended::after {
+      border-color: var(--neon-pink);
+    }
+
+    .pricing-card.recommended .pricing-badge {
+      display: block;
+    }
+
+    .pricing-badge {
+      display: none;
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--neon-pink);
+      color: var(--bg-deep-purple);
+      padding: 5px 20px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .pricing-header {
+      padding: 30px;
+      border-bottom: 2px solid var(--chrome-dark);
+      text-align: center;
+    }
+
+    .pricing-card.recommended .pricing-header {
+      border-bottom-color: var(--neon-pink);
+    }
+
+    .pricing-tier {
+      font-size: 12px;
+      color: var(--chrome-silver);
+      margin-bottom: 10px;
+    }
+
+    .pricing-price {
+      font-size: clamp(32px, 4vw, 48px);
+      margin-bottom: 10px;
+    }
+
+    .pricing-card.pink-border .pricing-price { color: var(--neon-pink); }
+    .pricing-card.cyan-border .pricing-price { color: var(--neon-cyan); }
+    .pricing-card.purple-border .pricing-price { color: #8000ff; }
+
+    .pricing-price span {
+      font-size: 16px;
+      color: var(--text-gray);
+    }
+
+    .pricing-period {
+      font-size: 14px;
+      color: var(--text-gray);
+    }
+
+    .pricing-features {
+      padding: 30px;
+      list-style: none;
+    }
+
+    .pricing-features li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(192, 192, 192, 0.2);
+      font-size: 16px;
+      color: var(--text-gray);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pricing-features li::before {
+      content: '▸';
+      color: var(--neon-pink);
+    }
+
+    .pricing-card.recommended .pricing-features li::before {
+      color: var(--neon-cyan);
+    }
+
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-cta {
+      padding: 0 30px 30px;
+    }
+
+    .pricing-cta .btn-primary,
+    .pricing-cta .btn-secondary {
+      width: 100%;
+    }
+
+    /* ============================================
+       TESTIMONIALS SECTION
+    ============================================ */
+    .testimonials {
+      padding: 120px 0;
+      background: var(--bg-darker);
+      position: relative;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+
+    .testimonial-card {
+      background: linear-gradient(135deg, #2a1a3e, #1a0a2e);
+      border: 3px solid var(--chrome-silver);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Retro TV Frame */
+    .tv-frame {
+      position: relative;
+      padding: 25px;
+    }
+
+    .tv-frame::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(180deg, var(--chrome-dark), var(--chrome-silver), var(--chrome-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tv-screen {
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid var(--chrome-dark);
+      padding: 30px 20px 20px;
+      position: relative;
+      margin-top: 15px;
+      min-height: 200px;
+    }
+
+    .tv-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+      );
+      pointer-events: none;
+    }
+
+    .tv-screen::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 0%,
+        rgba(0, 0, 0, 0.3) 100%
+      );
+      pointer-events: none;
+    }
+
+    .tv-indicator {
+      position: absolute;
+      top: 8px;
+      right: 15px;
+      width: 8px;
+      height: 8px;
+      background: #00ff00;
+      border-radius: 50%;
+      box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+      animation: flicker 2s infinite;
+    }
+
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-gray);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .testimonial-text::before {
+      content: '"';
+      font-size: 40px;
+      color: var(--neon-pink);
+      font-family: 'Press Start 2P', cursive;
+      position: absolute;
+      top: -10px;
+      left: -5px;
+      opacity: 0.5;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 16px;
+      color: var(--bg-deep-purple);
+    }
+
+    .author-info h4 {
+      font-size: 10px;
+      color: var(--text-white);
+      margin-bottom: 5px;
+    }
+
+    .author-info p {
+      font-size: 14px;
+      color: var(--text-gray);
+    }
+
+    .tv-controls {
+      display: flex;
+      gap: 10px;
+      padding: 10px 25px 15px;
+      justify-content: center;
+    }
+
+    .tv-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--chrome-dark);
+      background: var(--chrome-silver);
+    }
+
+    .tv-btn.active {
+      background: var(--neon-pink);
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 5px var(--neon-pink);
+    }
+
+    /* ============================================
+       STATS SECTION
+    ============================================ */
+    .stats {
+      padding: 100px 0;
+      background: var(--bg-deep-purple);
+      position: relative;
+    }
+
+    .stats::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(180deg, rgba(255, 107, 53, 0.2), transparent);
+      pointer-events: none;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      text-align: center;
+    }
+
+    .stat-item {
+      position: relative;
+    }
+
+    .stat-number {
+      font-family: 'Press Start 2P', cursive;
+      font-size: clamp(32px, 5vw, 56px);
+      margin-bottom: 15px;
+      animation: flicker 5s infinite;
+    }
+
+    .stat-item:nth-child(1) .stat-number {
+      color: var(--neon-pink);
+      text-shadow:
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 40px var(--neon-pink);
+    }
+
+    .stat-item:nth-child(2) .stat-number {
+      color: var(--neon-cyan);
+      text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan);
+    }
+
+    .stat-item:nth-child(3) .stat-number {
+      color: var(--sunset-orange);
+      text-shadow:
+        0 0 10px var(--sunset-orange),
+        0 0 20px var(--sunset-orange),
+        0 0 40px var(--sunset-orange);
+    }
+
+    .stat-item:nth-child(4) .stat-number {
+      color: #8000ff;
+      text-shadow:
+        0 0 10px #8000ff,
+        0 0 20px #8000ff,
+        0 0 40px #8000ff;
+    }
+
+    .stat-label {
+      font-size: 18px;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .stat-divider {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 60%;
+      background: linear-gradient(
+        180deg,
+        transparent,
+        var(--chrome-dark),
+        transparent
+      );
+    }
+
+    .stat-item:last-child .stat-divider {
+      display: none;
+    }
+
+    /* ============================================
+       CTA SECTION
+    ============================================ */
+    .cta {
+      padding: 120px 0;
+      background: linear-gradient(180deg, #ff6b35 0%, #ff00ff 50%, #1a0a2e 100%);
+      position: relative;
+      text-align: center;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 10;
+      background: rgba(13, 5, 25, 0.9);
+      padding: 60px 40px;
+      max-width: 800px;
+      margin: 0 auto;
+      border: 3px solid var(--neon-pink);
+    }
+
+    .cta h2 {
+      font-size: clamp(24px, 4vw, 40px);
+      margin-bottom: 20px;
+    }
+
+    .cta p {
+      font-size: 18px;
+      color: var(--text-gray);
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    .footer {
+      background: var(--bg-darker);
+      padding: 60px 0 30px;
+      border-top: 3px solid var(--neon-pink);
+      position: relative;
+    }
+
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg,
+        transparent,
+        var(--neon-cyan),
+        var(--neon-pink),
+        var(--neon-cyan),
+        transparent
+      );
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand h3 {
+      font-size: 14px;
+      color: var(--neon-pink);
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px var(--neon-pink);
+    }
+
+    .footer-brand p {
+      color: var(--text-gray);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .footer-links h4 {
+      font-size: 10px;
+      color: var(--neon-cyan);
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      color: var(--text-gray);
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--neon-pink);
+      text-shadow: 0 0 5px var(--neon-pink);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--chrome-silver);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--chrome-silver);
+      transition: all 0.3s ease;
+    }
+
+    .social-icon:hover {
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+      box-shadow: 0 0 10px var(--neon-pink);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--chrome-dark);
+      padding-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-bottom p {
+      color: var(--text-gray);
+      font-size: 14px;
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-bottom-links a {
+      color: var(--text-gray);
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .footer-bottom-links a:hover {
+      color: var(--neon-cyan);
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: flex;
+      }
+
+      .hero-content {
+        padding: 100px 15px 60px;
+      }
+
+      .features-grid,
+      .pricing-grid,
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-card.recommended {
+        transform: scale(1);
+      }
+
+      .stat-divider {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        padding: 15px 30px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-content {
+        padding: 40px 20px;
+      }
+    }
+
+    /* ============================================
+       ADDITIONAL DECORATIONS
+    ============================================ */
+    .decoration-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        var(--neon-pink),
+        var(--neon-cyan),
+        var(--neon-pink),
+        transparent
+      );
+    }
+
+    /* VHS Noise Effect */
+    .vhs-noise {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Retro Cursor */
+    body {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='10' height='10' fill='%23ff00ff'/%3E%3C/svg%3E") 0 0, auto;
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-deep-purple);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-text {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 18px;
+      color: var(--neon-pink);
+      text-shadow: 0 0 20px var(--neon-pink);
+      animation: flicker 0.5s infinite;
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 4px;
+      background: var(--chrome-dark);
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 50%;
+      background: var(--neon-pink);
+      box-shadow: 0 0 10px var(--neon-pink);
+      animation: loading 1s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+      0% { left: -50%; }
+      100% { left: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-text">LOADING...</div>
+    <div class="loading-bar"></div>
+  </div>
+
+  <!-- VHS Noise Overlay -->
+  <div class="vhs-noise"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="#" class="nav-logo">VAPORWAVE<span>//</span></a>
+      <ul class="nav-links">
+        <li><a href="#features">功能</a></li>
+        <li><a href="#pricing">定价</a></li>
+        <li><a href="#testimonials">评价</a></li>
+        <li><a href="#contact">联系</a></li>
+      </ul>
+      <button class="nav-cta">开始使用</button>
+      <button class="mobile-menu-btn" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <!-- Perspective Grid Floor -->
+    <div class="grid-floor"></div>
+
+    <!-- Sunset Horizon -->
+    <div class="sunset-horizon"></div>
+    <div class="sunset-glow"></div>
+
+    <!-- Floating Decorative Elements -->
+    <div class="floating-shapes">
+      <span class="shape shape-1">◆</span>
+      <span class="shape shape-2">★</span>
+      <span class="shape shape-3">▲</span>
+      <span class="shape shape-4">●</span>
+      <span class="shape shape-5">✦</span>
+      <span class="shape shape-6">◇</span>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <div class="hero-badge">★ 复古未来主义科技 ★</div>
+      <h1 class="chrome-text">
+        <span class="bracket">&lt;</span>蒸 波<span class="bracket">&gt;</span>
+      </h1>
+      <p class="hero-subtitle">
+        回到未来，用复古美学驱动现代科技。打造令人惊叹的数字体验，让你的品牌穿越时空。
+      </p>
+      <div class="hero-cta-group">
+        <button class="btn-primary">立即体验</button>
+        <button class="btn-secondary">了解更多</button>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+      <span>SCROLL DOWN</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- Sunset Strip -->
+  <div class="sunset-strip"></div>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="chrome-text">核心功能</h2>
+        <p>探索我们为您精心打造的复古科技体验</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature Card 1 -->
+        <div class="feature-card pink scanline-overlay">
+          <div class="feature-icon">⚡</div>
+          <h3>极速引擎</h3>
+          <p>
+            采用先进的复古算法引擎，让你的项目运行如闪电般迅速。
+            优化每一个像素，确保极致性能体验。
+          </p>
+        </div>
+
+        <!-- Feature Card 2 -->
+        <div class="feature-card cyan scanline-overlay">
+          <div class="feature-icon">◆</div>
+          <h3>美学系统</h3>
+          <p>
+            内置完整的蒸汽波美学组件库，从霓虹灯效果到像素艺术，
+            一键生成令人惊艳的视觉设计。
+          </p>
+        </div>
+
+        <!-- Feature Card 3 -->
+        <div class="feature-card purple scanline-overlay">
+          <div class="feature-icon">◇</div>
+          <h3>未来协议</h3>
+          <p>
+            基于区块链的去中心化架构，确保你的数据安全穿越时空。
+            面向未来的可扩展性设计。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sunset Strip -->
+  <div class="sunset-strip"></div>
+
+  <!-- Pricing Section -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="chrome-text">选择方案</h2>
+        <p>根据你的需求，选择最适合的复古计划</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Basic Plan -->
+        <div class="pricing-card pink-border">
+          <div class="pricing-badge">推荐</div>
+          <div class="pricing-header">
+            <p class="pricing-tier">入门版</p>
+            <p class="pricing-price">¥99<span>/月</span></p>
+            <p class="pricing-period">适合个人开发者</p>
+          </div>
+          <ul class="pricing-features">
+            <li>基础美学组件</li>
+            <li>5GB 存储空间</li>
+            <li>社区支持</li>
+            <li>基础分析工具</li>
+          </ul>
+          <div class="pricing-cta">
+            <button class="btn-secondary">选择方案</button>
+          </div>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="pricing-card recommended cyan-border">
+          <div class="pricing-badge">★ 最受欢迎 ★</div>
+          <div class="pricing-header">
+            <p class="pricing-tier">专业版</p>
+            <p class="pricing-price">¥299<span>/月</span></p>
+            <p class="pricing-period">适合小型团队</p>
+          </div>
+          <ul class="pricing-features">
+            <li>全部美学组件</li>
+            <li>50GB 存储空间</li>
+            <li>优先技术支持</li>
+            <li>高级分析工具</li>
+            <li>API 访问权限</li>
+          </ul>
+          <div class="pricing-cta">
+            <button class="btn-primary">立即升级</button>
+          </div>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="pricing-card purple-border">
+          <div class="pricing-badge">推荐</div>
+          <div class="pricing-header">
+            <p class="pricing-tier">企业版</p>
+            <p class="pricing-price">¥999<span>/月</span></p>
+            <p class="pricing-period">适合大型企业</p>
+          </div>
+          <ul class="pricing-features">
+            <li>定制美学方案</li>
+            <li>无限存储空间</li>
+            <li>专属客户经理</li>
+            <li>定制化分析</li>
+            <li>全平台 API</li>
+            <li>SLA 保障</li>
+          </ul>
+          <div class="pricing-cta">
+            <button class="btn-secondary">联系我们</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sunset Strip -->
+  <div class="sunset-strip"></div>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="chrome-text">用户评价</h2>
+        <p>听听我们的用户怎么说</p>
+      </div>
+
+      <div class="testimonials-grid">
+        <!-- Testimonial 1 -->
+        <div class="testimonial-card">
+          <div class="tv-frame">
+            <div class="tv-screen">
+              <div class="tv-indicator"></div>
+              <p class="testimonial-text">
+                使用这个平台后，我的网站设计提升到了一个全新的层次。
+                复古美学与现代科技的完美结合，让我的客户印象深刻。
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">陈</div>
+                <div class="author-info">
+                  <h4>陈小明</h4>
+                  <p>独立设计师</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tv-controls">
+            <div class="tv-btn"></div>
+            <div class="tv-btn active"></div>
+            <div class="tv-btn"></div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="testimonial-card">
+          <div class="tv-frame">
+            <div class="tv-screen">
+              <div class="tv-indicator"></div>
+              <p class="testimonial-text">
+                极速引擎让我们的项目性能提升了300%。
+                这不仅是一个工具，更是一种全新的创作理念。
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">李</div>
+                <div class="author-info">
+                  <h4>李雨涵</h4>
+                  <p>科技公司CEO</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tv-controls">
+            <div class="tv-btn active"></div>
+            <div class="tv-btn"></div>
+            <div class="tv-btn"></div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="testimonial-card">
+          <div class="tv-frame">
+            <div class="tv-screen">
+              <div class="tv-indicator"></div>
+              <p class="testimonial-text">
+                未来协议确保了我们数据的安全性，
+                同时美学系统让我们的品牌形象更加独特。
+                强烈推荐！
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">王</div>
+                <div class="author-info">
+                  <h4>王大伟</h4>
+                  <p>产品经理</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tv-controls">
+            <div class="tv-btn"></div>
+            <div class="tv-btn"></div>
+            <div class="tv-btn active"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sunset Strip -->
+  <div class="sunset-strip"></div>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <p class="stat-number">10K+</p>
+          <p class="stat-label">活跃用户</p>
+          <div class="stat-divider"></div>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number">99.9%</p>
+          <p class="stat-label">正常运行</p>
+          <div class="stat-divider"></div>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number">50M+</p>
+          <p class="stat-label">API 请求</p>
+          <div class="stat-divider"></div>
+        </div>
+        <div class="stat-item">
+          <p class="stat-number">24/7</p>
+          <p class="stat-label">技术支持</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sunset Strip -->
+  <div class="sunset-strip"></div>
+
+  <!-- CTA Section -->
+  <section class="cta" id="contact">
+    <div class="cta-content">
+      <h2 class="chrome-text">准备好了吗？</h2>
+      <p>加入我们，一起穿越到未来。开始你的复古科技之旅。</p>
+      <div class="cta-buttons">
+        <button class="btn-primary">免费试用</button>
+        <button class="btn-secondary">联系销售</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>VAPORWAVE//</h3>
+          <p>用复古美学驱动现代科技，打造令人惊叹的数字体验。</p>
+          <div class="footer-social">
+            <a href="#" class="social-icon" aria-label="Twitter">𝕏</a>
+            <a href="#" class="social-icon" aria-label="Discord">◈</a>
+            <a href="#" class="social-icon" aria-label="GitHub">◉</a>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <h4>产品</h4>
+          <ul>
+            <li><a href="#">功能特性</a></li>
+            <li><a href="#">定价方案</a></li>
+            <li><a href="#">更新日志</a></li>
+            <li><a href="#">API 文档</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>公司</h4>
+          <ul>
+            <li><a href="#">关于我们</a></li>
+            <li><a href="#">加入我们</a></li>
+            <li><a href="#">合作伙伴</a></li>
+            <li><a href="#">联系我们</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>资源</h4>
+          <ul>
+            <li><a href="#">帮助中心</a></li>
+            <li><a href="#">社区论坛</a></li>
+            <li><a href="#">设计资源</a></li>
+            <li><a href="#">博客文章</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2024 VAPORWAVE// 保留所有权利</p>
+        <div class="footer-bottom-links">
+          <a href="#">隐私政策</a>
+          <a href="#">服务条款</a>
+          <a href="#">Cookie 设置</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Loading Screen
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('loadingScreen').classList.add('hidden');
+      }, 1500);
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 100) {
+        navbar.style.background = 'rgba(13, 5, 25, 0.98)';
+      } else {
+        navbar.style.background = 'rgba(13, 5, 25, 0.95)';
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.feature-card, .pricing-card, .testimonial-card, .stat-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+
+    // Add stagger delay to grid items
+    document.querySelectorAll('.features-grid .feature-card').forEach((el, index) => {
+      el.style.transitionDelay = `${index * 0.2}s`;
+    });
+
+    document.querySelectorAll('.pricing-grid .pricing-card').forEach((el, index) => {
+      el.style.transitionDelay = `${index * 0.2}s`;
+    });
+
+    document.querySelectorAll('.testimonials-grid .testimonial-card').forEach((el, index) => {
+      el.style.transitionDelay = `${index * 0.2}s`;
+    });
+
+    document.querySelectorAll('.stats-grid .stat-item').forEach((el, index) => {
+      el.style.transitionDelay = `${index * 0.1}s`;
+    });
+
+    // Mobile menu toggle (basic implementation)
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', function() {
+        if (navLinks.style.display === 'flex') {
+          navLinks.style.display = 'none';
+        } else {
+          navLinks.style.display = 'flex';
+          navLinks.style.flexDirection = 'column';
+          navLinks.style.position = 'absolute';
+          navLinks.style.top = '100%';
+          navLinks.style.left = '0';
+          navLinks.style.right = '0';
+          navLinks.style.background = 'rgba(13, 5, 25, 0.98)';
+          navLinks.style.padding = '20px';
+          navLinks.style.borderBottom = '2px solid var(--neon-pink)';
+        }
+      });
+    }
+
+    // Random flicker effect on neon elements
+    function randomFlicker() {
+      const neonElements = document.querySelectorAll('.neon-glow, .neon-glow-cyan');
+      neonElements.forEach(el => {
+        if (Math.random() > 0.95) {
+          el.style.opacity = '0.7';
+          setTimeout(() => {
+            el.style.opacity = '1';
+          }, 50);
+        }
+      });
+    }
+
+    setInterval(randomFlicker, 100);
+
+    // Button hover sound effect (visual feedback)
+    document.querySelectorAll('.btn-primary, .btn-secondary, .nav-cta').forEach(btn => {
+      btn.addEventListener('mouseenter', function() {
+        this.style.transform = this.style.transform || '';
+        if (!this.style.transform.includes('scale')) {
+          this.style.transform += ' scale(1.02)';
+        }
+      });
+      btn.addEventListener('mouseleave', function() {
+        this.style.transform = this.style.transform.replace(' scale(1.02)', '');
+      });
+    });
+
+    // Parallax effect for floating shapes
+    document.addEventListener('mousemove', function(e) {
+      const shapes = document.querySelectorAll('.shape');
+      const mouseX = e.clientX / window.innerWidth - 0.5;
+      const mouseY = e.clientY / window.innerHeight - 0.5;
+
+      shapes.forEach((shape, index) => {
+        const speed = (index + 1) * 10;
+        const x = mouseX * speed;
+        const y = mouseY * speed;
+        shape.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    });
+
+    // Console easter egg
+    console.log('%c VAPORWAVE// ', 'background: linear-gradient(135deg, #ff00ff, #00ffff); color: #1a0a2e; font-size: 20px; font-weight: bold; padding: 10px;');
+    console.log('%c 复古未来主义科技 | Retro Futuristic Technology ', 'color: #ff6ec7; font-size: 12px;');
+  </script>
+</body>
+</html>

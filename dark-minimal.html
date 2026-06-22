@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vecto — 开发者优先的代码协作平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS Custom Properties
+           ============================================ */
+        :root {
+            --color-bg: #0d0d0d;
+            --color-bg-elevated: #111111;
+            --color-bg-panel: #161616;
+            --color-bg-terminal: #0a0a0a;
+            --color-border: rgba(255, 255, 255, 0.06);
+            --color-border-hover: rgba(255, 255, 255, 0.1);
+            --color-text-primary: #fafafa;
+            --color-text-secondary: #a1a1aa;
+            --color-text-tertiary: #71717a;
+            --color-accent: #6366f1;
+            --color-accent-hover: #818cf8;
+            --color-accent-dim: rgba(99, 102, 241, 0.1);
+            --color-success: #22c55e;
+            --color-error: #ef4444;
+            --color-syntax-keyword: #60a5fa;
+            --color-syntax-string: #34d399;
+            --color-syntax-number: #fb923c;
+            --color-syntax-comment: #52525b;
+            --color-syntax-function: #c4b5fd;
+            --color-syntax-variable: #e2e8f0;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --max-width: 1120px;
+            --section-padding: 120px;
+            --border-radius: 6px;
+        }
+
+        /* ============================================
+           Reset & Base
+           ============================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        /* ============================================
+           Scroll Reveal
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.08s; }
+        .reveal-delay-2 { transition-delay: 0.16s; }
+        .reveal-delay-3 { transition-delay: 0.24s; }
+        .reveal-delay-4 { transition-delay: 0.32s; }
+
+        /* ============================================
+           Layout
+           ============================================ */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        section {
+            padding: var(--section-padding) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            max-width: 520px;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           Navigation
+           ============================================ */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(13, 13, 13, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .nav-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-text-tertiary);
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-text-primary);
+        }
+
+        .nav-cta {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-text-primary) !important;
+            background: var(--color-accent);
+            padding: 7px 16px;
+            border-radius: var(--border-radius);
+            transition: background 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--color-accent-hover);
+        }
+
+        .nav-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .nav-mobile-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ============================================
+           Hero Section
+           ============================================ */
+        .hero {
+            padding: 180px 0 var(--section-padding);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-orb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
+            opacity: 0.03;
+            animation: orbPulse 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes orbPulse {
+            0%, 100% { transform: translate(-50%, -60%) scale(1); opacity: 0.03; }
+            50% { transform: translate(-50%, -60%) scale(1.15); opacity: 0.05; }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--color-accent-dim);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-accent);
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1.08;
+            letter-spacing: -0.035em;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            max-width: 480px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 11px 24px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-accent-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-border-hover);
+            color: var(--color-text-primary);
+        }
+
+        /* ============================================
+           Logo Strip
+           ============================================ */
+        .logos {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .logos-label {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--color-text-tertiary);
+            margin-bottom: 32px;
+        }
+
+        .logos-grid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+        }
+
+        .logo-item {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            letter-spacing: -0.01em;
+        }
+
+        .logo-item:hover {
+            opacity: 0.8;
+        }
+
+        /* ============================================
+           Features Section
+           ============================================ */
+        .features-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .features-header .section-desc {
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+
+        .feature-item {
+            padding: 40px 32px;
+            border: 1px solid var(--color-border);
+            margin: -0.5px;
+            transition: border-color 0.2s;
+        }
+
+        .feature-item:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-accent-dim);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon svg {
+            width: 18px;
+            height: 18px;
+            color: var(--color-accent);
+        }
+
+        .feature-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+            line-height: 1.65;
+        }
+
+        /* ============================================
+           Product Showcase / Mock Terminal
+           ============================================ */
+        .showcase {
+            text-align: center;
+        }
+
+        .showcase-header {
+            margin-bottom: 48px;
+        }
+
+        .showcase-header .section-desc {
+            margin: 0 auto;
+        }
+
+        .terminal {
+            background: var(--color-bg-terminal);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            text-align: left;
+            overflow: hidden;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .terminal-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-border);
+            background: var(--color-bg-panel);
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--color-text-tertiary);
+            opacity: 0.3;
+        }
+
+        .terminal-dot:nth-child(1) { background: #ef4444; opacity: 0.6; }
+        .terminal-dot:nth-child(2) { background: #eab308; opacity: 0.6; }
+        .terminal-dot:nth-child(3) { background: #22c55e; opacity: 0.6; }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-text-tertiary);
+            margin-right: 38px;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .terminal-line {
+            display: flex;
+            gap: 16px;
+        }
+
+        .line-number {
+            color: var(--color-text-tertiary);
+            opacity: 0.3;
+            user-select: none;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        .line-content {
+            flex: 1;
+            white-space: pre;
+        }
+
+        .t-keyword { color: var(--color-syntax-keyword); }
+        .t-string { color: var(--color-syntax-string); }
+        .t-number { color: var(--color-syntax-number); }
+        .t-comment { color: var(--color-syntax-comment); }
+        .t-function { color: var(--color-syntax-function); }
+        .t-variable { color: var(--color-syntax-variable); }
+        .t-punctuation { color: var(--color-text-tertiary); }
+        .t-operator { color: var(--color-syntax-keyword); }
+
+        /* ============================================
+           Comparison Table
+           ============================================ */
+        .comparison {
+            overflow: hidden;
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .comparison-header .section-desc {
+            margin: 0 auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .comparison-table thead th {
+            padding: 16px 24px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .comparison-table thead th:first-child {
+            text-align: left;
+        }
+
+        .comparison-table thead .plan-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: var(--color-accent-dim);
+            color: var(--color-accent);
+            margin-top: 6px;
+        }
+
+        .comparison-table tbody td {
+            padding: 14px 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+        }
+
+        .comparison-table tbody td:first-child {
+            text-align: left;
+            color: var(--color-text-primary);
+            font-weight: 500;
+        }
+
+        .comparison-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--color-success);
+        }
+
+        .check-icon svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .cross-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--color-error);
+            opacity: 0.6;
+        }
+
+        .cross-icon svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* ============================================
+           Pricing Section
+           ============================================ */
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .pricing-header .section-desc {
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+
+        .pricing-card {
+            padding: 40px 32px;
+            border: 1px solid var(--color-border);
+            margin: -0.5px;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.2s;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        .pricing-card.recommended {
+            border-color: var(--color-accent);
+            position: relative;
+        }
+
+        .pricing-card.recommended::before {
+            content: '推荐';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-accent);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+
+        .pricing-plan {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+            line-height: 1.1;
+        }
+
+        .pricing-price span {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--color-text-tertiary);
+        }
+
+        .pricing-desc {
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            margin-bottom: 28px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .pricing-features li svg {
+            width: 14px;
+            height: 14px;
+            color: var(--color-accent);
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           Stats Section
+           ============================================ */
+        .stats {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 24px 16px;
+            border: 1px solid var(--color-border);
+            margin: -0.5px;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* ============================================
+           Testimonials Section
+           ============================================ */
+        .testimonials-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .testimonials-header .section-desc {
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+
+        .testimonial-card {
+            padding: 32px;
+            border: 1px solid var(--color-border);
+            margin: -0.5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 240px;
+            transition: border-color 0.2s;
+        }
+
+        .testimonial-card:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        .testimonial-text {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--color-accent-dim);
+            color: var(--color-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .testimonial-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .testimonial-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .testimonial-role {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* ============================================
+           CTA Section
+           ============================================ */
+        .cta {
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .cta-desc {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            margin-bottom: 32px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta .btn-primary {
+            padding: 13px 32px;
+            font-size: 15px;
+        }
+
+        /* ============================================
+           Footer
+           ============================================ */
+        .footer {
+            padding: 40px 0;
+            border-bottom: none;
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-logo {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-text-secondary);
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+            opacity: 0.6;
+        }
+
+        /* ============================================
+           Responsive
+           ============================================ */
+        @media (max-width: 768px) {
+            :root {
+                --section-padding: 80px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-mobile-toggle {
+                display: block;
+            }
+
+            .hero {
+                padding: 140px 0 80px;
+            }
+
+            .hero-title {
+                font-size: 40px;
+                letter-spacing: -0.03em;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .hero-actions .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .hero-orb {
+                width: 400px;
+                height: 400px;
+            }
+
+            .logos-grid {
+                gap: 28px;
+            }
+
+            .logo-item {
+                font-size: 14px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .terminal-body {
+                font-size: 11px;
+                padding: 16px;
+            }
+
+            .comparison-table {
+                font-size: 12px;
+            }
+
+            .comparison-table thead th,
+            .comparison-table tbody td {
+                padding: 10px 8px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-title {
+                font-size: 28px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .logos-grid {
+                gap: 20px;
+            }
+
+            .logo-item {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">Vecto</a>
+            <ul class="nav-links">
+                <li><a href="#features">功能</a></li>
+                <li><a href="#showcase">产品</a></li>
+                <li><a href="#pricing">定价</a></li>
+                <li><a href="#">文档</a></li>
+                <li><a href="#" class="nav-cta">开始使用</a></li>
+            </ul>
+            <button class="nav-mobile-toggle" aria-label="菜单">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <line x1="4" y1="7" x2="20" y2="7"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                    <line x1="4" y1="17" x2="20" y2="17"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-orb"></div>
+        <div class="container">
+            <div class="hero-badge reveal">
+                <span class="hero-badge-dot"></span>
+                v2.0 已发布 — 全新协作引擎
+            </div>
+            <h1 class="hero-title reveal reveal-delay-1">为开发者打造的<br>代码协作平台</h1>
+            <p class="hero-subtitle reveal reveal-delay-2">实时协作、智能代码审查、无缝集成。让团队以更快的速度交付更优质的代码。</p>
+            <div class="hero-actions reveal reveal-delay-3">
+                <a href="#" class="btn btn-primary">
+                    免费开始
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+                <a href="#" class="btn btn-secondary">查看演示</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Strip -->
+    <div class="logos">
+        <div class="container">
+            <p class="logos-label">深受以下团队信赖</p>
+            <div class="logos-grid reveal">
+                <span class="logo-item">ByteForge</span>
+                <span class="logo-item">NexusAI</span>
+                <span class="logo-item">CloudPeak</span>
+                <span class="logo-item">Dataweave</span>
+                <span class="logo-item">Synthwave</span>
+                <span class="logo-item">Arcadium</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <div class="features-header">
+                <p class="section-label reveal">核心功能</p>
+                <h2 class="section-title reveal reveal-delay-1">一切为了开发者体验</h2>
+                <p class="section-desc reveal reveal-delay-2">精心设计的工具链，让代码协作变得像呼吸一样自然。</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-item reveal">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">实时协作</h3>
+                    <p class="feature-desc">多人同时编辑同一文件，光标实时同步，变更即时可见。告别合并冲突的噩梦。</p>
+                </div>
+                <div class="feature-item reveal reveal-delay-1">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">智能审查</h3>
+                    <p class="feature-desc">AI 驱动的代码审查，自动检测潜在问题，提供改进建议。每次提交都经过严格把关。</p>
+                </div>
+                <div class="feature-item reveal reveal-delay-2">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <path d="M8 21h8"/><path d="M12 17v4"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">无缝集成</h3>
+                    <p class="feature-desc">原生支持 GitHub、GitLab、Bitbucket。与你喜爱的工具无缝衔接，零配置开箱即用。</p>
+                </div>
+                <div class="feature-item reveal">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">企业级安全</h3>
+                    <p class="feature-desc">端到端加密、SOC 2 合规、SSO 支持。你的代码，由你掌控。</p>
+                </div>
+                <div class="feature-item reveal reveal-delay-1">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">灵活工作流</h3>
+                    <p class="feature-desc">自定义分支策略、自动化检查点、条件合并规则。工作流，由你定义。</p>
+                </div>
+                <div class="feature-item reveal reveal-delay-2">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">性能分析</h3>
+                    <p class="feature-desc">内置性能追踪，实时监控构建时间、测试覆盖率和部署频率。数据驱动决策。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Showcase -->
+    <section id="showcase" class="showcase">
+        <div class="container">
+            <div class="showcase-header">
+                <p class="section-label reveal">产品展示</p>
+                <h2 class="section-title reveal reveal-delay-1">优雅的开发者体验</h2>
+                <p class="section-desc reveal reveal-delay-2">不是另一个臃肿的工具。我们专注于开发者真正需要的功能，不多也不少。</p>
+            </div>
+            <div class="terminal reveal">
+                <div class="terminal-bar">
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-title">vecto-cli — ~/projects/my-app</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="line-number">1</span>
+                        <span class="line-content"><span class="t-keyword">import</span> <span class="t-variable">{ VectoClient }</span> <span class="t-keyword">from</span> <span class="t-string">'@vecto/sdk'</span><span class="t-punctuation">;</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">2</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">3</span>
+                        <span class="line-content"><span class="t-keyword">const</span> <span class="t-variable">client</span> <span class="t-operator">=</span> <span class="t-keyword">new</span> <span class="t-function">VectoClient</span><span class="t-punctuation">({</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">4</span>
+                        <span class="line-content">  <span class="t-variable">apiKey</span><span class="t-punctuation">:</span> <span class="t-variable">process</span><span class="t-punctuation">.</span><span class="t-variable">env</span><span class="t-punctuation">.</span><span class="t-variable">VECTO_API_KEY</span><span class="t-punctuation">,</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">5</span>
+                        <span class="line-content">  <span class="t-variable">region</span><span class="t-punctuation">:</span> <span class="t-string">'asia-east'</span><span class="t-punctuation">,</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">6</span>
+                        <span class="line-content"><span class="t-punctuation">});</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">7</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">8</span>
+                        <span class="line-content"><span class="t-comment">// 创建实时协作会话</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">9</span>
+                        <span class="line-content"><span class="t-keyword">const</span> <span class="t-variable">session</span> <span class="t-operator">=</span> <span class="t-keyword">await</span> <span class="t-variable">client</span><span class="t-punctuation">.</span><span class="t-function">sessions</span><span class="t-punctuation">.</span><span class="t-function">create</span><span class="t-punctuation">({</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">10</span>
+                        <span class="line-content">  <span class="t-variable">repo</span><span class="t-punctuation">:</span> <span class="t-string">'my-org/my-app'</span><span class="t-punctuation">,</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">11</span>
+                        <span class="line-content">  <span class="t-variable">branch</span><span class="t-punctuation">:</span> <span class="t-string">'feature/auth-v2'</span><span class="t-punctuation">,</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">12</span>
+                        <span class="line-content">  <span class="t-variable">participants</span><span class="t-punctuation">:</span> <span class="t-punctuation">[</span><span class="t-string">'alice'</span><span class="t-punctuation">,</span> <span class="t-string">'bob'</span><span class="t-punctuation">],</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">13</span>
+                        <span class="line-content"><span class="t-punctuation">});</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">14</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">15</span>
+                        <span class="line-content"><span class="t-variable">console</span><span class="t-punctuation">.</span><span class="t-function">log</span><span class="t-punctuation">(</span><span class="t-string">`会话已创建: </span><span class="t-variable">${session.id}</span><span class="t-string">`</span><span class="t-punctuation">);</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">16</span>
+                        <span class="line-content"><span class="t-comment">// 输出: 会话已创建: sess_7x9k2m</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">17</span>
+                        <span class="line-content"></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">18</span>
+                        <span class="line-content"><span class="t-comment">// 监听代码变更</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">19</span>
+                        <span class="line-content"><span class="t-variable">session</span><span class="t-punctuation">.</span><span class="t-function">on</span><span class="t-punctuation">(</span><span class="t-string">'change'</span><span class="t-punctuation">,</span> <span class="t-punctuation">(</span><span class="t-variable">event</span><span class="t-punctuation">)</span> <span class="t-operator">=></span> <span class="t-punctuation">{</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">20</span>
+                        <span class="line-content">  <span class="t-variable">console</span><span class="t-punctuation">.</span><span class="t-function">log</span><span class="t-punctuation">(</span><span class="t-string">`</span><span class="t-variable">${event.user}</span><span class="t-string"> 正在编辑 </span><span class="t-variable">${event.file}</span><span class="t-string">`</span><span class="t-punctuation">);</span></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="line-number">21</span>
+                        <span class="line-content"><span class="t-punctuation">});</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section id="comparison" class="comparison">
+        <div class="container">
+            <div class="comparison-header">
+                <p class="section-label reveal">方案对比</p>
+                <h2 class="section-title reveal reveal-delay-1">选择适合你的方案</h2>
+                <p class="section-desc reveal reveal-delay-2">从个人开发者到大型团队，总有一款适合你。</p>
+            </div>
+            <div class="reveal" style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>功能</th>
+                            <th>免费版</th>
+                            <th>专业版<br><span class="plan-badge">最受欢迎</span></th>
+                            <th>企业版</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>协作会话</td>
+                            <td>3 个/月</td>
+                            <td>不限</td>
+                            <td>不限</td>
+                        </tr>
+                        <tr>
+                            <td>团队成员</td>
+                            <td>最多 3 人</td>
+                            <td>最多 25 人</td>
+                            <td>不限</td>
+                        </tr>
+                        <tr>
+                            <td>私有仓库</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>AI 代码审查</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>自定义工作流</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SSO / SAML</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>审计日志</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>保留 90 天</td>
+                            <td>保留 2 年</td>
+                        </tr>
+                        <tr>
+                            <td>优先支持</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="check-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </td>
+                            <td>专属客户经理</td>
+                        </tr>
+                        <tr>
+                            <td>SLA 保障</td>
+                            <td>
+                                <span class="cross-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </td>
+                            <td>99.9%</td>
+                            <td>99.99%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing">
+        <div class="container">
+            <div class="pricing-header">
+                <p class="section-label reveal">定价方案</p>
+                <h2 class="section-title reveal reveal-delay-1">简单透明的定价</h2>
+                <p class="section-desc reveal reveal-delay-2">无隐藏费用，随时取消。所有方案均包含 14 天免费试用。</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card reveal">
+                    <p class="pricing-plan">免费版</p>
+                    <p class="pricing-price">¥0<span>/月</span></p>
+                    <p class="pricing-desc">适合个人开发者和小型开源项目</p>
+                    <a href="#" class="btn btn-secondary pricing-btn">开始使用</a>
+                    <ul class="pricing-features">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            每月 3 个协作会话
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            最多 3 名团队成员
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            基础代码审查
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            社区支持
+                        </li>
+                    </ul>
+                </div>
+                <div class="pricing-card recommended reveal reveal-delay-1">
+                    <p class="pricing-plan">专业版</p>
+                    <p class="pricing-price">¥99<span>/月</span></p>
+                    <p class="pricing-desc">适合成长中的团队和创业公司</p>
+                    <a href="#" class="btn btn-primary pricing-btn">开始试用</a>
+                    <ul class="pricing-features">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            不限协作会话
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            最多 25 名团队成员
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            AI 代码审查
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            自定义工作流
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            优先邮件支持
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            99.9% SLA 保障
+                        </li>
+                    </ul>
+                </div>
+                <div class="pricing-card reveal reveal-delay-2">
+                    <p class="pricing-plan">企业版</p>
+                    <p class="pricing-price">定制</p>
+                    <p class="pricing-desc">适合大型团队和对安全有严格要求的企业</p>
+                    <a href="#" class="btn btn-secondary pricing-btn">联系销售</a>
+                    <ul class="pricing-features">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            不限团队成员
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            SSO / SAML 集成
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            审计日志（2 年）
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            专属客户经理
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            99.99% SLA 保障
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            私有化部署
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid reveal">
+                <div class="stat-item">
+                    <span class="stat-number">12,000+</span>
+                    <span class="stat-label">活跃开发者</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3.2M</span>
+                    <span class="stat-label">代码审查次数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99.97%</span>
+                    <span class="stat-label">平台可用性</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">47ms</span>
+                    <span class="stat-label">平均响应延迟</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="testimonials-header">
+                <p class="section-label reveal">用户评价</p>
+                <h2 class="section-title reveal reveal-delay-1">深受开发者喜爱</h2>
+                <p class="section-desc reveal reveal-delay-2">听听他们怎么说。</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-text">"切换到 Vecto 之后，我们的代码审查效率提升了 60%。AI 审查功能节省了大量时间。"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">L</div>
+                        <div class="testimonial-info">
+                            <span class="testimonial-name">李明</span>
+                            <span class="testimonial-role">ByteForge · 工程总监</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal reveal-delay-1">
+                    <p class="testimonial-text">"实时协作功能太丝滑了。远程团队终于能像在同一个办公室一样高效工作。"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">W</div>
+                        <div class="testimonial-info">
+                            <span class="testimonial-name">王芳</span>
+                            <span class="testimonial-role">NexusAI · 首席架构师</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal reveal-delay-2">
+                    <p class="testimonial-text">"我们 200 人的工程团队在一天内完成了迁移。Vecto 的企业版满足了我们所有的合规需求。"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">C</div>
+                        <div class="testimonial-info">
+                            <span class="testimonial-name">陈强</span>
+                            <span class="testimonial-role">CloudPeak · CTO</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2 class="cta-title reveal">准备好提升你的开发效率了吗？</h2>
+            <p class="cta-desc reveal reveal-delay-1">加入数千名开发者，用 Vecto 重新定义代码协作。</p>
+            <a href="#" class="btn btn-primary reveal reveal-delay-2">
+                免费开始使用
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <span class="footer-logo">Vecto</span>
+                <ul class="footer-links">
+                    <li><a href="#">产品</a></li>
+                    <li><a href="#">文档</a></li>
+                    <li><a href="#">博客</a></li>
+                    <li><a href="#">定价</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                </ul>
+                <span class="footer-copy">© 2026 Vecto Inc.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- IntersectionObserver Scroll Reveal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -40px 0px'
+            });
+
+            reveals.forEach((el) => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
