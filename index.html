@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,206 +7,857 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
-:root{--bg:#07070e;--s1:#0e0e1a;--s2:#161625;--tx:#e8e8f4;--td:#6e6e96;--bd:rgba(255,255,255,.06);--r:20px;--p:#6C5CE7;--acc:#00cec9;--p-glow:rgba(108,92,231,.25);--acc-glow:rgba(0,206,201,.2)}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-::selection{background:rgba(108,92,231,.35)}
+/* ═══════════════════════════════════════════════════════════
+   CSS Custom Properties — Dark / Light Theme
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --p: #6C5CE7;
+  --acc: #00cec9;
+  --p-glow: rgba(108, 92, 231, 0.25);
+  --acc-glow: rgba(0, 206, 201, 0.2);
+  --r: 20px;
+  --transition-theme: 0.3s ease;
+}
+[data-theme="dark"] {
+  --bg: #07070e;
+  --s1: #0e0e1a;
+  --s2: #161625;
+  --s3: #1c1c30;
+  --tx: #e8e8f4;
+  --td: #6e6e96;
+  --bd: rgba(255, 255, 255, 0.06);
+  --bd-hover: rgba(255, 255, 255, 0.12);
+  --card-bg: #0e0e1a;
+  --card-hover-bg: #14142a;
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-border: rgba(255, 255, 255, 0.06);
+  --tag-bg: rgba(255, 255, 255, 0.025);
+  --tag-border: rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 24px 64px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(108, 92, 231, 0.1);
+  --orb1: rgba(108, 92, 231, 0.07);
+  --orb2: rgba(0, 206, 201, 0.05);
+  --orb3: rgba(236, 72, 153, 0.04);
+  --grid-line: rgba(108, 92, 231, 0.025);
+  --particle-color: 108, 92, 231;
+  --particle-line: rgba(108, 92, 231, 0.06);
+  --guest-bg: linear-gradient(135deg, rgba(14, 14, 26, 0.9), rgba(22, 22, 37, 0.9));
+  --auth-wall-bg: rgba(4, 4, 10, 0.88);
+  --auth-card-bg: linear-gradient(180deg, var(--s1), var(--s2));
+  --scroll-top-bg: rgba(14, 14, 26, 0.9);
+  --scroll-top-border: rgba(255, 255, 255, 0.08);
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --s1: #f8f9fa;
+  --s2: #f1f3f5;
+  --s3: #e9ecef;
+  --tx: #111111;
+  --td: #6c757d;
+  --bd: rgba(0, 0, 0, 0.08);
+  --bd-hover: rgba(0, 0, 0, 0.15);
+  --card-bg: #ffffff;
+  --card-hover-bg: #f8f9fa;
+  --input-bg: #f8f9fa;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --tag-bg: rgba(0, 0, 0, 0.03);
+  --tag-border: rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 16px 48px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(108, 92, 231, 0.12);
+  --orb1: rgba(108, 92, 231, 0.04);
+  --orb2: rgba(0, 206, 201, 0.03);
+  --orb3: rgba(236, 72, 153, 0.03);
+  --grid-line: rgba(108, 92, 231, 0.03);
+  --particle-color: 108, 92, 231;
+  --particle-line: rgba(108, 92, 231, 0.04);
+  --guest-bg: linear-gradient(135deg, rgba(248, 249, 250, 0.95), rgba(241, 243, 245, 0.95));
+  --auth-wall-bg: rgba(0, 0, 0, 0.4);
+  --auth-card-bg: linear-gradient(180deg, #ffffff, #f8f9fa);
+  --scroll-top-bg: rgba(255, 255, 255, 0.95);
+  --scroll-top-border: rgba(0, 0, 0, 0.08);
+}
 
-/* ─── Background Effects ──────────────────────────────── */
-.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.025) 1px,transparent 1px);background-size:72px 72px;pointer-events:none;z-index:0}
-.bg-orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;will-change:transform}
-.bg-orb.purple{width:600px;height:600px;background:rgba(108,92,231,.07);top:-200px;right:-150px;animation:orbFloat 18s ease-in-out infinite}
-.bg-orb.teal{width:500px;height:500px;background:rgba(0,206,201,.05);bottom:-150px;left:-120px;animation:orbFloat 18s ease-in-out infinite -9s}
-.bg-orb.pink{width:350px;height:350px;background:rgba(236,72,153,.04);top:40%;left:50%;animation:orbFloat 14s ease-in-out infinite -4s}
-@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-50px) scale(1.05)}66%{transform:translate(-30px,30px) scale(.95)}}
+/* ═══════════════════════════════════════════════════════════
+   Reset & Base
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition-theme), color var(--transition-theme);
+}
+::selection { background: rgba(108, 92, 231, 0.3); }
+a { color: inherit; text-decoration: none; }
 
-/* Floating particles via canvas */
-#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+/* ═══════════════════════════════════════════════════════════
+   Background Effects
+   ═══════════════════════════════════════════════════════════ */
+.bg-grid {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  pointer-events: none; z-index: 0;
+  transition: background var(--transition-theme);
+}
+.bg-orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(140px); pointer-events: none; z-index: 0;
+  will-change: transform;
+  transition: background var(--transition-theme);
+}
+.bg-orb.purple { width: 600px; height: 600px; background: var(--orb1); top: -200px; right: -150px; animation: orbFloat 18s ease-in-out infinite; }
+.bg-orb.teal { width: 500px; height: 500px; background: var(--orb2); bottom: -150px; left: -120px; animation: orbFloat 18s ease-in-out infinite -9s; }
+.bg-orb.pink { width: 350px; height: 350px; background: var(--orb3); top: 40%; left: 50%; animation: orbFloat 14s ease-in-out infinite -4s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -50px) scale(1.05); }
+  66% { transform: translate(-30px, 30px) scale(0.95); }
+}
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 
-.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
+.wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 24px; }
 
-/* ─── Header ───────────────────────────────────────────── */
-header{text-align:center;padding:100px 0 50px}
-.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.15);padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;color:var(--p);margin-bottom:28px;backdrop-filter:blur(8px);transition:all .3s}
-.badge:hover{background:rgba(108,92,231,.12);border-color:rgba(108,92,231,.25)}
-.badge .dot{width:7px;height:7px;background:var(--acc);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--acc-glow)}50%{box-shadow:0 0 0 8px rgba(0,206,201,0)}}
-h1{font-size:clamp(38px,6vw,68px);font-weight:800;line-height:1.08;letter-spacing:-.04em;margin-bottom:20px}
-h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sub{font-size:17px;color:var(--td);max-width:520px;margin:0 auto 36px;line-height:1.75}
-.tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.tag{background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:7px 14px;border-radius:10px;font-size:12px;color:var(--td);transition:all .25s}
-.tag:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:var(--tx)}
+/* ═══════════════════════════════════════════════════════════
+   Header / Navigation Bar
+   ═══════════════════════════════════════════════════════════ */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  background: transparent;
+  transition: background 0.3s, backdrop-filter 0.3s, box-shadow 0.3s;
+}
+.top-bar.scrolled {
+  background: rgba(7, 7, 14, 0.75);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: 0 1px 0 var(--bd);
+}
+[data-theme="light"] .top-bar.scrolled {
+  background: rgba(255, 255, 255, 0.8);
+}
+.top-bar .logo {
+  font-size: 16px; font-weight: 800; letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.top-bar .logo span { background: linear-gradient(135deg, var(--p), var(--acc)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.theme-toggle {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--bd);
+  background: var(--input-bg); color: var(--td); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s; font-size: 0;
+}
+.theme-toggle:hover { border-color: var(--bd-hover); color: var(--tx); background: var(--s2); }
+.theme-toggle i { width: 18px; height: 18px; }
 
-/* ─── Filters ──────────────────────────────────────────── */
-.filters{display:flex;justify-content:center;gap:6px;margin:36px 0 28px;flex-wrap:wrap}
-.fbtn{background:rgba(255,255,255,.03);border:1px solid var(--bd);padding:8px 18px;border-radius:10px;font-size:13px;font-weight:500;color:var(--td);cursor:pointer;transition:all .25s;font-family:inherit;backdrop-filter:blur(4px)}
-.fbtn:hover{background:rgba(108,92,231,.08);border-color:rgba(108,92,231,.2);color:var(--p)}
-.fbtn.active{background:rgba(108,92,231,.14);border-color:rgba(108,92,231,.3);color:var(--p);box-shadow:0 0 20px rgba(108,92,231,.1)}
+/* ═══════════════════════════════════════════════════════════
+   Hero Section
+   ═══════════════════════════════════════════════════════════ */
+.hero {
+  text-align: center;
+  padding: 140px 0 50px;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  padding: 8px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--p);
+  margin-bottom: 32px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s;
+}
+.badge:hover { background: rgba(108, 92, 231, 0.12); border-color: rgba(108, 92, 231, 0.25); }
+.badge .dot { width: 7px; height: 7px; background: var(--acc); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--acc-glow); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 206, 201, 0); }
+}
+h1 {
+  font-size: clamp(40px, 6.5vw, 76px);
+  font-weight: 800; line-height: 1.05; letter-spacing: -0.04em;
+  margin-bottom: 20px;
+}
+.gradient-text {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--p), var(--acc), #ec4899, var(--p));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientText 6s ease infinite;
+}
+@keyframes gradientText {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.sub {
+  font-size: 17px; color: var(--td);
+  max-width: 560px; margin: 0 auto 36px;
+  line-height: 1.75;
+}
+.hero-tags {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+.hero-tag {
+  background: var(--tag-bg); border: 1px solid var(--tag-border);
+  padding: 7px 14px; border-radius: 10px;
+  font-size: 12px; color: var(--td);
+  transition: all 0.25s;
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-tag i { width: 13px; height: 13px; }
+.hero-tag:hover { background: rgba(108, 92, 231, 0.08); border-color: rgba(108, 92, 231, 0.2); color: var(--p); }
 
-/* ─── Template Grid ────────────────────────────────────── */
-.tpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding-bottom:60px}
-.tpl-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .4s cubic-bezier(.22,1,.36,1);position:relative}
-.tpl-card:hover{transform:translateY(-8px);border-color:rgba(108,92,231,.2);box-shadow:0 24px 64px rgba(0,0,0,.35),0 0 0 1px rgba(108,92,231,.08),0 0 80px rgba(108,92,231,.06)}
-.tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),var(--acc),transparent);opacity:0;transition:opacity .4s;z-index:2}
-.tpl-card:hover::before{opacity:1}
+/* ═══════════════════════════════════════════════════════════
+   Stats Section
+   ═══════════════════════════════════════════════════════════ */
+.stats {
+  display: flex; justify-content: center; gap: 48px;
+  padding: 40px 0; margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.stat-item {
+  text-align: center;
+}
+.stat-num {
+  font-size: 32px; font-weight: 800; letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--p), var(--acc));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  font-size: 13px; color: var(--td); margin-top: 4px;
+}
 
-/* ─── Preview ──────────────────────────────────────────── */
-.tpl-preview{height:200px;position:relative;overflow:hidden;border-bottom:1px solid var(--bd)}
-.tpl-preview iframe{width:200%;height:400%;transform:scale(.5);transform-origin:top left;border:none;pointer-events:none}
-.tpl-preview .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,var(--s1) 100%);pointer-events:none;z-index:1}
+/* ═══════════════════════════════════════════════════════════
+   Search & Filters
+   ═══════════════════════════════════════════════════════════ */
+.controls { margin: 20px 0 32px; }
+.search-bar {
+  position: relative; max-width: 480px; margin: 0 auto 20px;
+}
+.search-bar input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border-radius: 14px;
+  border: 1.5px solid var(--bd);
+  background: var(--input-bg);
+  color: var(--tx);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s;
+}
+.search-bar input:focus {
+  border-color: var(--p);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+.search-bar input::placeholder { color: var(--td); }
+.search-bar i {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; color: var(--td);
+  pointer-events: none;
+}
+.search-count {
+  text-align: center; font-size: 13px; color: var(--td); margin-bottom: 16px;
+}
+.filters {
+  display: flex; justify-content: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.fbtn {
+  background: var(--tag-bg);
+  border: 1.5px solid var(--bd);
+  padding: 9px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 600;
+  color: var(--td); cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: inherit;
+  backdrop-filter: blur(4px);
+  position: relative; overflow: hidden;
+}
+.fbtn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--p), var(--acc));
+  opacity: 0; transition: opacity 0.3s;
+  border-radius: inherit;
+}
+.fbtn span { position: relative; z-index: 1; }
+.fbtn:hover { border-color: rgba(108, 92, 231, 0.3); color: var(--p); }
+.fbtn.active {
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 16px var(--p-glow);
+}
+.fbtn.active::before { opacity: 1; }
 
-/* ─── Card Info ────────────────────────────────────────── */
-.tpl-info{padding:20px 24px 24px}
-.tpl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
-.tpl-name{font-size:18px;font-weight:700;white-space:nowrap}
-.tpl-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0}
-.tag-dark{background:rgba(139,92,246,.1);color:#a78bfa}
-.tag-light{background:rgba(37,99,235,.08);color:#60a5fa}
-.tag-gradient{background:rgba(236,72,153,.08);color:#f472b6}
-.tag-ai{background:rgba(6,182,212,.08);color:#22d3ee}
-.tag-mobile{background:rgba(249,115,22,.08);color:#fb923c}
-.tag-ecom{background:rgba(220,38,38,.08);color:#f87171}
-.tag-agency{background:rgba(212,175,55,.1);color:#d4af37}
-.tag-finance{background:rgba(59,130,246,.08);color:#60a5fa}
-.tpl-desc{font-size:13px;color:var(--td);line-height:1.6;margin-bottom:14px}
-.tpl-features{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
-.tpl-feat{font-size:10px;color:var(--td);background:rgba(255,255,255,.025);border:1px solid var(--bd);padding:4px 9px;border-radius:6px;letter-spacing:.02em}
-.tpl-btns{display:flex;gap:8px}
-.tpl-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;transition:all .25s;cursor:pointer;border:none;font-family:inherit}
-.tpl-btn.primary{background:var(--p);color:#fff;box-shadow:0 4px 16px var(--p-glow)}
-.tpl-btn.primary:hover{background:#5b4bcf;transform:translateY(-2px);box-shadow:0 8px 24px var(--p-glow)}
-.tpl-btn.secondary{background:rgba(255,255,255,.04);color:var(--tx);border:1px solid var(--bd)}
-.tpl-btn.secondary:hover{background:rgba(255,255,255,.08)}
-.tpl-btn svg{width:15px;height:15px;flex-shrink:0}
+/* ═══════════════════════════════════════════════════════════
+   Template Grid & Cards
+   ═══════════════════════════════════════════════════════════ */
+.tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding-bottom: 60px;
+}
+.tpl-card {
+  background: var(--card-bg);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+.tpl-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(108, 92, 231, 0.2);
+  box-shadow: var(--shadow-card-hover);
+}
+.tpl-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent, var(--p));
+  opacity: 0.7;
+  transition: opacity 0.4s;
+  z-index: 2;
+}
+.tpl-card:hover::before { opacity: 1; }
 
-/* ─── CTA Banner ───────────────────────────────────────── */
-.cta-banner{background:linear-gradient(135deg,rgba(108,92,231,.1),rgba(0,206,201,.06));border:1px solid rgba(108,92,231,.12);border-radius:var(--r);padding:44px;text-align:center;margin-bottom:60px;position:relative;overflow:hidden}
-.cta-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(108,92,231,.06),transparent 70%);pointer-events:none}
-.cta-banner h2{font-size:clamp(22px,3vw,30px);font-weight:800;margin-bottom:10px;position:relative}
-.cta-banner p{color:var(--td);margin-bottom:20px;font-size:15px;position:relative}
-.cta-banner .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:12px;background:var(--p);color:#fff;font-weight:600;font-size:15px;text-decoration:none;transition:all .25s;position:relative}
-.cta-banner .btn:hover{background:#5b4bcf;transform:translateY(-2px);box-shadow:0 8px 24px var(--p-glow)}
+/* Preview Area */
+.tpl-preview {
+  height: 250px; position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--bd);
+  background: var(--s2);
+}
+.tpl-preview iframe {
+  width: 200%; height: 400%;
+  transform: scale(0.5); transform-origin: top left;
+  border: none; pointer-events: none;
+}
+.tpl-preview .overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 40%, var(--card-bg) 100%);
+  pointer-events: none; z-index: 1;
+}
+.tpl-preview .preview-hover {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+[data-theme="light"] .tpl-preview .preview-hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+.tpl-card:hover .preview-hover { opacity: 1; }
+.preview-hover-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; font-family: inherit;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+.preview-hover-btn i { width: 16px; height: 16px; }
+.preview-hover-btn.primary {
+  background: var(--p); color: #fff;
+  box-shadow: 0 4px 16px var(--p-glow);
+}
+.preview-hover-btn.primary:hover { background: #5b4bcf; transform: translateY(-2px); }
+.preview-hover-btn.secondary {
+  background: rgba(255, 255, 255, 0.15); color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+[data-theme="light"] .preview-hover-btn.secondary {
+  background: rgba(0, 0, 0, 0.05); color: var(--tx);
+  border: 1px solid var(--bd);
+}
+.preview-hover-btn.secondary:hover { background: rgba(255, 255, 255, 0.25); }
 
-.page-footer{text-align:center;padding:36px 0;border-top:1px solid var(--bd);font-size:12px;color:var(--td);letter-spacing:.02em}
+/* Card Info */
+.tpl-info { padding: 20px 24px 24px; }
+.tpl-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; gap: 10px;
+}
+.tpl-name { font-size: 18px; font-weight: 700; white-space: nowrap; }
+.tpl-tag {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 6px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.tag-dark { background: rgba(139, 92, 246, 0.1); color: #a78bfa; }
+[data-theme="light"] .tag-dark { background: rgba(109, 40, 217, 0.08); color: #7c3aed; }
+.tag-light { background: rgba(37, 99, 235, 0.08); color: #60a5fa; }
+[data-theme="light"] .tag-light { background: rgba(37, 99, 235, 0.08); color: #2563eb; }
+.tag-gradient { background: rgba(236, 72, 153, 0.08); color: #f472b6; }
+.tag-ai { background: rgba(6, 182, 212, 0.08); color: #22d3ee; }
+.tag-mobile { background: rgba(249, 115, 22, 0.08); color: #fb923c; }
+.tag-ecom { background: rgba(220, 38, 38, 0.08); color: #f87171; }
+.tag-agency { background: rgba(212, 175, 55, 0.1); color: #d4af37; }
+.tag-finance { background: rgba(59, 130, 246, 0.08); color: #60a5fa; }
+.tag-ink { background: rgba(148, 163, 184, 0.1); color: #94a3b8; }
+.tag-minimal { background: rgba(17, 17, 17, 0.06); color: #555; }
+[data-theme="light"] .tag-minimal { background: rgba(0, 0, 0, 0.06); color: #333; }
+[data-theme="dark"] .tag-minimal { background: rgba(255, 255, 255, 0.06); color: #ccc; }
+.tag-luxury { background: rgba(201, 169, 110, 0.1); color: #c9a96e; }
+.tag-cyber { background: rgba(255, 0, 255, 0.08); color: #ff66ff; }
+.tag-wabi { background: rgba(163, 146, 122, 0.1); color: #a3927a; }
+.tag-glass { background: rgba(125, 211, 252, 0.08); color: #7dd3fc; }
+.tag-brutal { background: rgba(17, 17, 17, 0.06); color: #555; }
+[data-theme="light"] .tag-brutal { background: rgba(0, 0, 0, 0.08); color: #111; }
+[data-theme="dark"] .tag-brutal { background: rgba(255, 255, 255, 0.08); color: #ddd; }
+.tag-aurora { background: rgba(34, 197, 94, 0.08); color: #22c55e; }
+.tag-editorial { background: rgba(17, 17, 17, 0.05); color: #666; }
+[data-theme="light"] .tag-editorial { background: rgba(0, 0, 0, 0.05); color: #333; }
+[data-theme="dark"] .tag-editorial { background: rgba(255, 255, 255, 0.05); color: #bbb; }
+.tag-warm { background: rgba(217, 119, 6, 0.08); color: #d97706; }
 
-/* ─── AUTH WALL ─────────────────────────────────────────── */
-#auth-wall{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(4,4,10,.88);backdrop-filter:blur(32px) saturate(1.2);opacity:0;transform:scale(.97);transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1)}
-#auth-wall.show{opacity:1;transform:scale(1)}
+.tpl-desc {
+  font-size: 13px; color: var(--td);
+  line-height: 1.6; margin-bottom: 14px;
+}
+.tpl-features { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px; }
+.tpl-feat {
+  font-size: 10px; color: var(--td);
+  background: var(--tag-bg); border: 1px solid var(--tag-border);
+  padding: 4px 9px; border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+.tpl-btns { display: flex; gap: 8px; }
+.tpl-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 11px 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: all 0.25s;
+  cursor: pointer; border: none; font-family: inherit;
+}
+.tpl-btn i { width: 15px; height: 15px; flex-shrink: 0; }
+.tpl-btn.primary {
+  background: var(--p); color: #fff;
+  box-shadow: 0 4px 16px var(--p-glow);
+}
+.tpl-btn.primary:hover { background: #5b4bcf; transform: translateY(-2px); box-shadow: 0 8px 24px var(--p-glow); }
+.tpl-btn.secondary {
+  background: var(--tag-bg); color: var(--tx);
+  border: 1px solid var(--bd);
+}
+.tpl-btn.secondary:hover { background: var(--bd-hover); }
 
-.auth-card{background:linear-gradient(180deg,var(--s1),var(--s2));border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:44px 36px;max-width:420px;width:92%;text-align:center;position:relative;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 0 1px rgba(108,92,231,.06)}
-.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--p),var(--acc),var(--p));background-size:200% 100%;animation:gradientShift 4s linear infinite}
-@keyframes gradientShift{0%{background-position:0% 0}100%{background-position:200% 0}}
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--td);
+}
+.empty-state i { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.4; }
+.empty-state p { font-size: 16px; }
 
-.auth-icon{font-size:44px;margin-bottom:14px;display:inline-block;animation:iconBounce 2s ease-in-out infinite}
-@keyframes iconBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+/* ═══════════════════════════════════════════════════════════
+   CTA Banner
+   ═══════════════════════════════════════════════════════════ */
+.cta-banner {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.08), rgba(0, 206, 201, 0.05));
+  border: 1px solid rgba(108, 92, 231, 0.12);
+  border-radius: var(--r);
+  padding: 52px 44px;
+  text-align: center;
+  margin-bottom: 60px;
+  position: relative; overflow: hidden;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(108, 92, 231, 0.06), transparent 70%);
+  pointer-events: none;
+}
+[data-theme="light"] .cta-banner {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.04), rgba(0, 206, 201, 0.03));
+}
+.cta-banner h2 {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800; margin-bottom: 10px;
+  position: relative;
+}
+.cta-banner p { color: var(--td); margin-bottom: 24px; font-size: 15px; position: relative; }
+.cta-banner .btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: 12px;
+  background: var(--p); color: #fff;
+  font-weight: 600; font-size: 15px;
+  transition: all 0.25s; position: relative;
+}
+.cta-banner .btn i { width: 18px; height: 18px; }
+.cta-banner .btn:hover { background: #5b4bcf; transform: translateY(-2px); box-shadow: 0 8px 24px var(--p-glow); }
 
-.auth-card h2{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.02em}
-.auth-card .auth-sub{color:var(--td);font-size:13px;margin-bottom:24px;line-height:1.65}
+/* ═══════════════════════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════════════════════ */
+.page-footer {
+  text-align: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--bd);
+}
+.footer-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  padding: 8px 18px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--p);
+  margin-bottom: 16px;
+}
+.footer-badge i { width: 14px; height: 14px; }
+.footer-links {
+  display: flex; justify-content: center; gap: 24px;
+  margin-bottom: 16px;
+}
+.footer-links a {
+  font-size: 13px; color: var(--td);
+  display: flex; align-items: center; gap: 6px;
+  transition: color 0.2s;
+}
+.footer-links a i { width: 14px; height: 14px; }
+.footer-links a:hover { color: var(--p); }
+.footer-copy { font-size: 12px; color: var(--td); opacity: 0.6; }
 
-.auth-tabs{display:flex;margin-bottom:22px;border-radius:12px;overflow:hidden;border:1px solid var(--bd);background:rgba(255,255,255,.02)}
-.auth-tab{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--td);font-family:inherit;transition:all .25s;position:relative}
-.auth-tab.active{color:var(--p)}
-.auth-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--p);border-radius:2px}
-.auth-tab:hover:not(.active){color:var(--tx);background:rgba(255,255,255,.03)}
+/* ═══════════════════════════════════════════════════════════
+   Scroll to Top
+   ═══════════════════════════════════════════════════════════ */
+.scroll-top {
+  position: fixed; bottom: 32px; right: 32px; z-index: 90;
+  width: 44px; height: 44px; border-radius: 12px;
+  border: 1px solid var(--scroll-top-border);
+  background: var(--scroll-top-bg);
+  backdrop-filter: blur(16px);
+  color: var(--td); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(16px);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.scroll-top.visible {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+.scroll-top:hover { color: var(--p); border-color: rgba(108, 92, 231, 0.3); box-shadow: 0 4px 16px var(--p-glow); }
+.scroll-top i { width: 18px; height: 18px; }
 
-.auth-panel{display:none;animation:panelIn .3s ease}
-.auth-panel.active{display:block}
-@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* ═══════════════════════════════════════════════════════════
+   AUTH WALL
+   ═══════════════════════════════════════════════════════════ */
+#auth-wall {
+  position: fixed; inset: 0; z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+  background: var(--auth-wall-bg);
+  backdrop-filter: blur(32px) saturate(1.2);
+  opacity: 0; transform: scale(0.97);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#auth-wall.show { opacity: 1; transform: scale(1); }
 
-.key-input{width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid var(--bd);background:rgba(255,255,255,.03);color:var(--tx);font-size:16px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:2px;text-transform:uppercase;text-align:center;outline:none;transition:all .3s}
-.key-input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(108,92,231,.1),0 0 30px rgba(108,92,231,.06)}
-.key-input::placeholder{color:rgba(110,110,150,.5);text-transform:none;letter-spacing:0;font-size:14px}
-.key-input.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+.auth-bg-orbs {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.auth-bg-orbs .auth-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(100px); opacity: 0.5;
+}
+.auth-bg-orbs .auth-orb:nth-child(1) {
+  width: 400px; height: 400px;
+  background: rgba(108, 92, 231, 0.12);
+  top: -100px; left: -100px;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+.auth-bg-orbs .auth-orb:nth-child(2) {
+  width: 300px; height: 300px;
+  background: rgba(0, 206, 201, 0.08);
+  bottom: -80px; right: -80px;
+  animation: orbFloat 12s ease-in-out infinite -6s;
+}
+[data-theme="light"] .auth-bg-orbs .auth-orb { opacity: 0.3; }
 
-.auth-btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;margin-top:14px;position:relative;overflow:hidden}
-.auth-btn.primary{background:linear-gradient(135deg,var(--p),#5b4bcf);color:#fff;box-shadow:0 4px 20px var(--p-glow)}
-.auth-btn.primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px var(--p-glow)}
-.auth-btn.primary:active{transform:translateY(0)}
-.auth-btn.primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.auth-btn.ghost{background:rgba(255,255,255,.05);color:var(--td);border:1px solid var(--bd);margin-top:8px}
-.auth-btn.ghost:hover{background:rgba(255,255,255,.08);color:var(--tx)}
+.auth-card {
+  background: var(--auth-card-bg);
+  border: 1px solid var(--bd);
+  border-radius: 28px;
+  padding: 48px 40px;
+  max-width: 440px; width: 92%;
+  text-align: center;
+  position: relative; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+}
+[data-theme="light"] .auth-card {
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.12);
+}
+.auth-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--p), var(--acc), var(--p));
+  background-size: 200% 100%;
+  animation: gradientShift 4s linear infinite;
+}
+@keyframes gradientShift { 0% { background-position: 0% 0; } 100% { background-position: 200% 0; } }
 
-.auth-msg{font-size:13px;margin-top:12px;display:none;padding:10px 14px;border-radius:10px;line-height:1.5}
-.auth-msg.error{color:#f87171;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.1)}
-.auth-msg.success{color:#34d399;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.1)}
+.auth-icon-wrap {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: rgba(108, 92, 231, 0.1);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+[data-theme="light"] .auth-icon-wrap { background: rgba(108, 92, 231, 0.08); }
+.auth-icon-wrap i { width: 28px; height: 28px; color: var(--p); }
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
 
-.guest-hint{text-align:left;margin-top:16px;padding:16px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid var(--bd)}
-.guest-hint p{font-size:12px;color:var(--td);line-height:1.7;margin:0}
-.guest-hint strong{color:var(--tx)}
+.auth-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
+.auth-card .auth-sub { color: var(--td); font-size: 13px; margin-bottom: 28px; line-height: 1.65; }
 
-/* ─── Spinner ──────────────────────────────────────────── */
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
+.auth-tabs {
+  display: flex; margin-bottom: 24px;
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--bd);
+  background: var(--input-bg);
+  padding: 4px;
+}
+.auth-tab {
+  flex: 1; padding: 11px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--td); font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.auth-tab i { width: 15px; height: 15px; }
+.auth-tab.active {
+  color: var(--p);
+  background: rgba(108, 92, 231, 0.1);
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);
+}
+.auth-tab:hover:not(.active) { color: var(--tx); background: rgba(255, 255, 255, 0.03); }
+[data-theme="light"] .auth-tab:hover:not(.active) { background: rgba(0, 0, 0, 0.03); }
 
-/* ─── Shake ────────────────────────────────────────────── */
-@keyframes shake{0%,100%{transform:translateX(0)}15%,45%,75%{transform:translateX(-6px)}30%,60%,90%{transform:translateX(6px)}}
+.auth-panel { display: none; animation: panelIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.auth-panel.active { display: block; }
+@keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ─── Toast ────────────────────────────────────────────── */
-.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:10000;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:500;opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);pointer-events:none;backdrop-filter:blur(16px);white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast-success{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:#34d399}
-.toast-error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2);color:#f87171}
-.toast-info{background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.2);color:#a78bfa}
+.key-input-wrap {
+  position: relative; margin-bottom: 4px;
+}
+.key-input-wrap i {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; color: var(--td);
+  pointer-events: none; transition: color 0.3s;
+}
+.key-input {
+  width: 100%;
+  padding: 16px 16px 16px 44px;
+  border-radius: 14px;
+  border: 1.5px solid var(--bd);
+  background: var(--input-bg);
+  color: var(--tx);
+  font-size: 16px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  outline: none;
+  transition: all 0.3s;
+}
+.key-input:focus {
+  border-color: var(--p);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1), 0 0 30px rgba(108, 92, 231, 0.06);
+}
+.key-input:focus + i,
+.key-input:focus ~ i { color: var(--p); }
+.key-input::placeholder { color: var(--td); text-transform: none; letter-spacing: 0; font-size: 14px; font-family: inherit; }
+.key-input.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
 
-/* ─── Guest Notice ─────────────────────────────────────── */
-#guest-notice{position:fixed;bottom:0;left:0;right:0;z-index:100;padding:14px 20px;background:linear-gradient(135deg,rgba(14,14,26,.9),rgba(22,22,37,.9));border-top:1px solid rgba(108,92,231,.15);display:none;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(20px);animation:slideUp .4s ease}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-#guest-notice span{font-size:12px;color:var(--td)}
-.notice-btn{padding:7px 18px;border-radius:8px;background:linear-gradient(135deg,var(--p),#5b4bcf);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
-.notice-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--p-glow)}
+.auth-btn {
+  width: 100%; padding: 15px; border-radius: 14px;
+  border: none; font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.25s; margin-top: 14px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.auth-btn i { width: 18px; height: 18px; }
+.auth-btn.primary {
+  background: linear-gradient(135deg, var(--p), #5b4bcf);
+  color: #fff; box-shadow: 0 4px 20px var(--p-glow);
+}
+.auth-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 28px var(--p-glow); }
+.auth-btn.primary:active { transform: translateY(0); }
+.auth-btn.primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.auth-btn.ghost {
+  background: var(--input-bg); color: var(--td);
+  border: 1px solid var(--bd); margin-top: 8px;
+}
+.auth-btn.ghost:hover { background: var(--bd-hover); color: var(--tx); }
 
-/* ─── Scroll Reveal ────────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.2s}
-.reveal-delay-3{transition-delay:.3s}
+.auth-msg {
+  font-size: 13px; margin-top: 12px; display: none;
+  padding: 12px 16px; border-radius: 10px; line-height: 1.5;
+  text-align: left;
+}
+.auth-msg.error { color: #f87171; background: rgba(248, 113, 113, 0.06); border: 1px solid rgba(248, 113, 113, 0.1); }
+.auth-msg.success { color: #34d399; background: rgba(52, 211, 153, 0.06); border: 1px solid rgba(52, 211, 153, 0.1); }
 
-/* ─── Responsive ───────────────────────────────────────── */
-@media(max-width:900px){.tpl-grid{grid-template-columns:1fr}}
-@media(max-width:640px){
-  header{padding:80px 0 30px}
-  h1{font-size:32px}
-  .sub{font-size:15px}
-  .tpl-preview{height:160px}
-  .tpl-info{padding:16px 18px 20px}
-  .tpl-name{font-size:16px}
-  .cta-banner{padding:28px 18px;margin-bottom:40px}
-  .auth-card{padding:32px 22px;border-radius:22px}
-  .auth-icon{font-size:36px}
-  #guest-notice{padding:12px 16px}
-  .tags{gap:6px}
-  .tag{padding:5px 10px;font-size:11px}
+.guest-hint {
+  text-align: left; margin-top: 16px; padding: 16px;
+  border-radius: 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--bd);
+}
+.guest-hint p { font-size: 12px; color: var(--td); line-height: 1.7; margin: 0; }
+.guest-hint strong { color: var(--tx); }
+
+/* ═══════════════════════════════════════════════════════════
+   Guest Notice Bar
+   ═══════════════════════════════════════════════════════════ */
+#guest-notice {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  padding: 14px 20px;
+  background: var(--guest-bg);
+  border-top: 1px solid rgba(108, 92, 231, 0.15);
+  display: none; align-items: center; justify-content: center;
+  gap: 12px; backdrop-filter: blur(20px);
+  animation: slideUp 0.4s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+#guest-notice span { font-size: 12px; color: var(--td); display: flex; align-items: center; gap: 6px; }
+#guest-notice span i { width: 14px; height: 14px; }
+.notice-btn {
+  padding: 7px 18px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--p), #5b4bcf);
+  color: #fff; font-size: 12px; font-weight: 600;
+  border: none; cursor: pointer; font-family: inherit;
+  transition: all 0.2s;
+}
+.notice-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--p-glow); }
+
+/* ═══════════════════════════════════════════════════════════
+   Spinner & Utilities
+   ═══════════════════════════════════════════════════════════ */
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 15%, 45%, 75% { transform: translateX(-6px); } 30%, 60%, 90% { transform: translateX(6px); } }
+
+/* Toast */
+.toast {
+  position: fixed; top: 24px; left: 50%;
+  transform: translateX(-50%) translateY(-20px); z-index: 10000;
+  padding: 12px 24px; border-radius: 12px;
+  font-size: 13px; font-weight: 500;
+  opacity: 0; transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none; backdrop-filter: blur(16px);
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast-success { background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.2); color: #34d399; }
+.toast-error { background: rgba(248, 113, 113, 0.12); border: 1px solid rgba(248, 113, 113, 0.2); color: #f87171; }
+.toast-info { background: rgba(108, 92, 231, 0.12); border: 1px solid rgba(108, 92, 231, 0.2); color: #a78bfa; }
+
+/* Scroll Reveal */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+@media (max-width: 900px) {
+  .tpl-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .tpl-grid { grid-template-columns: 1fr; }
+  .hero { padding: 120px 0 30px; }
+  h1 { font-size: 34px; }
+  .sub { font-size: 15px; }
+  .tpl-preview { height: 200px; }
+  .tpl-info { padding: 16px 18px 20px; }
+  .tpl-name { font-size: 16px; }
+  .cta-banner { padding: 32px 20px; margin-bottom: 40px; }
+  .auth-card { padding: 36px 24px; border-radius: 22px; }
+  #guest-notice { padding: 12px 16px; }
+  .hero-tags { gap: 6px; }
+  .hero-tag { padding: 5px 10px; font-size: 11px; }
+  .stats { gap: 24px; }
+  .stat-num { font-size: 24px; }
+  .top-bar { padding: 12px 16px; }
+  .filters { gap: 6px; }
+  .fbtn { padding: 7px 14px; font-size: 12px; }
+  .tpl-preview .preview-hover { display: none; }
+  .scroll-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
 }
 </style>
 </head>
 <body>
 
-<!-- AUTH WALL -->
+<!-- ═══════════════════════════════════════════════════════════
+     AUTH WALL
+     ═══════════════════════════════════════════════════════════ -->
 <div id="auth-wall">
+  <div class="auth-bg-orbs">
+    <div class="auth-orb"></div>
+    <div class="auth-orb"></div>
+  </div>
   <div class="auth-card">
-    <div class="auth-icon">🔐</div>
+    <div class="auth-icon-wrap">
+      <i data-lucide="lock"></i>
+    </div>
     <h2>访问验证</h2>
     <p class="auth-sub">输入密钥解锁全部功能，或以游客身份浏览</p>
 
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('key')">🔑 密钥登录</button>
-      <button class="auth-tab" onclick="switchAuthTab('guest')">👤 游客浏览</button>
+      <button class="auth-tab active" onclick="switchAuthTab('key')"><i data-lucide="key"></i> 密钥登录</button>
+      <button class="auth-tab" onclick="switchAuthTab('guest')"><i data-lucide="user"></i> 游客浏览</button>
     </div>
 
     <div class="auth-panel active" id="panel-key">
-      <input type="text" id="key-input" class="key-input" placeholder="TMPL-XXXX-XXXX-XXXX" maxlength="18" autocomplete="off" spellcheck="false">
-      <button id="key-submit" class="auth-btn primary">验证并登录</button>
+      <div class="key-input-wrap">
+        <input type="text" id="key-input" class="key-input" placeholder="TMPL-XXXX-XXXX-XXXX" maxlength="18" autocomplete="off" spellcheck="false">
+        <i data-lucide="key"></i>
+      </div>
+      <button id="key-submit" class="auth-btn primary"><i data-lucide="unlock"></i> 验证并登录</button>
       <div id="key-error" class="auth-msg error"></div>
       <div id="key-success" class="auth-msg success">✅ 验证通过，正在进入...</div>
     </div>
 
     <div class="auth-panel" id="panel-guest">
       <p class="auth-sub" style="margin-bottom:18px">游客模式可<strong style="color:var(--acc)">预览</strong>全部模板<br>但<strong style="color:#f87171">无法下载</strong>源码文件</p>
-      <button id="guest-btn" class="auth-btn ghost">进入预览 →</button>
+      <button id="guest-btn" class="auth-btn ghost"><i data-lucide="arrow-right"></i> 进入预览</button>
       <div class="guest-hint">
         <p>💡 <strong>需要源码？</strong><br>购买密钥后输入即可解锁下载，一个密钥限一台设备。</p>
       </div>
@@ -214,152 +865,456 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
   </div>
 </div>
 
-<!-- GUEST NOTICE -->
+<!-- ═══════════════════════════════════════════════════════════
+     GUEST NOTICE
+     ═══════════════════════════════════════════════════════════ -->
 <div id="guest-notice">
-  <span>🔒 游客模式 — 源码下载已锁定</span>
+  <span><i data-lucide="lock"></i> 游客模式 — 源码下载已锁定</span>
   <button class="notice-btn" id="open-auth-btn">输入密钥</button>
 </div>
 
-<!-- BACKGROUND -->
+<!-- ═══════════════════════════════════════════════════════════
+     BACKGROUND
+     ═══════════════════════════════════════════════════════════ -->
 <div class="bg-grid"></div>
 <div class="bg-orb purple"></div>
 <div class="bg-orb teal"></div>
 <div class="bg-orb pink"></div>
 <canvas id="particles"></canvas>
 
-<!-- CONTENT -->
+<!-- ═══════════════════════════════════════════════════════════
+     TOP BAR
+     ═══════════════════════════════════════════════════════════ -->
+<div class="top-bar" id="topBar">
+  <div class="logo">
+    <i data-lucide="layout-grid" style="width:20px;height:20px;color:var(--p)"></i>
+    <span>Template Shop</span>
+  </div>
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <i data-lucide="sun" id="themeIcon"></i>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CONTENT
+     ═══════════════════════════════════════════════════════════ -->
 <div class="wrap">
 
-<header>
-  <div class="badge reveal"><span class="dot"></span> 8 套模板 · 持续更新</div>
-  <h1 class="reveal">SaaS 落地页<br><em>模板合集</em></h1>
-  <p class="sub reveal">精选 8 套不同风格的落地页模板，即买即用。<br>纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
-  <div class="tags reveal">
-    <span class="tag">✨ 纯 HTML 单文件</span>
-    <span class="tag">📱 完全响应式</span>
-    <span class="tag">🎨 CSS 变量换色</span>
-    <span class="tag">⚡ 零依赖</span>
-    <span class="tag">📦 即买即发</span>
+<!-- HERO -->
+<header class="hero">
+  <div class="badge reveal"><span class="dot"></span> 18 套模板 · 持续更新</div>
+  <h1 class="reveal">落地页<br><span class="gradient-text">模板合集</span></h1>
+  <p class="sub reveal">精选 18 套不同风格的落地页模板，即买即用。<br>纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
+  <div class="hero-tags reveal">
+    <span class="hero-tag"><i data-lucide="file-code"></i> 纯 HTML 单文件</span>
+    <span class="hero-tag"><i data-lucide="smartphone"></i> 完全响应式</span>
+    <span class="hero-tag"><i data-lucide="palette"></i> CSS 变量换色</span>
+    <span class="hero-tag"><i data-lucide="zap"></i> 零依赖</span>
+    <span class="hero-tag"><i data-lucide="package"></i> 即买即发</span>
   </div>
 </header>
 
-<div class="filters reveal">
-  <button class="fbtn active" data-filter="all">全部 (8)</button>
-  <button class="fbtn" data-filter="dark">暗色系 (3)</button>
-  <button class="fbtn" data-filter="light">亮色系 (2)</button>
-  <button class="fbtn" data-filter="industry">行业专属 (3)</button>
+<!-- STATS -->
+<div class="stats reveal">
+  <div class="stat-item"><div class="stat-num">18</div><div class="stat-label">套模板</div></div>
+  <div class="stat-item"><div class="stat-num">10+</div><div class="stat-label">种风格</div></div>
+  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">响应式</div></div>
+  <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">依赖</div></div>
 </div>
 
+<!-- SEARCH & FILTERS -->
+<div class="controls reveal">
+  <div class="search-bar">
+    <i data-lucide="search"></i>
+    <input type="text" id="searchInput" placeholder="搜索模板名称或描述...">
+  </div>
+  <div class="search-count" id="searchCount"></div>
+  <div class="filters" id="filterBar">
+    <button class="fbtn active" data-filter="all"><span>全部 (18)</span></button>
+    <button class="fbtn" data-filter="dark"><span>暗色系 (9)</span></button>
+    <button class="fbtn" data-filter="light"><span>亮色系 (7)</span></button>
+    <button class="fbtn" data-filter="industry"><span>行业专属 (3)</span></button>
+    <button class="fbtn" data-filter="culture"><span>国风文化 (3)</span></button>
+  </div>
+</div>
+
+<!-- TEMPLATE GRID -->
 <div class="tpl-grid" id="tpl-grid">
 
   <!-- 1. Starter -->
-  <div class="tpl-card reveal" data-cat="dark">
-    <div class="tpl-preview"><iframe src="dark-saas.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="dark" data-name="Starter" data-desc="深空蓝底色 暗黑科技风 AI产品 开发者工具 技术型SaaS" style="--card-accent:#6C5CE7">
+    <div class="tpl-preview">
+      <iframe src="dark-saas.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="dark-saas.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="dark-saas.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">Starter</div><span class="tpl-tag tag-dark">暗黑科技风</span></div>
       <div class="tpl-desc">深空蓝底色 + 紫/青渐变，适合 AI 产品、开发者工具、技术型 SaaS。</div>
       <div class="tpl-features"><span class="tpl-feat">Bento Grid</span><span class="tpl-feat">代码预览</span><span class="tpl-feat">玻璃态导航</span><span class="tpl-feat">柱状图</span></div>
       <div class="tpl-btns">
-        <a href="dark-saas.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="dark-saas.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="dark-saas.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="dark-saas.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 2. CleanSaaS -->
-  <div class="tpl-card reveal" data-cat="light">
-    <div class="tpl-preview" style="background:#f5f5f5"><iframe src="light-clean.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="light" data-name="CleanSaaS" data-desc="白色极简风 企业级SaaS B2B产品 效率工具" style="--card-accent:#3b82f6">
+    <div class="tpl-preview" style="background:#f5f5f5">
+      <iframe src="light-clean.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="light-clean.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="light-clean.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">CleanSaaS</div><span class="tpl-tag tag-light">白色极简风</span></div>
       <div class="tpl-desc">白底 + 蓝绿配色，干净专业。适合企业级 SaaS、B2B 产品、效率工具。</div>
       <div class="tpl-features"><span class="tpl-feat">极简排版</span><span class="tpl-feat">用户评价</span><span class="tpl-feat">渐变 CTA</span><span class="tpl-feat">步骤流程</span></div>
       <div class="tpl-btns">
-        <a href="light-clean.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="light-clean.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="light-clean.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="light-clean.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 3. VibeLaunch -->
-  <div class="tpl-card reveal" data-cat="dark">
-    <div class="tpl-preview"><iframe src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="dark" data-name="VibeLaunch" data-desc="渐变潮流风 初创品牌 产品发布 视觉冲击" style="--card-accent:#ec4899">
+    <div class="tpl-preview">
+      <iframe src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="gradient-bold.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="gradient-bold.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">VibeLaunch</div><span class="tpl-tag tag-gradient">渐变潮流风</span></div>
       <div class="tpl-desc">靛蓝→粉红渐变 + 暗色背景，视觉冲击力强。适合初创品牌、产品发布。</div>
       <div class="tpl-features"><span class="tpl-feat">渐变边框</span><span class="tpl-feat">产品展示</span><span class="tpl-feat">浮动光晕</span><span class="tpl-feat">邮件订阅</span></div>
       <div class="tpl-btns">
-        <a href="gradient-bold.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="gradient-bold.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="gradient-bold.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="gradient-bold.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 4. NeuralAI -->
-  <div class="tpl-card reveal" data-cat="dark">
-    <div class="tpl-preview"><iframe src="ai-product.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="dark" data-name="NeuralAI" data-desc="AI产品专用 神经网络 霓虹色 API演示" style="--card-accent:#06b6d4">
+    <div class="tpl-preview">
+      <iframe src="ai-product.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="ai-product.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ai-product.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">NeuralAI</div><span class="tpl-tag tag-ai">AI 产品专用</span></div>
       <div class="tpl-desc">紫/青霓虹色 + 神经网络动画，专为 AI 产品打造。含 API 代码演示。</div>
       <div class="tpl-features"><span class="tpl-feat">神经网络动画</span><span class="tpl-feat">API 演示</span><span class="tpl-feat">发光边框</span><span class="tpl-feat">对比表</span></div>
       <div class="tpl-btns">
-        <a href="ai-product.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="ai-product.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="ai-product.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ai-product.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 5. AppLaunch -->
-  <div class="tpl-card reveal" data-cat="industry">
-    <div class="tpl-preview"><iframe src="mobile-app.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="industry" data-name="AppLaunch" data-desc="App专属 移动端 手机模型 应用商店" style="--card-accent:#f97316">
+    <div class="tpl-preview">
+      <iframe src="mobile-app.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="mobile-app.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="mobile-app.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">AppLaunch</div><span class="tpl-tag tag-mobile">App 专属</span></div>
       <div class="tpl-desc">暗色背景 + 蓝/橙配色，专为移动端 App 设计。含 CSS 手机模型。</div>
       <div class="tpl-features"><span class="tpl-feat">手机模型</span><span class="tpl-feat">应用商店按钮</span><span class="tpl-feat">三屏展示</span><span class="tpl-feat">下载统计</span></div>
       <div class="tpl-btns">
-        <a href="mobile-app.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="mobile-app.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="mobile-app.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="mobile-app.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 6. ShopWave -->
-  <div class="tpl-card reveal" data-cat="light">
-    <div class="tpl-preview" style="background:#fafaf8"><iframe src="ecommerce.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="light industry" data-name="ShopWave" data-desc="电商产品 电商 单品落地页 独立站" style="--card-accent:#ef4444">
+    <div class="tpl-preview" style="background:#fafaf8">
+      <iframe src="ecommerce.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="ecommerce.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ecommerce.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">ShopWave</div><span class="tpl-tag tag-ecom">电商产品</span></div>
       <div class="tpl-desc">暖白底 + 红/绿配色，适合电商产品展示、单品落地页、独立站。</div>
       <div class="tpl-features"><span class="tpl-feat">产品卡片</span><span class="tpl-feat">星级评价</span><span class="tpl-feat">购物车</span><span class="tpl-feat">邮件订阅</span></div>
       <div class="tpl-btns">
-        <a href="ecommerce.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="ecommerce.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="ecommerce.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ecommerce.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 7. Atelier -->
-  <div class="tpl-card reveal" data-cat="dark">
-    <div class="tpl-preview"><iframe src="agency.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="dark" data-name="Atelier" data-desc="创意工作室 设计公司 创意代理 作品集" style="--card-accent:#d4af37">
+    <div class="tpl-preview">
+      <iframe src="agency.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="agency.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="agency.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">Atelier</div><span class="tpl-tag tag-agency">创意工作室</span></div>
       <div class="tpl-desc">近黑底 + 金色点缀，高级感排版。适合设计公司、创意代理、作品集。</div>
       <div class="tpl-features"><span class="tpl-feat">编辑式排版</span><span class="tpl-feat">作品集网格</span><span class="tpl-feat">团队展示</span><span class="tpl-feat">金色点缀</span></div>
       <div class="tpl-btns">
-        <a href="agency.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="agency.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="agency.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="agency.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
 
   <!-- 8. FinFlow -->
-  <div class="tpl-card reveal" data-cat="industry">
-    <div class="tpl-preview"><iframe src="fintech.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div></div>
+  <div class="tpl-card reveal" data-cat="industry" data-name="FinFlow" data-desc="金融科技 金融产品 支付平台 合规" style="--card-accent:#3b82f6">
+    <div class="tpl-preview">
+      <iframe src="fintech.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="fintech.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="fintech.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
     <div class="tpl-info">
       <div class="tpl-head"><div class="tpl-name">FinFlow</div><span class="tpl-tag tag-finance">金融科技</span></div>
       <div class="tpl-desc">深海军蓝底 + 蓝/绿配色，专业可信。适合金融产品、支付平台。</div>
       <div class="tpl-features"><span class="tpl-feat">合规徽章</span><span class="tpl-feat">金融仪表盘</span><span class="tpl-feat">交易列表</span><span class="tpl-feat">定价对比</span></div>
       <div class="tpl-btns">
-        <a href="fintech.html" target="_blank" class="tpl-btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>预览</a>
-        <a href="fintech.html" download class="tpl-btn secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>源码</a>
+        <a href="fintech.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="fintech.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. 墨韵 -->
+  <div class="tpl-card reveal" data-cat="dark culture" data-name="墨韵" data-desc="水墨国风 国风文化 传统 东方美学" style="--card-accent:#94a3b8">
+    <div class="tpl-preview">
+      <iframe src="ink-wash.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="ink-wash.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ink-wash.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">墨韵</div><span class="tpl-tag tag-ink">水墨国风</span></div>
+      <div class="tpl-desc">水墨画风 + 暗色背景，东方美学与现代设计的融合。适合文化品牌、茶道、国潮。</div>
+      <div class="tpl-features"><span class="tpl-feat">水墨动画</span><span class="tpl-feat">书法字体</span><span class="tpl-feat">留白排版</span><span class="tpl-feat">古典纹样</span></div>
+      <div class="tpl-btns">
+        <a href="ink-wash.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ink-wash.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. 极简 -->
+  <div class="tpl-card reveal" data-cat="light" data-name="极简" data-desc="包豪斯极简 几何 原色 现代主义" style="--card-accent:#111111">
+    <div class="tpl-preview" style="background:#fafafa">
+      <iframe src="minimal.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="minimal.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="minimal.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">极简</div><span class="tpl-tag tag-minimal">包豪斯极简</span></div>
+      <div class="tpl-desc">白底 + 几何色块，致敬包豪斯的极致简洁。适合设计工具、效率产品。</div>
+      <div class="tpl-features"><span class="tpl-feat">几何构图</span><span class="tpl-feat">原色点缀</span><span class="tpl-feat">大量留白</span><span class="tpl-feat">网格系统</span></div>
+      <div class="tpl-btns">
+        <a href="minimal.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="minimal.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. LUXE -->
+  <div class="tpl-card reveal" data-cat="dark culture" data-name="LUXE" data-desc="轻奢风格 高端 奢华 品质" style="--card-accent:#c9a96e">
+    <div class="tpl-preview">
+      <iframe src="luxury.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="luxury.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="luxury.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">LUXE</div><span class="tpl-tag tag-luxury">轻奢风格</span></div>
+      <div class="tpl-desc">深邃暗色 + 金铜配色，营造轻奢氛围。适合高端品牌、奢侈品类、会员制服务。</div>
+      <div class="tpl-features"><span class="tpl-feat">金铜渐变</span><span class="tpl-feat">衬线字体</span><span class="tpl-feat">精奢排版</span><span class="tpl-feat">暗色沉浸</span></div>
+      <div class="tpl-btns">
+        <a href="luxury.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="luxury.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. NEON -->
+  <div class="tpl-card reveal" data-cat="dark" data-name="NEON" data-desc="赛博朋克 霓虹 未来 科幻" style="--card-accent:#ff00ff">
+    <div class="tpl-preview">
+      <iframe src="cyberpunk.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="cyberpunk.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="cyberpunk.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">NEON</div><span class="tpl-tag tag-cyber">赛博朋克</span></div>
+      <div class="tpl-desc">霓虹灯配色 + 暗色赛博风，适合游戏、Web3、未来科技类产品。</div>
+      <div class="tpl-features"><span class="tpl-feat">霓虹发光</span><span class="tpl-feat">故障效果</span><span class="tpl-feat">网格扫描</span><span class="tpl-feat">赛博排版</span></div>
+      <div class="tpl-btns">
+        <a href="cyberpunk.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="cyberpunk.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. 侘寂 -->
+  <div class="tpl-card reveal" data-cat="light culture" data-name="侘寂" data-desc="日式侘寂 侘寂美学 自然 禅意" style="--card-accent:#a3927a">
+    <div class="tpl-preview" style="background:#f5f0eb">
+      <iframe src="wabi-sabi.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="wabi-sabi.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="wabi-sabi.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">侘寂</div><span class="tpl-tag tag-wabi">日式侘寂</span></div>
+      <div class="tpl-desc">温暖大地色 + 不完美之美，禅意留白。适合生活方式品牌、手工匠人、自然产品。</div>
+      <div class="tpl-features"><span class="tpl-feat">大地色系</span><span class="tpl-feat">有机纹理</span><span class="tpl-feat">禅意留白</span><span class="tpl-feat">手写质感</span></div>
+      <div class="tpl-btns">
+        <a href="wabi-sabi.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="wabi-sabi.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. VITRO -->
+  <div class="tpl-card reveal" data-cat="dark" data-name="VITRO" data-desc="玻璃拟态 毛玻璃 透明 现代" style="--card-accent:#7dd3fc">
+    <div class="tpl-preview">
+      <iframe src="glassmorphism.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="glassmorphism.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="glassmorphism.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">VITRO</div><span class="tpl-tag tag-glass">玻璃拟态</span></div>
+      <div class="tpl-desc">半透明毛玻璃 + 渐变背景，现代感十足。适合创意工具、设计平台。</div>
+      <div class="tpl-features"><span class="tpl-feat">毛玻璃卡片</span><span class="tpl-feat">模糊背景</span><span class="tpl-feat">渐变层叠</span><span class="tpl-feat">透明边框</span></div>
+      <div class="tpl-btns">
+        <a href="glassmorphism.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="glassmorphism.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15. BRUTAL -->
+  <div class="tpl-card reveal" data-cat="light" data-name="BRUTAL" data-desc="新粗野主义 粗糙 大胆 原始" style="--card-accent:#111111">
+    <div class="tpl-preview" style="background:#f0f0f0">
+      <iframe src="neobrutalism.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="neobrutalism.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="neobrutalism.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">BRUTAL</div><span class="tpl-tag tag-brutal">新粗野主义</span></div>
+      <div class="tpl-desc">粗黑边框 + 高饱和色块，大胆不妥协。适合独立开发者、创意项目。</div>
+      <div class="tpl-features"><span class="tpl-feat">粗边框</span><span class="tpl-feat">高饱和色</span><span class="tpl-feat">阴影偏移</span><span class="tpl-feat">原始排版</span></div>
+      <div class="tpl-btns">
+        <a href="neobrutalism.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="neobrutalism.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16. 极光 -->
+  <div class="tpl-card reveal" data-cat="dark" data-name="极光" data-desc="极光渐变 流动 自然 壮丽" style="--card-accent:#22c55e">
+    <div class="tpl-preview">
+      <iframe src="aurora.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="aurora.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="aurora.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">极光</div><span class="tpl-tag tag-aurora">极光渐变</span></div>
+      <div class="tpl-desc">流动极光色 + 深空背景，如北极光般绚丽。适合创意工具、艺术平台。</div>
+      <div class="tpl-features"><span class="tpl-feat">极光渐变</span><span class="tpl-feat">流动动画</span><span class="tpl-feat">星点粒子</span><span class="tpl-feat">柔光卡片</span></div>
+      <div class="tpl-btns">
+        <a href="aurora.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="aurora.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 17. 编辑 -->
+  <div class="tpl-card reveal" data-cat="light" data-name="编辑" data-desc="杂志编辑风 杂志 排版 内容" style="--card-accent:#333333">
+    <div class="tpl-preview" style="background:#fafaf8">
+      <iframe src="editorial.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="editorial.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="editorial.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">编辑</div><span class="tpl-tag tag-editorial">杂志编辑风</span></div>
+      <div class="tpl-desc">杂志感排版 + 衬线字体，沉浸式阅读体验。适合内容平台、媒体、Newsletter。</div>
+      <div class="tpl-features"><span class="tpl-feat">杂志排版</span><span class="tpl-feat">衬线字体</span><span class="tpl-feat">图文混排</span><span class="tpl-feat">优雅留白</span></div>
+      <div class="tpl-btns">
+        <a href="editorial.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="editorial.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 18. 暖集 -->
+  <div class="tpl-card reveal" data-cat="light" data-name="暖集" data-desc="温暖有机 自然 手工 温度" style="--card-accent:#d97706">
+    <div class="tpl-preview" style="background:#fdf8f0">
+      <iframe src="warm-organic.html" loading="lazy" tabindex="-1"></iframe>
+      <div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="warm-organic.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="warm-organic.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">暖集</div><span class="tpl-tag tag-warm">温暖有机</span></div>
+      <div class="tpl-desc">暖色调 + 圆润造型，有温度的设计。适合健康品牌、有机食品、社区产品。</div>
+      <div class="tpl-features"><span class="tpl-feat">暖色调</span><span class="tpl-feat">圆润造型</span><span class="tpl-feat">有机纹理</span><span class="tpl-feat">手绘元素</span></div>
+      <div class="tpl-btns">
+        <a href="warm-organic.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="warm-organic.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a>
       </div>
     </div>
   </div>
@@ -370,56 +1325,137 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
 <div class="cta-banner reveal">
   <h2>需要定制？</h2>
   <p>所有模板均可按需修改颜色、内容、区块。支持企业定制开发。</p>
-  <a href="#" class="btn">联系我们</a>
+  <a href="#" class="btn">联系我们 <i data-lucide="arrow-right"></i></a>
 </div>
 
-<div class="page-footer">© 2026 Template Shop · 8 套模板 · 单文件 · 零依赖 · 即买即用</div>
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="footer-badge"><i data-lucide="sparkles"></i> 18 套模板 · 持续更新</div>
+  <div class="footer-links">
+    <a href="#"><i data-lucide="github"></i> GitHub</a>
+    <a href="#"><i data-lucide="mail"></i> 联系我们</a>
+  </div>
+  <div class="footer-copy">© 2026 Template Shop · 单文件 · 零依赖 · 即买即用</div>
+</footer>
 
 </div>
 
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTop" aria-label="回到顶部">
+  <i data-lucide="arrow-up"></i>
+</button>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════════ -->
 <script src="keys.js"></script>
 <script src="auth.js"></script>
 <script>
-/* ─── Particles ───────────────────────────────────────── */
-(function(){
-  const c=document.getElementById('particles');
-  if(!c)return;
-  const ctx=c.getContext('2d');
-  let w,h,particles=[];
-  function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+/* ─── Initialize Lucide Icons ──────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+});
+
+/* ─── Theme Toggle ─────────────────────────────────────────── */
+(function() {
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateThemeIcon(theme);
+  }
+
+  function updateThemeIcon(theme) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    lucide.createIcons();
+  }
+
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    setTheme(saved);
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
+  }
+
+  toggle.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+})();
+
+/* ─── Top Bar Scroll ───────────────────────────────────────── */
+(function() {
+  const bar = document.getElementById('topBar');
+  window.addEventListener('scroll', () => {
+    bar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+})();
+
+/* ─── Particles ────────────────────────────────────────────── */
+(function() {
+  const c = document.getElementById('particles');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let w, h, particles = [];
+
+  function resize() { w = c.width = innerWidth; h = c.height = innerHeight; }
   resize();
-  addEventListener('resize',resize);
-  for(let i=0;i<40;i++){
+  addEventListener('resize', resize);
+
+  for (let i = 0; i < 40; i++) {
     particles.push({
-      x:Math.random()*w,y:Math.random()*h,
-      vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
-      r:Math.random()*1.5+.5,
-      a:Math.random()*.3+.1
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+      a: Math.random() * 0.3 + 0.1
     });
   }
-  function draw(){
-    ctx.clearRect(0,0,w,h);
-    particles.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<0)p.x=w;if(p.x>w)p.x=0;
-      if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+
+  function getParticleColor() {
+    return document.documentElement.getAttribute('data-theme') === 'dark'
+      ? '108, 92, 231'
+      : '108, 92, 231';
+  }
+
+  function getLineColor(alpha) {
+    return document.documentElement.getAttribute('data-theme') === 'dark'
+      ? `rgba(108, 92, 231, ${alpha})`
+      : `rgba(108, 92, 231, ${alpha * 0.6})`;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    const color = getParticleColor();
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
       ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(108,92,231,${p.a})`;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${color}, ${p.a})`;
       ctx.fill();
     });
-    // Draw lines between nearby particles
-    for(let i=0;i<particles.length;i++){
-      for(let j=i+1;j<particles.length;j++){
-        const dx=particles[i].x-particles[j].x;
-        const dy=particles[i].y-particles[j].y;
-        const d=Math.sqrt(dx*dx+dy*dy);
-        if(d<150){
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 150) {
           ctx.beginPath();
-          ctx.moveTo(particles[i].x,particles[i].y);
-          ctx.lineTo(particles[j].x,particles[j].y);
-          ctx.strokeStyle=`rgba(108,92,231,${.06*(1-d/150)})`;
-          ctx.lineWidth=.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = getLineColor(0.06 * (1 - d / 150));
+          ctx.lineWidth = 0.5;
           ctx.stroke();
         }
       }
@@ -429,22 +1465,83 @@ h1 em{font-style:normal;background:linear-gradient(135deg,var(--p),var(--acc));-
   draw();
 })();
 
-/* ─── Scroll Reveal ───────────────────────────────────── */
-const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+/* ─── Scroll Reveal ────────────────────────────────────────── */
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-/* ─── Filter ──────────────────────────────────────────── */
-document.querySelectorAll('.fbtn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const f=btn.dataset.filter;
-    document.querySelectorAll('.tpl-card').forEach(card=>{
-      if(f==='all'||card.dataset.cat===f){card.style.display=''}
-      else{card.style.display='none'}
+/* ─── Filter & Search ──────────────────────────────────────── */
+(function() {
+  const cards = document.querySelectorAll('.tpl-card');
+  const filterBtns = document.querySelectorAll('.fbtn');
+  const searchInput = document.getElementById('searchInput');
+  const searchCount = document.getElementById('searchCount');
+  let activeFilter = 'all';
+
+  function applyFilter() {
+    const query = searchInput.value.toLowerCase().trim();
+    let visible = 0;
+
+    cards.forEach(card => {
+      const cats = card.dataset.cat || '';
+      const name = (card.dataset.name || '').toLowerCase();
+      const desc = (card.dataset.desc || '').toLowerCase();
+      const matchesFilter = activeFilter === 'all' || cats.includes(activeFilter);
+      const matchesSearch = !query || name.includes(query) || desc.includes(query);
+      const show = matchesFilter && matchesSearch;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    const emptyState = document.getElementById('emptyState');
+    if (visible === 0 && !emptyState) {
+      const grid = document.getElementById('tpl-grid');
+      const div = document.createElement('div');
+      div.id = 'emptyState';
+      div.className = 'empty-state';
+      div.innerHTML = '<i data-lucide="search"></i><p>没有找到匹配的模板</p>';
+      grid.appendChild(div);
+      lucide.createIcons();
+    } else if (visible > 0 && emptyState) {
+      emptyState.remove();
+    }
+
+    if (query) {
+      searchCount.textContent = `找到 ${visible} 个模板`;
+      searchCount.style.display = 'block';
+    } else {
+      searchCount.style.display = 'none';
+    }
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      applyFilter();
     });
   });
-});
+
+  searchInput.addEventListener('input', applyFilter);
+})();
+
+/* ─── Scroll to Top ────────────────────────────────────────── */
+(function() {
+  const btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
 </script>
 
 </body>

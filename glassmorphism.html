@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaTech — 智能云平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    /* ─── CSS Custom Properties ─── */
+    :root {
+      --bg-deep: #0f0f1a;
+      --bg-deep-rgb: 15, 15, 26;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-bg-hover: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-border-hover: rgba(255, 255, 255, 0.2);
+      --glass-blur: blur(20px);
+      --glass-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      --glass-top-left: rgba(255, 255, 255, 0.15);
+      --glass-bottom-right: rgba(255, 255, 255, 0.05);
+      --text-primary: #f0f0f5;
+      --text-secondary: rgba(240, 240, 245, 0.6);
+      --text-tertiary: rgba(240, 240, 245, 0.4);
+      --gradient-purple: #a855f7;
+      --gradient-blue: #3b82f6;
+      --gradient-pink: #ec4899;
+      --gradient-teal: #14b8a6;
+      --font-heading: 'Space Grotesk', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --section-gap: 120px;
+      --container-max: 1200px;
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --radius-pill: 100px;
+    }
+
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ─── Utility ─── */
+    .container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue), var(--gradient-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-text-alt {
+      background: linear-gradient(135deg, var(--gradient-teal), var(--gradient-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── Scroll Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── Background Orbs ─── */
+    .bg-orbs {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      will-change: transform;
+    }
+
+    .bg-orb--purple {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--gradient-purple) 0%, transparent 70%);
+      top: -10%;
+      left: -5%;
+      animation: orbDrift1 25s ease-in-out infinite;
+    }
+
+    .bg-orb--blue {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--gradient-blue) 0%, transparent 70%);
+      top: 30%;
+      right: -10%;
+      animation: orbDrift2 22s ease-in-out infinite;
+    }
+
+    .bg-orb--pink {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, var(--gradient-pink) 0%, transparent 70%);
+      bottom: 10%;
+      left: 20%;
+      animation: orbDrift3 28s ease-in-out infinite;
+    }
+
+    .bg-orb--teal {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--gradient-teal) 0%, transparent 70%);
+      top: 60%;
+      left: 60%;
+      animation: orbDrift4 30s ease-in-out infinite;
+    }
+
+    @keyframes orbDrift1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(120px, 80px) scale(1.1); }
+      50% { transform: translate(60px, 160px) scale(0.95); }
+      75% { transform: translate(-40px, 100px) scale(1.05); }
+    }
+
+    @keyframes orbDrift2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(-100px, 60px) scale(1.08); }
+      50% { transform: translate(-180px, -40px) scale(0.92); }
+      75% { transform: translate(-80px, -120px) scale(1.05); }
+    }
+
+    @keyframes orbDrift3 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(80px, -60px) scale(1.05); }
+      50% { transform: translate(-60px, -140px) scale(1.1); }
+      75% { transform: translate(100px, -80px) scale(0.95); }
+    }
+
+    @keyframes orbDrift4 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(-120px, -40px) scale(1.08); }
+      50% { transform: translate(40px, 60px) scale(0.9); }
+      75% { transform: translate(80px, -100px) scale(1.06); }
+    }
+
+    /* ─── Particles / Stars ─── */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: particleFloat linear infinite;
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+    }
+
+    /* ─── Glass Panel Mixin via Class ─── */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-top-left);
+      border-left-color: var(--glass-top-left);
+      border-bottom-color: var(--glass-bottom-right);
+      border-right-color: var(--glass-bottom-right);
+      box-shadow: var(--glass-inner-glow),
+                  0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: background 0.3s ease,
+                  border-color 0.3s ease,
+                  box-shadow 0.3s ease;
+    }
+
+    .glass:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-hover);
+      border-top-color: rgba(255, 255, 255, 0.2);
+      border-left-color: rgba(255, 255, 255, 0.2);
+      box-shadow: var(--glass-inner-glow),
+                  0 8px 32px rgba(0, 0, 0, 0.3),
+                  0 0 40px rgba(168, 85, 247, 0.08);
+    }
+
+    .glass-no-hover:hover {
+      background: var(--glass-bg);
+      border-color: var(--glass-border);
+      box-shadow: var(--glass-inner-glow),
+                  0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ─── Navigation ─── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 0;
+      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
+
+    .nav.scrolled {
+      background: rgba(15, 15, 26, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav__logo {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav__logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav__link {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .nav__link:hover {
+      color: var(--text-primary);
+    }
+
+    .nav__cta {
+      padding: 8px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .nav__cta--ghost {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+    }
+
+    .nav__cta--ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--glass-border-hover);
+    }
+
+    .nav__cta--fill {
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue));
+      border: none;
+      color: white;
+      font-weight: 600;
+    }
+
+    .nav__cta--fill:hover {
+      opacity: 0.9;
+      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+    }
+
+    .nav__mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .nav__mobile-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      margin: 5px 0;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* ─── Glass Divider ─── */
+    .glass-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+      margin: 0 auto;
+    }
+
+    /* ─── Section Padding ─── */
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: var(--section-gap) 0;
+    }
+
+    .section-label {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gradient-purple);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .btn--fill {
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue));
+      color: white;
+      box-shadow: 0 4px 24px rgba(168, 85, 247, 0.25);
+    }
+
+    .btn--fill:hover {
+      box-shadow: 0 6px 32px rgba(168, 85, 247, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn--outline {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn--outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn--sm {
+      padding: 10px 24px;
+      font-size: 13px;
+    }
+
+    /* ══════════════════════════════════════════
+       §1 — HERO
+       ══════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+
+    .hero__content {
+      max-width: 720px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gradient-purple);
+      margin-bottom: 32px;
+    }
+
+    .hero__badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gradient-purple);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero__title {
+      font-family: var(--font-heading);
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .hero__title span {
+      display: block;
+    }
+
+    .hero__desc {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero__actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero__glass-panel {
+      position: absolute;
+      border-radius: var(--radius-lg);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .hero__glass-panel--1 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, var(--gradient-purple), transparent);
+      top: 5%;
+      right: 10%;
+      animation: panelFloat1 20s ease-in-out infinite;
+    }
+
+    .hero__glass-panel--2 {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, var(--gradient-teal), transparent);
+      bottom: 15%;
+      left: 5%;
+      animation: panelFloat2 18s ease-in-out infinite;
+    }
+
+    @keyframes panelFloat1 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-30px, 20px) rotate(5deg); }
+    }
+
+    @keyframes panelFloat2 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(20px, -30px) rotate(-5deg); }
+    }
+
+    .hero__scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+
+    .hero__scroll-indicator svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+    }
+
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ══════════════════════════════════════════
+       §2 — FEATURES
+       ══════════════════════════════════════════ */
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card__icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0.15;
+    }
+
+    .feature-card__icon--purple::before { background: var(--gradient-purple); }
+    .feature-card__icon--blue::before { background: var(--gradient-blue); }
+    .feature-card__icon--pink::before { background: var(--gradient-pink); }
+    .feature-card__icon--teal::before { background: var(--gradient-teal); }
+
+    .feature-card__icon svg {
+      width: 24px;
+      height: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-card__title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .feature-card__desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .feature-card__glow {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.12;
+      top: -30px;
+      right: -30px;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       §3 — PRODUCT SHOWCASE (Mock Dashboard)
+       ══════════════════════════════════════════ */
+    .showcase__panel {
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin-top: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .showcase__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .showcase__header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .showcase__window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .showcase__window-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .showcase__window-dot:nth-child(1) { background: #ff5f57; }
+    .showcase__window-dot:nth-child(2) { background: #febc2e; }
+    .showcase__window-dot:nth-child(3) { background: #28c840; }
+
+    .showcase__header-title {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .showcase__header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .showcase__header-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+    }
+
+    .showcase__header-btn.active {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: var(--gradient-purple);
+    }
+
+    .showcase__body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 200px;
+      gap: 24px;
+    }
+
+    .showcase__chart-area {
+      grid-column: 1 / 3;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 24px;
+    }
+
+    .showcase__chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .showcase__chart-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .showcase__chart-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .showcase__chart-legend span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .showcase__chart-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .showcase__bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 180px;
+      padding-top: 20px;
+    }
+
+    .showcase__bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .showcase__bars-pair {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      width: 100%;
+      flex: 1;
+    }
+
+    .showcase__bar {
+      flex: 1;
+      border-radius: 4px 4px 0 0;
+      min-height: 8px;
+      transition: height 1s ease;
+    }
+
+    .showcase__bar--primary {
+      background: linear-gradient(to top, rgba(168, 85, 247, 0.4), rgba(168, 85, 247, 0.8));
+    }
+
+    .showcase__bar--secondary {
+      background: linear-gradient(to top, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.6));
+    }
+
+    .showcase__bar-label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    .showcase__sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .showcase__stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+
+    .showcase__stat-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .showcase__stat-value {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .showcase__stat-change {
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .showcase__stat-change.up { color: var(--gradient-teal); }
+    .showcase__stat-change.down { color: var(--gradient-pink); }
+
+    .showcase__glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gradient-purple) 0%, transparent 70%);
+      opacity: 0.06;
+      bottom: -100px;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       §4 — STATS
+       ══════════════════════════════════════════ */
+    .stats__row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .stat-pill {
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-pill__number {
+      font-family: var(--font-heading);
+      font-size: clamp(32px, 4vw, 44px);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .stat-pill__label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .stat-pill__glow {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       §5 — PRICING
+       ══════════════════════════════════════════ */
+    .pricing__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+      align-items: start;
+    }
+
+    .pricing-card {
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card--featured {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(168, 85, 247, 0.3);
+      transform: scale(1.04);
+      box-shadow: var(--glass-inner-glow),
+                  0 12px 48px rgba(0, 0, 0, 0.4),
+                  0 0 60px rgba(168, 85, 247, 0.1);
+    }
+
+    .pricing-card__badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-pink));
+      color: white;
+    }
+
+    .pricing-card__name {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .pricing-card__desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .pricing-card__price {
+      font-family: var(--font-heading);
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .pricing-card__price-amount {
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .pricing-card__price-period {
+      font-size: 16px;
+      color: var(--text-tertiary);
+      -webkit-text-fill-color: var(--text-tertiary);
+    }
+
+    .pricing-card__divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+      margin: 24px 0;
+    }
+
+    .pricing-card__features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .pricing-card__feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .pricing-card__feature svg {
+      width: 16px;
+      height: 16px;
+      color: var(--gradient-teal);
+      flex-shrink: 0;
+    }
+
+    .pricing-card__btn {
+      width: 100%;
+    }
+
+    /* ══════════════════════════════════════════
+       §6 — TESTIMONIALS
+       ══════════════════════════════════════════ */
+    .testimonials__header {
+      margin-bottom: 40px;
+    }
+
+    .testimonials__scroll {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 20px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .testimonials__scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .testimonial-card {
+      flex: 0 0 380px;
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      scroll-snap-align: start;
+      position: relative;
+    }
+
+    .testimonial-card__stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-card__star {
+      width: 16px;
+      height: 16px;
+      color: #fbbf24;
+    }
+
+    .testimonial-card__text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .testimonial-card__author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-card__avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .testimonial-card__avatar--purple { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+    .testimonial-card__avatar--blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    .testimonial-card__avatar--pink { background: linear-gradient(135deg, #db2777, #ec4899); }
+    .testimonial-card__avatar--teal { background: linear-gradient(135deg, #0d9488, #14b8a6); }
+    .testimonial-card__avatar--indigo { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+
+    .testimonial-card__info-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .testimonial-card__info-role {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    /* ══════════════════════════════════════════
+       §7 — CTA + FOOTER
+       ══════════════════════════════════════════ */
+    .cta__panel {
+      border-radius: var(--radius-lg);
+      padding: 64px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta__title {
+      font-family: var(--font-heading);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .cta__desc {
+      font-size: 17px;
+      color: var(--text-secondary);
+      margin-bottom: 36px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta__glow {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .cta__glow--left {
+      background: var(--gradient-purple);
+      top: -80px;
+      left: -80px;
+    }
+
+    .cta__glow--right {
+      background: var(--gradient-teal);
+      bottom: -80px;
+      right: -80px;
+    }
+
+    .footer {
+      padding: 48px 0 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer__inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer__left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer__logo-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--gradient-purple), var(--gradient-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .footer__brand {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .footer__copy {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .footer__links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer__link {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer__link:hover {
+      color: var(--text-secondary);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 1024px) {
+      .features__grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pricing__grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pricing-card--featured {
+        transform: scale(1);
+      }
+
+      .showcase__body {
+        grid-template-columns: 1fr;
+      }
+
+      .showcase__chart-area {
+        grid-column: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --section-gap: 80px;
+      }
+
+      .nav__links {
+        display: none;
+      }
+
+      .nav__cta {
+        display: none;
+      }
+
+      .nav__mobile-toggle {
+        display: block;
+      }
+
+      .nav.mobile-open .nav__links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(15, 15, 26, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 24px;
+        gap: 16px;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .hero__title {
+        font-size: clamp(32px, 8vw, 52px);
+      }
+
+      .hero__desc {
+        font-size: 16px;
+      }
+
+      .features__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats__row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pricing__grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .testimonial-card {
+        flex: 0 0 300px;
+      }
+
+      .cta__panel {
+        padding: 48px 24px;
+      }
+
+      .footer__inner {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer__links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats__row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero__actions {
+        flex-direction: column;
+      }
+
+      .hero__actions .btn {
+        width: 100%;
+      }
+
+      .showcase__panel {
+        padding: 20px;
+      }
+
+      .showcase__bars {
+        height: 140px;
+      }
+
+      .testimonial-card {
+        flex: 0 0 calc(100vw - 72px);
+      }
+    }
+
+    /* ─── Fallback for backdrop-filter ─── */
+    @supports not (backdrop-filter: blur(20px)) {
+      .glass {
+        background: rgba(20, 20, 35, 0.9);
+      }
+
+      .hero__glass-panel {
+        opacity: 0.04;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="bg-orb bg-orb--purple"></div>
+    <div class="bg-orb bg-orb--blue"></div>
+    <div class="bg-orb bg-orb--pink"></div>
+    <div class="bg-orb bg-orb--teal"></div>
+  </div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="container">
+      <a href="#" class="nav__logo">
+        <div class="nav__logo-icon">N</div>
+        NovaTech
+      </a>
+      <ul class="nav__links">
+        <li><a href="#features" class="nav__link">功能</a></li>
+        <li><a href="#product" class="nav__link">产品</a></li>
+        <li><a href="#pricing" class="nav__link">定价</a></li>
+        <li><a href="#testimonials" class="nav__link">评价</a></li>
+      </ul>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="#" class="nav__cta nav__cta--ghost">登录</a>
+        <a href="#" class="nav__cta nav__cta--fill">免费试用</a>
+      </div>
+      <button class="nav__mobile-toggle" id="mobileToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="hero" id="hero">
+    <div class="hero__glass-panel hero__glass-panel--1"></div>
+    <div class="hero__glass-panel hero__glass-panel--2"></div>
+
+    <div class="hero__content">
+      <div class="hero__badge reveal">
+        <span class="hero__badge-dot"></span>
+        全新 3.0 版本已上线
+      </div>
+      <h1 class="hero__title reveal reveal-delay-1">
+        <span>用智能驱动</span>
+        <span class="gradient-text">下一代业务增长</span>
+      </h1>
+      <p class="hero__desc reveal reveal-delay-2">
+        NovaTech 是面向未来的全栈云平台，提供 AI 数据分析、自动化工作流和实时协作，帮助团队以前所未有的速度构建和交付产品。
+      </p>
+      <div class="hero__actions reveal reveal-delay-3">
+        <a href="#" class="btn btn--fill">
+          开始免费试用
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#" class="btn btn--outline">观看演示</a>
+      </div>
+    </div>
+
+    <div class="hero__scroll-indicator">
+      向下滚动
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </div>
+  </section>
+
+  <div class="glass-divider"></div>
+
+  <!-- ════════════════════ FEATURES ════════════════════ -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-label reveal">核心能力</div>
+      <h2 class="section-title reveal reveal-delay-1">为高效团队打造的<br><span class="gradient-text">强大工具集</span></h2>
+      <p class="section-subtitle reveal reveal-delay-2">
+        从数据洞察到自动化执行，NovaTech 让复杂工作流变得简单直观。
+      </p>
+
+      <div class="features__grid">
+        <!-- Feature 1 -->
+        <div class="feature-card glass glass-no-hover reveal reveal-delay-1">
+          <div class="feature-card__glow" style="background:var(--gradient-purple)"></div>
+          <div class="feature-card__icon feature-card__icon--purple">
+            <svg fill="none" stroke="rgba(168,85,247,0.9)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605"/></svg>
+          </div>
+          <h3 class="feature-card__title">智能数据分析</h3>
+          <p class="feature-card__desc">
+            AI 驱动的实时数据仪表盘，自动识别趋势和异常，支持自然语言查询，让每个人都能轻松获取数据洞察。
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card glass glass-no-hover reveal reveal-delay-2">
+          <div class="feature-card__glow" style="background:var(--gradient-blue)"></div>
+          <div class="feature-card__icon feature-card__icon--blue">
+            <svg fill="none" stroke="rgba(59,130,246,0.9)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <h3 class="feature-card__title">自动化工作流</h3>
+          <p class="feature-card__desc">
+            可视化拖拽编排，500+ 预置模板，智能触发器和条件分支，让重复性工作完全自动化。
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card glass glass-no-hover reveal reveal-delay-3">
+          <div class="feature-card__glow" style="background:var(--gradient-pink)"></div>
+          <div class="feature-card__icon feature-card__icon--pink">
+            <svg fill="none" stroke="rgba(236,72,153,0.9)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+          </div>
+          <h3 class="feature-card__title">实时团队协作</h3>
+          <p class="feature-card__desc">
+            多人实时编辑、评论和版本管理，集成消息通知和权限控制，让分散团队高效协同。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glass-divider"></div>
+
+  <!-- ════════════════════ PRODUCT SHOWCASE ════════════════════ -->
+  <section class="section" id="product">
+    <div class="container">
+      <div class="section-label reveal">产品展示</div>
+      <h2 class="section-title reveal reveal-delay-1">直观的<span class="gradient-text">数据面板</span></h2>
+      <p class="section-subtitle reveal reveal-delay-2">
+        一目了然的业务全景，支持自定义视图和智能预警。
+      </p>
+
+      <div class="showcase__panel glass glass-no-hover reveal reveal-delay-3">
+        <div class="showcase__glow"></div>
+        <div class="showcase__header">
+          <div class="showcase__header-left">
+            <div class="showcase__window-dots">
+              <span class="showcase__window-dot"></span>
+              <span class="showcase__window-dot"></span>
+              <span class="showcase__window-dot"></span>
+            </div>
+            <span class="showcase__header-title">NovaTech Dashboard</span>
+          </div>
+          <div class="showcase__header-actions">
+            <span class="showcase__header-btn active">周</span>
+            <span class="showcase__header-btn">月</span>
+            <span class="showcase__header-btn">年</span>
+          </div>
+        </div>
+
+        <div class="showcase__body">
+          <!-- Chart -->
+          <div class="showcase__chart-area">
+            <div class="showcase__chart-header">
+              <span class="showcase__chart-title">收入趋势</span>
+              <div class="showcase__chart-legend">
+                <span><span class="showcase__chart-legend-dot" style="background:var(--gradient-purple)"></span>本期</span>
+                <span><span class="showcase__chart-legend-dot" style="background:var(--gradient-blue)"></span>上期</span>
+              </div>
+            </div>
+            <div class="showcase__bars">
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:45%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:30%"></div>
+                </div>
+                <span class="showcase__bar-label">周一</span>
+              </div>
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:60%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:40%"></div>
+                </div>
+                <span class="showcase__bar-label">周二</span>
+              </div>
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:50%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:55%"></div>
+                </div>
+                <span class="showcase__bar-label">周三</span>
+              </div>
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:75%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:48%"></div>
+                </div>
+                <span class="showcase__bar-label">周四</span>
+              </div>
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:85%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:52%"></div>
+                </div>
+                <span class="showcase__bar-label">周五</span>
+              </div>
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:95%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:65%"></div>
+                </div>
+                <span class="showcase__bar-label">周六</span>
+              </div>
+              <div class="showcase__bar-group">
+                <div class="showcase__bars-pair">
+                  <div class="showcase__bar showcase__bar--primary" style="height:70%"></div>
+                  <div class="showcase__bar showcase__bar--secondary" style="height:60%"></div>
+                </div>
+                <span class="showcase__bar-label">周日</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar Stats -->
+          <div class="showcase__sidebar">
+            <div class="showcase__stat-card">
+              <div class="showcase__stat-label">总收入</div>
+              <div class="showcase__stat-value gradient-text">¥ 128.5万</div>
+              <div class="showcase__stat-change up">↑ 23.5% 较上月</div>
+            </div>
+            <div class="showcase__stat-card">
+              <div class="showcase__stat-label">活跃用户</div>
+              <div class="showcase__stat-value gradient-text">32,847</div>
+              <div class="showcase__stat-change up">↑ 12.8% 较上月</div>
+            </div>
+            <div class="showcase__stat-card">
+              <div class="showcase__stat-label">转化率</div>
+              <div class="showcase__stat-value gradient-text">4.82%</div>
+              <div class="showcase__stat-change down">↓ 0.3% 较上月</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glass-divider"></div>
+
+  <!-- ════════════════════ STATS ════════════════════ -->
+  <section class="section" id="stats">
+    <div class="container">
+      <div class="stats__row">
+        <div class="stat-pill glass glass-no-hover reveal">
+          <div class="stat-pill__glow" style="background:var(--gradient-purple)"></div>
+          <div class="stat-pill__number">10K+</div>
+          <div class="stat-pill__label">企业客户</div>
+        </div>
+        <div class="stat-pill glass glass-no-hover reveal reveal-delay-1">
+          <div class="stat-pill__glow" style="background:var(--gradient-blue)"></div>
+          <div class="stat-pill__number">99.9%</div>
+          <div class="stat-pill__label">系统可用性</div>
+        </div>
+        <div class="stat-pill glass glass-no-hover reveal reveal-delay-2">
+          <div class="stat-pill__glow" style="background:var(--gradient-pink)"></div>
+          <div class="stat-pill__number">50M+</div>
+          <div class="stat-pill__label">日处理数据量</div>
+        </div>
+        <div class="stat-pill glass glass-no-hover reveal reveal-delay-3">
+          <div class="stat-pill__glow" style="background:var(--gradient-teal)"></div>
+          <div class="stat-pill__number">4.9</div>
+          <div class="stat-pill__label">用户满意度</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glass-divider"></div>
+
+  <!-- ════════════════════ PRICING ════════════════════ -->
+  <section class="section" id="pricing">
+    <div class="container">
+      <div class="section-label reveal">定价方案</div>
+      <h2 class="section-title reveal reveal-delay-1">选择适合您的<span class="gradient-text">方案</span></h2>
+      <p class="section-subtitle reveal reveal-delay-2">
+        灵活的定价策略，从初创团队到大型企业，总有适合您的方案。
+      </p>
+
+      <div class="pricing__grid">
+        <!-- Starter -->
+        <div class="pricing-card glass reveal reveal-delay-1">
+          <div class="pricing-card__name">入门版</div>
+          <div class="pricing-card__desc">适合小型团队开始数字化转型</div>
+          <div class="pricing-card__price">
+            <span class="pricing-card__price-amount">¥99</span>
+            <span class="pricing-card__price-period"> / 月</span>
+          </div>
+          <div class="pricing-card__divider"></div>
+          <ul class="pricing-card__features">
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              最多 5 名团队成员
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              10GB 存储空间
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              基础数据仪表盘
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              邮件支持
+            </li>
+          </ul>
+          <a href="#" class="btn btn--outline btn--sm pricing-card__btn">开始试用</a>
+        </div>
+
+        <!-- Pro (Featured) -->
+        <div class="pricing-card glass glass-no-hover pricing-card--featured reveal reveal-delay-2">
+          <div class="pricing-card__badge">最受欢迎</div>
+          <div class="pricing-card__name">专业版</div>
+          <div class="pricing-card__desc">适合成长期团队的全能方案</div>
+          <div class="pricing-card__price">
+            <span class="pricing-card__price-amount">¥299</span>
+            <span class="pricing-card__price-period"> / 月</span>
+          </div>
+          <div class="pricing-card__divider"></div>
+          <ul class="pricing-card__features">
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              最多 20 名团队成员
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              100GB 存储空间
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              高级 AI 分析功能
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              自动化工作流 (20个)
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              优先技术支持
+            </li>
+          </ul>
+          <a href="#" class="btn btn--fill btn--sm pricing-card__btn">开始试用</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card glass reveal reveal-delay-3">
+          <div class="pricing-card__name">企业版</div>
+          <div class="pricing-card__desc">为大型组织量身定制的解决方案</div>
+          <div class="pricing-card__price">
+            <span class="pricing-card__price-amount">定制</span>
+            <span class="pricing-card__price-period"></span>
+          </div>
+          <div class="pricing-card__divider"></div>
+          <ul class="pricing-card__features">
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              无限团队成员
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              无限存储空间
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              全部高级功能
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              SSO 与 SAML 集成
+            </li>
+            <li class="pricing-card__feature">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+              专属客户经理
+            </li>
+          </ul>
+          <a href="#" class="btn btn--outline btn--sm pricing-card__btn">联系销售</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glass-divider"></div>
+
+  <!-- ════════════════════ TESTIMONIALS ════════════════════ -->
+  <section class="section" id="testimonials">
+    <div class="container">
+      <div class="testimonials__header">
+        <div class="section-label reveal">用户评价</div>
+        <h2 class="section-title reveal reveal-delay-1">客户<span class="gradient-text">怎么说</span></h2>
+      </div>
+
+      <div class="testimonials__scroll">
+        <!-- Testimonial 1 -->
+        <div class="testimonial-card glass glass-no-hover reveal">
+          <div class="testimonial-card__stars">
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+          </div>
+          <p class="testimonial-card__text">
+            "NovaTech 完全改变了我们团队的工作方式。数据分析面板的实时性令人惊叹，自动化工作流每周为我们节省了超过 20 小时的重复劳动。"
+          </p>
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar testimonial-card__avatar--purple">陈</div>
+            <div>
+              <div class="testimonial-card__info-name">陈思远</div>
+              <div class="testimonial-card__info-role">某科技公司 CTO</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="testimonial-card glass glass-no-hover reveal reveal-delay-1">
+          <div class="testimonial-card__stars">
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+          </div>
+          <p class="testimonial-card__text">
+            "作为一个跨时区团队，实时协作功能对我们至关重要。NovaTech 的协同编辑体验流畅到几乎感觉不到延迟。"
+          </p>
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar testimonial-card__avatar--blue">李</div>
+            <div>
+              <div class="testimonial-card__info-name">李明月</div>
+              <div class="testimonial-card__info-role">某国际设计团队负责人</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="testimonial-card glass glass-no-hover reveal reveal-delay-2">
+          <div class="testimonial-card__stars">
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+          </div>
+          <p class="testimonial-card__text">
+            "从试用到全面部署只用了一周时间。NovaTech 的 API 文档清晰，集成难度远低于预期，技术支持响应也非常迅速。"
+          </p>
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar testimonial-card__avatar--pink">王</div>
+            <div>
+              <div class="testimonial-card__info-name">王海涛</div>
+              <div class="testimonial-card__info-role">某电商平台技术总监</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 4 -->
+        <div class="testimonial-card glass glass-no-hover reveal reveal-delay-3">
+          <div class="testimonial-card__stars">
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+          </div>
+          <p class="testimonial-card__text">
+            "AI 数据分析帮我们发现了之前忽视的用户行为模式，据此优化的产品功能让转化率提升了 18%。数据驱动决策不再是口号。"
+          </p>
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar testimonial-card__avatar--teal">张</div>
+            <div>
+              <div class="testimonial-card__info-name">张雨婷</div>
+              <div class="testimonial-card__info-role">某 SaaS 创业公司产品经理</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 5 -->
+        <div class="testimonial-card glass glass-no-hover reveal reveal-delay-4">
+          <div class="testimonial-card__stars">
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+            <svg class="testimonial-card__star" fill="currentColor" viewBox="0 0 24 24"><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"/></svg>
+          </div>
+          <p class="testimonial-card__text">
+            "我们评估了市面上十几款产品，NovaTech 是唯一同时满足我们安全合规要求和易用性需求的平台。企业版物超所值。"
+          </p>
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar testimonial-card__avatar--indigo">刘</div>
+            <div>
+              <div class="testimonial-card__info-name">刘建国</div>
+              <div class="testimonial-card__info-role">某金融集团 IT 总监</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glass-divider"></div>
+
+  <!-- ════════════════════ CTA ════════════════════ -->
+  <section class="section" id="cta">
+    <div class="container">
+      <div class="cta__panel glass glass-no-hover reveal">
+        <div class="cta__glow cta__glow--left"></div>
+        <div class="cta__glow cta__glow--right"></div>
+        <h2 class="cta__title">准备好开始了吗？</h2>
+        <p class="cta__desc">
+          立即注册，免费体验 14 天。无需信用卡，随时取消。
+        </p>
+        <div class="hero__actions">
+          <a href="#" class="btn btn--fill">
+            免费试用 14 天
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#" class="btn btn--outline">预约演示</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__left">
+          <div class="footer__logo-icon">N</div>
+          <span class="footer__brand">NovaTech</span>
+          <span class="footer__copy">&copy; 2026 NovaTech. All rights reserved.</span>
+        </div>
+        <ul class="footer__links">
+          <li><a href="#" class="footer__link">隐私政策</a></li>
+          <li><a href="#" class="footer__link">服务条款</a></li>
+          <li><a href="#" class="footer__link">帮助中心</a></li>
+          <li><a href="#" class="footer__link">联系我们</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ════════════════════ SCRIPTS ════════════════════ -->
+  <script>
+    /* ─── IntersectionObserver Scroll Reveal ─── */
+    (function () {
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+      );
+
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
+
+    /* ─── Nav Scroll Effect ─── */
+    (function () {
+      var nav = document.getElementById('nav');
+      var lastScroll = 0;
+
+      window.addEventListener('scroll', function () {
+        var scrollY = window.scrollY;
+        if (scrollY > 50) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+        lastScroll = scrollY;
+      }, { passive: true });
+    })();
+
+    /* ─── Mobile Menu Toggle ─── */
+    (function () {
+      var toggle = document.getElementById('mobileToggle');
+      var nav = document.getElementById('nav');
+
+      toggle.addEventListener('click', function () {
+        nav.classList.toggle('mobile-open');
+      });
+
+      nav.querySelectorAll('.nav__link').forEach(function (link) {
+        link.addEventListener('click', function () {
+          nav.classList.remove('mobile-open');
+        });
+      });
+    })();
+
+    /* ─── Generate Floating Particles ─── */
+    (function () {
+      var container = document.getElementById('particles');
+      var count = 40;
+
+      for (var i = 0; i < count; i++) {
+        var particle = document.createElement('div');
+        particle.classList.add('particle');
+
+        var size = Math.random() * 2 + 1;
+        var left = Math.random() * 100;
+        var delay = Math.random() * 20;
+        var duration = Math.random() * 15 + 15;
+        var opacity = Math.random() * 0.5 + 0.2;
+
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = left + '%';
+        particle.style.bottom = '-10px';
+        particle.style.animationDelay = delay + 's';
+        particle.style.animationDuration = duration + 's';
+        particle.style.opacity = opacity;
+
+        container.appendChild(particle);
+      }
+    })();
+
+    /* ─── Smooth Anchor Scroll ─── */
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+      anchor.addEventListener('click', function (e) {
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

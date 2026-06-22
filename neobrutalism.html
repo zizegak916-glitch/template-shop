@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoFlow — 下一代协作平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS CUSTOM PROPERTIES ===== */
+:root {
+  --bg: #f5f0e8;
+  --bg-alt: #fff;
+  --black: #000000;
+  --yellow: #ffe156;
+  --pink: #ff6b9d;
+  --blue: #4d8df7;
+  --green: #7dd956;
+  --border: 3px solid #000;
+  --border-thick: 4px solid #000;
+  --shadow: 4px 4px 0 #000;
+  --shadow-lg: 6px 6px 0 #000;
+  --shadow-sm: 2px 2px 0 #000;
+  --radius: 0px;
+  --radius-round: 12px;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  font-family: var(--font-heading);
+  background: var(--bg);
+  color: var(--black);
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-left: 3px solid var(--black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--black);
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== SELECTION ===== */
+::selection {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+/* ===== REVEAL ANIMATION ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+
+/* ===== NAVIGATION ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg);
+  border-bottom: var(--border-thick);
+  padding: 0 24px;
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.nav-logo:hover {
+  opacity: 0.8;
+}
+.nav-logo-box {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  background: var(--yellow);
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+.nav-logo:hover .nav-logo-box {
+  transform: rotate(-5deg);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--black);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 2px solid transparent;
+  padding: 6px 12px;
+  transition: all 0.15s ease;
+}
+.nav-links a:hover {
+  background: var(--yellow);
+  border-color: var(--black);
+}
+.nav-cta {
+  background: var(--yellow) !important;
+  border: var(--border) !important;
+  box-shadow: var(--shadow-sm);
+  padding: 8px 22px !important;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  display: inline-block;
+}
+.nav-cta:hover {
+  box-shadow: 1px 1px 0 #000;
+  transform: translate(1px, 1px);
+}
+.nav-cta:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.nav-mobile-toggle {
+  display: none;
+  background: var(--yellow);
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+.nav-mobile-toggle:hover {
+  box-shadow: 1px 1px 0 #000;
+  transform: translate(1px, 1px);
+}
+.nav-mobile-toggle:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  padding: 140px 24px 100px;
+  position: relative;
+  overflow: hidden;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+}
+.hero-bg-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.hero-shape {
+  position: absolute;
+  border: var(--border-thick);
+}
+.hero-shape-1 {
+  width: 80px;
+  height: 80px;
+  background: var(--pink);
+  top: 110px;
+  right: 70px;
+  transform: rotate(15deg);
+  animation: floatShape1 6s ease-in-out infinite;
+}
+@keyframes floatShape1 {
+  0%, 100% { transform: rotate(15deg) translateY(0); }
+  50% { transform: rotate(20deg) translateY(-10px); }
+}
+.hero-shape-2 {
+  width: 60px;
+  height: 60px;
+  background: var(--blue);
+  bottom: 100px;
+  left: 50px;
+  border-radius: 50%;
+  transform: rotate(-10deg);
+  animation: floatShape2 5s ease-in-out infinite;
+}
+@keyframes floatShape2 {
+  0%, 100% { transform: rotate(-10deg) translate(0, 0); }
+  50% { transform: rotate(-5deg) translate(8px, -8px); }
+}
+.hero-shape-3 {
+  width: 0;
+  height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--green);
+  background: none;
+  top: 180px;
+  left: 14%;
+  transform: rotate(20deg);
+  animation: floatShape3 7s ease-in-out infinite;
+}
+@keyframes floatShape3 {
+  0%, 100% { transform: rotate(20deg); }
+  50% { transform: rotate(25deg) translateX(-5px); }
+}
+.hero-shape-4 {
+  width: 100px;
+  height: 40px;
+  background: var(--yellow);
+  bottom: 60px;
+  right: 14%;
+  transform: rotate(-5deg);
+  animation: floatShape4 8s ease-in-out infinite;
+}
+@keyframes floatShape4 {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(0deg) translateY(-6px); }
+}
+.hero-shape-5 {
+  width: 30px;
+  height: 30px;
+  background: var(--pink);
+  border-radius: 50%;
+  top: 300px;
+  left: 8%;
+  transform: rotate(0deg);
+  animation: floatShape5 4s ease-in-out infinite;
+}
+@keyframes floatShape5 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.hero-shape-6 {
+  width: 50px;
+  height: 50px;
+  background: var(--green);
+  top: 150px;
+  right: 25%;
+  transform: rotate(30deg);
+  opacity: 0.6;
+}
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--pink);
+  color: #fff;
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 8px 16px;
+  margin-bottom: 28px;
+  transform: rotate(-2deg);
+}
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-weight: 700;
+  line-height: 1.02;
+  margin-bottom: 28px;
+  letter-spacing: -0.03em;
+}
+.hero-title-highlight {
+  display: inline-block;
+  background: var(--yellow);
+  border: var(--border);
+  box-shadow: 4px 4px 0 #000;
+  padding: 2px 14px;
+  transform: rotate(1deg);
+  line-height: 1.2;
+}
+.hero-desc {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  max-width: 480px;
+  margin-bottom: 40px;
+  color: #333;
+}
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.hero-trust {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+.hero-trust-avatars {
+  display: flex;
+}
+.hero-trust-avatar {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.65rem;
+  margin-left: -8px;
+}
+.hero-trust-avatar:first-child { margin-left: 0; }
+.hero-trust-avatar:nth-child(1) { background: var(--yellow); z-index: 4; }
+.hero-trust-avatar:nth-child(2) { background: var(--pink); color: #fff; z-index: 3; }
+.hero-trust-avatar:nth-child(3) { background: var(--blue); color: #fff; z-index: 2; }
+.hero-trust-avatar:nth-child(4) { background: var(--green); z-index: 1; }
+
+/* Hero float card */
+.hero-float-card {
+  background: #fff;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-lg);
+  padding: 0;
+  transform: rotate(2deg);
+  position: relative;
+  transition: all 0.2s ease;
+}
+.hero-float-card:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px) rotate(1deg);
+}
+.hero-float-badge {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  background: var(--pink);
+  color: #fff;
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transform: rotate(5deg);
+  z-index: 2;
+}
+.hero-float-card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 2px solid var(--black);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.hero-float-card-header .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.hero-float-card-inner {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.hero-float-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  border-bottom: 2px solid var(--black);
+  transition: background 0.15s ease;
+}
+.hero-float-stat:last-child {
+  border-bottom: none;
+}
+.hero-float-stat:hover {
+  background: rgba(0,0,0,0.04);
+}
+.hero-float-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.hero-float-value {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+.hero-float-bar {
+  margin: 12px 24px 20px;
+  height: 6px;
+  background: var(--black);
+  border-radius: 0;
+  overflow: hidden;
+  border: 1px solid var(--black);
+}
+.hero-float-bar-fill {
+  height: 100%;
+  width: 72%;
+  background: var(--green);
+  animation: barFill 2s ease-out;
+}
+@keyframes barFill {
+  0% { width: 0; }
+  100% { width: 72%; }
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 14px 28px;
+  border: var(--border-thick);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+.btn-primary {
+  background: var(--yellow);
+  box-shadow: var(--shadow);
+}
+.btn-primary:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px);
+}
+.btn-primary:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+.btn-secondary {
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.btn-secondary:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px);
+}
+.btn-secondary:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+.btn-pink {
+  background: var(--pink);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.btn-pink:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px);
+}
+.btn-pink:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+.btn-blue {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.btn-blue:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px);
+}
+.btn-blue:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+/* ===== MARQUEE STRIP ===== */
+.marquee-strip {
+  border-top: var(--border-thick);
+  border-bottom: var(--border-thick);
+  background: var(--yellow);
+  overflow: hidden;
+  padding: 14px 0;
+  position: relative;
+}
+.marquee-strip::before,
+.marquee-strip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.marquee-strip::before {
+  left: 0;
+  background: linear-gradient(to right, var(--yellow), transparent);
+}
+.marquee-strip::after {
+  right: 0;
+  background: linear-gradient(to left, var(--yellow), transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 35s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+.marquee-item {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.marquee-item::before {
+  content: '★';
+  font-size: 1rem;
+}
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ===== SECTION UTILITIES ===== */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--blue);
+  color: #fff;
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 7px 16px;
+  margin-bottom: 24px;
+}
+.section-tag-pink { background: var(--pink); color: #fff; }
+.section-tag-green { background: var(--green); color: var(--black); }
+.section-tag-yellow { background: var(--yellow); color: var(--black); }
+.section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.section-desc {
+  font-size: 1.1rem;
+  color: #444;
+  max-width: 560px;
+  margin-bottom: 60px;
+  line-height: 1.7;
+}
+
+/* ===== FEATURES SECTION ===== */
+.features {
+  padding: 110px 24px;
+  position: relative;
+}
+.features::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--yellow) 0px,
+    var(--yellow) 40px,
+    var(--pink) 40px,
+    var(--pink) 80px,
+    var(--blue) 80px,
+    var(--blue) 120px,
+    var(--green) 120px,
+    var(--green) 160px
+  );
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.feature-card {
+  background: var(--bg);
+  border: var(--border-thick);
+  box-shadow: var(--shadow-lg);
+  padding: 32px 24px;
+  position: relative;
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--black);
+}
+.feature-card:nth-child(1) {
+  transform: rotate(-1deg);
+  background: var(--yellow);
+}
+.feature-card:nth-child(2) {
+  transform: rotate(1.5deg);
+  background: var(--pink);
+  color: #fff;
+}
+.feature-card:nth-child(3) {
+  transform: rotate(-0.5deg);
+  background: var(--blue);
+  color: #fff;
+}
+.feature-card:nth-child(4) {
+  transform: rotate(2deg);
+  background: var(--green);
+}
+.feature-card:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px) rotate(0deg) !important;
+}
+.feature-card:active {
+  box-shadow: none;
+  transform: translate(4px, 4px) rotate(0deg) !important;
+}
+.feature-number {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 700;
+  opacity: 0.15;
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  line-height: 1;
+}
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  background: rgba(255,255,255,0.35);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+.feature-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: var(--black);
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.feature-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+}
+.feature-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+.feature-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(0,0,0,0.12);
+  border: 2px solid var(--black);
+  padding: 4px 10px;
+  margin-top: 16px;
+}
+
+/* ===== TRUSTED BY / LOGOS ===== */
+.trusted {
+  padding: 80px 24px;
+  text-align: center;
+  border-top: var(--border-thick);
+  border-bottom: var(--border-thick);
+  background: #fff;
+}
+.trusted-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.5;
+  margin-bottom: 32px;
+}
+.trusted-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+.trusted-logo {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.3rem;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+  border: 3px solid transparent;
+  padding: 8px 16px;
+}
+.trusted-logo:hover {
+  opacity: 0.7;
+  border-color: var(--black);
+  background: var(--bg);
+}
+.trusted-logo:nth-child(even) {
+  font-family: var(--font-mono);
+}
+
+/* ===== PRICING SECTION ===== */
+.pricing {
+  padding: 110px 24px;
+  background: #fff;
+  border-top: var(--border-thick);
+  border-bottom: var(--border-thick);
+  position: relative;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.price-card {
+  border: var(--border-thick);
+  box-shadow: var(--shadow-lg);
+  padding: 40px 28px;
+  position: relative;
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+.price-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--black);
+}
+.price-card:nth-child(1) {
+  background: var(--yellow);
+  transform: rotate(-1deg);
+}
+.price-card:nth-child(2) {
+  background: var(--pink);
+  color: #fff;
+  transform: scale(1.05) rotate(1deg);
+  z-index: 2;
+}
+.price-card:nth-child(2)::after {
+  background: rgba(255,255,255,0.3);
+}
+.price-card:nth-child(3) {
+  background: var(--blue);
+  color: #fff;
+  transform: rotate(-0.5deg);
+}
+.price-card:nth-child(3)::after {
+  background: rgba(255,255,255,0.3);
+}
+.price-card:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px) rotate(0deg) scale(1) !important;
+}
+.price-card:active {
+  box-shadow: none;
+  transform: translate(4px, 4px) rotate(0deg) scale(1) !important;
+}
+.price-recommended {
+  position: absolute;
+  top: -16px;
+  right: 20px;
+  background: var(--yellow);
+  color: var(--black);
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  transform: rotate(3deg);
+  letter-spacing: 0.06em;
+}
+.price-tier {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.price-amount {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.price-amount span {
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.price-period {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  margin-bottom: 28px;
+  opacity: 0.7;
+}
+.price-divider {
+  height: 3px;
+  background: rgba(0,0,0,0.15);
+  margin-bottom: 24px;
+}
+.price-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.price-features li {
+  padding: 10px 0;
+  border-bottom: 2px solid rgba(0,0,0,0.12);
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+}
+.price-features li:last-child { border-bottom: none; }
+.price-features li::before {
+  content: '✓';
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+}
+.price-btn {
+  width: 100%;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  border: var(--border-thick);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.04em;
+}
+.price-btn-dark {
+  background: var(--black);
+  color: #fff;
+  box-shadow: 4px 4px 0 var(--yellow);
+}
+.price-btn-dark:hover {
+  box-shadow: 2px 2px 0 var(--yellow);
+  transform: translate(2px, 2px);
+}
+.price-btn-dark:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+.price-btn-light {
+  background: #fff;
+  color: var(--black);
+  box-shadow: 4px 4px 0 var(--black);
+}
+.price-btn-light:hover {
+  box-shadow: 2px 2px 0 var(--black);
+  transform: translate(2px, 2px);
+}
+.price-btn-light:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+.price-annual {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--green);
+  color: var(--black);
+  border: 2px solid var(--black);
+  padding: 4px 12px;
+  margin-top: 12px;
+}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials {
+  padding: 110px 24px;
+  overflow: hidden;
+  position: relative;
+}
+.testimonials-marquee {
+  display: flex;
+  width: max-content;
+  animation: testimonialScroll 45s linear infinite;
+  gap: 24px;
+  margin-top: 48px;
+}
+.testimonials-marquee:hover {
+  animation-play-state: paused;
+}
+@keyframes testimonialScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.testimonial-card {
+  flex-shrink: 0;
+  width: 400px;
+  background: #fff;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-lg);
+  padding: 32px;
+  transition: all 0.15s ease;
+  position: relative;
+}
+.testimonial-card::before {
+  content: '"';
+  font-family: var(--font-heading);
+  font-size: 4rem;
+  font-weight: 700;
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  opacity: 0.08;
+  line-height: 1;
+}
+.testimonial-card:nth-child(3n+1) { transform: rotate(-1deg); }
+.testimonial-card:nth-child(3n+2) { transform: rotate(1.5deg); }
+.testimonial-card:nth-child(3n) { transform: rotate(-0.5deg); }
+.testimonial-card:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px) rotate(0deg) !important;
+}
+.testimonial-card:active {
+  box-shadow: none;
+  transform: translate(4px, 4px) rotate(0deg) !important;
+}
+.testimonial-stars {
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  letter-spacing: 3px;
+}
+.testimonial-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  color: #333;
+}
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 2px solid rgba(0,0,0,0.1);
+}
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.testimonial-card:nth-child(3n+1) .testimonial-avatar { background: var(--yellow); }
+.testimonial-card:nth-child(3n+2) .testimonial-avatar { background: var(--pink); color: #fff; }
+.testimonial-card:nth-child(3n) .testimonial-avatar { background: var(--blue); color: #fff; }
+.testimonial-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.testimonial-role {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.55;
+  margin-top: 2px;
+}
+
+/* ===== FAQ SECTION ===== */
+.faq {
+  padding: 110px 24px;
+  background: #fff;
+  border-top: var(--border-thick);
+  border-bottom: var(--border-thick);
+}
+.faq-list {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.faq-item {
+  border: var(--border-thick);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.faq-item:nth-child(5n+1) { background: var(--yellow); color: var(--black); }
+.faq-item:nth-child(5n+2) { background: var(--pink); color: #fff; }
+.faq-item:nth-child(5n+3) { background: var(--blue); color: #fff; }
+.faq-item:nth-child(5n+4) { background: var(--green); color: var(--black); }
+.faq-item:nth-child(5n+5) { background: var(--black); color: #fff; }
+.faq-item:hover {
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(2px, 2px);
+}
+.faq-item:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+.faq-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-align: left;
+  color: inherit;
+  gap: 16px;
+}
+.faq-toggle:focus-visible {
+  outline: 3px dashed currentColor;
+  outline-offset: -6px;
+}
+.faq-toggle-text {
+  flex: 1;
+}
+.faq-toggle-icon {
+  font-size: 1.5rem;
+  font-weight: 700;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+}
+.faq-item.open .faq-toggle-icon {
+  transform: rotate(45deg);
+}
+.faq-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-content-inner {
+  padding: 0 24px 22px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+  padding: 110px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-box {
+  background: var(--yellow);
+  border: var(--border-thick);
+  box-shadow: var(--shadow-lg);
+  padding: 80px 48px;
+  transform: rotate(-1deg);
+  position: relative;
+  overflow: hidden;
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 20px,
+    rgba(0,0,0,0.03) 20px,
+    rgba(0,0,0,0.03) 40px
+  );
+  pointer-events: none;
+}
+.cta-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+.cta-desc {
+  font-size: 1.15rem;
+  max-width: 520px;
+  margin: 0 auto 40px;
+  color: #333;
+  line-height: 1.7;
+  position: relative;
+  z-index: 1;
+}
+.cta-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.cta-note {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+}
+.cta-shape {
+  position: absolute;
+  border: var(--border-thick);
+  z-index: 1;
+}
+.cta-shape-1 {
+  width: 60px;
+  height: 60px;
+  background: var(--pink);
+  top: -20px;
+  right: 50px;
+  transform: rotate(25deg);
+}
+.cta-shape-2 {
+  width: 40px;
+  height: 40px;
+  background: var(--blue);
+  bottom: -10px;
+  left: 60px;
+  border-radius: 50%;
+}
+.cta-shape-3 {
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 45px solid var(--green);
+  background: none;
+  bottom: 30px;
+  right: 120px;
+  transform: rotate(10deg);
+}
+.cta-shape-4 {
+  width: 30px;
+  height: 30px;
+  background: var(--yellow);
+  top: 40px;
+  left: 30px;
+  transform: rotate(-15deg);
+  border: var(--border);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  border-top: var(--border-thick);
+  padding: 70px 24px 40px;
+  background: var(--black);
+  color: #fff;
+  position: relative;
+}
+.footer-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+.footer-brand {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-brand-box {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  background: var(--yellow);
+  border: 2px solid #fff;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--black);
+}
+.footer-brand-desc {
+  font-size: 0.9rem;
+  opacity: 0.5;
+  max-width: 300px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.footer-subscribe {
+  display: flex;
+  gap: 0;
+  max-width: 300px;
+}
+.footer-subscribe input {
+  flex: 1;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-right: none;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.footer-subscribe input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+.footer-subscribe input:focus {
+  border-color: var(--yellow);
+}
+.footer-subscribe button {
+  background: var(--yellow);
+  color: var(--black);
+  border: 2px solid #fff;
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+.footer-subscribe button:hover {
+  background: #fff;
+}
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+  color: var(--yellow);
+}
+.footer-col ul {
+  list-style: none;
+}
+.footer-col li {
+  margin-bottom: 12px;
+}
+.footer-col a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 0.88rem;
+  opacity: 0.55;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-col a:hover {
+  opacity: 1;
+  color: var(--yellow);
+}
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 2px solid rgba(255,255,255,0.1);
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  opacity: 0.4;
+}
+.footer-socials {
+  display: flex;
+  gap: 10px;
+}
+.footer-social {
+  width: 38px;
+  height: 38px;
+  border: 2px solid rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+}
+.footer-social:hover {
+  background: var(--yellow);
+  color: var(--black);
+  border-color: var(--yellow);
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 rgba(255,255,255,0.2);
+}
+
+/* ===== RESPONSIVE: TABLETS ===== */
+@media (max-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  .price-card:nth-child(2) {
+    transform: rotate(1deg);
+  }
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .hero-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-actions {
+    justify-content: center;
+  }
+  .hero-trust {
+    justify-content: center;
+  }
+  .hero-float-card {
+    display: none;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .trusted-logos {
+    gap: 32px;
+  }
+}
+
+/* ===== RESPONSIVE: MOBILE ===== */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-bottom: var(--border-thick);
+    flex-direction: column;
+    padding: 20px 24px;
+    gap: 8px;
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .nav-links a {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  .nav-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero {
+    padding: 120px 24px 60px;
+    min-height: auto;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+  .features {
+    padding: 80px 24px;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .feature-card {
+    transform: rotate(0deg) !important;
+  }
+  .feature-card:hover {
+    transform: translate(2px, 2px) !important;
+  }
+  .pricing {
+    padding: 80px 24px;
+  }
+  .testimonials {
+    padding: 80px 24px;
+  }
+  .testimonial-card {
+    width: 320px;
+    padding: 24px;
+  }
+  .faq {
+    padding: 80px 24px;
+  }
+  .cta-section {
+    padding: 80px 24px;
+  }
+  .cta-box {
+    transform: rotate(0deg);
+    padding: 48px 24px;
+  }
+  .footer {
+    padding: 48px 24px 32px;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-subscribe {
+    max-width: 100%;
+  }
+  .trusted-logos {
+    gap: 24px;
+  }
+  .trusted-logo {
+    font-size: 1rem;
+  }
+}
+
+/* ===== RESPONSIVE: SMALL MOBILE ===== */
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .testimonial-card {
+    width: 280px;
+    padding: 20px;
+  }
+  .testimonial-text {
+    font-size: 0.9rem;
+  }
+  .cta-title {
+    font-size: 1.8rem;
+  }
+  .faq-toggle {
+    font-size: 0.95rem;
+    padding: 18px 18px;
+  }
+  .faq-content-inner {
+    padding: 0 18px 18px;
+    font-size: 0.88rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-box">N</span>
+      NeoFlow
+    </a>
+    <button class="nav-mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('open'); this.textContent = this.textContent === '☰' ? '✕' : '☰';">☰</button>
+    <ul class="nav-links">
+      <li><a href="#features">功能</a></li>
+      <li><a href="#pricing">定价</a></li>
+      <li><a href="#testimonials">评价</a></li>
+      <li><a href="#faq">常见问题</a></li>
+      <li><a href="#cta" class="nav-cta">免费试用</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+  <div class="hero-bg-shapes" aria-hidden="true">
+    <div class="hero-shape hero-shape-1"></div>
+    <div class="hero-shape hero-shape-2"></div>
+    <div class="hero-shape hero-shape-3"></div>
+    <div class="hero-shape hero-shape-4"></div>
+    <div class="hero-shape hero-shape-5"></div>
+    <div class="hero-shape hero-shape-6"></div>
+  </div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag reveal">🚀 全新发布 v3.0</div>
+      <h1 class="hero-title reveal reveal-delay-1">
+        用 <span class="hero-title-highlight">NeoFlow</span><br>
+        重新定义团队协作
+      </h1>
+      <p class="hero-desc reveal reveal-delay-2">
+        告别低效的工具链。NeoFlow 将项目管理、实时协作和智能分析融为一体，让您的团队效率提升 3 倍。
+      </p>
+      <div class="hero-actions reveal reveal-delay-3">
+        <a href="#cta" class="btn btn-primary">开始免费试用</a>
+        <a href="#features" class="btn btn-secondary">了解更多 →</a>
+      </div>
+      <div class="hero-trust reveal reveal-delay-4">
+        <div class="hero-trust-avatars">
+          <div class="hero-trust-avatar">张</div>
+          <div class="hero-trust-avatar">李</div>
+          <div class="hero-trust-avatar">王</div>
+          <div class="hero-trust-avatar">+</div>
+        </div>
+        <span>12,000+ 团队已信赖 NeoFlow</span>
+      </div>
+    </div>
+    <div class="hero-float-card reveal reveal-delay-4">
+      <div class="hero-float-badge">⚡ 实时数据</div>
+      <div class="hero-float-card-header">
+        <span>仪表盘概览</span>
+        <span class="dot"></span>
+      </div>
+      <div class="hero-float-card-inner">
+        <div class="hero-float-stat">
+          <span class="hero-float-label">本周完成任务</span>
+          <span class="hero-float-value">142</span>
+        </div>
+        <div class="hero-float-stat">
+          <span class="hero-float-label">团队效率</span>
+          <span class="hero-float-value" style="color: #0a7a0a">+38%</span>
+        </div>
+        <div class="hero-float-stat">
+          <span class="hero-float-label">活跃项目</span>
+          <span class="hero-float-value">17</span>
+        </div>
+        <div class="hero-float-stat">
+          <span class="hero-float-label">满意度</span>
+          <span class="hero-float-value">98.5%</span>
+        </div>
+      </div>
+      <div class="hero-float-bar">
+        <div class="hero-float-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SOCIAL PROOF MARQUEE ===== -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">已服务 12,000+ 团队</span>
+    <span class="marquee-item">支持 50+ 集成</span>
+    <span class="marquee-item">99.9% 可用性保证</span>
+    <span class="marquee-item">256 位加密</span>
+    <span class="marquee-item">SOC 2 认证</span>
+    <span class="marquee-item">GDPR 合规</span>
+    <span class="marquee-item">7×24 技术支持</span>
+    <span class="marquee-item">14 天免费试用</span>
+    <span class="marquee-item">99.9% SLA</span>
+    <span class="marquee-item">开源 API</span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item">已服务 12,000+ 团队</span>
+    <span class="marquee-item">支持 50+ 集成</span>
+    <span class="marquee-item">99.9% 可用性保证</span>
+    <span class="marquee-item">256 位加密</span>
+    <span class="marquee-item">SOC 2 认证</span>
+    <span class="marquee-item">GDPR 合规</span>
+    <span class="marquee-item">7×24 技术支持</span>
+    <span class="marquee-item">14 天免费试用</span>
+    <span class="marquee-item">99.9% SLA</span>
+    <span class="marquee-item">开源 API</span>
+  </div>
+</div>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-tag reveal">核心功能</div>
+    <h2 class="section-title reveal reveal-delay-1">
+      为效率而生的<br>四大力量
+    </h2>
+    <p class="section-desc reveal reveal-delay-2">
+      每一个功能都经过精心设计，让团队协作变得简单、直观、高效。
+    </p>
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card reveal reveal-delay-1">
+        <span class="feature-number">01</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">看板管理</h3>
+        <p class="feature-desc">直观的拖拽看板，实时同步所有团队成员的进度，支持自定义工作流和自动化规则。</p>
+        <span class="feature-tag">拖拽排序</span>
+      </div>
+      <!-- Feature 2 -->
+      <div class="feature-card reveal reveal-delay-2">
+        <span class="feature-number">02</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">实时协作</h3>
+        <p class="feature-desc">多人同时在线编辑，内置即时通讯和视频会议，让沟通零距离。</p>
+        <span class="feature-tag">多人在线</span>
+      </div>
+      <!-- Feature 3 -->
+      <div class="feature-card reveal reveal-delay-3">
+        <span class="feature-number">03</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 12a9 9 0 1 1-6.22-8.56"/>
+            <path d="M21 3v5h-5"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="12" x2="16" y2="12"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">智能分析</h3>
+        <p class="feature-desc">AI 驱动的数据看板，自动生成周报和趋势预测，用数据驱动决策。</p>
+        <span class="feature-tag">AI 驱动</span>
+      </div>
+      <!-- Feature 4 -->
+      <div class="feature-card reveal reveal-delay-4">
+        <span class="feature-number">04</span>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">企业安全</h3>
+        <p class="feature-desc">端到端加密、SSO 单点登录、细粒度权限控制，满足最严格的安全要求。</p>
+        <span class="feature-tag">SOC 2</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUSTED BY ===== -->
+<section class="trusted reveal">
+  <p class="trusted-label">受以下企业信赖</p>
+  <div class="trusted-logos">
+    <span class="trusted-logo">ByteDance</span>
+    <span class="trusted-logo">腾讯</span>
+    <span class="trusted-logo">阿里巴巴</span>
+    <span class="trusted-logo">美团</span>
+    <span class="trusted-logo">小红书</span>
+    <span class="trusted-logo">Bilibili</span>
+  </div>
+</section>
+
+<!-- ===== PRICING SECTION ===== -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-tag section-tag-pink reveal">灵活定价</div>
+    <h2 class="section-title reveal reveal-delay-1">选择适合你的方案</h2>
+    <p class="section-desc reveal reveal-delay-2">
+      无隐藏费用，随时取消。所有方案均含 14 天免费试用。
+    </p>
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="price-card reveal reveal-delay-1">
+        <div class="price-tier">入门版</div>
+        <div class="price-amount">¥0<span>/月</span></div>
+        <div class="price-period">适合个人和小团队</div>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li>最多 5 名成员</li>
+          <li>3 个活跃项目</li>
+          <li>基础看板功能</li>
+          <li>1GB 存储空间</li>
+          <li>社区支持</li>
+        </ul>
+        <button class="price-btn price-btn-dark">免费开始</button>
+      </div>
+      <!-- Pro (Recommended) -->
+      <div class="price-card reveal reveal-delay-2">
+        <div class="price-recommended">⭐ 推荐方案</div>
+        <div class="price-tier">专业版</div>
+        <div class="price-amount">¥79<span>/月</span></div>
+        <div class="price-period">每增加一名成员 +¥19/月</div>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li>不限成员数量</li>
+          <li>不限项目数量</li>
+          <li>高级工作流 & 自动化</li>
+          <li>AI 智能分析报告</li>
+          <li>优先技术支持</li>
+          <li>100GB 存储空间</li>
+          <li>API 访问权限</li>
+        </ul>
+        <button class="price-btn price-btn-light">立即升级</button>
+        <div class="price-annual">年付省 20%</div>
+      </div>
+      <!-- Enterprise -->
+      <div class="price-card reveal reveal-delay-3">
+        <div class="price-tier">企业版</div>
+        <div class="price-amount">定制<span>报价</span></div>
+        <div class="price-period">适合大型组织</div>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li>包含专业版全部功能</li>
+          <li>SSO 单点登录</li>
+          <li>高级安全审计日志</li>
+          <li>自定义 SLA 协议</li>
+          <li>专属客户经理</li>
+          <li>无限存储空间</li>
+          <li>私有化部署方案</li>
+        </ul>
+        <button class="price-btn price-btn-dark">联系销售</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-tag section-tag-green reveal">用户评价</div>
+    <h2 class="section-title reveal reveal-delay-1">他们都在用 NeoFlow</h2>
+    <p class="section-desc reveal reveal-delay-2">
+      来自真实用户的声音，看看 NeoFlow 如何改变他们的工作方式。
+    </p>
+  </div>
+  <div class="testimonials-marquee">
+    <!-- Card set 1 -->
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"NeoFlow 彻底改变了我们团队的工作方式。项目交付时间缩短了 40%，沟通成本大幅降低。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">张</div>
+        <div>
+          <div class="testimonial-name">张明远</div>
+          <div class="testimonial-role">某科技公司 CTO</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"作为产品经理，我终于能在一个平台上管理所有事情了。看板 + 文档 + 沟通，完美组合。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">李</div>
+        <div>
+          <div class="testimonial-name">李雨薇</div>
+          <div class="testimonial-role">某互联网公司 PM</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"智能分析功能太强大了！自动生成的周报帮我们节省了每周至少 3 小时的汇报时间。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">王</div>
+        <div>
+          <div class="testimonial-name">王浩然</div>
+          <div class="testimonial-role">某设计团队 Lead</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"安全性是我们的首要考虑，NeoFlow 的企业级安全功能让我们非常放心。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">陈</div>
+        <div>
+          <div class="testimonial-name">陈思瑶</div>
+          <div class="testimonial-role">某金融机构 IT 总监</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"远程团队的最佳选择！实时协作功能让我们感觉就像在同一个办公室里一样。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">赵</div>
+        <div>
+          <div class="testimonial-name">赵子涵</div>
+          <div class="testimonial-role">某创业公司 CEO</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"从 Notion 迁移到 NeoFlow 后，团队效率明显提升。自动化工作流节省了大量重复劳动。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">刘</div>
+        <div>
+          <div class="testimonial-name">刘芳华</div>
+          <div class="testimonial-role">某教育机构运营总监</div>
+        </div>
+      </div>
+    </div>
+    <!-- Card set 2 (duplicate for infinite loop) -->
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"NeoFlow 彻底改变了我们团队的工作方式。项目交付时间缩短了 40%，沟通成本大幅降低。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">张</div>
+        <div>
+          <div class="testimonial-name">张明远</div>
+          <div class="testimonial-role">某科技公司 CTO</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"作为产品经理，我终于能在一个平台上管理所有事情了。看板 + 文档 + 沟通，完美组合。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">李</div>
+        <div>
+          <div class="testimonial-name">李雨薇</div>
+          <div class="testimonial-role">某互联网公司 PM</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"智能分析功能太强大了！自动生成的周报帮我们节省了每周至少 3 小时的汇报时间。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">王</div>
+        <div>
+          <div class="testimonial-name">王浩然</div>
+          <div class="testimonial-role">某设计团队 Lead</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"安全性是我们的首要考虑，NeoFlow 的企业级安全功能让我们非常放心。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">陈</div>
+        <div>
+          <div class="testimonial-name">陈思瑶</div>
+          <div class="testimonial-role">某金融机构 IT 总监</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"远程团队的最佳选择！实时协作功能让我们感觉就像在同一个办公室里一样。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">赵</div>
+        <div>
+          <div class="testimonial-name">赵子涵</div>
+          <div class="testimonial-role">某创业公司 CEO</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"从 Notion 迁移到 NeoFlow 后，团队效率明显提升。自动化工作流节省了大量重复劳动。"</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">刘</div>
+        <div>
+          <div class="testimonial-name">刘芳华</div>
+          <div class="testimonial-role">某教育机构运营总监</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ SECTION ===== -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-tag section-tag-yellow reveal">常见问题</div>
+    <h2 class="section-title reveal reveal-delay-1">你可能想了解的</h2>
+    <p class="section-desc reveal reveal-delay-2">
+      以下是用户最常问到的问题，如果还有疑问，随时联系我们。
+    </p>
+    <div class="faq-list">
+      <div class="faq-item reveal reveal-delay-1">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">NeoFlow 支持哪些平台？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            NeoFlow 支持 Web 端、iOS、Android、macOS 和 Windows 全平台覆盖。我们还提供 Chrome 和 Firefox 浏览器扩展，以及 API 和 Webhook 供开发者集成使用。所有平台数据实时同步，随时随地高效工作。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-2">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">免费试用期结束后会自动扣费吗？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            不会。14 天免费试用结束后，您的账户会自动降级为免费版，所有数据完整保留，不会丢失任何内容。只有在您主动选择升级付费方案后才会产生费用。您可以随时在账户设置中管理订阅状态。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-3">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">如何将现有数据迁移到 NeoFlow？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            我们提供一键导入工具，支持从 Trello、Asana、Jira、Notion、飞书、钉钉等主流平台直接迁移数据。企业版用户还可获得专属迁移顾问的一对一支持，确保迁移过程零数据损失。大多数团队可在 24 小时内完成迁移。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-4">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">数据安全如何保障？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            NeoFlow 采用 AES-256 端到端加密，所有数据传输使用 TLS 1.3 协议。我们通过了 SOC 2 Type II 认证，完全符合 GDPR 和 CCPA 数据保护法规。企业版用户还可选择私有化部署，将数据完全掌控在自己手中。所有基础设施部署在国内一线云服务商，满足等保三级要求。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-5">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">团队成员数量有限制吗？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            免费版支持最多 5 名团队成员。专业版和企业版不限成员数量，按实际使用人数计费。我们还提供教育优惠和非营利组织折扣，如果您符合条件，请联系我们获取专属方案。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-5">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">可以离线使用吗？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            可以。NeoFlow 的桌面端和移动端应用支持离线模式。在没有网络连接时，您可以正常查看和编辑内容，所有更改会在恢复网络后自动同步到云端。我们确保您的工作永远不会因网络问题而中断。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-6">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">如何联系客服支持？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            免费版用户可通过社区论坛和帮助中心获取支持。专业版用户享有工作日 9:00-18:00 的在线客服支持，平均响应时间 30 分钟。企业版用户拥有 7×24 小时专属技术支持热线，以及 15 分钟 SLA 紧急响应承诺。您也可以通过应用内反馈功能直接联系我们。
+          </div>
+        </div>
+      </div>
+      <div class="faq-item reveal reveal-delay-6">
+        <button class="faq-toggle" onclick="toggleFaq(this)">
+          <span class="faq-toggle-text">支持哪些第三方集成？</span>
+          <span class="faq-toggle-icon">+</span>
+        </button>
+        <div class="faq-content">
+          <div class="faq-content-inner">
+            NeoFlow 目前支持 50+ 第三方集成，包括 GitHub、GitLab、Slack、钉钉、飞书、企业微信、Google Workspace、Office 365 等。我们还提供开放 API 和 Webhook，支持与自研系统对接。如果您需要特殊的集成方案，我们的企业版支持定制开发。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA SECTION ===== -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-box reveal">
+      <div class="cta-shape cta-shape-1" aria-hidden="true"></div>
+      <div class="cta-shape cta-shape-2" aria-hidden="true"></div>
+      <div class="cta-shape cta-shape-3" aria-hidden="true"></div>
+      <div class="cta-shape cta-shape-4" aria-hidden="true"></div>
+      <h2 class="cta-title reveal reveal-delay-1">准备好改变了吗？</h2>
+      <p class="cta-desc reveal reveal-delay-2">
+        加入 12,000+ 团队，用 NeoFlow 开启高效协作之旅。14 天免费试用，无需信用卡。
+      </p>
+      <div class="cta-actions reveal reveal-delay-3">
+        <a href="#" class="btn btn-primary" style="font-size: 1.05rem; padding: 18px 44px;">立即免费试用 →</a>
+        <a href="#" class="btn btn-secondary" style="background: #fff;">预约演示</a>
+      </div>
+      <p class="cta-note reveal reveal-delay-4">无需信用卡 · 30 秒注册 · 随时取消</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <span class="footer-brand-box">N</span>
+        NeoFlow
+      </div>
+      <p class="footer-brand-desc">
+        下一代团队协作平台，让高效成为习惯。为追求卓越的团队而生。
+      </p>
+      <div class="footer-subscribe">
+        <input type="email" placeholder="输入邮箱订阅更新" aria-label="邮箱地址">
+        <button type="button">订阅</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">产品</div>
+      <ul>
+        <li><a href="#">功能介绍</a></li>
+        <li><a href="#">定价方案</a></li>
+        <li><a href="#">集成市场</a></li>
+        <li><a href="#">更新日志</a></li>
+        <li><a href="#">API 文档</a></li>
+        <li><a href="#">系统状态</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">资源</div>
+      <ul>
+        <li><a href="#">帮助中心</a></li>
+        <li><a href="#">使用教程</a></li>
+        <li><a href="#">博客</a></li>
+        <li><a href="#">社区论坛</a></li>
+        <li><a href="#">视频课程</a></li>
+        <li><a href="#">模板市场</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">公司</div>
+      <ul>
+        <li><a href="#">关于我们</a></li>
+        <li><a href="#">加入团队</a></li>
+        <li><a href="#">联系我们</a></li>
+        <li><a href="#">隐私政策</a></li>
+        <li><a href="#">服务条款</a></li>
+        <li><a href="#">合作伙伴</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 NeoFlow. 保留所有权利。</span>
+    <div class="footer-socials">
+      <a href="#" class="footer-social" aria-label="Twitter">𝕏</a>
+      <a href="#" class="footer-social" aria-label="GitHub">GH</a>
+      <a href="#" class="footer-social" aria-label="WeChat">微</a>
+      <a href="#" class="footer-social" aria-label="Douyin">抖</a>
+      <a href="#" class="footer-social" aria-label="Bilibili">B</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// FAQ Accordion
+function toggleFaq(btn) {
+  var item = btn.closest('.faq-item');
+  var content = item.querySelector('.faq-content');
+  var isOpen = item.classList.contains('open');
+
+  // Close all other items
+  document.querySelectorAll('.faq-item.open').forEach(function(openItem) {
+    if (openItem !== item) {
+      openItem.classList.remove('open');
+      openItem.querySelector('.faq-content').style.maxHeight = '0';
+    }
+  });
+
+  if (isOpen) {
+    item.classList.remove('open');
+    content.style.maxHeight = '0';
+  } else {
+    item.classList.add('open');
+    content.style.maxHeight = content.scrollHeight + 'px';
+  }
+}
+
+// IntersectionObserver stagger reveal
+document.addEventListener('DOMContentLoaded', function() {
+  var reveals = document.querySelectorAll('.reveal');
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    reveals.forEach(function(el) {
+      observer.observe(el);
+    });
+  } else {
+    // Fallback: show everything immediately
+    reveals.forEach(function(el) {
+      el.classList.add('visible');
+    });
+  }
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      var targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      var target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Close mobile menu if open
+        var navLinks = document.querySelector('.nav-links');
+        var toggle = document.querySelector('.nav-mobile-toggle');
+        if (navLinks.classList.contains('open')) {
+          navLinks.classList.remove('open');
+          toggle.textContent = '☰';
+        }
+      }
+    });
+  });
+
+  // Nav background on scroll
+  var nav = document.querySelector('.nav');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 10) {
+      nav.style.boxShadow = '0 4px 0 #000';
+    } else {
+      nav.style.boxShadow = 'none';
+    }
+  });
+});
+</script>
+
+</body>
+</html>

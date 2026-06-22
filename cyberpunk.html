@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBER://TEMPLATE - 赛博朋克SaaS平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --neon-cyan-rgb {
+  syntax: '<integer>';
+  initial-value: 0;
+  inherits: false;
+}
+@property --neon-pink-rgb {
+  syntax: '<integer>';
+  initial-value: 0;
+  inherits: false;
+}
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-card: #1a1a2e;
+  --bg-card-hover: #222240;
+  --neon-cyan: #00f0ff;
+  --neon-pink: #ff2d6f;
+  --neon-purple: #b026ff;
+  --neon-green: #39ff14;
+  --neon-yellow: #ffe83a;
+  --text-primary: #e0e0e0;
+  --text-secondary: #8888aa;
+  --text-dim: #555577;
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --glow-cyan: 0 0 10px #00f0ff, 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+  --glow-pink: 0 0 10px #ff2d6f, 0 0 20px #ff2d6f, 0 0 40px #ff2d6f;
+  --glow-purple: 0 0 10px #b026ff, 0 0 20px #b026ff, 0 0 40px #b026ff;
+  --box-glow-cyan: 0 0 15px #00f0ff, 0 0 30px rgba(0,240,255,0.3);
+  --box-glow-pink: 0 0 15px #ff2d6f, 0 0 30px rgba(255,45,111,0.3);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+  font-weight: 400;
+}
+::selection { background: var(--neon-cyan); color: var(--bg-primary); }
+a { color: var(--neon-cyan); text-decoration: none; transition: all 0.3s; }
+a:hover { text-shadow: var(--glow-cyan); }
+
+.scanline-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.015) 2px,
+    rgba(0, 240, 255, 0.015) 4px
+  );
+  animation: scanlineShift 8s linear infinite;
+}
+@keyframes scanlineShift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--neon-cyan);
+  text-shadow: var(--glow-cyan);
+  letter-spacing: 2px;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+.nav-links a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+.nav-cta {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid var(--neon-pink);
+  color: var(--neon-pink) !important;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+.nav-cta:hover {
+  background: var(--neon-pink);
+  color: #fff !important;
+  box-shadow: var(--box-glow-pink);
+  text-shadow: none !important;
+}
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+  overflow: hidden;
+}
+.hero-grid {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridScroll 20s linear infinite;
+}
+@keyframes gridScroll {
+  0% { transform: perspective(500px) rotateX(0deg); }
+  100% { transform: perspective(500px) rotateX(0deg) translateY(60px); }
+}
+.hero-radial {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(0,240,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 2; }
+.hero-badge {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: neonFlicker 4s infinite;
+}
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
+}
+.glitch-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+.glitch-text {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(0,240,255,0.5);
+  letter-spacing: 4px;
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+}
+.glitch-text::before {
+  color: var(--neon-cyan);
+  z-index: -1;
+  animation: glitch1 3s infinite linear alternate-reverse;
+}
+.glitch-text::after {
+  color: var(--neon-pink);
+  z-index: -2;
+  animation: glitch2 2s infinite linear alternate-reverse;
+}
+@keyframes glitch1 {
+  0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, -1px); }
+  5% { clip-path: inset(10% 0 85% 0); transform: translate(2px, 1px); }
+  10% { clip-path: inset(80% 0 5% 0); transform: translate(-1px, 2px); }
+  15% { clip-path: inset(20% 0 65% 0); transform: translate(1px, -1px); }
+  20% { clip-path: inset(55% 0 30% 0); transform: translate(-2px, 2px); }
+  25% { clip-path: inset(5% 0 90% 0); transform: translate(2px, -2px); }
+  30% { clip-path: inset(70% 0 15% 0); transform: translate(-1px, 1px); }
+  35% { clip-path: inset(35% 0 50% 0); transform: translate(1px, -1px); }
+  40% { clip-path: inset(90% 0 2% 0); transform: translate(-2px, 2px); }
+  45% { clip-path: inset(15% 0 75% 0); transform: translate(2px, -1px); }
+  50% { clip-path: inset(60% 0 25% 0); transform: translate(-1px, -2px); }
+  55% { clip-path: inset(0% 0 95% 0); transform: translate(1px, 2px); }
+  60% { clip-path: inset(45% 0 40% 0); transform: translate(-2px, -1px); }
+  65% { clip-path: inset(85% 0 8% 0); transform: translate(2px, 1px); }
+  70% { clip-path: inset(25% 0 60% 0); transform: translate(-1px, -2px); }
+  75% { clip-path: inset(50% 0 35% 0); transform: translate(1px, -1px); }
+  80% { clip-path: inset(10% 0 80% 0); transform: translate(-2px, 2px); }
+  85% { clip-path: inset(75% 0 10% 0); transform: translate(2px, -2px); }
+  90% { clip-path: inset(30% 0 55% 0); transform: translate(-1px, 1px); }
+  95% { clip-path: inset(65% 0 20% 0); transform: translate(1px, -1px); }
+  100% { clip-path: inset(40% 0 45% 0); transform: translate(-2px, 2px); }
+}
+@keyframes glitch2 {
+  0% { clip-path: inset(25% 0 58% 0); transform: translate(2px, 2px); }
+  5% { clip-path: inset(75% 0 10% 0); transform: translate(-1px, -2px); }
+  10% { clip-path: inset(5% 0 80% 0); transform: translate(1px, 1px); }
+  15% { clip-path: inset(50% 0 35% 0); transform: translate(-2px, -1px); }
+  20% { clip-path: inset(15% 0 70% 0); transform: translate(2px, -2px); }
+  25% { clip-path: inset(80% 0 5% 0); transform: translate(-1px, 2px); }
+  30% { clip-path: inset(30% 0 55% 0); transform: translate(1px, -1px); }
+  35% { clip-path: inset(60% 0 25% 0); transform: translate(-2px, 1px); }
+  40% { clip-path: inset(10% 0 75% 0); transform: translate(2px, -2px); }
+  45% { clip-path: inset(45% 0 40% 0); transform: translate(-1px, -1px); }
+  50% { clip-path: inset(90% 0 3% 0); transform: translate(1px, 2px); }
+  55% { clip-path: inset(20% 0 65% 0); transform: translate(-2px, -2px); }
+  60% { clip-path: inset(70% 0 15% 0); transform: translate(2px, 1px); }
+  65% { clip-path: inset(35% 0 50% 0); transform: translate(-1px, -2px); }
+  70% { clip-path: inset(0% 0 90% 0); transform: translate(2px, 2px); }
+  75% { clip-path: inset(55% 0 30% 0); transform: translate(-2px, 1px); }
+  80% { clip-path: inset(85% 0 8% 0); transform: translate(1px, -1px); }
+  85% { clip-path: inset(40% 0 45% 0); transform: translate(-1px, 2px); }
+  90% { clip-path: inset(65% 0 20% 0); transform: translate(2px, -2px); }
+  95% { clip-path: inset(12% 0 73% 0); transform: translate(-2px, -1px); }
+  100% { clip-path: inset(48% 0 37% 0); transform: translate(1px, 1px); }
+}
+.hero-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+.hero-subtitle span {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.5);
+}
+.hero-buttons { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+.btn-neon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 2.5rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-neon.primary {
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  box-shadow: 0 0 20px rgba(0,240,255,0.4);
+}
+.btn-neon.primary:hover {
+  box-shadow: 0 0 30px rgba(0,240,255,0.6), 0 0 60px rgba(0,240,255,0.3);
+  transform: translateY(-2px);
+}
+.btn-neon.secondary {
+  background: transparent;
+  color: var(--neon-pink);
+  border: 2px solid var(--neon-pink);
+}
+.btn-neon.secondary:hover {
+  background: rgba(255,45,111,0.1);
+  box-shadow: 0 0 20px rgba(255,45,111,0.3), inset 0 0 20px rgba(255,45,111,0.1);
+  transform: translateY(-2px);
+}
+.hud-corner {
+  position: absolute;
+  width: 20px; height: 20px;
+  pointer-events: none;
+}
+.hud-corner::before,
+.hud-corner::after {
+  content: '';
+  position: absolute;
+  background: var(--neon-cyan);
+}
+.hud-corner::before { width: 100%; height: 1px; }
+.hud-corner::after { width: 1px; height: 100%; }
+.hud-corner.tl { top: 10%; left: 10%; }
+.hud-corner.tl::before { top: 0; left: 0; }
+.hud-corner.tl::after { top: 0; left: 0; }
+.hud-corner.tr { top: 10%; right: 10%; }
+.hud-corner.tr::before { top: 0; right: 0; }
+.hud-corner.tr::after { top: 0; right: 0; }
+.hud-corner.bl { bottom: 10%; left: 10%; }
+.hud-corner.bl::before { bottom: 0; left: 0; }
+.hud-corner.bl::after { bottom: 0; left: 0; }
+.hud-corner.br { bottom: 10%; right: 10%; }
+.hud-corner.br::before { bottom: 0; right: 0; }
+.hud-corner.br::after { bottom: 0; right: 0; }
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0,240,255,0.1);
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.5);
+}
+.hero-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section {
+  padding: 6rem 2rem;
+  position: relative;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+.section-tag {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.1);
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+}
+.section-desc {
+  color: var(--text-secondary);
+  max-width: 550px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.feature-card {
+  background: var(--bg-card);
+  padding: 2.5rem;
+  position: relative;
+  transition: all 0.4s;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 8px;
+  width: 16px; height: 16px;
+  border-left: 2px solid var(--neon-cyan);
+  border-top: 2px solid var(--neon-cyan);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.feature-card::after {
+  content: '';
+  position: absolute;
+  bottom: 8px; right: 8px;
+  width: 16px; height: 16px;
+  border-right: 2px solid var(--neon-cyan);
+  border-bottom: 2px solid var(--neon-cyan);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.feature-card:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: var(--box-glow-cyan);
+  transform: translateY(-4px);
+}
+.feature-card:hover::before,
+.feature-card:hover::after { opacity: 1; }
+.feature-card .hud-tl,
+.feature-card .hud-br {
+  position: absolute;
+  width: 16px; height: 16px;
+}
+.feature-card .hud-tl {
+  top: 8px; right: 8px;
+  border-right: 2px solid var(--neon-pink);
+  border-top: 2px solid var(--neon-pink);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feature-card .hud-br {
+  bottom: 8px; left: 8px;
+  border-left: 2px solid var(--neon-pink);
+  border-bottom: 2px solid var(--neon-pink);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feature-card:hover .hud-tl,
+.feature-card:hover .hud-br { opacity: 0.8; }
+.feature-icon {
+  width: 50px; height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 15px rgba(0,240,255,0.6);
+  position: relative;
+}
+.feature-icon::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: var(--neon-pink);
+  box-shadow: 0 0 10px var(--neon-pink);
+}
+.feature-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+}
+.feature-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.feature-tag {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
+  font-size: 0.65rem;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+}
+.pricing-card {
+  background: var(--bg-card);
+  padding: 2.5rem 2rem;
+  position: relative;
+  border: 1px solid rgba(0,240,255,0.1);
+  transition: all 0.4s;
+}
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 8px;
+  width: 14px; height: 14px;
+  border-left: 2px solid var(--neon-cyan);
+  border-top: 2px solid var(--neon-cyan);
+  opacity: 0.5;
+}
+.pricing-card::after {
+  content: '';
+  position: absolute;
+  bottom: 8px; right: 8px;
+  width: 14px; height: 14px;
+  border-right: 2px solid var(--neon-cyan);
+  border-bottom: 2px solid var(--neon-cyan);
+  opacity: 0.5;
+}
+.pricing-card.recommended {
+  border-color: var(--neon-pink);
+  animation: pulsingGlow 2s ease-in-out infinite;
+  transform: scale(1.05);
+  z-index: 2;
+}
+@keyframes pulsingGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(255,45,111,0.2), 0 0 30px rgba(255,45,111,0.1); }
+  50% { box-shadow: 0 0 25px rgba(255,45,111,0.4), 0 0 50px rgba(255,45,111,0.2), inset 0 0 20px rgba(255,45,111,0.05); }
+}
+.pricing-recommended-tag {
+  position: absolute;
+  top: -1px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--neon-pink);
+  color: #fff;
+  padding: 0.3rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.pricing-tier {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--neon-cyan);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.pricing-price {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 0.3rem;
+}
+.pricing-price span { font-size: 1rem; color: var(--text-dim); font-weight: 400; }
+.pricing-desc {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.pricing-features { list-style: none; margin-bottom: 2rem; }
+.pricing-features li {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.pricing-features li::before {
+  content: '//';
+  color: var(--neon-cyan);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.pricing-btn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.pricing-btn:hover {
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  box-shadow: var(--box-glow-cyan);
+}
+.pricing-card.recommended .pricing-btn {
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+}
+.pricing-card.recommended .pricing-btn:hover {
+  background: var(--neon-pink);
+  color: #fff;
+  box-shadow: var(--box-glow-pink);
+}
+
+.terminal-section {
+  background: var(--bg-card);
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  border: 1px solid rgba(0,240,255,0.15);
+}
+.terminal-section::before,
+.terminal-section::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+}
+.terminal-section::before {
+  top: -1px; left: -1px;
+  border-left: 2px solid var(--neon-purple);
+  border-top: 2px solid var(--neon-purple);
+}
+.terminal-section::after {
+  bottom: -1px; right: -1px;
+  border-right: 2px solid var(--neon-purple);
+  border-bottom: 2px solid var(--neon-purple);
+}
+.terminal-header {
+  background: rgba(0,0,0,0.5);
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(0,240,255,0.1);
+}
+.terminal-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.terminal-dot.red { background: var(--neon-pink); box-shadow: 0 0 6px var(--neon-pink); }
+.terminal-dot.yellow { background: var(--neon-yellow); box-shadow: 0 0 6px var(--neon-yellow); }
+.terminal-dot.green { background: var(--neon-green); box-shadow: 0 0 6px var(--neon-green); }
+.terminal-title {
+  margin-left: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+.terminal-body {
+  padding: 1.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  min-height: 280px;
+  color: var(--neon-green);
+}
+.terminal-line {
+  opacity: 0;
+  animation: terminalFadeIn 0.3s forwards;
+}
+.terminal-line .prompt {
+  color: var(--neon-pink);
+}
+.terminal-line .cmd {
+  color: var(--neon-cyan);
+}
+.terminal-line .comment {
+  color: var(--text-dim);
+}
+.terminal-line .string {
+  color: var(--neon-yellow);
+}
+.terminal-line .keyword {
+  color: var(--neon-purple);
+}
+.terminal-line .func {
+  color: var(--neon-cyan);
+}
+@keyframes terminalFadeIn {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background: var(--neon-green);
+  vertical-align: text-bottom;
+  animation: cursorBlink 1s step-end infinite;
+  margin-left: 2px;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.stats-section {
+  border-top: 1px solid rgba(0,240,255,0.08);
+  border-bottom: 1px solid rgba(0,240,255,0.08);
+  background: rgba(0,0,0,0.2);
+}
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  max-width: 1000px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  position: relative;
+}
+.stat-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan), 0 0 15px var(--neon-cyan);
+}
+.stat-number {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.5), 0 0 20px rgba(0,240,255,0.3);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.cta-section {
+  text-align: center;
+  padding: 6rem 2rem;
+  position: relative;
+}
+.cta-box {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  position: relative;
+  background: var(--bg-card);
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: conic-gradient(from var(--angle), var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+  z-index: -1;
+  animation: borderRotate 4s linear infinite;
+}
+@keyframes borderRotate {
+  to { --angle: 360deg; }
+}
+.cta-box::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--bg-card);
+  z-index: -1;
+}
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+}
+.cta-desc {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.cta-input-group {
+  display: flex;
+  gap: 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.cta-input {
+  flex: 1;
+  padding: 0.9rem 1.2rem;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,240,255,0.2);
+  border-right: none;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.cta-input::placeholder { color: var(--text-dim); }
+.cta-input:focus { border-color: var(--neon-cyan); }
+.cta-submit {
+  padding: 0.9rem 2rem;
+  background: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+  color: var(--bg-primary);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.cta-submit:hover {
+  box-shadow: var(--box-glow-cyan);
+  transform: translateY(-1px);
+}
+
+.footer {
+  padding: 3rem 2rem;
+  border-top: 1px solid rgba(0,240,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-left {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  transition: color 0.3s;
+}
+.footer-links a:hover { color: var(--neon-cyan); }
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  color: var(--neon-green);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(57,255,20,0.5);
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 6px var(--neon-green), 0 0 12px var(--neon-green);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.divider {
+  height: 1px;
+  max-width: 200px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  box-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .features-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .pricing-card.recommended { transform: scale(1); }
+  .stats-grid { flex-direction: column; }
+  .stat-item:not(:last-child)::after {
+    right: 20%;
+    left: 20%;
+    top: auto;
+    bottom: 0;
+    width: 60%;
+    height: 1px;
+  }
+  .hero-stats { flex-direction: column; gap: 1.5rem; }
+  .cta-input-group { flex-direction: column; }
+  .cta-input { border-right: 1px solid rgba(0,240,255,0.2); border-bottom: none; }
+  .footer { flex-direction: column; text-align: center; }
+  .footer-right { flex-direction: column; }
+  .hero-buttons { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="scanline-overlay"></div>
+
+<nav class="nav">
+  <div class="nav-logo">CYBER://SYS</div>
+  <ul class="nav-links">
+    <li><a href="#features">功能</a></li>
+    <li><a href="#pricing">方案</a></li>
+    <li><a href="#terminal">演示</a></li>
+    <li><a href="#stats">数据</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">接入系统</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-radial"></div>
+  <div class="hud-corner tl"></div>
+  <div class="hud-corner tr"></div>
+  <div class="hud-corner bl"></div>
+  <div class="hud-corner br"></div>
+  <div class="hero-content">
+    <div class="hero-badge">[ 下一代云端基础设施 ]</div>
+    <div class="glitch-wrapper">
+      <div class="glitch-text" data-text="CYBER://TEMPLATE">CYBER://TEMPLATE</div>
+    </div>
+    <p class="hero-subtitle">
+      为未来而构建的<span>全栈云服务平台</span>。量子级加密、神经网络智能调度、
+      边缘节点极速部署——重新定义数字基础设施的边界。
+    </p>
+    <div class="hero-buttons">
+      <button class="btn-neon primary">▶ 启动控制台</button>
+      <button class="btn-neon secondary">◈ 查看文档</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">99.99%</div>
+        <div class="hero-stat-label">在线率</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">&lt;3ms</div>
+        <div class="hero-stat-label">全球延迟</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">50M+</div>
+        <div class="hero-stat-label">API请求/秒</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="section-header reveal">
+    <div class="section-tag">// 核心模块</div>
+    <h2 class="section-title">系统功能</h2>
+    <p class="section-desc">每一行代码都经过量子验证，每一个节点都实现自愈冗余</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="hud-tl"></div>
+      <div class="hud-br"></div>
+      <div class="feature-icon">⬡</div>
+      <h3 class="feature-title">量子加密隧道</h3>
+      <p class="feature-desc">采用后量子密码学算法，结合量子密钥分发技术，为数据传输提供理论上不可破解的安全保障。</p>
+      <span class="feature-tag">QKD-256</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="hud-tl"></div>
+      <div class="hud-br"></div>
+      <div class="feature-icon">⟁</div>
+      <h3 class="feature-title">神经网络调度</h3>
+      <p class="feature-desc">深度强化学习驱动的资源调度引擎，实时预测负载波动，自动扩缩容精确到毫秒级。</p>
+      <span class="feature-tag">AI-NATIVE</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="hud-tl"></div>
+      <div class="hud-br"></div>
+      <div class="feature-icon">◈</div>
+      <h3 class="feature-title">边缘计算矩阵</h3>
+      <p class="feature-desc">全球 200+ 边缘节点构成分布式计算矩阵，支持雾计算任务卸载与就近推理。</p>
+      <span class="feature-tag">EDGE-200</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="hud-tl"></div>
+      <div class="hud-br"></div>
+      <div class="feature-icon">⟐</div>
+      <h3 class="feature-title">全息监控面板</h3>
+      <p class="feature-desc">三维立体可视化监控体系，实时追踪服务拓扑、数据流向与异常事件，支持 AR 沉浸式运维。</p>
+      <span class="feature-tag">HOLO-DASH</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="pricing">
+  <div class="section-header reveal">
+    <div class="section-tag">// 接入方案</div>
+    <h2 class="section-title">选择套餐</h2>
+    <p class="section-desc">从个人开发者到企业级部署，灵活配置满足不同规模需求</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">基础版</div>
+      <div class="pricing-price">¥0<span>/月</span></div>
+      <p class="pricing-desc">适合个人项目和原型验证</p>
+      <ul class="pricing-features">
+        <li>2 个计算节点</li>
+        <li>10GB 存储空间</li>
+        <li>基础 API 调用限额</li>
+        <li>社区技术支持</li>
+        <li>标准 SSL 加密</li>
+      </ul>
+      <button class="pricing-btn">开始使用</button>
+    </div>
+    <div class="pricing-card recommended reveal">
+      <div class="pricing-recommended-tag">推荐</div>
+      <div class="pricing-tier" style="color: var(--neon-pink);">专业版</div>
+      <div class="pricing-price">¥299<span>/月</span></div>
+      <p class="pricing-desc">适合成长型团队和初创企业</p>
+      <ul class="pricing-features">
+        <li>20 个计算节点</li>
+        <li>500GB 存储空间</li>
+        <li>无限 API 调用</li>
+        <li>专属技术顾问</li>
+        <li>量子加密通道</li>
+        <li>边缘节点加速</li>
+      </ul>
+      <button class="pricing-btn">立即升级</button>
+    </div>
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">企业版</div>
+      <div class="pricing-price">定制<span></span></div>
+      <p class="pricing-desc">为大型企业和关键任务而生</p>
+      <ul class="pricing-features">
+        <li>无限计算节点</li>
+        <li>无限存储空间</li>
+        <li>私有化部署</li>
+        <li>7×24 SLA 保障</li>
+        <li>量子密钥管理</li>
+        <li>定制合规审计</li>
+      </ul>
+      <button class="pricing-btn">联系我们</button>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="terminal">
+  <div class="section-header reveal">
+    <div class="section-tag">// 系统演示</div>
+    <h2 class="section-title">接入控制台</h2>
+    <p class="section-desc">三行命令，启动你的云端基础设施</p>
+  </div>
+  <div class="terminal-section reveal">
+    <div class="terminal-header">
+      <div class="terminal-dot red"></div>
+      <div class="terminal-dot yellow"></div>
+      <div class="terminal-dot green"></div>
+      <span class="terminal-title">cyber-terminal v3.7.1 — ~/workspace</span>
+    </div>
+    <div class="terminal-body" id="terminalBody"></div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="section" style="padding: 4rem 2rem;">
+    <div class="stats-grid reveal">
+      <div class="stat-item">
+        <div class="stat-number" data-target="200">0</div>
+        <div class="stat-label">全球节点</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="50000">0</div>
+        <div class="stat-label">企业客户</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="99.99">0</div>
+        <div class="stat-label">可用性 %</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="12">0</div>
+        <div class="stat-label">全球数据中心</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="cta-box reveal">
+    <h2 class="cta-title">准备好了吗？</h2>
+    <p class="cta-desc">加入 50,000+ 企业，开启你的赛博云端之旅。免费试用 30 天，无需绑定信用卡。</p>
+    <div class="cta-input-group">
+      <input type="email" class="cta-input" placeholder="输入你的邮箱地址...">
+      <button class="cta-submit">立即注册</button>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-left">© 2077 CYBER://TEMPLATE — ALL RIGHTS RESERVED</div>
+  <div class="footer-right">
+    <ul class="footer-links">
+      <li><a href="#">隐私政策</a></li>
+      <li><a href="#">服务条款</a></li>
+      <li><a href="#">开发者文档</a></li>
+    </ul>
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      SYSTEM STATUS: ONLINE
+    </div>
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => observer.observe(el));
+
+  const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseFloat(el.dataset.target);
+        const isDecimal = target % 1 !== 0;
+        const duration = 2000;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = eased * target;
+          if (isDecimal) {
+            el.textContent = current.toFixed(2);
+          } else if (target >= 1000) {
+            el.textContent = Math.floor(current).toLocaleString();
+          } else {
+            el.textContent = Math.floor(current);
+          }
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+        statObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  statNumbers.forEach(el => statObserver.observe(el));
+
+  const terminalLines = [
+    { html: '<span class="comment"># 安装 CyberSDK</span>' },
+    { html: '<span class="prompt">$</span> <span class="cmd">npm install</span> <span class="string">@cyber/template-sdk</span>' },
+    { html: '<span class="comment"># 配置量子加密通道</span>' },
+    { html: '<span class="prompt">$</span> <span class="cmd">cyber</span> init <span class="string">--quantum-mode=on</span>' },
+    { html: '<span class="comment"># 部署到边缘计算矩阵</span>' },
+    { html: '<span class="prompt">$</span> <span class="cmd">cyber</span> deploy <span class="string">--region=all-nodes</span>' },
+    { html: '' },
+    { html: '<span class="keyword">✓</span> 量子通道已建立 <span class="comment">[QKD-256]</span>' },
+    { html: '<span class="keyword">✓</span> 神经网络调度器已激活' },
+    { html: '<span class="keyword">✓</span> 200+ 边缘节点同步完成' },
+    { html: '<span class="keyword">✓</span> 全息监控面板已上线' },
+    { html: '' },
+    { html: '<span style="color: var(--neon-pink);">>>> 部署完成</span> — 所有系统运行正常 <span class="terminal-cursor"></span>' },
+  ];
+
+  const terminalBody = document.getElementById('terminalBody');
+  let lineIndex = 0;
+  let terminalStarted = false;
+
+  const termObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !terminalStarted) {
+        terminalStarted = true;
+        startTerminal();
+      }
+    });
+  }, { threshold: 0.3 });
+  termObserver.observe(document.querySelector('.terminal-section'));
+
+  function startTerminal() {
+    if (lineIndex >= terminalLines.length) return;
+    const lineData = terminalLines[lineIndex];
+    const lineEl = document.createElement('div');
+    lineEl.className = 'terminal-line';
+    lineEl.innerHTML = lineData.html;
+    lineEl.style.animationDelay = '0s';
+    terminalBody.appendChild(lineEl);
+    lineIndex++;
+    const delay = lineData.html === '' ? 300 : (400 + Math.random() * 300);
+    setTimeout(startTerminal, delay);
+  }
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+});
+</script>
+</body>
+</html>

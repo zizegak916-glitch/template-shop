@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDITORIAL — SaaS Landing Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-bg: #ffffff;
+  --color-bg-alt: #f7f7f7;
+  --color-text: #111111;
+  --color-text-secondary: #666666;
+  --color-text-light: #999999;
+  --color-accent: #c41e3a;
+  --color-rule: #e0e0e0;
+  --color-placeholder: #f0f0f0;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+  --max-width: 1200px;
+  --section-gap: 120px;
+  --transition-duration: 0.7s;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================
+   Editorial Rules & Dividers
+   ============================================ */
+
+.editorial-rule {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-rule);
+  border: none;
+  margin: 0;
+}
+
+.editorial-rule--accent {
+  background-color: var(--color-accent);
+}
+
+.editorial-rule--centered-dot {
+  position: relative;
+  height: 1px;
+  background-color: var(--color-rule);
+}
+
+.editorial-rule--centered-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+}
+
+/* ============================================
+   Reveal Animations
+   ============================================ */
+
+.reveal {
+  opacity: 0;
+  transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
+  will-change: opacity, transform;
+}
+
+.reveal--up {
+  transform: translateY(40px);
+}
+
+.reveal--down {
+  transform: translateY(-40px);
+}
+
+.reveal--left {
+  transform: translateX(-40px);
+}
+
+.reveal--right {
+  transform: translateX(40px);
+}
+
+.reveal--scale {
+  transform: scale(0.95);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+/* ============================================
+   Navigation
+   ============================================ */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-rule);
+  transition: transform 0.3s ease;
+}
+
+.nav__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.nav__logo {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.nav__links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav__links a {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  transition: color 0.3s ease;
+}
+
+.nav__links a:hover {
+  color: var(--color-accent);
+}
+
+.nav__cta {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background-color: var(--color-text);
+  color: var(--color-bg);
+  padding: 10px 24px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav__cta:hover {
+  background-color: var(--color-accent);
+}
+
+/* ============================================
+   Hero Section
+   ============================================ */
+
+.hero {
+  padding: 140px 40px 80px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+  margin-bottom: 32px;
+}
+
+.hero__label span {
+  color: var(--color-accent);
+  margin-right: 8px;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1fr 0.45fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.hero__rule-top {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-accent);
+  margin-bottom: 48px;
+}
+
+.hero__content {
+  padding-top: 20px;
+}
+
+.hero__headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+  color: var(--color-text);
+}
+
+.hero__subline {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  max-width: 520px;
+  margin-bottom: 48px;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn--primary {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background-color: #a8182f;
+}
+
+.btn--secondary {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-text);
+  color: #ffffff;
+}
+
+.hero__image-wrapper {
+  position: relative;
+}
+
+.hero__image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: var(--color-placeholder);
+  position: relative;
+}
+
+.hero__image::after {
+  content: 'EDITORIAL PHOTO';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.hero__photo-credit {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-style: italic;
+  color: var(--color-text-light);
+  margin-top: 12px;
+  text-align: right;
+}
+
+.hero__rule-bottom {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-accent);
+  margin-top: 48px;
+}
+
+/* ============================================
+   Lead Article Section
+   ============================================ */
+
+.lead-article {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.lead-article__header {
+  margin-bottom: 60px;
+}
+
+.lead-article__category {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.lead-article__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  max-width: 800px;
+}
+
+.lead-article__grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.lead-article__body {
+  columns: 2;
+  column-gap: 40px;
+  column-rule: 1px solid var(--color-rule);
+}
+
+.lead-article__drop-cap::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  float: left;
+  line-height: 0.8;
+  margin-right: 12px;
+  margin-top: 6px;
+}
+
+.lead-article__body p {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+  break-inside: avoid;
+}
+
+.lead-article__pull-quote {
+  position: relative;
+  padding: 48px 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+  margin-top: 20px;
+}
+
+.lead-article__pull-quote::before {
+  content: '\201C';
+  font-family: var(--font-display);
+  font-size: 8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  position: absolute;
+  top: 10px;
+  left: -10px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.lead-article__pull-quote blockquote {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-text);
+  padding-left: 20px;
+  margin-bottom: 24px;
+}
+
+.lead-article__pull-quote cite {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-style: normal;
+  display: block;
+  padding-left: 20px;
+}
+
+/* ============================================
+   Feature Grid Section
+   ============================================ */
+
+.features {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.features__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 64px;
+}
+
+.features__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.features__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.features__link {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent);
+  padding-bottom: 2px;
+  transition: opacity 0.3s ease;
+}
+
+.features__link:hover {
+  opacity: 0.7;
+}
+
+.features__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.85fr 0.75fr;
+  grid-template-rows: auto auto;
+  gap: 32px;
+}
+
+.feature-card {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+}
+
+.feature-card__image {
+  background-color: var(--color-placeholder);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.feature-card__image::after {
+  content: 'FEATURE IMAGE';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.feature-card--tall .feature-card__image {
+  aspect-ratio: 3 / 4;
+  grid-row: 1 / 3;
+}
+
+.feature-card--wide .feature-card__image {
+  aspect-ratio: 16 / 9;
+}
+
+.feature-card--square .feature-card__image {
+  aspect-ratio: 4 / 3;
+}
+
+.feature-card__category {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+.feature-card__title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
+}
+
+.feature-card:hover .feature-card__title {
+  color: var(--color-accent);
+}
+
+.feature-card__excerpt {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.feature-card__meta {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+.feature-card__photo-credit {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--color-text-light);
+  margin-top: 8px;
+}
+
+/* ============================================
+   Stats/Data Strip
+   ============================================ */
+
+.stats {
+  background-color: var(--color-bg-alt);
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.stats__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 48px 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.stat {
+  text-align: center;
+  position: relative;
+  padding: 0 32px;
+}
+
+.stat:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 0;
+  bottom: 4px;
+  width: 1px;
+  background-color: var(--color-rule);
+}
+
+.stat__number {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 3.5vw, 3.5rem);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.stat__number span {
+  color: var(--color-accent);
+}
+
+.stat__label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Pricing Section
+   ============================================ */
+
+.pricing {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.pricing__header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+.pricing__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.pricing__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.pricing__subtitle {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.pricing__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.pricing-card {
+  border: 1px solid var(--color-rule);
+  padding: 56px 48px;
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.pricing-card:hover {
+  border-color: var(--color-text-light);
+}
+
+.pricing-card--featured {
+  border-color: var(--color-accent);
+  border-width: 2px;
+}
+
+.pricing-card__badge {
+  position: absolute;
+  top: -1px;
+  right: 40px;
+  background-color: var(--color-accent);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+}
+
+.pricing-card__tier {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+  margin-bottom: 16px;
+}
+
+.pricing-card__price {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.pricing-card__price span {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.pricing-card__desc {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.pricing-card__features {
+  list-style: none;
+  margin-bottom: 40px;
+}
+
+.pricing-card__features li {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-bg-alt);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pricing-card__features li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pricing-card__cta {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+/* ============================================
+   Testimonial Section
+   ============================================ */
+
+.testimonial {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.testimonial__inner {
+  position: relative;
+  padding: 48px 60px;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.testimonial__quote-mark {
+  font-family: var(--font-display);
+  font-size: 7rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: 16px;
+  opacity: 0.85;
+}
+
+.testimonial__quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--color-text);
+  max-width: 720px;
+  margin: 0 auto 36px;
+}
+
+.testimonial__attribution {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.testimonial__role {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-text-light);
+  margin-top: 4px;
+}
+
+/* ============================================
+   Editorial CTA Section
+   ============================================ */
+
+.editorial-cta {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.editorial-cta__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.editorial-cta__image {
+  aspect-ratio: 3 / 4;
+  background-color: var(--color-placeholder);
+  position: relative;
+}
+
+.editorial-cta__image::after {
+  content: 'EDITORIAL IMAGE';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.editorial-cta__content {
+  padding: 40px 0;
+}
+
+.editorial-cta__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 20px;
+}
+
+.editorial-cta__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 24px;
+}
+
+.editorial-cta__text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  margin-bottom: 40px;
+}
+
+.editorial-cta__photo-credit {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--color-text-light);
+  margin-top: 12px;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+
+.footer {
+  border-top: 1px solid var(--color-rule);
+  padding: 60px 40px 80px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 60px;
+}
+
+.footer__brand {
+  max-width: 280px;
+}
+
+.footer__logo {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.footer__tagline {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.footer__col-title {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+  margin-bottom: 20px;
+}
+
+.footer__col ul {
+  list-style: none;
+}
+
+.footer__col li {
+  margin-bottom: 12px;
+}
+
+.footer__col a {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  transition: color 0.3s ease;
+}
+
+.footer__col a:hover {
+  color: var(--color-accent);
+}
+
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-rule);
+}
+
+.footer__colophon {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  letter-spacing: 0.05em;
+}
+
+.footer__colophon span {
+  color: var(--color-accent);
+}
+
+.footer__issue {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-light);
+  letter-spacing: 0.1em;
+}
+
+/* ============================================
+   Mobile Navigation
+   ============================================ */
+
+.nav__toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.nav__toggle span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background-color: var(--color-text);
+  margin: 5px 0;
+  transition: all 0.3s ease;
+}
+
+/* ============================================
+   Responsive Styles
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .hero__grid {
+    grid-template-columns: 1fr 0.4fr;
+    gap: 40px;
+  }
+
+  .lead-article__grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .features__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feature-card--tall {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .feature-card--tall .feature-card__image {
+    grid-row: auto;
+    margin-bottom: 0;
+  }
+
+  .stats__inner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+
+  .stat:nth-child(2)::after {
+    display: none;
+  }
+
+  .editorial-cta__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .editorial-cta__image {
+    max-height: 500px;
+    overflow: hidden;
+  }
+
+  .footer__top {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --section-gap: 80px;
+  }
+
+  .nav__links,
+  .nav__cta {
+    display: none;
+  }
+
+  .nav__toggle {
+    display: block;
+  }
+
+  .hero {
+    padding: 120px 24px 60px;
+  }
+
+  .hero__grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero__headline {
+    font-size: clamp(2.2rem, 8vw, 3.2rem);
+  }
+
+  .hero__image-wrapper {
+    order: -1;
+  }
+
+  .hero__image {
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero__rule-bottom {
+    margin-top: 32px;
+  }
+
+  .lead-article {
+    padding: var(--section-gap) 24px;
+  }
+
+  .lead-article__body {
+    columns: 1;
+  }
+
+  .lead-article__pull-quote::before {
+    font-size: 5rem;
+    top: 5px;
+  }
+
+  .lead-article__pull-quote blockquote {
+    font-size: 1.3rem;
+  }
+
+  .features {
+    padding: var(--section-gap) 24px;
+  }
+
+  .features__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .features__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-card--tall {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    padding: 0 24px;
+  }
+
+  .stats__inner {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 40px 24px;
+  }
+
+  .stat {
+    padding: 0 16px;
+  }
+
+  .stat::after {
+    display: none !important;
+  }
+
+  .pricing {
+    padding: var(--section-gap) 24px;
+  }
+
+  .pricing__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .pricing-card {
+    padding: 40px 32px;
+  }
+
+  .testimonial {
+    padding: var(--section-gap) 24px;
+  }
+
+  .testimonial__inner {
+    padding: 40px 24px;
+  }
+
+  .testimonial__quote-mark {
+    font-size: 5rem;
+  }
+
+  .editorial-cta {
+    padding: var(--section-gap) 24px;
+  }
+
+  .editorial-cta__inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .editorial-cta__image {
+    aspect-ratio: 16 / 9;
+  }
+
+  .footer {
+    padding: 48px 24px 60px;
+  }
+
+  .footer__top {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__headline {
+    font-size: 2rem;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stat__number {
+    font-size: 2rem;
+  }
+
+  .pricing-card__price {
+    font-size: 2.5rem;
+  }
+}
+
+/* ============================================
+   Inline Callout Boxes
+   ============================================ */
+
+.callout {
+  background-color: var(--color-bg-alt);
+  border-left: 3px solid var(--color-accent);
+  padding: 32px 40px;
+  margin: 40px 0;
+}
+
+.callout__label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+.callout__text {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+/* ============================================
+   Two-Column Editorial Image Grid
+   ============================================ */
+
+.image-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 60px 0;
+}
+
+.image-duo__item {
+  position: relative;
+}
+
+.image-duo__image {
+  width: 100%;
+  background-color: var(--color-placeholder);
+  position: relative;
+}
+
+.image-duo__image--tall {
+  aspect-ratio: 3 / 4;
+}
+
+.image-duo__image--wide {
+  aspect-ratio: 16 / 10;
+}
+
+.image-duo__image::after {
+  content: 'EDITORIAL PHOTO';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.image-duo__credit {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--color-text-light);
+  margin-top: 10px;
+}
+
+/* ============================================
+   Timeline / Issue History
+   ============================================ */
+
+.timeline {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.timeline__header {
+  margin-bottom: 60px;
+}
+
+.timeline__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.timeline__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.timeline__grid {
+  display: grid;
+  grid-template-columns: 0.15fr 1fr;
+  gap: 0;
+}
+
+.timeline__line {
+  position: relative;
+  background-color: var(--color-rule);
+  width: 1px;
+  margin: 0 auto;
+}
+
+.timeline__dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.timeline__items {
+  padding-left: 48px;
+}
+
+.timeline__item {
+  padding: 0 0 56px 0;
+  position: relative;
+}
+
+.timeline__item::before {
+  content: '';
+  position: absolute;
+  left: -53px;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+}
+
+.timeline__item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: -49px;
+  top: 22px;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--color-rule);
+}
+
+.timeline__item-number {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.timeline__item-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.timeline__item-text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 480px;
+}
+
+.timeline__item-date {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* ============================================
+   Contributor Grid
+   ============================================ */
+
+.contributors {
+  padding: var(--section-gap) 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.contributors__header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.contributors__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.contributors__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.contributors__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.contributor {
+  text-align: center;
+}
+
+.contributor__avatar {
+  width: 80px;
+  height: 80px;
+  background-color: var(--color-placeholder);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  position: relative;
+}
+
+.contributor__avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--color-rule);
+}
+
+.contributor__name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.contributor__role {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+}
+
+.contributor__topics {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-accent);
+  margin-top: 8px;
+}
+
+/* ============================================
+   Full-Width Editorial Banner
+   ============================================ */
+
+.banner {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+  padding: 100px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--color-accent);
+}
+
+.banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--color-accent);
+}
+
+.banner__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 24px;
+}
+
+.banner__headline {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  max-width: 700px;
+  margin: 0 auto 32px;
+}
+
+.banner__text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 500px;
+  margin: 0 auto 40px;
+}
+
+.banner .btn--primary {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.banner .btn--primary:hover {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* ============================================
+   Editorial Ornament
+   ============================================ */
+
+.ornament {
+  text-align: center;
+  padding: 32px 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-rule);
+  letter-spacing: 0.5em;
+  user-select: none;
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .nav {
+    display: none;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  body {
+    font-size: 10pt;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     Navigation
+     ============================================ -->
+
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">Editorial</a>
+    <ul class="nav__links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Membership</a></li>
+      <li><a href="#testimonial">Voices</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav__cta">Subscribe</button>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============================================
+     Hero Section
+     ============================================ -->
+
+<section class="hero" id="hero">
+  <div class="hero__label reveal reveal--up">
+    <span>Vol. 01</span> Issue No. 042 — June 2026
+  </div>
+
+  <div class="hero__rule-top reveal reveal--scale"></div>
+
+  <div class="hero__grid">
+    <div class="hero__content reveal reveal--left">
+      <h1 class="hero__headline">The Future of Digital Design Is Written in Editorial</h1>
+      <p class="hero__subline">
+        探索设计与科技的交汇之处，我们以杂志编辑的视角，重新定义SaaS产品体验。每一期都是一次对数字美学的深度审视。
+      </p>
+      <div class="hero__actions">
+        <button class="btn btn--primary">Start Reading</button>
+        <button class="btn btn--secondary">View Archive</button>
+      </div>
+    </div>
+
+    <div class="hero__image-wrapper reveal reveal--right">
+      <div class="hero__image"></div>
+      <p class="hero__photo-credit">Photo by Editorial Studio</p>
+    </div>
+  </div>
+
+  <div class="hero__rule-bottom reveal reveal--scale"></div>
+</section>
+
+<!-- ============================================
+     Lead Article Section
+     ============================================ -->
+
+<section class="lead-article">
+  <div class="lead-article__header reveal reveal--up">
+    <p class="lead-article__category">Editor's Letter</p>
+    <h2 class="lead-article__title">当技术遇见美学：重新构想企业级软件体验</h2>
+  </div>
+
+  <hr class="editorial-rule--centered-dot reveal">
+
+  <div class="lead-article__grid">
+    <div class="lead-article__body reveal reveal--left">
+      <p class="lead-article__drop-cap">
+        在数字化浪潮席卷全球的今天，我们见证了一个令人振奋的现象——企业级软件正在从冰冷的工具蜕变为优雅的体验。曾经，功能性是衡量SaaS产品的唯一标准；而今，美学、情感与叙事正在重新定义产品的价值维度。这不仅是设计的胜利，更是对"好产品"这一概念的深刻反思。
+      </p>
+      <p>
+        杂志编辑部的同仁们在过去六个月中走访了全球三十七座城市，与超过两百位设计师、工程师和产品负责人展开对话。我们发现，那些真正改变行业格局的产品，无一例外地将编辑思维融入了产品DNA——它们讲述故事，营造氛围，引导用户进入精心编排的旅程。
+      </p>
+      <p>
+        本期专题将深入剖析这一趋势背后的设计哲学。从排版的微观美学到宏观的交互叙事，从色彩心理学到空间节奏的把控，我们将揭示顶级SaaS产品如何运用杂志编辑的智慧，创造出令人沉醉的使用体验。这不是一份技术手册，而是一封写给数字美学的情书。
+      </p>
+      <p>
+        作为本期的主编，我希望这份刊物能够激发每一位读者对"美"的思考。在这个效率至上的时代，我们更需要停下来，审视那些被忽视的设计细节，重新发现技术产品中蕴含的人文温度。
+      </p>
+    </div>
+
+    <div class="reveal reveal--right">
+      <div class="lead-article__pull-quote">
+        <blockquote>
+          好的设计不是增加，而是减少到本质。好到不需要解释。
+        </blockquote>
+        <cite>Dieter Rams</cite>
+      </div>
+
+      <div style="margin-top: 48px;">
+        <div class="feature-card__image" style="aspect-ratio: 4/3; width: 100%;"></div>
+        <p class="feature-card__photo-credit">Studio portrait — Milan, 2026</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Feature Grid Section
+     ============================================ -->
+
+<section class="features" id="features">
+  <div class="features__header reveal reveal--up">
+    <div>
+      <p class="features__label">Featured Stories</p>
+      <h2 class="features__title">本期精选</h2>
+    </div>
+    <a href="#" class="features__link">View All Stories</a>
+  </div>
+
+  <div class="features__grid">
+    <!-- Tall Card -->
+    <div class="feature-card feature-card--tall reveal reveal--left">
+      <div class="feature-card__image"></div>
+      <div>
+        <p class="feature-card__category">Cover Story</p>
+        <h3 class="feature-card__title">排版的力量：字体如何塑造品牌感知</h3>
+        <p class="feature-card__excerpt">
+          从衬线到无衬线，从字重到字距，每一个排版决策都在无声地传递品牌的核心价值。本文深入探讨了字体选择如何影响用户对产品的第一印象，以及如何建立一套贯穿始终的排版系统。
+        </p>
+        <p class="feature-card__meta">12 min read — By Lin Xiaomei</p>
+        <p class="feature-card__photo-credit">Typography specimen — Letterform Archive</p>
+      </div>
+    </div>
+
+    <!-- Wide Card -->
+    <div class="feature-card feature-card--wide reveal reveal--up" style="grid-column: 2 / 4;">
+      <div class="feature-card__image"></div>
+      <p class="feature-card__category">Deep Dive</p>
+      <h3 class="feature-card__title">白色空间的哲学：留白如何创造呼吸感</h3>
+      <p class="feature-card__excerpt">
+        在信息过载的时代，留白是最奢侈的设计元素。我们探讨了如何在SaaS界面中运用白色空间引导视线、创造节奏，以及提升内容的可读性与沉浸感。
+      </p>
+      <p class="feature-card__meta">8 min read — By Zhang Wei</p>
+    </div>
+
+    <!-- Square Card -->
+    <div class="feature-card feature-card--square reveal reveal--right">
+      <div class="feature-card__image"></div>
+      <p class="feature-card__category">Interview</p>
+      <h3 class="feature-card__title">与色彩对话</h3>
+      <p class="feature-card__excerpt">
+        我们与全球知名的色彩研究学者进行了一场深度对话，探讨色彩在数字产品中的情感力量。
+      </p>
+      <p class="feature-card__meta">6 min read — By Chen Jie</p>
+    </div>
+
+    <!-- Square Card -->
+    <div class="feature-card feature-card--square reveal reveal--up">
+      <div class="feature-card__image"></div>
+      <p class="feature-card__category">Case Study</p>
+      <h3 class="feature-card__title">从零到一：编辑式SaaS的诞生</h3>
+      <p class="feature-card__excerpt">
+        一家初创公司如何将杂志编辑的思维融入产品设计，创造出令人惊艳的企业级体验。
+      </p>
+      <p class="feature-card__meta">10 min read — By Wang Liu</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Stats/Data Strip
+     ============================================ -->
+
+<section class="stats">
+  <div class="stats__inner">
+    <div class="stat reveal reveal--up">
+      <div class="stat__number">2,847<span>+</span></div>
+      <div class="stat__label">Subscribers</div>
+    </div>
+    <div class="stat reveal reveal--up" style="transition-delay: 0.1s;">
+      <div class="stat__number">156</div>
+      <div class="stat__label">Published Articles</div>
+    </div>
+    <div class="stat reveal reveal--up" style="transition-delay: 0.2s;">
+      <div class="stat__number">42</div>
+      <div class="stat__label">Issue Numbers</div>
+    </div>
+    <div class="stat reveal reveal--up" style="transition-delay: 0.3s;">
+      <div class="stat__number">98<span>%</span></div>
+      <div class="stat__label">Reader Satisfaction</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Pricing Section
+     ============================================ -->
+
+<section class="pricing" id="pricing">
+  <div class="pricing__header reveal reveal--up">
+    <p class="pricing__label">Membership</p>
+    <h2 class="pricing__title">选择你的会员计划</h2>
+    <p class="pricing__subtitle">
+      加入全球最具品味的设计师社区，解锁独家内容与灵感资源。
+    </p>
+  </div>
+
+  <div class="pricing__grid">
+    <div class="pricing-card reveal reveal--left">
+      <p class="pricing-card__tier">Standard</p>
+      <p class="pricing-card__price"><span>$</span>29<span>/month</span></p>
+      <p class="pricing-card__desc">
+        适合独立设计师和小型团队，获取精选内容与基础资源。
+      </p>
+      <ul class="pricing-card__features">
+        <li>每月 4 篇独家深度文章</li>
+        <li>编辑精选设计资源库</li>
+        <li>社区讨论与交流</li>
+        <li>季度设计趋势报告</li>
+      </ul>
+      <button class="btn btn--secondary pricing-card__cta">Get Started</button>
+    </div>
+
+    <div class="pricing-card pricing-card--featured reveal reveal--right">
+      <div class="pricing-card__badge">Most Popular</div>
+      <p class="pricing-card__tier">Premium</p>
+      <p class="pricing-card__price"><span>$</span>79<span>/month</span></p>
+      <p class="pricing-card__desc">
+        适合专业设计团队，享受全部内容与优先支持服务。
+      </p>
+      <ul class="pricing-card__features">
+        <li>无限访问全部文章与档案</li>
+        <li>高清设计素材与模板</li>
+        <li>一对一设计咨询（每月1次）</li>
+        <li>优先参加线下沙龙活动</li>
+        <li>专属编辑团队支持</li>
+      </ul>
+      <button class="btn btn--primary pricing-card__cta">Subscribe Now</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Testimonial Section
+     ============================================ -->
+
+<section class="testimonial" id="testimonial">
+  <div class="testimonial__inner reveal reveal--scale">
+    <div class="testimonial__quote-mark">"</div>
+    <blockquote class="testimonial__quote">
+      这不仅是一本杂志，更是一种设计哲学的宣言。每一篇文章都像一件精心雕琢的艺术品，让我重新思考了产品设计的本质。
+    </blockquote>
+    <p class="testimonial__attribution">Li Mingzhe</p>
+    <p class="testimonial__role">Design Director, ByteVerse Technology</p>
+  </div>
+</section>
+
+<!-- ============================================
+     Issue History / Timeline
+     ============================================ -->
+
+<section class="timeline" id="archive">
+  <div class="timeline__header reveal reveal--up">
+    <p class="timeline__label">Past Issues</p>
+    <h2 class="timeline__title">往期回顾</h2>
+  </div>
+
+  <div class="timeline__grid">
+    <div class="timeline__line">
+      <div class="timeline__dot" style="top: 8px;"></div>
+    </div>
+
+    <div class="timeline__items">
+      <div class="timeline__item reveal reveal--right">
+        <p class="timeline__item-number">Issue No. 041</p>
+        <h3 class="timeline__item-title">数据可视化的情感维度</h3>
+        <p class="timeline__item-text">
+          当数字不再冰冷，图表也能讲述动人故事。本期深入探讨数据可视化如何从功能性工具演变为情感传达的媒介，以及设计师如何在精确与美感之间找到平衡。
+        </p>
+        <p class="timeline__item-date">May 2026 — 14 min read</p>
+      </div>
+
+      <div class="timeline__item reveal reveal--right" style="transition-delay: 0.1s;">
+        <p class="timeline__item-number">Issue No. 040</p>
+        <h3 class="timeline__item-title">极简主义的回归与超越</h3>
+        <p class="timeline__item-text">
+          从包豪斯到数字界面，极简主义经历了百年演变。我们追溯这一美学运动的根源，探讨它在当代SaaS产品中的新表达。
+        </p>
+        <p class="timeline__item-date">April 2026 — 11 min read</p>
+      </div>
+
+      <div class="timeline__item reveal reveal--right" style="transition-delay: 0.2s;">
+        <p class="timeline__item-number">Issue No. 039</p>
+        <h3 class="timeline__item-title">无障碍设计的美学革命</h3>
+        <p class="timeline__item-text">
+          无障碍不是妥协，而是创新的催化剂。本期记录了那些将包容性设计提升到艺术高度的先锋实践者。
+        </p>
+        <p class="timeline__item-date">March 2026 — 9 min read</p>
+      </div>
+
+      <div class="timeline__item reveal reveal--right" style="transition-delay: 0.3s;">
+        <p class="timeline__item-number">Issue No. 038</p>
+        <h3 class="timeline__item-title">品牌声音：文字如何塑造感知</h3>
+        <p class="timeline__item-text">
+          从文案风格到界面微文案，品牌的声音贯穿产品的每一个触点。我们与顶尖品牌策略师共同解码声音设计的艺术。
+        </p>
+        <p class="timeline__item-date">February 2026 — 12 min read</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Contributors Section
+     ============================================ -->
+
+<section class="contributors">
+  <div class="contributors__header reveal reveal--up">
+    <p class="contributors__label">Our Contributors</p>
+    <h2 class="contributors__title">撰稿人</h2>
+  </div>
+
+  <div class="contributors__grid">
+    <div class="contributor reveal reveal--up">
+      <div class="contributor__avatar"></div>
+      <p class="contributor__name">Lin Xiaomei</p>
+      <p class="contributor__role">Typographer</p>
+      <p class="contributor__topics">Typography, Branding</p>
+    </div>
+
+    <div class="contributor reveal reveal--up" style="transition-delay: 0.1s;">
+      <div class="contributor__avatar"></div>
+      <p class="contributor__name">Zhang Wei</p>
+      <p class="contributor__role">UX Designer</p>
+      <p class="contributor__topics">Layout, White Space</p>
+    </div>
+
+    <div class="contributor reveal reveal--up" style="transition-delay: 0.2s;">
+      <div class="contributor__avatar"></div>
+      <p class="contributor__name">Chen Jie</p>
+      <p class="contributor__role">Color Researcher</p>
+      <p class="contributor__topics">Color Theory, Psychology</p>
+    </div>
+
+    <div class="contributor reveal reveal--up" style="transition-delay: 0.3s;">
+      <div class="contributor__avatar"></div>
+      <p class="contributor__name">Wang Liu</p>
+      <p class="contributor__role">Product Designer</p>
+      <p class="contributor__topics">SaaS, Editorial Design</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Two-Column Image Grid
+     ============================================ -->
+
+<section style="padding: 0 40px; max-width: var(--max-width); margin: 0 auto;">
+  <div class="image-duo reveal reveal--up">
+    <div class="image-duo__item">
+      <div class="image-duo__image image-duo__image--tall"></div>
+      <p class="image-duo__credit">Studio session — Shanghai, 2026</p>
+    </div>
+    <div class="image-duo__item">
+      <div class="image-duo__image image-duo__image--wide"></div>
+      <p class="image-duo__credit">Print proofs — Editorial Workshop</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Full-Width Banner
+     ============================================ -->
+
+<div class="banner reveal reveal--scale">
+  <p class="banner__label">Limited Time Offer</p>
+  <h2 class="banner__headline">加入年度会员，享受八折优惠</h2>
+  <p class="banner__text">
+    年度会员可解锁全部往期档案、独家设计资源，以及优先参加线下沙龙活动的机会。
+  </p>
+  <button class="btn btn--primary">Claim Offer</button>
+</div>
+
+<!-- ============================================
+     Editorial CTA Section
+     ============================================ -->
+
+<section class="editorial-cta" id="contact">
+  <div class="editorial-cta__inner">
+    <div class="editorial-cta__image reveal reveal--left"></div>
+    <div class="editorial-cta__content reveal reveal--right">
+      <p class="editorial-cta__label">Next Issue</p>
+      <h2 class="editorial-cta__title">第七期预告：动效的叙事语言</h2>
+      <p class="editorial-cta__text">
+        在下一期中，我们将深入探讨动效设计如何成为产品叙事的核心语言。从微交互到全屏过渡，从数据可视化到品牌动画，我们将揭示动效如何让冰冷的界面拥有温度与灵魂。
+      </p>
+      <button class="btn btn--primary">Pre-Order Now</button>
+      <p class="editorial-cta__photo-credit">Cover illustration — Available July 2026</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     Footer
+     ============================================ -->
+
+<footer class="footer">
+  <div class="footer__top">
+    <div class="footer__brand">
+      <p class="footer__logo">Editorial</p>
+      <p class="footer__tagline">
+        一本关于设计、技术与美学的数字杂志。我们相信，好的产品体验源于对细节的极致追求。
+      </p>
+    </div>
+
+    <div class="footer__col">
+      <p class="footer__col-title">Archive</p>
+      <ul>
+        <li><a href="#">Issue No. 042</a></li>
+        <li><a href="#">Issue No. 041</a></li>
+        <li><a href="#">Issue No. 040</a></li>
+        <li><a href="#">Issue No. 039</a></li>
+        <li><a href="#">View All Issues</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <p class="footer__col-title">Sections</p>
+      <ul>
+        <li><a href="#">Cover Story</a></li>
+        <li><a href="#">Deep Dive</a></li>
+        <li><a href="#">Interview</a></li>
+        <li><a href="#">Case Study</a></li>
+        <li><a href="#">Resources</a></li>
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <p class="footer__col-title">Connect</p>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Submit a Story</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <p class="footer__colophon">
+      © 2026 Editorial Magazine. All rights reserved. Made with <span>♥</span> for design.
+    </p>
+    <p class="footer__issue">
+      Vol. 01 — Issue No. 042 — June 2026
+    </p>
+  </div>
+</footer>
+
+<!-- ============================================
+     IntersectionObserver Reveal Script
+     ============================================ -->
+
+<script>
+(function () {
+  'use strict';
+
+  // Reveal on scroll
+  var reveals = document.querySelectorAll('.reveal');
+  var observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -60px 0px',
+    threshold: 0.1
+  };
+
+  var revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  reveals.forEach(function (el) {
+    revealObserver.observe(el);
+  });
+
+  // Nav hide/show on scroll (subtle)
+  var lastScroll = 0;
+  var nav = document.getElementById('nav');
+
+  window.addEventListener('scroll', function () {
+    var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    if (currentScroll > 200 && currentScroll > lastScroll) {
+      nav.style.transform = 'translateY(-100%)';
+    } else {
+      nav.style.transform = 'translateY(0)';
+    }
+    lastScroll = currentScroll;
+  }, { passive: true });
+
+  // Mobile nav toggle
+  var navToggle = document.getElementById('navToggle');
+  var navLinks = document.querySelector('.nav__links');
+  var navCta = document.querySelector('.nav__cta');
+
+  navToggle.addEventListener('click', function () {
+    var isOpen = navLinks.style.display === 'flex';
+    if (isOpen) {
+      navLinks.style.display = '';
+      navCta.style.display = '';
+    } else {
+      navLinks.style.display = 'flex';
+      navLinks.style.flexDirection = 'column';
+      navLinks.style.position = 'absolute';
+      navLinks.style.top = '64px';
+      navLinks.style.left = '0';
+      navLinks.style.right = '0';
+      navLinks.style.backgroundColor = '#ffffff';
+      navLinks.style.padding = '24px 40px';
+      navLinks.style.borderBottom = '1px solid #e0e0e0';
+      navLinks.style.gap = '20px';
+
+      navCta.style.display = 'block';
+      navCta.style.position = 'absolute';
+      navCta.style.top = 'calc(64px + 160px)';
+      navCta.style.left = '40px';
+      navCta.style.right = '40px';
+    }
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      var targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      var target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        var offset = 80;
+        var targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+
+        // Close mobile nav if open
+        if (window.innerWidth <= 768) {
+          navLinks.style.display = '';
+          navCta.style.display = '';
+        }
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

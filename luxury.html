@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>轻奢级 SaaS — 奢享级数字体验</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --charcoal: #1a1a1e;
+  --ivory: #f8f6f1;
+  --gold: #c9a96e;
+  --gold-30: rgba(201,169,110,0.3);
+  --gold-15: rgba(201,169,110,0.15);
+  --gold-08: rgba(201,169,110,0.08);
+  --rose: #d4a0a0;
+  --white: #ffffff;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Outfit', -apple-system, sans-serif;
+  --border: 1px solid var(--gold-30);
+  --gradient-line: linear-gradient(90deg, transparent, var(--gold), transparent);
+  --section-padding: clamp(80px, 12vw, 160px);
+  --container-width: 1200px;
+  --transition-elegant: 1s ease-out;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--sans);
+  font-weight: 300;
+  background: var(--charcoal);
+  color: var(--white);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+/* Gold divider line between sections */
+.gold-divider {
+  width: 200px;
+  height: 1px;
+  background: var(--gradient-line);
+  margin: 0 auto;
+}
+
+.gold-divider--left {
+  margin-left: 0;
+}
+
+.gold-divider--wide {
+  width: 100%;
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity var(--transition-elegant), transform var(--transition-elegant);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+.reveal-delay-4 { transition-delay: 0.6s; }
+
+/* ─── NAVIGATION ─── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 24px 0;
+  transition: background 0.5s ease, padding 0.5s ease;
+}
+
+.nav.scrolled {
+  background: rgba(26,26,30,0.92);
+  backdrop-filter: blur(20px);
+  padding: 16px 0;
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+.nav__logo {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--white);
+}
+
+.nav__logo span {
+  color: var(--gold);
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  list-style: none;
+}
+
+.nav__links a {
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  transition: color 0.3s ease;
+}
+
+.nav__links a:hover {
+  color: var(--gold);
+}
+
+.nav__cta {
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  border: 1px solid var(--gold-30);
+  color: var(--gold);
+  transition: all 0.4s ease;
+}
+
+.nav__cta:hover {
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+.nav__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.nav__hamburger span {
+  width: 24px;
+  height: 1px;
+  background: var(--white);
+  transition: all 0.3s ease;
+}
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 80px,
+      var(--gold-08) 80px,
+      var(--gold-08) 81px
+    );
+  z-index: 0;
+}
+
+.hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, var(--charcoal) 75%);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+.hero__label {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: heroFadeIn 1.2s ease-out 0.3s forwards;
+}
+
+.hero__title {
+  font-family: var(--serif);
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: heroFadeUp 1.4s ease-out 0.5s forwards;
+}
+
+.hero__divider {
+  width: 120px;
+  height: 1px;
+  background: var(--gradient-line);
+  margin: 0 auto 40px;
+  opacity: 0;
+  animation: heroFadeIn 1.2s ease-out 0.8s forwards;
+}
+
+.hero__subtitle {
+  font-family: var(--sans);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 200;
+  color: rgba(255,255,255,0.55);
+  max-width: 560px;
+  margin: 0 auto 56px;
+  line-height: 1.9;
+  opacity: 0;
+  animation: heroFadeUp 1.4s ease-out 1s forwards;
+}
+
+.hero__cta {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 18px 52px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  transition: all 0.5s ease;
+  opacity: 0;
+  animation: heroFadeUp 1.4s ease-out 1.2s forwards;
+}
+
+.hero__cta:hover {
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+.hero__scroll {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  animation: heroFadeIn 1.2s ease-out 1.8s forwards;
+}
+
+.hero__scroll-text {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+.hero__scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--gold-30), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+/* ─── BRAND STRIP ─── */
+.brands {
+  padding: 64px 0;
+  border-top: 1px solid rgba(201,169,110,0.1);
+  border-bottom: 1px solid rgba(201,169,110,0.1);
+  background: var(--charcoal);
+}
+
+.brands__label {
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 40px;
+}
+
+.brands__grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(32px, 6vw, 80px);
+  flex-wrap: wrap;
+}
+
+.brands__wordmark {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 400;
+  color: var(--gold-30);
+  letter-spacing: 0.08em;
+  transition: color 0.4s ease;
+  white-space: nowrap;
+}
+
+.brands__wordmark:hover {
+  color: var(--gold);
+}
+
+/* ─── FEATURES ─── */
+.features {
+  padding: var(--section-padding) 0;
+}
+
+.features__heading {
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.features__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.features__title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.3;
+}
+
+.feature {
+  padding: clamp(60px, 10vw, 120px) 0;
+}
+
+.feature--ivory {
+  background: var(--ivory);
+  color: var(--charcoal);
+}
+
+.feature__inner {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(40px, 6vw, 100px);
+  align-items: start;
+}
+
+.feature__number {
+  font-family: var(--serif);
+  font-size: clamp(4rem, 8vw, 8rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--gold);
+  opacity: 0.35;
+}
+
+.feature--ivory .feature__number {
+  opacity: 0.2;
+}
+
+.feature__content {
+  padding-top: 12px;
+}
+
+.feature__rule {
+  width: 48px;
+  height: 1px;
+  background: var(--gold);
+  margin-bottom: 32px;
+}
+
+.feature--ivory .feature__rule {
+  background: var(--charcoal);
+  opacity: 0.2;
+}
+
+.feature__name {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 400;
+  margin-bottom: 24px;
+  line-height: 1.3;
+}
+
+.feature__desc {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 2;
+  color: rgba(255,255,255,0.5);
+  max-width: 520px;
+}
+
+.feature--ivory .feature__desc {
+  color: rgba(26,26,30,0.55);
+}
+
+.feature__icon {
+  margin-top: 40px;
+}
+
+.feature__icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.feature--ivory .feature__icon svg {
+  stroke: var(--charcoal);
+  opacity: 0.4;
+}
+
+/* ─── SHOWCASE ─── */
+.showcase {
+  padding: var(--section-padding) 0;
+}
+
+.showcase__heading {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.showcase__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.showcase__title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+}
+
+.showcase__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+.showcase__item {
+  border: var(--border);
+  background: rgba(201,169,110,0.03);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.showcase__item:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 40px rgba(201,169,110,0.06);
+}
+
+.showcase__item--wide {
+  grid-column: span 8;
+  aspect-ratio: 16/9;
+}
+
+.showcase__item--narrow {
+  grid-column: span 4;
+  aspect-ratio: 4/3;
+}
+
+.showcase__item--half {
+  grid-column: span 6;
+  aspect-ratio: 4/3;
+}
+
+.showcase__item--full {
+  grid-column: span 12;
+  aspect-ratio: 21/9;
+}
+
+.showcase__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.showcase__placeholder-inner {
+  width: 60%;
+  height: 60%;
+  border: 1px dashed var(--gold-15);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.showcase__placeholder-text {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-30);
+}
+
+/* ─── PRICING ─── */
+.pricing {
+  padding: var(--section-padding) 0;
+}
+
+.pricing__heading {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.pricing__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.pricing__title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+}
+
+.pricing__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.pricing__card {
+  border: var(--border);
+  padding: clamp(40px, 4vw, 56px);
+  position: relative;
+  transition: border-color 0.4s ease;
+}
+
+.pricing__card:hover {
+  border-color: var(--gold);
+}
+
+.pricing__card--recommended {
+  border-color: var(--gold);
+  box-shadow: 0 0 60px rgba(201,169,110,0.08), 0 0 120px rgba(201,169,110,0.04);
+}
+
+.pricing__badge {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--charcoal);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 20px;
+}
+
+.pricing__tier {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 24px;
+}
+
+.pricing__price {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.pricing__price span {
+  font-size: 0.4em;
+  font-family: var(--sans);
+  font-weight: 300;
+  color: rgba(255,255,255,0.35);
+}
+
+.pricing__period {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 40px;
+}
+
+.pricing__rule {
+  width: 100%;
+  height: 1px;
+  background: var(--gold-15);
+  margin-bottom: 36px;
+}
+
+.pricing__features {
+  list-style: none;
+  margin-bottom: 44px;
+}
+
+.pricing__features li {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(201,169,110,0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pricing__features li:last-child {
+  border-bottom: none;
+}
+
+.pricing__check {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.pricing__btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--gold-30);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.pricing__btn:hover {
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+.pricing__card--recommended .pricing__btn {
+  background: var(--gold);
+  color: var(--charcoal);
+  border-color: var(--gold);
+}
+
+.pricing__card--recommended .pricing__btn:hover {
+  background: var(--white);
+  border-color: var(--white);
+}
+
+/* ─── TESTIMONIAL ─── */
+.testimonial {
+  padding: var(--section-padding) 0;
+  background: var(--ivory);
+  text-align: center;
+}
+
+.testimonial__inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+.testimonial__marks {
+  font-family: var(--serif);
+  font-size: 6rem;
+  line-height: 0.6;
+  color: var(--gold);
+  opacity: 0.25;
+  margin-bottom: 24px;
+}
+
+.testimonial__quote {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.9;
+  color: var(--charcoal);
+  margin-bottom: 48px;
+}
+
+.testimonial__rule {
+  width: 48px;
+  height: 1px;
+  background: var(--charcoal);
+  opacity: 0.15;
+  margin: 0 auto 36px;
+}
+
+.testimonial__author {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(26,26,30,0.45);
+}
+
+.testimonial__author strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  padding: 80px 0 48px;
+  border-top: 1px solid var(--gold-30);
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 60px;
+  margin-bottom: 80px;
+}
+
+.footer__brand {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.footer__brand span {
+  color: var(--gold);
+}
+
+.footer__desc {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.35);
+  max-width: 320px;
+  line-height: 1.9;
+}
+
+.footer__col-title {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.footer__col-links {
+  list-style: none;
+}
+
+.footer__col-links li {
+  margin-bottom: 12px;
+}
+
+.footer__col-links a {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.4);
+  transition: color 0.3s ease;
+}
+
+.footer__col-links a:hover {
+  color: var(--gold);
+}
+
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 32px;
+  border-top: 1px solid rgba(201,169,110,0.1);
+}
+
+.footer__copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.25);
+}
+
+.footer__social {
+  display: flex;
+  gap: 24px;
+}
+
+.footer__social a {
+  color: rgba(255,255,255,0.3);
+  transition: color 0.3s ease;
+}
+
+.footer__social a:hover {
+  color: var(--gold);
+}
+
+.footer__social svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ─── STATS ─── */
+.stats {
+  padding: var(--section-padding) 0;
+  border-top: 1px solid var(--gold-08);
+  border-bottom: 1px solid var(--gold-08);
+}
+
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+
+.stats__item {
+  padding: 32px 16px;
+  position: relative;
+}
+
+.stats__item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: var(--gradient-line);
+}
+
+.stats__number {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.stats__label {
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ─── CTA SECTION ─── */
+.cta-section {
+  padding: var(--section-padding) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(201,169,110,0.06) 0%, transparent 60%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 120px,
+      var(--gold-08) 120px,
+      var(--gold-08) 121px
+    );
+  z-index: 0;
+}
+
+.cta-section__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+.cta-section__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 28px;
+}
+
+.cta-section__title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  line-height: 1.3;
+  margin-bottom: 24px;
+}
+
+.cta-section__divider {
+  width: 80px;
+  height: 1px;
+  background: var(--gradient-line);
+  margin: 0 auto 32px;
+}
+
+.cta-section__desc {
+  font-size: 0.95rem;
+  font-weight: 200;
+  color: rgba(255,255,255,0.5);
+  line-height: 2;
+  margin-bottom: 48px;
+}
+
+.cta-section__btn {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 18px 52px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  transition: all 0.5s ease;
+}
+
+.cta-section__btn:hover {
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+.cta-section__note {
+  margin-top: 24px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.25);
+}
+
+/* ─── TESTIMONIAL GRID (additional) ─── */
+.testimonials-grid {
+  padding: var(--section-padding) 0;
+  background: var(--charcoal);
+}
+
+.testimonials-grid__heading {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.testimonials-grid__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.testimonials-grid__title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+}
+
+.testimonials-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  border: var(--border);
+  padding: clamp(32px, 3vw, 44px);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.testimonial-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 40px rgba(201,169,110,0.05);
+}
+
+.testimonial-card__stars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.testimonial-card__star {
+  width: 14px;
+  height: 14px;
+  color: var(--gold);
+}
+
+.testimonial-card__text {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 32px;
+  min-height: 120px;
+}
+
+.testimonial-card__author {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.testimonial-card__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.testimonial-card__name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.testimonial-card__role {
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ─── PROCESS / HOW IT WORKS ─── */
+.process {
+  padding: var(--section-padding) 0;
+  background: var(--ivory);
+  color: var(--charcoal);
+}
+
+.process__heading {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.process__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.process__title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+}
+
+.process__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+.process__step {
+  text-align: center;
+  position: relative;
+}
+
+.process__step-number {
+  font-family: var(--serif);
+  font-size: 3.2rem;
+  font-weight: 300;
+  color: var(--gold);
+  opacity: 0.25;
+  margin-bottom: 28px;
+  line-height: 1;
+}
+
+.process__step-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 28px;
+  border: 1px solid var(--gold-30);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.process__step-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: var(--charcoal);
+  opacity: 0.5;
+}
+
+.process__step-title {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 16px;
+}
+
+.process__step-desc {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: rgba(26,26,30,0.5);
+  line-height: 1.9;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.process__connector {
+  position: absolute;
+  top: 32px;
+  right: -24px;
+  width: 48px;
+  height: 1px;
+  background: var(--gradient-line);
+  opacity: 0.4;
+}
+
+.process__step:last-child .process__connector {
+  display: none;
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 1024px) {
+  .showcase__item--wide,
+  .showcase__item--narrow {
+    grid-column: span 6;
+  }
+  .showcase__item--full {
+    grid-column: span 12;
+  }
+  .stats__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats__item:nth-child(2)::after {
+    display: none;
+  }
+  .testimonials-grid__cards {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav__links {
+    display: none;
+  }
+  .nav__hamburger {
+    display: flex;
+  }
+  .feature__inner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .feature__number {
+    font-size: clamp(3rem, 12vw, 5rem);
+  }
+  .pricing__grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .showcase__grid {
+    grid-template-columns: 1fr;
+  }
+  .showcase__item--wide,
+  .showcase__item--narrow,
+  .showcase__item--half,
+  .showcase__item--full {
+    grid-column: span 1;
+    aspect-ratio: 16/10;
+  }
+  .footer__top {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  .process__steps {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    gap: 60px;
+  }
+  .process__connector {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .brands__grid {
+    gap: 24px;
+  }
+  .brands__wordmark {
+    font-size: 0.95rem;
+  }
+  .footer__top {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .footer__bottom {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  .stats__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .stats__item::after {
+    display: none !important;
+  }
+}
+
+/* ─── SELECTION STYLE ─── */
+::selection {
+  background: rgba(201,169,110,0.25);
+  color: var(--white);
+}
+
+::-moz-selection {
+  background: rgba(201,169,110,0.25);
+  color: var(--white);
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--charcoal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-30);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ─── FOCUS STYLES ─── */
+a:focus-visible,
+button:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">LUX<span>E</span></a>
+    <ul class="nav__links">
+      <li><a href="#features">功能</a></li>
+      <li><a href="#showcase">展示</a></li>
+      <li><a href="#pricing">定价</a></li>
+      <li><a href="#testimonial">评价</a></li>
+      <li><a href="#" class="nav__cta">立即体验</a></li>
+    </ul>
+    <div class="nav__hamburger" id="hamburger" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <p class="hero__label">Premium SaaS Experience</p>
+    <h1 class="hero__title">轻奢级体验</h1>
+    <div class="hero__divider"></div>
+    <p class="hero__subtitle">为追求极致品质的团队打造。每一处细节，都经过精雕细琢，只为呈现无可挑剔的数字体验。</p>
+    <a href="#" class="hero__cta">开启旅程</a>
+  </div>
+  <div class="hero__scroll">
+    <span class="hero__scroll-text">Scroll</span>
+    <div class="hero__scroll-line"></div>
+  </div>
+</section>
+
+<!-- Brand Strip -->
+<section class="brands">
+  <div class="container">
+    <p class="brands__label reveal">Trusted by Premium Brands</p>
+    <div class="brands__grid reveal reveal-delay-1">
+      <span class="brands__wordmark">HERMÈS</span>
+      <span class="brands__wordmark">BOTTEGA</span>
+      <span class="brands__wordmark">LOEWE</span>
+      <span class="brands__wordmark">CELINE</span>
+      <span class="brands__wordmark">BULGARI</span>
+      <span class="brands__wordmark">CARTIER</span>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats">
+  <div class="container">
+    <div class="stats__grid">
+      <div class="stats__item reveal">
+        <div class="stats__number" data-count="12000">12,000<span style="font-size:0.5em;opacity:0.5">+</span></div>
+        <p class="stats__label">活跃用户</p>
+      </div>
+      <div class="stats__item reveal reveal-delay-1">
+        <div class="stats__number" data-count="98">98<span style="font-size:0.5em;opacity:0.5">%</span></div>
+        <p class="stats__label">客户满意度</p>
+      </div>
+      <div class="stats__item reveal reveal-delay-2">
+        <div class="stats__number" data-count="50">50<span style="font-size:0.5em;opacity:0.5">+</span></div>
+        <p class="stats__label">行业覆盖</p>
+      </div>
+      <div class="stats__item reveal reveal-delay-3">
+        <div class="stats__number" data-count="99.99">99.99<span style="font-size:0.5em;opacity:0.5">%</span></div>
+        <p class="stats__label">服务可用性</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="features__heading">
+    <p class="features__label reveal">Core Features</p>
+    <h2 class="features__title reveal reveal-delay-1">匠心打造的每一个细节</h2>
+  </div>
+
+  <div class="feature reveal">
+    <div class="feature__inner">
+      <div class="feature__number">01</div>
+      <div class="feature__content">
+        <div class="feature__rule"></div>
+        <h3 class="feature__name">极致美学设计</h3>
+        <p class="feature__desc">每一个像素都经过精心考量。从色彩搭配到排版节奏，我们以奢侈品的标准来打磨用户界面，确保每一次交互都成为愉悦的视觉享受。</p>
+        <div class="feature__icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="16" cy="16" r="14"/>
+            <path d="M16 8v8l5.5 5.5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature feature--ivory reveal">
+    <div class="feature__inner">
+      <div class="feature__number">02</div>
+      <div class="feature__content">
+        <div class="feature__rule"></div>
+        <h3 class="feature__name">无缝协作体验</h3>
+        <p class="feature__desc">如同顶级腕表的精密齿轮，我们的协作系统将团队的每一次配合都变得流畅而优雅。实时同步、智能通知，让创意永不间断。</p>
+        <div class="feature__icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4v24M20 4v24M4 12h24M4 20h24"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature reveal">
+    <div class="feature__inner">
+      <div class="feature__number">03</div>
+      <div class="feature__content">
+        <div class="feature__rule"></div>
+        <h3 class="feature__name">数据洞察如珠宝</h3>
+        <p class="feature__desc">将复杂的数据转化为精美的可视化洞察。每一个图表都如同切割完美的钻石，让数据之美自然绽放，助力明智决策。</p>
+        <div class="feature__icon">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="20" width="4" height="8" rx="1"/>
+            <rect x="10" y="14" width="4" height="14" rx="1"/>
+            <rect x="16" y="10" width="4" height="18" rx="1"/>
+            <rect x="22" y="4" width="4" height="24" rx="1"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="process">
+  <div class="process__heading">
+    <p class="process__label reveal">How It Works</p>
+    <h2 class="process__title reveal reveal-delay-1">三步开启轻奢之旅</h2>
+  </div>
+  <div class="process__steps">
+    <div class="process__step reveal">
+      <div class="process__step-number">I</div>
+      <div class="process__step-icon">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4v6M16 22v6M4 16h6M22 16h6"/>
+          <circle cx="16" cy="16" r="6"/>
+        </svg>
+      </div>
+      <h3 class="process__step-title">注册与定制</h3>
+      <p class="process__step-desc">三分钟完成注册，根据您的品牌调性定制专属工作空间，感受前所未有的个性化体验。</p>
+      <div class="process__connector"></div>
+    </div>
+    <div class="process__step reveal reveal-delay-1">
+      <div class="process__step-number">II</div>
+      <div class="process__step-icon">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 16h16M16 8v16"/>
+          <rect x="6" y="6" width="20" height="20" rx="2"/>
+        </svg>
+      </div>
+      <h3 class="process__step-title">团队协作</h3>
+      <p class="process__step-desc">邀请团队成员加入，建立流畅的协作流程。智能权限管理确保信息在正确的手中流转。</p>
+      <div class="process__connector"></div>
+    </div>
+    <div class="process__step reveal reveal-delay-2">
+      <div class="process__step-number">III</div>
+      <div class="process__step-icon">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 28c6.63 0 12-5.37 12-12S22.63 4 16 4 4 9.37 4 16s5.37 12 12 12z"/>
+          <path d="M12 16l3 3 5-6"/>
+        </svg>
+      </div>
+      <h3 class="process__step-title">卓越成果</h3>
+      <p class="process__step-desc">借助 AI 洞察和精美报表，让数据驱动决策。在优雅中实现效率的飞跃，成就非凡。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Showcase -->
+<section class="showcase" id="showcase">
+  <div class="container">
+    <div class="showcase__heading">
+      <p class="showcase__label reveal">Showcase</p>
+      <h2 class="showcase__title reveal reveal-delay-1">精雕细琢的每一个界面</h2>
+    </div>
+    <div class="showcase__grid">
+      <div class="showcase__item showcase__item--wide reveal">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Dashboard</span>
+          </div>
+        </div>
+      </div>
+      <div class="showcase__item showcase__item--narrow reveal reveal-delay-1">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Analytics</span>
+          </div>
+        </div>
+      </div>
+      <div class="showcase__item showcase__item--narrow reveal reveal-delay-2">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Reports</span>
+          </div>
+        </div>
+      </div>
+      <div class="showcase__item showcase__item--wide reveal reveal-delay-3">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Workspace</span>
+          </div>
+        </div>
+      </div>
+      <div class="showcase__item showcase__item--half reveal reveal-delay-2">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Design System</span>
+          </div>
+        </div>
+      </div>
+      <div class="showcase__item showcase__item--half reveal reveal-delay-3">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Collaboration</span>
+          </div>
+        </div>
+      </div>
+      <div class="showcase__item showcase__item--full reveal">
+        <div class="showcase__placeholder">
+          <div class="showcase__placeholder-inner">
+            <span class="showcase__placeholder-text">Full Width Showcase</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="pricing__heading">
+      <p class="pricing__label reveal">Pricing</p>
+      <h2 class="pricing__title reveal reveal-delay-1">为品质而生的方案</h2>
+    </div>
+    <div class="pricing__grid">
+
+      <div class="pricing__card reveal">
+        <p class="pricing__tier">Essential</p>
+        <p class="pricing__price">¥299<span>/月</span></p>
+        <p class="pricing__period">按年付费享八折优惠</p>
+        <div class="pricing__rule"></div>
+        <ul class="pricing__features">
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            基础数据仪表盘
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            最多 5 名团队成员
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            标准分析报告
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            邮件技术支持
+          </li>
+        </ul>
+        <button class="pricing__btn">选择方案</button>
+      </div>
+
+      <div class="pricing__card pricing__card--recommended reveal reveal-delay-1">
+        <div class="pricing__badge">推荐</div>
+        <p class="pricing__tier">Prestige</p>
+        <p class="pricing__price">¥799<span>/月</span></p>
+        <p class="pricing__period">按年付费享八折优惠</p>
+        <div class="pricing__rule"></div>
+        <ul class="pricing__features">
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            高级数据仪表盘
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            无限团队成员
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            AI 智能洞察
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            专属客户经理
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            API 全量接入
+          </li>
+        </ul>
+        <button class="pricing__btn">选择方案</button>
+      </div>
+
+      <div class="pricing__card reveal reveal-delay-2">
+        <p class="pricing__tier">Haute Couture</p>
+        <p class="pricing__price">定制<span></span></p>
+        <p class="pricing__period">为顶尖企业量身定制</p>
+        <div class="pricing__rule"></div>
+        <ul class="pricing__features">
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            所有 Prestige 功能
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            私有化部署
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            SLA 99.99% 保障
+          </li>
+          <li>
+            <svg class="pricing__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 8.5l3.5 3.5L13 4"/></svg>
+            7×24 专线支持
+          </li>
+        </ul>
+        <button class="pricing__btn">联系我们</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial -->
+<section class="testimonial" id="testimonial">
+  <div class="testimonial__inner reveal">
+    <div class="testimonial__marks">&ldquo;</div>
+    <blockquote class="testimonial__quote">
+      使用 LUXE 之后，我们的团队协作效率提升了 40%。它不仅仅是一个工具，更像是一种全新的工作方式——优雅、高效、令人愉悦。
+    </blockquote>
+    <div class="testimonial__rule"></div>
+    <p class="testimonial__author">
+      <strong>林雅琪</strong>
+      某科技集团 · 首席产品官
+    </p>
+  </div>
+</section>
+
+<!-- Testimonials Grid -->
+<section class="testimonials-grid">
+  <div class="container">
+    <div class="testimonials-grid__heading">
+      <p class="testimonials-grid__label reveal">What They Say</p>
+      <h2 class="testimonials-grid__title reveal reveal-delay-1">来自各行业领袖的声音</h2>
+    </div>
+    <div class="testimonials-grid__cards">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-card__stars">
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+        </div>
+        <p class="testimonial-card__text">&ldquo;界面的精致程度让我想到了瑞士钟表。每一个微交互都恰到好处，让日常工作变成了一种享受。&rdquo;</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">陈</div>
+          <div>
+            <p class="testimonial-card__name">陈思远</p>
+            <p class="testimonial-card__role">某投资基金 · 合伙人</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-1">
+        <div class="testimonial-card__stars">
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+        </div>
+        <p class="testimonial-card__text">&ldquo;数据分析从未如此优雅。LUXE 让我们从海量信息中快速提炼洞察，决策速度提升了三倍。&rdquo;</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">王</div>
+          <div>
+            <p class="testimonial-card__name">王明辉</p>
+            <p class="testimonial-card__role">某时尚品牌 · 数字化总监</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-2">
+        <div class="testimonial-card__stars">
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+          <svg class="testimonial-card__star" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5l1.85 3.75 4.15.6-3 2.93.71 4.12L8 10.88l-3.71 1.95L5 8.73 2 5.8l4.15-.6L8 1.5z"/></svg>
+        </div>
+        <p class="testimonial-card__text">&ldquo;我们是设计驱动的公司，对工具有极高的审美要求。LUXE 是唯一一个在美学和功能上都让我们满意的产品。&rdquo;</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">李</div>
+          <div>
+            <p class="testimonial-card__name">李若琳</p>
+            <p class="testimonial-card__role">某设计工作室 · 创始人</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-section__bg"></div>
+  <div class="cta-section__inner reveal">
+    <p class="cta-section__label">Get Started</p>
+    <h2 class="cta-section__title">为您的团队开启<br>轻奢级协作体验</h2>
+    <div class="cta-section__divider"></div>
+    <p class="cta-section__desc">加入 12,000+ 正在使用 LUXE 的精英团队。14 天免费试用，无需绑定信用卡，随时可以取消。</p>
+    <a href="#" class="cta-section__btn">免费试用 14 天</a>
+    <p class="cta-section__note">无信用卡 · 无隐藏费用 · 随时取消</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div>
+        <p class="footer__brand">LUX<span>E</span></p>
+        <p class="footer__desc">为追求极致品质的团队打造的轻奢级 SaaS 平台。让每一次数字交互都成为愉悦的体验。</p>
+      </div>
+      <div>
+        <p class="footer__col-title">产品</p>
+        <ul class="footer__col-links">
+          <li><a href="#">功能概览</a></li>
+          <li><a href="#">定价方案</a></li>
+          <li><a href="#">更新日志</a></li>
+          <li><a href="#">API 文档</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__col-title">公司</p>
+        <ul class="footer__col-links">
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">加入团队</a></li>
+          <li><a href="#">新闻动态</a></li>
+          <li><a href="#">联系我们</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__col-title">支持</p>
+        <ul class="footer__col-links">
+          <li><a href="#">帮助中心</a></li>
+          <li><a href="#">社区论坛</a></li>
+          <li><a href="#">隐私政策</a></li>
+          <li><a href="#">服务条款</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p class="footer__copy">&copy; 2026 LUXE. All rights reserved.</p>
+      <div class="footer__social">
+        <a href="#" aria-label="WeChat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/>
+            <path d="M13 12a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/>
+            <path d="M7.5 3C4.46 3 2 5.24 2 8c0 1.45.78 2.75 2 3.58L3.5 14l2.7-1.27c.72.24 1.48.27 2.27.09"/>
+            <path d="M15.5 8c0-2.5-2.24-4.5-5-4.5S5.5 5.5 5.5 8"/>
+            <path d="M22 14c0-2.21-2.24-4-5-4-2.76 0-5 1.79-5 4s2.24 4 5 4c.66 0 1.28-.1 1.85-.28L20.5 19l-.65-2.2c.88-.67 1.5-1.62 1.5-2.8Z"/>
+            <circle cx="15" cy="12.5" r=".5" fill="currentColor"/>
+            <circle cx="11" cy="12.5" r=".5" fill="currentColor"/>
+          </svg>
+        </a>
+        <a href="#" aria-label="Weibo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 18c-3.31 0-6-1.79-6-4 0-1.22.67-2.3 1.67-3.05C6.84 10.06 8.5 9 10 9c.83 0 1.6.28 2.23.75"/>
+            <path d="M15 6c-1.5 0-2.6.8-3 2"/>
+            <path d="M18 4c-2.5 0-4.5 1.5-5 3.5"/>
+            <path d="M20 2c-3.5 0-6.5 2.5-7 5.5"/>
+            <path d="M14 16c0 2.21-1.79 4-4 4-2.21 0-4-1.79-4-4 0-1.86 1.28-3.41 3-3.86"/>
+          </svg>
+        </a>
+        <a href="#" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/>
+            <path d="M9 18c-4.51 2-5-2-7-2"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  // IntersectionObserver for scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  reveals.forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // Nav scroll effect
+  var nav = document.getElementById('nav');
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    var currentScroll = window.pageYOffset;
+    if (currentScroll > 80) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = currentScroll;
+  }, { passive: true });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

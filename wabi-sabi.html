@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>侘寂 · 寻找不完美的美</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-warm-stone: #e8e0d4;
+            --bg-warm-stone-dark: #dcd2c4;
+            --text-charcoal: #2c2c2c;
+            --text-charcoal-light: rgba(44, 44, 44, 0.6);
+            --accent-sage: #7a8b6f;
+            --accent-sage-light: rgba(122, 139, 111, 0.15);
+            --secondary-clay: #b8956a;
+            --secondary-clay-light: rgba(184, 149, 106, 0.15);
+            --bg-parchment: #f2ece3;
+            --bg-parchment-dark: #e5ded3;
+            --border-subtle: rgba(44, 44, 44, 0.06);
+            --border-medium: rgba(44, 44, 44, 0.12);
+            --shadow-soft: 2px 2px 0px rgba(44, 44, 44, 0.04);
+            --shadow-hand: 3px 3px 0px rgba(44, 44, 44, 0.08);
+            --shadow-lifted: 8px 8px 0px rgba(44, 44, 44, 0.05);
+            --font-heading: 'Zen Old Mincho', serif;
+            --font-body: 'Noto Sans JP', sans-serif;
+            --transition-slow: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-medium: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-quick: 0.2s ease;
+            --radius-blob-a: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            --radius-blob-b: 70% 30% 30% 70% / 70% 70% 30% 30%;
+            --radius-blob-c: 50% 50% 20% 80% / 25% 80% 20% 75%;
+            --radius-blob-d: 20% 80% 25% 75% / 50% 50% 80% 20%;
+            --radius-blob-e: 40% 60% 60% 40% / 70% 30% 70% 30%;
+            --radius-blob-f: 80% 20% 50% 50% / 30% 40% 60% 70%;
+            --radius-blob-g: 45% 55% 65% 35% / 55% 45% 35% 65%;
+            --radius-blob-h: 60% 40% 35% 65% / 40% 55% 65% 35%;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            background-color: var(--bg-warm-stone);
+            color: var(--text-charcoal);
+            font-family: var(--font-body);
+            line-height: 1.8;
+            overflow-x: hidden;
+            position: relative;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* =============================================
+           PAPER / LINEN TEXTURE OVERLAY
+           ============================================= */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+            z-index: 9999;
+            opacity: 0.5;
+            mix-blend-mode: multiply;
+        }
+
+        /* Secondary linen texture layer */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(44, 44, 44, 0.008) 2px,
+                    rgba(44, 44, 44, 0.008) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(44, 44, 44, 0.008) 2px,
+                    rgba(44, 44, 44, 0.008) 4px
+                );
+            z-index: 9998;
+        }
+
+        /* =============================================
+           TYPOGRAPHY UTILITIES
+           ============================================= */
+        .text-sage { color: var(--accent-sage); }
+        .text-clay { color: var(--secondary-clay); }
+        .text-muted { color: var(--text-charcoal-light); }
+        .font-heading { font-family: var(--font-heading); }
+        .font-body { font-family: var(--font-body); }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 400;
+            color: var(--text-charcoal);
+            letter-spacing: 0.04em;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: clamp(1.4rem, 2vw, 2rem);
+            line-height: 1.4;
+        }
+
+        h4 {
+            font-size: 1.3rem;
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.9;
+        }
+
+        a {
+            color: var(--text-charcoal);
+            text-decoration: none;
+            transition: color var(--transition-slow);
+        }
+
+        /* =============================================
+           ORGANIC BLOB SHAPES
+           ============================================= */
+        .blob-a { border-radius: var(--radius-blob-a); }
+        .blob-b { border-radius: var(--radius-blob-b); }
+        .blob-c { border-radius: var(--radius-blob-c); }
+        .blob-d { border-radius: var(--radius-blob-d); }
+        .blob-e { border-radius: var(--radius-blob-e); }
+        .blob-f { border-radius: var(--radius-blob-f); }
+        .blob-g { border-radius: var(--radius-blob-g); }
+        .blob-h { border-radius: var(--radius-blob-h); }
+
+        /* =============================================
+           HAND-DRAWN BORDER STYLE
+           ============================================= */
+        .hand-border {
+            position: relative;
+        }
+
+        .hand-border::after {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid var(--text-charcoal);
+            opacity: 0.08;
+            transform: rotate(-0.4deg);
+            pointer-events: none;
+            transition: opacity var(--transition-slow);
+        }
+
+        .hand-border:hover::after {
+            opacity: 0.15;
+        }
+
+        /* Thin offset shadow simulating hand-drawn style */
+        .hand-shadow {
+            box-shadow: var(--shadow-hand);
+        }
+
+        .hand-shadow-lg {
+            box-shadow: var(--shadow-lifted);
+        }
+
+        /* =============================================
+           LAYOUT COMPONENTS
+           ============================================= */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 6%;
+        }
+
+        .container-narrow {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 6%;
+        }
+
+        .section-padding {
+            padding: 10rem 0;
+            position: relative;
+        }
+
+        .section-padding-sm {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        /* Decorative section divider */
+        .section-divider {
+            width: 60px;
+            height: 1px;
+            background-color: var(--secondary-clay);
+            margin: 2rem auto;
+            opacity: 0.5;
+        }
+
+        .section-label {
+            font-family: var(--font-heading);
+            letter-spacing: 0.3em;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        /* =============================================
+           CTA LINK (Underline Style)
+           ============================================= */
+        .cta-link {
+            text-decoration: none;
+            color: var(--text-charcoal);
+            font-weight: 400;
+            border-bottom: 1px solid var(--text-charcoal);
+            padding-bottom: 4px;
+            transition: all var(--transition-slow);
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            position: relative;
+        }
+
+        .cta-link::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--accent-sage);
+            transition: width var(--transition-slow);
+        }
+
+        .cta-link:hover {
+            color: var(--accent-sage);
+            transform: translateY(-1px);
+        }
+
+        .cta-link:hover::after {
+            width: 100%;
+        }
+
+        .cta-link-sage {
+            border-bottom-color: var(--accent-sage);
+        }
+
+        .cta-link-sage:hover {
+            color: var(--secondary-clay);
+            border-bottom-color: var(--secondary-clay);
+        }
+
+        .cta-link-light {
+            color: var(--bg-parchment);
+            border-bottom-color: var(--bg-parchment);
+            opacity: 0.8;
+        }
+
+        .cta-link-light:hover {
+            color: var(--bg-parchment);
+            border-bottom-color: var(--accent-sage);
+            opacity: 1;
+        }
+
+        /* =============================================
+           ANIMATIONS
+           ============================================= */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.2s var(--transition-slow), transform 1.2s var(--transition-slow);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 1.2s var(--transition-slow), transform 1.2s var(--transition-slow);
+        }
+
+        .fade-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 1.2s var(--transition-slow), transform 1.2s var(--transition-slow);
+        }
+
+        .fade-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-scale {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 1.2s var(--transition-slow), transform 1.2s var(--transition-slow);
+        }
+
+        .fade-in-scale.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+
+        /* =============================================
+           FLOATING ELEMENTS (Hand-placed feel)
+           ============================================= */
+        .float-element {
+            position: absolute;
+            font-family: var(--font-heading);
+            font-size: 8rem;
+            opacity: 0.03;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .float-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--secondary-clay);
+            border-radius: 50%;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* =============================================
+           NAVIGATION
+           ============================================= */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition-slow);
+            background-color: transparent;
+        }
+
+        .nav.scrolled {
+            background-color: rgba(232, 224, 212, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 6%;
+            box-shadow: 0 1px 0 var(--border-subtle);
+        }
+
+        .nav-brand {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--text-charcoal);
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.85rem;
+            color: var(--text-charcoal);
+            opacity: 0.6;
+            transition: opacity var(--transition-slow);
+            letter-spacing: 0.08em;
+            font-weight: 400;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* =============================================
+           HERO SECTION
+           ============================================= */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            width: 55%;
+            padding-left: 10%;
+            z-index: 10;
+            position: relative;
+        }
+
+        .hero h1 {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .hero h1 .hero-subtitle {
+            display: block;
+            color: var(--accent-sage);
+            font-size: 1.1rem;
+            font-family: var(--font-body);
+            margin-top: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            max-width: 480px;
+            margin-bottom: 4rem;
+            color: var(--text-charcoal-light);
+            line-height: 2;
+        }
+
+        .hero-decoration {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 480px;
+            height: 560px;
+            z-index: 1;
+        }
+
+        .hero-rock {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 420px;
+            height: 480px;
+            background: linear-gradient(
+                160deg,
+                var(--secondary-clay) 0%,
+                var(--bg-parchment) 60%,
+                var(--bg-warm-stone-dark) 100%
+            );
+            opacity: 0.7;
+        }
+
+        .hero-rock-shadow {
+            position: absolute;
+            bottom: -20px;
+            right: 20px;
+            width: 380px;
+            height: 40px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(44, 44, 44, 0.06) 0%,
+                transparent 70%
+            );
+            transform: skewX(-5deg);
+        }
+
+        /* Decorative organic shape behind rock */
+        .hero-blob-bg {
+            position: absolute;
+            top: 20%;
+            right: 8%;
+            width: 300px;
+            height: 300px;
+            background-color: var(--accent-sage);
+            opacity: 0.06;
+            z-index: 0;
+        }
+
+        .hero-blob-bg-2 {
+            position: absolute;
+            bottom: 15%;
+            right: 15%;
+            width: 180px;
+            height: 180px;
+            background-color: var(--secondary-clay);
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        /* =============================================
+           PHILOSOPHY SECTION
+           ============================================= */
+        .philosophy-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .philosophy-header p {
+            max-width: 600px;
+            margin: 1rem auto 0;
+            color: var(--text-charcoal-light);
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5rem;
+            margin-top: 7rem;
+        }
+
+        .philosophy-item {
+            text-align: center;
+            padding: 3rem 2rem;
+            position: relative;
+        }
+
+        .icon-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 3rem;
+            background-color: var(--bg-parchment);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-family: var(--font-heading);
+            color: var(--secondary-clay);
+            position: relative;
+            box-shadow: var(--shadow-hand);
+            transition: all var(--transition-slow);
+        }
+
+        .icon-container:hover {
+            transform: rotate(3deg) scale(1.05);
+            box-shadow: var(--shadow-lifted);
+        }
+
+        .icon-container .icon-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 28px;
+            height: 28px;
+            background-color: var(--accent-sage);
+            color: var(--bg-parchment);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .philosophy-item h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .philosophy-item .en-label {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 0.85rem;
+            color: var(--text-charcoal-light);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .philosophy-item p {
+            color: var(--text-charcoal-light);
+            font-size: 1rem;
+            line-height: 1.9;
+        }
+
+        /* Decorative line under philosophy items */
+        .philosophy-item::after {
+            content: "";
+            display: block;
+            width: 30px;
+            height: 1px;
+            background-color: var(--secondary-clay);
+            margin: 2rem auto 0;
+            opacity: 0.3;
+        }
+
+        /* =============================================
+           FEATURES SECTION
+           ============================================= */
+        .features-header {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+
+        .features-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10rem;
+        }
+
+        .feature-row {
+            display: flex;
+            align-items: center;
+            gap: 7rem;
+            position: relative;
+        }
+
+        .feature-row.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .feature-visual {
+            flex: 1;
+            position: relative;
+            height: 480px;
+            min-width: 0;
+        }
+
+        .feature-bg {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: calc(100% + 30px);
+            height: calc(100% + 30px);
+            background-color: var(--accent-sage);
+            opacity: 0.08;
+            transition: all var(--transition-slow);
+        }
+
+        .feature-row:hover .feature-bg {
+            opacity: 0.12;
+            transform: rotate(1.5deg) scale(1.02);
+        }
+
+        .feature-card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75%;
+            height: 75%;
+            background-color: var(--bg-parchment);
+            box-shadow: var(--shadow-lifted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-slow);
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translate(-50%, -52%);
+        }
+
+        .feature-card-number {
+            font-family: var(--font-heading);
+            font-size: 5rem;
+            color: var(--accent-sage);
+            opacity: 0.15;
+            position: absolute;
+            top: 1rem;
+            left: 1.5rem;
+            line-height: 1;
+        }
+
+        .feature-card-label {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: var(--secondary-clay);
+            letter-spacing: 0.15em;
+        }
+
+        .feature-card-sub {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--text-charcoal-light);
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+
+        .feature-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .feature-content h3 {
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .feature-content h3::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 1px;
+            background-color: var(--secondary-clay);
+            transition: width var(--transition-slow);
+        }
+
+        .feature-content:hover h3::after {
+            width: 80px;
+        }
+
+        .feature-content p {
+            color: var(--text-charcoal-light);
+            font-size: 1.05rem;
+            margin-top: 2rem;
+            line-height: 2;
+        }
+
+        .feature-content .feature-detail {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--accent-sage);
+            font-weight: 400;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-content .feature-detail::after {
+            content: "→";
+            transition: transform var(--transition-slow);
+        }
+
+        .feature-content:hover .feature-detail::after {
+            transform: translateX(4px);
+        }
+
+        /* =============================================
+           GALLERY / SHOWCASE SECTION
+           ============================================= */
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 2.5rem;
+            margin-top: 5rem;
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 2.5rem;
+            background-color: var(--bg-parchment);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-hand);
+            position: relative;
+            transition: all var(--transition-slow);
+            cursor: pointer;
+        }
+
+        .gallery-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid transparent;
+            transition: border-color var(--transition-slow);
+            pointer-events: none;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px) rotate(0deg) !important;
+            box-shadow: 6px 6px 0px rgba(44, 44, 44, 0.1);
+        }
+
+        .gallery-item:hover::before {
+            border-color: var(--accent-sage);
+            opacity: 0.2;
+        }
+
+        .gallery-item:nth-child(1) { transform: rotate(1.5deg); }
+        .gallery-item:nth-child(2) { transform: rotate(-2deg); margin-top: 3rem; }
+        .gallery-item:nth-child(3) { transform: rotate(2.5deg); }
+        .gallery-item:nth-child(4) { transform: rotate(-1deg); margin-top: -1.5rem; }
+        .gallery-item:nth-child(5) { transform: rotate(1deg); }
+        .gallery-item:nth-child(6) { transform: rotate(-2.5deg); margin-top: 2rem; }
+        .gallery-item:nth-child(7) { transform: rotate(2deg); }
+        .gallery-item:nth-child(8) { transform: rotate(-1.5deg); margin-top: 3rem; }
+
+        .gallery-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background-color: var(--bg-warm-stone-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            color: rgba(44, 44, 44, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-image::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.08) 50%,
+                transparent 70%
+            );
+        }
+
+        .gallery-image .gallery-icon {
+            font-size: 3rem;
+            opacity: 0.3;
+            transition: all var(--transition-slow);
+        }
+
+        .gallery-item:hover .gallery-icon {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .gallery-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-item .gallery-desc {
+            font-size: 0.85rem;
+            color: var(--text-charcoal-light);
+            line-height: 1.6;
+        }
+
+        /* =============================================
+           TESTIMONIALS SECTION
+           ============================================= */
+        .testimonials-section {
+            background-color: var(--bg-parchment);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4rem;
+            margin-top: 6rem;
+        }
+
+        .testimonial-card {
+            background-color: var(--bg-warm-stone);
+            padding: 3rem;
+            position: relative;
+            box-shadow: var(--shadow-hand);
+            transition: all var(--transition-slow);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lifted);
+        }
+
+        .testimonial-card:nth-child(1) { transform: rotate(-0.5deg); }
+        .testimonial-card:nth-child(2) { transform: rotate(0.8deg); margin-top: 2rem; }
+        .testimonial-card:nth-child(3) { transform: rotate(0.3deg); }
+        .testimonial-card:nth-child(4) { transform: rotate(-0.7deg); margin-top: 1rem; }
+
+        .testimonial-card:hover {
+            transform: translateY(-3px) rotate(0deg) !important;
+        }
+
+        .testimonial-quote {
+            font-family: var(--font-heading);
+            font-size: 4rem;
+            color: var(--accent-sage);
+            opacity: 0.15;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            font-size: 1.05rem;
+            line-height: 2;
+            color: var(--text-charcoal);
+            margin-bottom: 2rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            background-color: var(--bg-parchment);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--secondary-clay);
+        }
+
+        .testimonial-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-charcoal-light);
+            font-weight: 300;
+        }
+
+        /* =============================================
+           PRICING SECTION
+           ============================================= */
+        .pricing-header {
+            text-align: center;
+        }
+
+        .pricing-header p {
+            color: var(--text-charcoal-light);
+            margin-top: 1rem;
+        }
+
+        .pricing-grid {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 7rem;
+            flex-wrap: wrap;
+        }
+
+        .pricing-card {
+            width: 440px;
+            text-align: center;
+            padding: 4rem 3rem;
+            background-color: var(--bg-parchment);
+            position: relative;
+            box-shadow: var(--shadow-lifted);
+            transition: all var(--transition-slow);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 12px 12px 0px rgba(44, 44, 44, 0.06);
+        }
+
+        .pricing-card::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: -10px;
+            bottom: -10px;
+            border: 1px solid var(--border-subtle);
+            z-index: -1;
+            transition: all var(--transition-slow);
+        }
+
+        .pricing-card:hover::before {
+            top: 12px;
+            left: 12px;
+            right: -12px;
+            bottom: -12px;
+        }
+
+        .pricing-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .pricing-sub {
+            color: var(--text-charcoal-light);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 3.5rem;
+            font-family: var(--font-heading);
+            margin: 2rem 0;
+            color: var(--accent-sage);
+            line-height: 1;
+        }
+
+        .price small {
+            font-size: 1rem;
+            color: var(--text-charcoal-light);
+            font-family: var(--font-body);
+            font-weight: 300;
+        }
+
+        .features-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 3rem;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 2rem;
+        }
+
+        .features-list li {
+            margin-bottom: 1.2rem;
+            position: relative;
+            padding-left: 1.8rem;
+            color: var(--text-charcoal-light);
+            font-size: 0.95rem;
+        }
+
+        .features-list li::before {
+            content: "○";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-clay);
+            font-size: 0.7rem;
+            top: 0.25rem;
+        }
+
+        .pricing-card .cta-link {
+            margin-top: 1rem;
+        }
+
+        /* =============================================
+           QUOTE SECTION
+           ============================================= */
+        .quote-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            position: relative;
+            background-color: var(--text-charcoal);
+            color: var(--bg-parchment);
+            overflow: hidden;
+        }
+
+        .quote-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .quote-vertical-left {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-size: 3.5rem;
+            font-family: var(--font-heading);
+            letter-spacing: 0.8em;
+            color: var(--bg-parchment);
+            opacity: 0.06;
+            position: absolute;
+            left: 8%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .quote-vertical-right {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-size: 2.5rem;
+            font-family: var(--font-heading);
+            letter-spacing: 0.6em;
+            color: var(--bg-parchment);
+            opacity: 0.04;
+            position: absolute;
+            right: 8%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .quote-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-box {
+            max-width: 700px;
+            padding: 4rem;
+            position: relative;
+            text-align: center;
+        }
+
+        .quote-box .quote-mark-open {
+            position: absolute;
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 6rem;
+            color: var(--accent-sage);
+            opacity: 0.2;
+            font-family: var(--font-heading);
+            line-height: 1;
+        }
+
+        .quote-box p {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
+            line-height: 2.2;
+            color: var(--bg-parchment);
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-box cite {
+            display: block;
+            margin-top: 3rem;
+            font-style: normal;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            opacity: 0.5;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+        }
+
+        .quote-box .quote-decoration {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-sage);
+            opacity: 0.1;
+        }
+
+        /* =============================================
+           FOOTER
+           ============================================= */
+        footer {
+            padding: 6rem 8% 4rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-tagline {
+            font-size: 0.85rem;
+            color: var(--text-charcoal-light);
+            max-width: 250px;
+            line-height: 1.8;
+        }
+
+        .footer-nav-group {
+            display: flex;
+            gap: 5rem;
+        }
+
+        .footer-nav-col h5 {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            color: var(--text-charcoal);
+            opacity: 0.4;
+        }
+
+        .footer-nav-col ul {
+            list-style: none;
+        }
+
+        .footer-nav-col ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-nav-col ul li a {
+            color: var(--text-charcoal);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            transition: opacity var(--transition-slow);
+        }
+
+        .footer-nav-col ul li a:hover {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            opacity: 0.4;
+            font-weight: 300;
+        }
+
+        .footer-colophon {
+            font-size: 0.75rem;
+            opacity: 0.3;
+            font-family: var(--font-body);
+            font-weight: 300;
+            text-align: right;
+            max-width: 300px;
+            line-height: 1.8;
+        }
+
+        /* =============================================
+           RESPONSIVE DESIGN
+           ============================================= */
+        @media (max-width: 1200px) {
+            .hero-content { width: 65%; }
+            .hero-decoration { width: 400px; height: 480px; }
+            .hero-rock { width: 360px; height: 420px; }
+            .feature-row, .feature-row.reverse { gap: 4rem; }
+            .masonry-grid { column-count: 2; }
+            .testimonials-grid { gap: 3rem; }
+        }
+
+        @media (max-width: 1024px) {
+            .nav-links { display: none; }
+
+            .hero {
+                flex-direction: column;
+                justify-content: center;
+                padding-top: 120px;
+                min-height: auto;
+                padding-bottom: 4rem;
+            }
+
+            .hero-content {
+                width: 100%;
+                padding: 0 6%;
+                text-align: center;
+            }
+
+            .hero p { margin: 0 auto 4rem; }
+
+            .hero-decoration {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+                width: 300px;
+                height: 350px;
+                margin-top: 4rem;
+            }
+
+            .hero-rock { width: 280px; height: 320px; right: 10px; }
+            .hero-blob-bg, .hero-blob-bg-2 { display: none; }
+
+            .philosophy-grid { grid-template-columns: repeat(2, 1fr); gap: 4rem; }
+
+            .feature-row, .feature-row.reverse {
+                flex-direction: column;
+                gap: 3rem;
+            }
+
+            .feature-visual { width: 100%; height: 350px; }
+            .feature-content { text-align: center; }
+            .feature-content h3::after { left: 50%; transform: translateX(-50%); }
+
+            .testimonials-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .section-padding { padding: 6rem 0; }
+
+            .philosophy-grid { grid-template-columns: 1fr; gap: 3rem; }
+
+            .masonry-grid { column-count: 1; }
+            .gallery-item {
+                transform: none !important;
+                margin-top: 0 !important;
+            }
+
+            .pricing-grid { flex-direction: column; align-items: center; }
+            .pricing-card { width: 100%; max-width: 400px; }
+
+            .quote-vertical-left, .quote-vertical-right { display: none; }
+            .quote-box { padding: 2rem; }
+
+            .footer-top {
+                flex-direction: column;
+                gap: 3rem;
+            }
+
+            .footer-nav-group {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .footer-colophon { text-align: center; }
+
+            .float-element { font-size: 5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 0 5%; }
+
+            .hero-content { padding: 0 5%; }
+
+            .hero-rock { width: 200px; height: 240px; }
+
+            .icon-container { width: 120px; height: 120px; font-size: 2.5rem; }
+
+            .feature-visual { height: 280px; }
+
+            .pricing-card { padding: 3rem 2rem; }
+
+            .testimonial-card { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <div class="nav-brand">侘寂</div>
+        <ul class="nav-links">
+            <li><a href="#philosophy">哲学</a></li>
+            <li><a href="#features">功能</a></li>
+            <li><a href="#gallery">展示</a></li>
+            <li><a href="#pricing">定价</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <!-- Floating decorative characters -->
+        <div class="float-element" style="top: 15%; left: 8%;">侘</div>
+        <div class="float-element" style="bottom: 18%; right: 25%;">寂</div>
+        <div class="float-element" style="top: 60%; left: 45%; font-size: 12rem; opacity: 0.015;">道</div>
+
+        <!-- Small floating dots for hand-placed feel -->
+        <div class="float-dot" style="top: 25%; left: 55%;"></div>
+        <div class="float-dot" style="top: 70%; left: 30%; width: 4px; height: 4px;"></div>
+        <div class="float-dot" style="top: 40%; right: 40%; width: 8px; height: 8px;"></div>
+
+        <div class="hero-content fade-in">
+            <h1>
+                在不完美中<br>发现永恒之美
+                <span class="hero-subtitle">侘寂 · WABI-SABI</span>
+            </h1>
+            <p>
+                一种源自东方的美学哲学，教导我们在简朴、自然与时间的流逝中，发现事物最本真的美。不追求完美的对称，而是拥抱每一道裂痕与痕迹。
+            </p>
+            <a href="#philosophy" class="cta-link">探索侘寂之道</a>
+        </div>
+
+        <div class="hero-decoration">
+            <!-- Background organic blob -->
+            <div class="hero-blob-bg blob-c fade-in-right stagger-2"></div>
+            <div class="hero-blob-bg-2 blob-e fade-in-right stagger-3"></div>
+
+            <!-- Main rock shape -->
+            <div class="hero-rock blob-c fade-in-right stagger-1">
+                <!-- SVG texture overlay for rock -->
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.15;">
+                    <path fill="var(--bg-parchment)" d="M45.3,-55.5C57.2,-45.9,64.5,-31.2,68.8,-14.8C73.1,1.6,74.3,19.7,66.8,33.5C59.3,47.3,43.1,56.8,26.8,63.2C10.5,69.5,-5.9,72.7,-22.1,68.8C-38.3,64.9,-54.3,53.9,-63.1,39.2C-71.9,24.5,-73.5,6.2,-68.7,-9.5C-63.9,-25.2,-52.7,-38.3,-39.8,-47.6C-26.9,-56.9,-12.3,-62.4,2.4,-65.6C17.1,-68.8,33.4,-65.1,45.3,-55.5Z" transform="translate(100 100)" />
+                </svg>
+            </div>
+            <div class="hero-rock-shadow"></div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="section-padding" id="philosophy">
+        <div class="container">
+            <div class="philosophy-header fade-in">
+                <span class="section-label text-clay">侘寂の哲学</span>
+                <h2 style="margin-top: 1rem;">三个核心原则</h2>
+                <div class="section-divider"></div>
+                <p>理解这三个核心概念，学会在日常生活中拥抱真实与自然。</p>
+            </div>
+
+            <div class="philosophy-grid">
+                <div class="philosophy-item fade-in stagger-1">
+                    <div class="icon-container blob-a">
+                        <span class="icon-number">1</span>
+                        不
+                    </div>
+                    <h3>不完美</h3>
+                    <div class="en-label">Imperfect · 不完全</div>
+                    <p>美存在于不对称、粗糙和简单之中。真正的优雅源于真实，而非完美无瑕的假象。金缮艺术告诉我们，裂痕不是缺陷，而是历史的见证。</p>
+                </div>
+                <div class="philosophy-item fade-in stagger-2">
+                    <div class="icon-container blob-b">
+                        <span class="icon-number">2</span>
+                        常
+                    </div>
+                    <h3>无常</h3>
+                    <div class="en-label">Impermanent · 無常</div>
+                    <p>一切皆在变化。接受时间的流逝，珍惜每一个转瞬即逝的瞬间，因为它们终将消逝。樱花之美，正因其短暂。</p>
+                </div>
+                <div class="philosophy-item fade-in stagger-3">
+                    <div class="icon-container blob-c">
+                        <span class="icon-number">3</span>
+                        素
+                    </div>
+                    <h3>简素</h3>
+                    <div class="en-label">Simple · 簡素</div>
+                    <p>减少至本质，但不剥离诗意。在简约中发现深度与丰富，让事物回归本来面目。少即是多，空即是满。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section-padding" style="background-color: var(--bg-parchment);" id="features">
+        <div class="container">
+            <div class="features-header fade-in">
+                <span class="section-label text-sage">機能</span>
+                <h2 style="margin-top: 1rem;">我们的设计哲学</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="features-container">
+                <!-- Feature 1 -->
+                <div class="feature-row">
+                    <div class="feature-visual fade-in-left">
+                        <div class="feature-bg blob-b"></div>
+                        <div class="feature-card">
+                            <div class="feature-card-number">01</div>
+                            <div class="feature-card-label">自然形态</div>
+                            <div class="feature-card-sub">Organic Forms</div>
+                        </div>
+                    </div>
+                    <div class="feature-content fade-in-right stagger-2">
+                        <h3>有机界面设计</h3>
+                        <p>我们的设计灵感源自自然界的有机形态。每一个元素都经过精心调整，创造出流畅、直观的体验。没有生硬的直角，只有如流水般自然的曲线。</p>
+                        <p style="margin-top: 1.5rem;">就像卵石被溪水打磨，我们的界面在反复推敲中趋向自然。每一次交互都如同呼吸般自然流畅。</p>
+                        <div class="feature-detail">了解设计过程</div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-row reverse">
+                    <div class="feature-visual fade-in-right">
+                        <div class="feature-bg blob-c"></div>
+                        <div class="feature-card">
+                            <div class="feature-card-number">02</div>
+                            <div class="feature-card-label">禅意专注</div>
+                            <div class="feature-card-sub">Zen Focus</div>
+                        </div>
+                    </div>
+                    <div class="feature-content fade-in-left stagger-2">
+                        <h3>极简主义体验</h3>
+                        <p>去除干扰，专注于真正重要的事情。极简的工具栏帮助你进入心流状态，让创作回归纯粹。每减少一个元素，都让核心功能更加突出。</p>
+                        <p style="margin-top: 1.5rem;">如同禅宗庭园中的枯山水，留白不是空无，而是为思考留出空间。少即是丰盛。</p>
+                        <div class="feature-detail">体验心流</div>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-row">
+                    <div class="feature-visual fade-in-left">
+                        <div class="feature-bg blob-d"></div>
+                        <div class="feature-card">
+                            <div class="feature-card-number">03</div>
+                            <div class="feature-card-label">时间质感</div>
+                            <div class="feature-card-sub">Patina of Time</div>
+                        </div>
+                    </div>
+                    <div class="feature-content fade-in-right stagger-2">
+                        <h3>岁月的痕迹</h3>
+                        <p>像陈年美酒一样，我们的产品随着时间的推移而变得更有价值。每一次使用都会留下独特的痕迹，记录你的创作旅程。</p>
+                        <p style="margin-top: 1.5rem;">老茶碗的釉面开裂，古木家具的包浆光泽，时间赋予物品独一无二的灵魂。我们的设计亦如此。</p>
+                        <div class="feature-detail">感受时间</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="section-padding" id="gallery">
+        <div class="container">
+            <div class="gallery-header fade-in">
+                <span class="section-label text-clay">展示</span>
+                <h2 style="margin-top: 1rem;">美学画廊</h2>
+                <div class="section-divider"></div>
+                <p style="color: var(--text-charcoal-light); max-width: 500px; margin: 1rem auto 0;">每一件作品都是对侘寂美学的诠释，在不完美中寻找独特之美。</p>
+            </div>
+
+            <div class="masonry-grid">
+                <div class="gallery-item fade-in stagger-1">
+                    <div class="gallery-image">
+                        <span class="gallery-icon">枯</span>
+                    </div>
+                    <h4>静谧午后</h4>
+                    <p class="gallery-desc">在光影交错中寻找宁静，枯山水庭园的禅意空间。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-2">
+                    <div class="gallery-image" style="aspect-ratio: 3/4;">
+                        <span class="gallery-icon">金</span>
+                    </div>
+                    <h4>修复的艺术</h4>
+                    <p class="gallery-desc">金缮——用黄金填补裂痕，让缺陷成为最美的装饰。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-3">
+                    <div class="gallery-image">
+                        <span class="gallery-icon">茶</span>
+                    </div>
+                    <h4>一期一会</h4>
+                    <p class="gallery-desc">珍惜每一次相遇，茶道中的无常之美。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-1">
+                    <div class="gallery-image" style="aspect-ratio: 1/1;">
+                        <span class="gallery-icon">紙</span>
+                    </div>
+                    <h4>时间的织物</h4>
+                    <p class="gallery-desc">传统和纸工艺，感受纤维间的温度与呼吸。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-2">
+                    <div class="gallery-image">
+                        <span class="gallery-icon">苔</span>
+                    </div>
+                    <h4>自然的韵律</h4>
+                    <p class="gallery-desc">苔藓覆盖的石头，在微小中见宏大之美。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-3">
+                    <div class="gallery-image" style="aspect-ratio: 3/4;">
+                        <span class="gallery-icon">陶</span>
+                    </div>
+                    <h4>不完美的完美</h4>
+                    <p class="gallery-desc">手工陶器的独特性，每一件都是孤品。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-1">
+                    <div class="gallery-image">
+                        <span class="gallery-icon">竹</span>
+                    </div>
+                    <h4>空灵之声</h4>
+                    <p class="gallery-desc">风穿过竹叶的低语，自然的音乐。</p>
+                </div>
+                <div class="gallery-item fade-in stagger-2">
+                    <div class="gallery-image" style="aspect-ratio: 4/5;">
+                        <span class="gallery-icon">墨</span>
+                    </div>
+                    <h4>留白之美</h4>
+                    <p class="gallery-desc">无言胜有言，水墨画中的虚空哲学。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section-padding testimonials-section">
+        <div class="container">
+            <div style="text-align: center;" class="fade-in">
+                <span class="section-label text-sage">声</span>
+                <h2 style="margin-top: 1rem;">来自用户的声音</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in stagger-1">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">在这个充斥着视觉噪音的世界里，侘寂让我重新找到了内心的平静。每一个界面元素都像是精心摆放的石子。</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar blob-e">林</div>
+                        <div>
+                            <div class="testimonial-name">林小雨</div>
+                            <div class="testimonial-role">独立设计师</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in stagger-2">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">侘寂不仅是一个工具，更是一种生活态度。它教会我接受不完美，在简约中发现丰富。这是我用过的最宁静的创作平台。</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar blob-f">田</div>
+                        <div>
+                            <div class="testimonial-name">田中美咲</div>
+                            <div class="testimonial-role">作家</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in stagger-3">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">作为一名建筑师，我一直在寻找能够体现侘寂美学的数字工具。这个产品完美地将传统哲学融入了现代设计。</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar blob-g">张</div>
+                        <div>
+                            <div class="testimonial-name">张远山</div>
+                            <div class="testimonial-role">建筑师</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card fade-in stagger-4">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">每次打开这个应用，都像是进入了一座日式庭园。它让我的创作过程变得从容而专注。真正的少即是多。</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar blob-h">王</div>
+                        <div>
+                            <div class="testimonial-name">王清风</div>
+                            <div class="testimonial-role">摄影师</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section-padding" id="pricing">
+        <div class="container">
+            <div class="pricing-header fade-in">
+                <span class="section-label text-sage">価格</span>
+                <h2 style="margin-top: 1rem;">简单定价</h2>
+                <div class="section-divider"></div>
+                <p>没有隐藏费用，只有诚实的价值。</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card fade-in stagger-1 hand-border">
+                    <h3>简素</h3>
+                    <p class="pricing-sub">适合个人创作者</p>
+                    <div class="price">
+                        ¥999
+                        <small>/年</small>
+                    </div>
+                    <ul class="features-list">
+                        <li>基础功能访问</li>
+                        <li>单用户许可</li>
+                        <li>社区支持</li>
+                        <li>季度更新</li>
+                        <li>5GB 存储空间</li>
+                        <li>3 个自定义主题</li>
+                    </ul>
+                    <a href="#" class="cta-link">选择方案</a>
+                </div>
+
+                <div class="pricing-card fade-in stagger-2 hand-border">
+                    <h3>完整</h3>
+                    <p class="pricing-sub">适合专业团队</p>
+                    <div class="price">
+                        ¥2,499
+                        <small>/年</small>
+                    </div>
+                    <ul class="features-list">
+                        <li>所有高级功能</li>
+                        <li>无限用户许可</li>
+                        <li>优先技术支持</li>
+                        <li>每月更新</li>
+                        <li>定制主题与品牌</li>
+                        <li>无限存储空间</li>
+                        <li>API 访问权限</li>
+                    </ul>
+                    <a href="#" class="cta-link">选择方案</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote Section -->
+    <section class="quote-section">
+        <div class="quote-vertical-left">侘寂之道</div>
+        <div class="quote-vertical-right">不完全の美</div>
+
+        <div class="quote-content fade-in-scale">
+            <div class="quote-box">
+                <div class="quote-mark-open">「</div>
+                <p>
+                    在这个追求完美的世界里，侘寂提醒我们：真正的美存在于真实之中，存在于时间的流逝之中，存在于每一个不完美的瞬间。
+                </p>
+                <cite>— 千利休</cite>
+                <div class="quote-decoration blob-a"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-top">
+            <div>
+                <div class="footer-brand">侘寂</div>
+                <p class="footer-tagline">以侘寂之心，创造有温度的数字体验。在不完美中寻找永恒之美。</p>
+            </div>
+            <div class="footer-nav-group">
+                <div class="footer-nav-col">
+                    <h5>产品</h5>
+                    <ul>
+                        <li><a href="#">功能介绍</a></li>
+                        <li><a href="#">定价方案</a></li>
+                        <li><a href="#">更新日志</a></li>
+                        <li><a href="#">路线图</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav-col">
+                    <h5>资源</h5>
+                    <ul>
+                        <li><a href="#">设计指南</a></li>
+                        <li><a href="#">API 文档</a></li>
+                        <li><a href="#">博客</a></li>
+                        <li><a href="#">社区</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav-col">
+                    <h5>关于</h5>
+                    <ul>
+                        <li><a href="#">我们的故事</a></li>
+                        <li><a href="#">设计理念</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copyright">© 2026 侘寂工作室. All rights reserved.</div>
+            <div class="footer-colophon">
+                一期一会，珍惜每一次相遇。<br>
+                以不完美之心，追求永恒之美。
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // IntersectionObserver for fade-in animations
+            const observerOptions = {
+                threshold: 0.12,
+                rootMargin: "0px 0px -60px 0px"
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .fade-in-scale').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Parallax effect for floating elements
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        const scrolled = window.pageYOffset;
+                        document.querySelectorAll('.float-element').forEach((el, index) => {
+                            const speed = 0.05 + (index * 0.03);
+                            el.style.transform = `translateY(${scrolled * speed}px)`;
+                        });
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            // Nav scroll effect
+            const nav = document.getElementById('mainNav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 80) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+
+            // Smooth scroll for nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
