@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使用指南 — Template Shop</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   CSS Custom Properties — Dark / Light Theme
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --p: #6C5CE7;
+  --acc: #00cec9;
+  --p-glow: rgba(108, 92, 231, 0.25);
+  --acc-glow: rgba(0, 206, 201, 0.2);
+  --r: 20px;
+  --transition-theme: 0.3s ease;
+}
+[data-theme="dark"] {
+  --bg: #07070e;
+  --s1: #0e0e1a;
+  --s2: #161625;
+  --s3: #1c1c30;
+  --tx: #e8e8f4;
+  --td: #6e6e96;
+  --bd: rgba(255, 255, 255, 0.06);
+  --bd-hover: rgba(255, 255, 255, 0.12);
+  --card-bg: #0e0e1a;
+  --card-hover-bg: #14142a;
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-border: rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 24px 64px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(108, 92, 231, 0.1);
+  --orb1: rgba(108, 92, 231, 0.07);
+  --orb2: rgba(0, 206, 201, 0.05);
+  --grid-line: rgba(108, 92, 231, 0.025);
+  --scroll-top-bg: rgba(14, 14, 26, 0.9);
+  --scroll-top-border: rgba(255, 255, 255, 0.08);
+  --code-bg: #12121e;
+  --table-stripe: rgba(255, 255, 255, 0.015);
+  --sidebar-hover: rgba(108, 92, 231, 0.08);
+  --sidebar-active: rgba(108, 92, 231, 0.14);
+}
+[data-theme="light"] {
+  --bg: #ffffff;
+  --s1: #f8f9fa;
+  --s2: #f1f3f5;
+  --s3: #e9ecef;
+  --tx: #111111;
+  --td: #6c757d;
+  --bd: rgba(0, 0, 0, 0.08);
+  --bd-hover: rgba(0, 0, 0, 0.15);
+  --card-bg: #ffffff;
+  --card-hover-bg: #f8f9fa;
+  --input-bg: #f8f9fa;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 16px 48px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(108, 92, 231, 0.12);
+  --orb1: rgba(108, 92, 231, 0.04);
+  --orb2: rgba(0, 206, 201, 0.03);
+  --grid-line: rgba(108, 92, 231, 0.03);
+  --scroll-top-bg: rgba(255, 255, 255, 0.95);
+  --scroll-top-border: rgba(0, 0, 0, 0.08);
+  --code-bg: #f6f8fa;
+  --table-stripe: rgba(0, 0, 0, 0.015);
+  --sidebar-hover: rgba(108, 92, 231, 0.06);
+  --sidebar-active: rgba(108, 92, 231, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Reset & Base
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition-theme), color var(--transition-theme);
+}
+::selection { background: rgba(108, 92, 231, 0.3); }
+a { color: inherit; text-decoration: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   Background Effects
+   ═══════════════════════════════════════════════════════════ */
+.bg-grid {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  pointer-events: none; z-index: 0;
+  transition: background var(--transition-theme);
+}
+.bg-orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(140px); pointer-events: none; z-index: 0;
+  will-change: transform;
+  transition: background var(--transition-theme);
+}
+.bg-orb.purple { width: 600px; height: 600px; background: var(--orb1); top: -200px; right: -150px; animation: orbFloat 18s ease-in-out infinite; }
+.bg-orb.teal { width: 500px; height: 500px; background: var(--orb2); bottom: -150px; left: -120px; animation: orbFloat 18s ease-in-out infinite -9s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -50px) scale(1.05); }
+  66% { transform: translate(-30px, 30px) scale(0.95); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Top Bar
+   ═══════════════════════════════════════════════════════════ */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+  background: transparent;
+  transition: background 0.3s, backdrop-filter 0.3s, box-shadow 0.3s;
+}
+.top-bar.scrolled {
+  background: rgba(7, 7, 14, 0.75);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: 0 1px 0 var(--bd);
+}
+[data-theme="light"] .top-bar.scrolled {
+  background: rgba(255, 255, 255, 0.8);
+}
+.top-bar .nav-left {
+  display: flex; align-items: center; gap: 12px;
+}
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 500; color: var(--td);
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--p); }
+.back-link i { width: 16px; height: 16px; }
+.nav-title {
+  font-size: 16px; font-weight: 800; letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-title span { background: linear-gradient(135deg, var(--p), var(--acc)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.nav-right {
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: var(--td);
+  padding: 8px 14px; border-radius: 10px;
+  border: 1px solid var(--bd);
+  background: var(--input-bg);
+  transition: all 0.25s;
+}
+.nav-link i { width: 14px; height: 14px; }
+.nav-link:hover { color: var(--p); border-color: rgba(108, 92, 231, 0.25); background: rgba(108, 92, 231, 0.06); }
+.theme-toggle {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--bd);
+  background: var(--input-bg); color: var(--td); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s; font-size: 0;
+}
+.theme-toggle:hover { border-color: var(--bd-hover); color: var(--tx); background: var(--s2); }
+.theme-toggle i { width: 18px; height: 18px; }
+
+/* ═══════════════════════════════════════════════════════════
+   Page Header
+   ═══════════════════════════════════════════════════════════ */
+.page-header {
+  padding: 140px 0 40px;
+  text-align: center;
+}
+.page-header .badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  padding: 8px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--p);
+  margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+}
+.page-header .badge .dot { width: 7px; height: 7px; background: var(--acc); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--acc-glow); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 206, 201, 0); }
+}
+.page-header h1 {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800; line-height: 1.1; letter-spacing: -0.04em;
+  margin-bottom: 16px;
+}
+.page-header h1 .gradient-text {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--p), var(--acc), #ec4899, var(--p));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 8s ease infinite;
+}
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.page-header .sub {
+  font-size: 16px; color: var(--td); max-width: 560px;
+  margin: 0 auto; line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Layout: Sidebar + Content
+   ═══════════════════════════════════════════════════════════ */
+.docs-layout {
+  display: flex;
+  gap: 48px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Sidebar TOC */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 88px;
+  align-self: flex-start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  padding-bottom: 24px;
+}
+.sidebar-title {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--td); margin-bottom: 12px;
+  padding-left: 12px;
+}
+.toc {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.toc a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  color: var(--td);
+  transition: all 0.2s;
+}
+.toc a i { width: 15px; height: 15px; opacity: 0.6; }
+.toc a:hover { background: var(--sidebar-hover); color: var(--tx); }
+.toc a.active { background: var(--sidebar-active); color: var(--p); }
+.toc a.active i { opacity: 1; color: var(--p); }
+
+/* Content */
+.doc-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Sections
+   ═══════════════════════════════════════════════════════════ */
+.doc-section {
+  margin-bottom: 56px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.doc-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.doc-section h2 {
+  font-size: 26px; font-weight: 800; letter-spacing: -0.03em;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+  scroll-margin-top: 88px;
+}
+.doc-section h2 .sec-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: rgba(108, 92, 231, 0.1);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.doc-section h2 .sec-icon i { width: 16px; height: 16px; color: var(--p); }
+.doc-section h3 {
+  font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+  margin: 28px 0 12px;
+  color: var(--tx);
+}
+.doc-section p, .doc-section li {
+  font-size: 15px; color: var(--td); line-height: 1.8;
+}
+.doc-section ul {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 16px;
+}
+.doc-section ul li {
+  padding-left: 20px;
+  position: relative;
+}
+.doc-section ul li::before {
+  content: '';
+  position: absolute; left: 0; top: 10px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--p);
+  opacity: 0.5;
+}
+.doc-section ul li strong { color: var(--tx); font-weight: 600; }
+.doc-section ul li code { color: var(--p); font-weight: 600; }
+
+/* Inline code */
+code {
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 0.88em;
+  background: var(--code-bg);
+  border: 1px solid var(--bd);
+  padding: 2px 7px; border-radius: 6px;
+}
+
+/* Code blocks */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--bd);
+  background: var(--s2);
+}
+.code-header .lang {
+  font-size: 12px; font-weight: 600;
+  color: var(--td); text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.code-header .dots {
+  display: flex; gap: 6px;
+}
+.code-header .dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+  opacity: 0.4;
+}
+.code-header .dots span:nth-child(1) { background: #ff5f57; }
+.code-header .dots span:nth-child(2) { background: #febc2e; }
+.code-header .dots span:nth-child(3) { background: #28c840; }
+.code-block pre {
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--tx);
+}
+.code-block pre code {
+  background: none; border: none; padding: 0;
+  font-size: inherit; color: inherit;
+}
+
+/* Callout */
+.callout {
+  display: flex; gap: 12px;
+  padding: 16px 18px; border-radius: 12px;
+  margin: 16px 0;
+  font-size: 14px; line-height: 1.7;
+  border: 1px solid;
+}
+.callout i { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+.callout.tip {
+  background: rgba(0, 206, 201, 0.06);
+  border-color: rgba(0, 206, 201, 0.15);
+  color: var(--td);
+}
+.callout.tip i { color: var(--acc); }
+.callout.warn {
+  background: rgba(234, 179, 8, 0.06);
+  border-color: rgba(234, 179, 8, 0.15);
+  color: var(--td);
+}
+.callout.warn i { color: #eab308; }
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 14px;
+  border: 1px solid var(--bd);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th {
+  background: var(--s2);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bd);
+  white-space: nowrap;
+}
+td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--bd);
+  color: var(--td);
+}
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) { background: var(--table-stripe); }
+td:first-child { font-weight: 600; color: var(--tx); white-space: nowrap; }
+.tag-inline {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 6px;
+}
+.tag-dark { background: rgba(30, 30, 60, 0.5); color: #8b8bd4; border: 1px solid rgba(108, 92, 231, 0.15); }
+.tag-light { background: rgba(200, 200, 210, 0.15); color: #7c8da0; border: 1px solid rgba(150, 150, 170, 0.15); }
+.tag-gradient { background: linear-gradient(135deg, rgba(108, 92, 231, 0.12), rgba(0, 206, 201, 0.08)); color: var(--p); border: 1px solid rgba(108, 92, 231, 0.15); }
+.tag-ai { background: rgba(108, 92, 231, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.15); }
+.tag-mobile { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.15); }
+.tag-ecom { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.15); }
+.tag-agency { background: rgba(234, 179, 8, 0.1); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.15); }
+.tag-finance { background: rgba(6, 182, 212, 0.1); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.15); }
+.tag-ink { background: rgba(156, 163, 175, 0.12); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.15); }
+.tag-minimal { background: rgba(156, 163, 175, 0.1); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.15); }
+.tag-luxury { background: rgba(217, 119, 6, 0.1); color: #f59e0b; border: 1px solid rgba(217, 119, 6, 0.15); }
+.tag-cyber { background: rgba(236, 72, 153, 0.1); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.15); }
+.tag-wabi { background: rgba(161, 128, 102, 0.12); color: #b8977a; border: 1px solid rgba(161, 128, 102, 0.15); }
+.tag-glass { background: rgba(139, 92, 246, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.15); }
+.tag-brutal { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15); }
+.tag-aurora { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.15); }
+.tag-editorial { background: rgba(156, 163, 175, 0.1); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.15); }
+.tag-warm { background: rgba(217, 119, 6, 0.1); color: #fb923c; border: 1px solid rgba(217, 119, 6, 0.15); }
+
+/* Steps */
+.steps {
+  display: flex; flex-direction: column; gap: 16px;
+  margin: 16px 0;
+}
+.step {
+  display: flex; gap: 14px;
+  padding: 16px 18px; border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--bd);
+  transition: all 0.25s;
+}
+.step:hover {
+  border-color: var(--bd-hover);
+  box-shadow: var(--shadow-card);
+}
+.step-num {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(108, 92, 231, 0.1);
+  border: 1px solid rgba(108, 92, 231, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--p);
+  flex-shrink: 0;
+}
+.step-body { flex: 1; }
+.step-body strong { color: var(--tx); font-weight: 600; }
+.step-body p { margin-top: 4px; }
+
+/* FAQ */
+.faq-item {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--bd);
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  font-size: 15px; font-weight: 600; color: var(--tx);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.faq-q i { width: 16px; height: 16px; color: var(--p); flex-shrink: 0; }
+.faq-a {
+  font-size: 14px; color: var(--td); line-height: 1.7;
+  padding-left: 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════════════════════ */
+.page-footer {
+  text-align: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--bd);
+  position: relative;
+  z-index: 1;
+}
+.footer-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  padding: 8px 18px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--p);
+  margin-bottom: 16px;
+}
+.footer-badge i { width: 14px; height: 14px; }
+.footer-links {
+  display: flex; justify-content: center; gap: 24px;
+  margin-bottom: 16px;
+}
+.footer-links a {
+  font-size: 13px; color: var(--td);
+  display: flex; align-items: center; gap: 6px;
+  transition: color 0.2s;
+}
+.footer-links a i { width: 14px; height: 14px; }
+.footer-links a:hover { color: var(--p); }
+.footer-copy { font-size: 12px; color: var(--td); opacity: 0.6; }
+
+/* ═══════════════════════════════════════════════════════════
+   Scroll to Top
+   ═══════════════════════════════════════════════════════════ */
+.scroll-top {
+  position: fixed; bottom: 32px; right: 32px; z-index: 90;
+  width: 44px; height: 44px; border-radius: 12px;
+  border: 1px solid var(--scroll-top-border);
+  background: var(--scroll-top-bg);
+  backdrop-filter: blur(16px);
+  color: var(--td); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(16px);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.scroll-top.visible {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+.scroll-top:hover { color: var(--p); border-color: rgba(108, 92, 231, 0.3); box-shadow: 0 4px 16px var(--p-glow); }
+.scroll-top i { width: 18px; height: 18px; }
+
+/* ═══════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .sidebar { display: none; }
+  .docs-layout { padding: 0 24px 60px; }
+}
+@media (max-width: 768px) {
+  .top-bar { padding: 12px 16px; }
+  .back-link span { display: none; }
+  .nav-link span { display: none; }
+  .page-header { padding: 120px 0 32px; }
+  .page-header h1 { font-size: 32px; }
+  .page-header .sub { font-size: 14px; }
+  .doc-section h2 { font-size: 22px; }
+  .scroll-top { bottom: 20px; right: 20px; }
+}
+@media (max-width: 480px) {
+  .page-header h1 { font-size: 28px; }
+  .docs-layout { padding: 0 16px 40px; gap: 32px; }
+  .table-wrap { font-size: 13px; }
+  th, td { padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb purple"></div>
+<div class="bg-orb teal"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar" id="topBar">
+  <div class="nav-left">
+    <a href="index.html" class="back-link"><i data-lucide="arrow-left"></i> <span>返回模板商店</span></a>
+    <div class="nav-title"><i data-lucide="book-open" style="width:18px;height:18px;color:var(--p)"></i> <span>使用指南</span></div>
+  </div>
+  <div class="nav-right">
+    <a href="changelog.html" class="nav-link"><i data-lucide="scroll-text"></i> <span>更新日志</span></a>
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+      <i data-lucide="sun" id="themeIcon"></i>
+    </button>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header" style="position:relative;z-index:1">
+  <div class="badge"><span class="dot"></span> 使用指南 · Documentation</div>
+  <h1>Template Shop <span class="gradient-text">使用指南</span></h1>
+  <p class="sub">从下载到部署，全方位掌握 24 套落地页模板的使用方法。</p>
+</div>
+
+<!-- DOCS LAYOUT -->
+<div class="docs-layout">
+
+<!-- SIDEBAR TOC -->
+<aside class="sidebar">
+  <div class="sidebar-title">目录</div>
+  <ul class="toc">
+    <li><a href="#quickstart" data-section="quickstart"><i data-lucide="zap"></i> 快速开始</a></li>
+    <li><a href="#customize" data-section="customize"><i data-lucide="palette"></i> 自定义修改</a></li>
+    <li><a href="#deploy" data-section="deploy"><i data-lucide="rocket"></i> 部署上线</a></li>
+    <li><a href="#responsive" data-section="responsive"><i data-lucide="smartphone"></i> 响应式适配</a></li>
+    <li><a href="#keys" data-section="keys"><i data-lucide="key"></i> 密钥系统</a></li>
+    <li><a href="#catalog" data-section="catalog"><i data-lucide="layout-grid"></i> 模板分类</a></li>
+    <li><a href="#faq" data-section="faq"><i data-lucide="help-circle"></i> FAQ</a></li>
+    <li><a href="#changelog" data-section="changelog"><i data-lucide="scroll-text"></i> 更新日志</a></li>
+  </ul>
+</aside>
+
+<!-- CONTENT -->
+<main class="doc-content">
+
+<!-- ═══════════════════════════════════════════════════════════
+     1. 快速开始
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="quickstart">
+  <h2><span class="sec-icon"><i data-lucide="zap"></i></span> 快速开始</h2>
+
+  <h3>下载模板</h3>
+  <ul>
+    <li><strong>游客模式</strong> — 所有模板均可在线预览，无需登录即可浏览全部 24 套模板的设计效果。</li>
+    <li><strong>密钥用户</strong> — 输入密钥登录后，可下载任意模板的完整源码（<code>.html</code> 单文件）。</li>
+  </ul>
+
+  <h3>打开方式</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>直接浏览器打开</strong>
+        <p>双击 <code>.html</code> 文件，或将其拖入浏览器窗口，即可查看完整效果。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>VS Code 编辑</strong>
+        <p>将文件拖入 VS Code，使用 Live Server 插件实时预览修改效果。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <i data-lucide="lightbulb"></i>
+    <div>所有模板均为<strong>纯 HTML/CSS/JS 单文件</strong>，零依赖，无需安装任何框架或构建工具。下载后即可直接使用。</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     2. 自定义修改
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="customize">
+  <h2><span class="sec-icon"><i data-lucide="palette"></i></span> 自定义修改</h2>
+
+  <h3>换颜色</h3>
+  <p>每个模板都使用 CSS 变量控制颜色，搜索以下变量名即可快速修改：</p>
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span class="lang">CSS</span>
+    </div>
+    <pre><code>:root {
+  --primary: #6C5CE7;    /* 主色 — 按钮、链接、强调色 */
+  --accent: #00cec9;     /* 辅助色 — 渐变、装饰 */
+  --bg: #07070e;         /* 页面背景 */
+  --text: #e8e8f4;       /* 正文文字颜色 */
+  --card-bg: #0e0e1a;    /* 卡片背景 */
+}</code></pre>
+  </div>
+  <div class="callout tip">
+    <i data-lucide="lightbulb"></i>
+    <div>使用 VS Code 的全局搜索（<code>Ctrl+Shift+F</code>）搜索 <code>--primary</code> 或 <code>--bg</code>，即可找到所有可自定义的颜色变量。</div>
+  </div>
+
+  <h3>换文字</h3>
+  <ul>
+    <li>直接在 HTML 文件中找到对应中文内容，替换为你的文案即可。</li>
+    <li>大多数模板的标题、描述、按钮文字都集中在 <code>&lt;section&gt;</code> 标签内。</li>
+  </ul>
+
+  <h3>换图片</h3>
+  <ul>
+    <li>替换 <code>&lt;img&gt;</code> 标签的 <code>src</code> 属性为你的图片路径。</li>
+    <li>修改 CSS 中的 <code>background-image: url(...)</code> 更换背景图。</li>
+    <li>建议使用 <a href="https://unsplash.com" target="_blank" style="color:var(--p);text-decoration:underline">Unsplash</a> 等免费图库获取高质量图片。</li>
+  </ul>
+
+  <h3>换字体</h3>
+  <ul>
+    <li>修改 <code>&lt;link&gt;</code> 标签中的 Google Fonts 链接，替换为你喜欢的字体。</li>
+    <li>同时修改 CSS 中的 <code>font-family</code> 属性。</li>
+  </ul>
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span class="lang">HTML</span>
+    </div>
+    <pre><code>&lt;!-- 替换 Inter 为其他字体 --&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet"&gt;</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     3. 部署上线
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="deploy">
+  <h2><span class="sec-icon"><i data-lucide="rocket"></i></span> 部署上线</h2>
+
+  <p>所有模板均为静态 HTML 文件，可部署到任意静态托管平台。</p>
+
+  <h3>GitHub Pages</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>推送代码到 GitHub 仓库</strong>
+        <p>将 <code>.html</code> 文件推送到你的 GitHub 仓库。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>开启 Pages</strong>
+        <p>进入仓库 Settings → Pages → Source 选择 <code>main</code> 分支 → 保存。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>访问你的网站</strong>
+        <p>等待 1-2 分钟，访问 <code>https://yourname.github.io/repo/</code> 即可。</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Cloudflare Pages</h3>
+  <ul>
+    <li>登录 <a href="https://pages.cloudflare.com" target="_blank" style="color:var(--p);text-decoration:underline">Cloudflare Pages</a>，连接 GitHub 仓库。</li>
+    <li>无需配置构建命令，自动部署，访问速度全球加速。</li>
+  </ul>
+
+  <h3>Vercel / Netlify</h3>
+  <ul>
+    <li>直接将 <code>.html</code> 文件拖拽上传到平台，即刻上线。</li>
+    <li>支持自定义域名和自动 HTTPS。</li>
+  </ul>
+
+  <h3>任意静态服务器</h3>
+  <ul>
+    <li>上传文件到 Nginx、Apache、Caddy 等静态服务器即可。</li>
+    <li>无需后端，无需数据库，纯静态托管。</li>
+  </ul>
+
+  <div class="callout tip">
+    <i data-lucide="info"></i>
+    <div>推荐使用 <strong>Cloudflare Pages</strong> — 免费额度充足，全球 CDN 加速，自带 HTTPS，部署最简单。</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     4. 响应式适配
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="responsive">
+  <h2><span class="sec-icon"><i data-lucide="smartphone"></i></span> 响应式适配</h2>
+
+  <ul>
+    <li>所有模板已全面适配 <strong>手机 / 平板 / 桌面</strong> 三种屏幕尺寸。</li>
+    <li>默认断点：<code>@media (max-width: 768px)</code>（平板）、<code>@media (max-width: 480px)</code>（手机）。</li>
+    <li>如需自定义断点，在 CSS 中搜索 <code>@media</code> 查询并修改即可。</li>
+  </ul>
+
+  <h3>测试建议</h3>
+  <ul>
+    <li>使用 Chrome DevTools 的 <strong>设备模式</strong>（<code>F12</code> → 点击手机图标）快速切换不同设备预览。</li>
+    <li>推荐测试 iPhone SE、iPhone 14、iPad、桌面 1440px 四种尺寸。</li>
+    <li>特别注意导航栏、按钮、表格在小屏幕上的显示效果。</li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span class="lang">CSS</span>
+    </div>
+    <pre><code>/* 典型响应式断点结构 */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 32px; }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 28px; }
+  .nav-links { display: none; }
+}</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     5. 密钥系统
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="keys">
+  <h2><span class="sec-icon"><i data-lucide="key"></i></span> 密钥系统</h2>
+
+  <h3>游客模式</h3>
+  <ul>
+    <li>无需登录即可预览所有模板的设计效果。</li>
+    <li>游客模式下<strong>不可下载</strong>源码文件。</li>
+    <li>可在首页自由浏览、搜索、筛选模板。</li>
+  </ul>
+
+  <h3>密钥登录</h3>
+  <ul>
+    <li>密钥格式：<code>TMPL-XXXX-XXXX-XXXX</code>（X 为大写字母或数字）。</li>
+    <li>输入密钥后系统自动校验，通过后即可下载全部模板源码。</li>
+    <li>密钥支持自动补全格式，输入时无需手动输入连字符。</li>
+  </ul>
+
+  <h3>设备绑定</h3>
+  <ul>
+    <li>一个密钥绑定<strong>一台设备</strong>，通过设备指纹识别。</li>
+    <li>切换设备（换浏览器、换电脑）后需<strong>重新登录</strong>。</li>
+    <li>系统会自动检测设备变更并提示重新验证。</li>
+  </ul>
+
+  <h3>获取密钥</h3>
+  <ul>
+    <li>通过 <a href="https://github.com/zizegak916-glitch/template-shop/issues" target="_blank" style="color:var(--p);text-decoration:underline">GitHub Issues</a> 联系获取密钥。</li>
+    <li>提交 Issue 时请说明使用场景，我们会尽快回复。</li>
+  </ul>
+
+  <div class="callout warn">
+    <i data-lucide="alert-triangle"></i>
+    <div>请妥善保管你的密钥。设备变更、浏览器清除缓存后均需重新输入密钥登录。</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     6. 模板分类
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="catalog">
+  <h2><span class="sec-icon"><i data-lucide="layout-grid"></i></span> 模板分类</h2>
+
+  <p>Template Shop 提供 24 套覆盖多种风格和行业的落地页模板：</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>模板名称</th>
+          <th>风格</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Starter</td>
+          <td><span class="tag-inline tag-dark">暗黑科技风</span></td>
+          <td>深空蓝底色 + 紫/青渐变，适合 AI 产品、开发者工具、技术型 SaaS</td>
+        </tr>
+        <tr>
+          <td>CleanSaaS</td>
+          <td><span class="tag-inline tag-light">白色极简风</span></td>
+          <td>白底 + 蓝绿配色，干净专业，适合企业级 SaaS、B2B 产品、效率工具</td>
+        </tr>
+        <tr>
+          <td>VibeLaunch</td>
+          <td><span class="tag-inline tag-gradient">渐变潮流风</span></td>
+          <td>靛蓝→粉红渐变 + 暗色背景，视觉冲击力强，适合初创品牌、产品发布</td>
+        </tr>
+        <tr>
+          <td>NeuralAI</td>
+          <td><span class="tag-inline tag-ai">AI 产品专用</span></td>
+          <td>紫/青霓虹色 + 神经网络动画，专为 AI 产品打造，含 API 代码演示</td>
+        </tr>
+        <tr>
+          <td>AppLaunch</td>
+          <td><span class="tag-inline tag-mobile">App 专属</span></td>
+          <td>暗色背景 + 蓝/橙配色，专为移动端 App 设计，含 CSS 手机模型</td>
+        </tr>
+        <tr>
+          <td>ShopWave</td>
+          <td><span class="tag-inline tag-ecom">电商产品</span></td>
+          <td>暖白底 + 红/绿配色，适合电商产品展示、单品落地页、独立站</td>
+        </tr>
+        <tr>
+          <td>Atelier</td>
+          <td><span class="tag-inline tag-agency">创意工作室</span></td>
+          <td>近黑底 + 金色点缀，高级感排版，适合设计公司、创意代理、作品集</td>
+        </tr>
+        <tr>
+          <td>FinFlow</td>
+          <td><span class="tag-inline tag-finance">金融科技</span></td>
+          <td>深海军蓝底 + 蓝/绿配色，专业可信，适合金融产品、支付平台</td>
+        </tr>
+        <tr>
+          <td>墨韵</td>
+          <td><span class="tag-inline tag-ink">水墨国风</span></td>
+          <td>水墨画风 + 暗色背景，东方美学与现代设计融合，适合文化品牌、国潮</td>
+        </tr>
+        <tr>
+          <td>极简</td>
+          <td><span class="tag-inline tag-minimal">包豪斯极简</span></td>
+          <td>白底 + 几何色块，致敬包豪斯的极致简洁，适合设计工具、效率产品</td>
+        </tr>
+        <tr>
+          <td>LUXE</td>
+          <td><span class="tag-inline tag-luxury">轻奢风格</span></td>
+          <td>深邃暗色 + 金铜配色，适合高端品牌、奢侈品类、会员制服务</td>
+        </tr>
+        <tr>
+          <td>NEON</td>
+          <td><span class="tag-inline tag-cyber">赛博朋克</span></td>
+          <td>霓虹灯配色 + 暗色赛博风，适合游戏、Web3、未来科技类产品</td>
+        </tr>
+        <tr>
+          <td>侘寂</td>
+          <td><span class="tag-inline tag-wabi">日式侘寂</span></td>
+          <td>温暖大地色 + 不完美之美，禅意留白，适合生活方式品牌、手工匠人</td>
+        </tr>
+        <tr>
+          <td>VITRO</td>
+          <td><span class="tag-inline tag-glass">玻璃拟态</span></td>
+          <td>半透明毛玻璃 + 渐变背景，现代感十足，适合创意工具、设计平台</td>
+        </tr>
+        <tr>
+          <td>BRUTAL</td>
+          <td><span class="tag-inline tag-brutal">新粗野主义</span></td>
+          <td>粗黑边框 + 高饱和色块，大胆不妥协，适合独立开发者、创意项目</td>
+        </tr>
+        <tr>
+          <td>极光</td>
+          <td><span class="tag-inline tag-aurora">极光渐变</span></td>
+          <td>流动极光色 + 深空背景，如北极光般绚丽，适合创意工具、艺术平台</td>
+        </tr>
+        <tr>
+          <td>编辑</td>
+          <td><span class="tag-inline tag-editorial">杂志编辑风</span></td>
+          <td>杂志感排版 + 衬线字体，沉浸式阅读体验，适合内容平台、媒体、Newsletter</td>
+        </tr>
+        <tr>
+          <td>暖集</td>
+          <td><span class="tag-inline tag-warm">温暖有机</span></td>
+          <td>暖色调 + 圆润造型，有温度的设计，适合健康品牌、有机食品、社区产品</td>
+        </tr>
+        <tr>
+          <td>蒸汽波</td>
+          <td><span class="tag-inline tag-gradient">蒸汽波复古</span></td>
+          <td>霓虹粉紫 + 透视网格 + 日落渐变，80年代复古未来主义美学</td>
+        </tr>
+        <tr>
+          <td>赛博禅</td>
+          <td><span class="tag-inline tag-dark">赛博禅境</span></td>
+          <td>禅意极简 + 暗色科技，水墨圆相动画，大面积留白，冥想级体验</td>
+        </tr>
+        <tr>
+          <td>极暗</td>
+          <td><span class="tag-inline tag-dark">极简暗色</span></td>
+          <td>近黑底 + 靛蓝点缀，开发者工具美学，含代码编辑器演示和对比表</td>
+        </tr>
+        <tr>
+          <td>流体渐变</td>
+          <td><span class="tag-inline tag-gradient">流体渐变</span></td>
+          <td>有机渐变色块 + 流动动画，Stripe 级品质感，含 FAQ 手风琴和步骤流程</td>
+        </tr>
+        <tr>
+          <td>像素复古</td>
+          <td><span class="tag-inline tag-ai">像素 8 位</span></td>
+          <td>8 位像素艺术 + 游戏 UI 面板 + 星空背景，复古游戏商店既视感</td>
+        </tr>
+        <tr>
+          <td>植物绿</td>
+          <td><span class="tag-inline tag-light">自然有机</span></td>
+          <td>深林绿 + 奶油底 + 金色点缀，自然系 SaaS，含 SVG 叶子装饰和仪表盘</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     7. FAQ
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="faq">
+  <h2><span class="sec-icon"><i data-lucide="help-circle"></i></span> FAQ</h2>
+
+  <div class="faq-item">
+    <div class="faq-q"><i data-lucide="check-circle"></i> 能否商用？</div>
+    <div class="faq-a">可以。所有模板无版权限制，可用于个人或商业项目，包括 SaaS 产品、落地页、营销页面等。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q"><i data-lucide="check-circle"></i> 能否二次销售？</div>
+    <div class="faq-a">不建议直接转售模板本身。你可以基于模板创建定制化项目交付给客户，但不应原样转卖模板文件。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q"><i data-lucide="check-circle"></i> 遇到 bug 怎么办？</div>
+    <div class="faq-a">请到 <a href="https://github.com/zizegak916-glitch/template-shop/issues" target="_blank" style="color:var(--p);text-decoration:underline">GitHub Issues</a> 提交 bug 反馈，描述问题复现步骤，我们会尽快修复。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q"><i data-lucide="check-circle"></i> 需要定制开发？</div>
+    <div class="faq-a">联系我们，支持企业定制开发。可以根据你的品牌需求修改颜色、内容、布局，或从零构建全新落地页。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q"><i data-lucide="check-circle"></i> 支持哪些浏览器？</div>
+    <div class="faq-a">支持所有现代浏览器：Chrome、Firefox、Safari、Edge 的最新版本。不支持 IE。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q"><i data-lucide="check-circle"></i> 模板会持续更新吗？</div>
+    <div class="faq-a">会。我们持续迭代模板库，添加新模板和改进现有模板，更新记录详见更新日志。</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     8. 更新日志
+     ═══════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="changelog">
+  <h2><span class="sec-icon"><i data-lucide="scroll-text"></i></span> 更新日志</h2>
+
+  <p>查看 Template Shop 的完整版本迭代记录：</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"><i data-lucide="scroll-text" style="width:14px;height:14px;color:var(--p)"></i></div>
+      <div class="step-body">
+        <strong><a href="changelog.html" style="color:var(--p);text-decoration:underline">查看完整更新日志 →</a></strong>
+        <p>记录每一次模板新增、功能改进和问题修复。</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>最新版本</h3>
+  <ul>
+    <li><strong>v2.0</strong> — 10 套全新风格模板、暗色/亮色主题切换、实时搜索筛选、Lucide 图标库</li>
+    <li><strong>v1.5</strong> — 设备指纹绑定、密钥格式校验、SHA-256 哈希验证</li>
+    <li><strong>v1.0</strong> — 首批 8 套模板上线、密钥登录墙、零依赖单文件架构</li>
+  </ul>
+</section>
+
+</main>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTop" aria-label="回到顶部">
+  <i data-lucide="arrow-up"></i>
+</button>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="footer-badge"><i data-lucide="sparkles"></i> 24 套模板 · 持续更新</div>
+  <div class="footer-links">
+    <a href="index.html"><i data-lucide="layout-grid"></i> 模板商店</a>
+    <a href="changelog.html"><i data-lucide="scroll-text"></i> 更新日志</a>
+    <a href="https://github.com/zizegak916-glitch/template-shop" target="_blank"><i data-lucide="github"></i> GitHub</a>
+    <a href="https://github.com/zizegak916-glitch/template-shop/issues" target="_blank"><i data-lucide="mail"></i> 联系我们</a>
+  </div>
+  <div class="footer-copy">© 2026 Template Shop · 单文件 · 零依赖 · 即买即用</div>
+</footer>
+
+<script>
+/* ─── Initialize Lucide Icons ──────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+});
+
+/* ─── Theme Toggle ─────────────────────────────────────────── */
+(function() {
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateThemeIcon(theme);
+  }
+
+  function updateThemeIcon(theme) {
+    icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+    lucide.createIcons();
+  }
+
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    setTheme(saved);
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
+  }
+
+  toggle.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+})();
+
+/* ─── Top Bar Scroll ───────────────────────────────────────── */
+(function() {
+  const bar = document.getElementById('topBar');
+  window.addEventListener('scroll', () => {
+    bar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+})();
+
+/* ─── Scroll Reveal ────────────────────────────────────────── */
+(function() {
+  const sections = document.querySelectorAll('.doc-section');
+  const observer = new IntersectionObserver((items) => {
+    items.forEach(item => {
+      if (item.isIntersecting) {
+        item.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  sections.forEach(s => observer.observe(s));
+})();
+
+/* ─── Active TOC Highlight ─────────────────────────────────── */
+(function() {
+  const tocLinks = document.querySelectorAll('.toc a');
+  const sections = [];
+
+  tocLinks.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ id, el, link });
+  });
+
+  function updateActive() {
+    let current = sections[0];
+    for (const s of sections) {
+      if (s.el.getBoundingClientRect().top <= 120) {
+        current = s;
+      }
+    }
+    tocLinks.forEach(l => l.classList.remove('active'));
+    if (current) current.link.classList.add('active');
+  }
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+})();
+
+/* ─── Scroll to Top ────────────────────────────────────────── */
+(function() {
+  const btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

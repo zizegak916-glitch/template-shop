@@ -72,12 +72,33 @@
   }
 
   // ─── Auth State ───────────────────────────────────────────────
+  // Dual storage: localStorage + cookie fallback
+  // Survives Chrome mobile↔desktop mode switches that may clear localStorage
 
-  function getAuth() { return localStorage.getItem(STORAGE_KEY); }
+  function setCookie(name, value, days) {
+    var d = new Date();
+    d.setTime(d.getTime() + days * 86400000);
+    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+  }
+
+  function getCookie(name) {
+    var v = document.cookie.match('(^|;)\\s*' + name + '=([^;]*)');
+    return v ? decodeURIComponent(v[2]) : null;
+  }
+
+  function getAuth() {
+    var v = localStorage.getItem(STORAGE_KEY);
+    if (!v) v = getCookie(STORAGE_KEY);
+    return v;
+  }
 
   function setAuth(level, key) {
     localStorage.setItem(STORAGE_KEY, level);
-    if (key) localStorage.setItem(STORAGE_KEY_VAL, key);
+    setCookie(STORAGE_KEY, level, 365);
+    if (key) {
+      localStorage.setItem(STORAGE_KEY_VAL, key);
+      setCookie(STORAGE_KEY_VAL, key, 365);
+    }
   }
 
   // ─── UI Helpers ────────────────────────────────────────────────
@@ -318,6 +339,8 @@
   window.__logout = function () {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(STORAGE_KEY_VAL);
+    setCookie(STORAGE_KEY, '', -1);
+    setCookie(STORAGE_KEY_VAL, '', -1);
     location.reload();
   };
 })();
