@@ -15,54 +15,16 @@
   const WORKER_URL = window.__AUTH_API__ || 'https://template-shop-auth.zizegak916.workers.dev';
 
   // ─── Device Fingerprint ────────────────────────────────────────
+  // Uses a stable random UUID stored in localStorage.
+  // Does NOT depend on UA/screen/canvas — survives Chrome mobile↔desktop switches.
 
   function getOrCreateFingerprint() {
     let cached = localStorage.getItem(STORAGE_FP);
     if (cached) return cached;
-
-    const components = [
-      navigator.userAgent,
-      screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
-      new Date().getTimezoneOffset(),
-      navigator.language,
-      navigator.platform,
-      navigator.hardwareConcurrency || 0,
-      navigator.maxTouchPoints || 0,
-      // Canvas fingerprint
-      getCanvasFingerprint(),
-    ];
-
-    // Simple hash
-    let hash = 0;
-    const str = components.join('|||');
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    const fp = 'fp_' + Math.abs(hash).toString(36) + '_' + Date.now().toString(36);
+    // Generate a random UUID v4
+    const fp = 'fp_' + crypto.randomUUID();
     localStorage.setItem(STORAGE_FP, fp);
     return fp;
-  }
-
-  function getCanvasFingerprint() {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 200;
-      canvas.height = 50;
-      const ctx = canvas.getContext('2d');
-      ctx.textBaseline = 'top';
-      ctx.font = '14px Arial';
-      ctx.fillStyle = '#f60';
-      ctx.fillRect(125, 1, 62, 20);
-      ctx.fillStyle = '#069';
-      ctx.fillText('TemplateShop', 2, 15);
-      ctx.fillStyle = 'rgba(102,204,0,0.7)';
-      ctx.fillText('TemplateShop', 4, 17);
-      return canvas.toDataURL().slice(-50);
-    } catch (e) {
-      return 'no-canvas';
-    }
   }
 
   // ─── SHA-256 ───────────────────────────────────────────────────
@@ -198,24 +160,9 @@
     const fingerprint = getOrCreateFingerprint();
 
     if (auth === 'key') {
-      // Already logged in — verify binding is still valid
-      const savedKey = localStorage.getItem(STORAGE_KEY_VAL);
-      if (savedKey && WORKER_URL) {
-        try {
-          const result = await validateKeyServer(savedKey, fingerprint, 'login');
-          if (!result.success && result.errorType === 'device_mismatch') {
-            // Device changed — force re-login
-            localStorage.removeItem(STORAGE_KEY);
-            localStorage.removeItem(STORAGE_KEY_VAL);
-            showToast('设备已变更，请重新登录', 'error');
-            showWall();
-            setDownloadState(false);
-            return;
-          }
-        } catch (e) {
-          // Server unreachable — allow local auth
-        }
-      }
+      // Already logged in — trust local auth state
+      // (No server re-verification on page load to avoid forced re-login
+      // when switching between mobile/desktop Chrome which changes fingerprint)
       hideWall();
       setDownloadState(true);
       return;
