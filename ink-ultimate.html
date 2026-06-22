@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f0e8">
+  <meta name="description" content="墨境——让东方美学与数字体验相遇，一幅会呼吸的水墨产品画卷。">
+  <title>墨境 · 水墨数字体验</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600&amp;family=Noto+Serif+SC:wght@400;500;600;700;900&amp;family=ZCOOL+XiaoWei&amp;display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #f5f0e8;
+      --paper-warm: #eee5d8;
+      --paper-light: #fbf8f2;
+      --ink: #1a1a1a;
+      --ink-mid: #30302d;
+      --ink-soft: #3a3a3a;
+      --mist: #8a8a7a;
+      --mist-light: #b8b7aa;
+      --seal: #c41e3a;
+      --seal-dark: #941329;
+      --serif: "Noto Serif SC", serif;
+      --sans: "Noto Sans SC", sans-serif;
+      --calligraphy: "ZCOOL XiaoWei", "Noto Serif SC", serif;
+      --gutter: clamp(1.25rem, 5vw, 6rem);
+      --content: 1240px;
+      --ease-ink: cubic-bezier(.22, .72, .18, 1);
+      --shadow-ink: 0 24px 60px rgba(26, 26, 26, .09);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 13% 9%, rgba(255, 255, 255, .7), transparent 24%),
+        radial-gradient(circle at 82% 34%, rgba(138, 138, 122, .07), transparent 29%),
+        var(--paper);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.8;
+      letter-spacing: .04em;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      pointer-events: none;
+      content: "";
+      opacity: .2;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' seed='13'/%3E%3CfeColorMatrix values='.35 0 0 0 .62 .25 0 0 0 .57 .17 0 0 0 .48 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.22'/%3E%3C/svg%3E");
+      background-size: 220px 220px;
+    }
+
+    body::after {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      content: "";
+      box-shadow: inset 0 0 11vw rgba(85, 69, 48, .08);
+    }
+
+    ::selection {
+      color: var(--paper-light);
+      background: var(--seal);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    img,
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 2000;
+      padding: .5rem 1rem;
+      color: var(--paper);
+      background: var(--ink);
+      transform: translateY(-200%);
+      transition: transform .2s ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .site-nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 1.75rem var(--gutter);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      font-family: var(--calligraphy);
+      font-size: 1.25rem;
+      letter-spacing: .18em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 2.25rem;
+      aspect-ratio: 1;
+      color: var(--paper-light);
+      background: var(--seal);
+      border: 1px solid var(--seal-dark);
+      border-radius: 5px 8px 4px 7px;
+      place-items: center;
+      font-family: var(--calligraphy);
+      line-height: 1;
+      box-shadow: inset 0 0 0 3px rgba(245, 240, 232, .16);
+      transform: rotate(-2deg);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 3vw, 2.75rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-family: var(--serif);
+      font-size: .85rem;
+      letter-spacing: .18em;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding: .35rem .1rem;
+    }
+
+    .nav-links a::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 1px;
+      content: "";
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform .5s var(--ease-ink);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a:focus-visible::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      overflow: hidden;
+      isolation: isolate;
+      place-items: center;
+    }
+
+    .hero::before {
+      position: absolute;
+      inset: 0;
+      z-index: -6;
+      content: "";
+      background:
+        radial-gradient(ellipse at 50% 36%, rgba(255, 255, 255, .58), transparent 35%),
+        linear-gradient(180deg, var(--paper-light) 0%, var(--paper) 62%, var(--paper-warm) 100%);
+    }
+
+    .hero-sun {
+      position: absolute;
+      top: 21%;
+      right: 18%;
+      z-index: -5;
+      width: clamp(90px, 12vw, 180px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      opacity: .13;
+      background: var(--seal);
+      filter: blur(1px);
+      box-shadow: 0 0 35px rgba(196, 30, 58, .2);
+    }
+
+    .mountain-scene {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .mountain {
+      position: absolute;
+      right: -4%;
+      bottom: -2px;
+      left: -4%;
+      height: 69%;
+      will-change: transform;
+      transform: translate3d(0, var(--parallax-y, 0), 0);
+      transition: transform .08s linear;
+      mix-blend-mode: multiply;
+    }
+
+    .mountain-far {
+      bottom: 18%;
+      height: 48%;
+      opacity: .17;
+      background: #77776e;
+      filter: blur(2px);
+      clip-path: polygon(0 79%, 6% 72%, 12% 75%, 20% 58%, 27% 67%, 34% 46%, 39% 57%, 45% 39%, 50% 57%, 57% 44%, 64% 63%, 72% 48%, 80% 64%, 89% 53%, 96% 69%, 100% 66%, 100% 100%, 0 100%);
+    }
+
+    .mountain-mid {
+      bottom: 8%;
+      height: 53%;
+      opacity: .27;
+      background: linear-gradient(180deg, #66665e, #8a8a7a);
+      filter: blur(.65px);
+      clip-path: polygon(0 75%, 4% 72%, 9% 63%, 14% 68%, 20% 49%, 24% 55%, 30% 31%, 35% 48%, 40% 39%, 46% 62%, 51% 53%, 57% 65%, 65% 45%, 70% 57%, 76% 35%, 82% 48%, 88% 41%, 94% 59%, 100% 49%, 100% 100%, 0 100%);
+    }
+
+    .mountain-near {
+      bottom: 0;
+      height: 44%;
+      opacity: .52;
+      background: linear-gradient(180deg, #3a3a37, #66665e 56%, #8a8a7a 100%);
+      filter: blur(.2px);
+      clip-path: polygon(0 68%, 5% 55%, 10% 61%, 15% 43%, 21% 54%, 27% 30%, 31% 43%, 35% 25%, 39% 46%, 46% 60%, 52% 51%, 58% 68%, 64% 53%, 70% 63%, 77% 46%, 84% 60%, 91% 48%, 100% 65%, 100% 100%, 0 100%);
+    }
+
+    .mountain-front {
+      bottom: -8%;
+      height: 34%;
+      opacity: .78;
+      background: linear-gradient(180deg, #292927, #474742 65%, #73736a 100%);
+      filter: blur(.1px);
+      clip-path: polygon(0 65%, 7% 54%, 14% 66%, 20% 47%, 28% 67%, 36% 55%, 43% 70%, 50% 59%, 59% 74%, 67% 52%, 76% 67%, 84% 55%, 92% 68%, 100% 57%, 100% 100%, 0 100%);
+    }
+
+    .mist-bank {
+      position: absolute;
+      right: -10%;
+      left: -10%;
+      z-index: -1;
+      height: 24%;
+      opacity: .85;
+      background: linear-gradient(180deg, transparent, rgba(245, 240, 232, .92) 42%, rgba(245, 240, 232, .72) 70%, transparent);
+      filter: blur(12px);
+    }
+
+    .mist-bank-one {
+      bottom: 23%;
+      animation: breathe-mist 10s ease-in-out infinite alternate;
+    }
+
+    .mist-bank-two {
+      bottom: 8%;
+      opacity: .68;
+      animation: breathe-mist 13s ease-in-out -4s infinite alternate-reverse;
+    }
+
+    @keyframes breathe-mist {
+      from {
+        transform: translateX(-2%) scaleY(.9);
+      }
+      to {
+        transform: translateX(2%) scaleY(1.1);
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      justify-items: center;
+      width: min(90%, 920px);
+      padding-top: 3rem;
+      text-align: center;
+    }
+
+    .hero-kicker {
+      margin: 0 0 1.4rem;
+      color: var(--mist);
+      font-family: var(--serif);
+      font-size: clamp(.74rem, 1.1vw, .92rem);
+      letter-spacing: .42em;
+      opacity: 0;
+      animation: quiet-arrival 1.2s .25s var(--ease-ink) forwards;
+    }
+
+    .hero-title {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(.02em, .5vw, .12em);
+      margin: 0;
+      font-family: var(--calligraphy);
+      font-size: clamp(4.5rem, 13vw, 10.5rem);
+      font-weight: 400;
+      line-height: .95;
+      letter-spacing: -.08em;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
+    }
+
+    .hero-title .char {
+      position: relative;
+      display: inline-block;
+      opacity: 0;
+      filter: blur(20px);
+      transform: scale(1.22) translateY(12px);
+      animation: ink-diffuse 1.65s var(--ease-ink) forwards;
+    }
+
+    .hero-title .char:nth-child(1) {
+      animation-delay: .45s;
+    }
+
+    .hero-title .char:nth-child(2) {
+      animation-delay: .62s;
+    }
+
+    .hero-title .char:nth-child(3) {
+      animation-delay: .79s;
+      color: var(--seal);
+      font-size: .55em;
+      transform: translateY(-.08em);
+    }
+
+    .hero-title .char:nth-child(4) {
+      animation-delay: .96s;
+    }
+
+    .hero-title .char:nth-child(5) {
+      animation-delay: 1.13s;
+    }
+
+    .hero-title::before,
+    .hero-title::after {
+      position: absolute;
+      content: "";
+      border-radius: 50%;
+      opacity: 0;
+      background:
+        radial-gradient(circle at center, rgba(26, 26, 26, .64) 0 10%, transparent 12%),
+        radial-gradient(circle at 24% 72%, rgba(26, 26, 26, .42) 0 5%, transparent 7%),
+        radial-gradient(circle at 78% 30%, rgba(26, 26, 26, .36) 0 4%, transparent 6%);
+      filter: blur(.6px);
+      animation: splatter-settle 1s 1.6s ease-out forwards;
+    }
+
+    .hero-title::before {
+      top: -12%;
+      right: 2%;
+      width: 54px;
+      height: 44px;
+      transform: rotate(16deg);
+    }
+
+    .hero-title::after {
+      bottom: -8%;
+      left: 7%;
+      width: 38px;
+      height: 46px;
+      transform: rotate(-21deg);
+    }
+
+    @keyframes ink-diffuse {
+      0% {
+        opacity: 0;
+        filter: blur(20px);
+        transform: scale(1.22) translateY(12px);
+      }
+      45% {
+        opacity: .76;
+        filter: blur(6px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes splatter-settle {
+      from {
+        opacity: 0;
+        transform: scale(0) rotate(0);
+      }
+      to {
+        opacity: .42;
+        transform: scale(1) rotate(16deg);
+      }
+    }
+
+    @keyframes quiet-arrival {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-copy {
+      max-width: 510px;
+      margin: 2rem auto 2.25rem;
+      color: rgba(26, 26, 26, .68);
+      font-family: var(--serif);
+      font-size: clamp(.94rem, 1.6vw, 1.1rem);
+      letter-spacing: .15em;
+      opacity: 0;
+      animation: quiet-arrival 1.1s 1.65s var(--ease-ink) forwards;
+    }
+
+    .seal-button {
+      --splash-x: 50%;
+      --splash-y: 50%;
+      position: relative;
+      display: inline-grid;
+      width: 5.6rem;
+      aspect-ratio: 1;
+      overflow: visible;
+      color: var(--paper-light);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, .08), transparent 38%),
+        var(--seal);
+      border: 1px solid var(--seal-dark);
+      border-radius: 9px 5px 10px 6px;
+      place-items: center;
+      font-family: var(--calligraphy);
+      font-size: 1.25rem;
+      line-height: 1.15;
+      letter-spacing: .16em;
+      text-align: center;
+      box-shadow:
+        inset 0 0 0 4px rgba(245, 240, 232, .16),
+        0 9px 28px rgba(148, 19, 41, .16);
+      cursor: pointer;
+      transform: rotate(-2deg);
+      transition:
+        transform .35s var(--ease-ink),
+        box-shadow .35s ease,
+        filter .35s ease;
+    }
+
+    .seal-button::before {
+      position: absolute;
+      inset: 7px;
+      content: "";
+      border: 1px solid rgba(245, 240, 232, .6);
+      border-radius: 4px 7px 3px 6px;
+      pointer-events: none;
+    }
+
+    .seal-button::after {
+      position: absolute;
+      z-index: -1;
+      width: 170%;
+      aspect-ratio: 1;
+      content: "";
+      opacity: 0;
+      background:
+        radial-gradient(circle at var(--splash-x) var(--splash-y), rgba(196, 30, 58, .32) 0 4%, transparent 5%),
+        radial-gradient(circle at 30% 38%, rgba(196, 30, 58, .28) 0 3%, transparent 4%),
+        radial-gradient(circle at 69% 66%, rgba(196, 30, 58, .22) 0 2.5%, transparent 3.5%),
+        radial-gradient(circle at 58% 25%, rgba(196, 30, 58, .2) 0 2%, transparent 3%);
+      transform: scale(.2) rotate(0);
+      pointer-events: none;
+    }
+
+    .seal-button:hover,
+    .seal-button:focus-visible {
+      outline: none;
+      filter: saturate(1.12);
+      transform: rotate(2deg) translateY(-3px);
+      box-shadow:
+        inset 0 0 0 4px rgba(245, 240, 232, .2),
+        0 0 0 5px rgba(196, 30, 58, .08),
+        0 13px 36px rgba(148, 19, 41, .25);
+    }
+
+    .seal-button.splash::after {
+      animation: seal-splash .72s ease-out;
+    }
+
+    @keyframes seal-splash {
+      0% {
+        opacity: .8;
+        transform: scale(.1) rotate(-12deg);
+      }
+      65% {
+        opacity: .46;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.35) rotate(8deg);
+      }
+    }
+
+    .hero-content .seal-button {
+      opacity: 0;
+      animation: seal-arrival .8s 2s var(--ease-ink) forwards;
+    }
+
+    @keyframes seal-arrival {
+      from {
+        opacity: 0;
+        transform: rotate(-8deg) scale(.82);
+      }
+      to {
+        opacity: 1;
+        transform: rotate(-2deg) scale(1);
+      }
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: rgba(26, 26, 26, .5);
+      font-family: var(--serif);
+      font-size: .7rem;
+      letter-spacing: .3em;
+      transform: translateX(-50%);
+    }
+
+    .scroll-cue::before {
+      width: 42px;
+      height: 1px;
+      content: "";
+      background: linear-gradient(90deg, transparent, currentColor);
+      animation: cue-breathe 2.2s ease-in-out infinite;
+    }
+
+    @keyframes cue-breathe {
+      50% {
+        width: 62px;
+        opacity: .35;
+      }
+    }
+
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      left: var(--left);
+      bottom: -20px;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      opacity: 0;
+      background: var(--mist);
+      filter: blur(var(--blur, 1px));
+      animation: float-mist var(--duration) var(--delay) linear infinite;
+    }
+
+    @keyframes float-mist {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(.7);
+      }
+      16% {
+        opacity: var(--alpha);
+      }
+      64% {
+        opacity: calc(var(--alpha) * .75);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--drift), -105vh, 0) scale(1.35);
+      }
+    }
+
+    .section {
+      position: relative;
+      padding: clamp(6rem, 12vw, 11rem) var(--gutter);
+      isolation: isolate;
+    }
+
+    .section-shell {
+      width: min(100%, var(--content));
+      margin: 0 auto;
+    }
+
+    .wash-top::before {
+      position: absolute;
+      top: -8rem;
+      right: 0;
+      left: 0;
+      z-index: -1;
+      height: 12rem;
+      content: "";
+      opacity: .7;
+      background: linear-gradient(180deg, transparent, rgba(238, 229, 216, .68) 55%, var(--paper));
+      filter: blur(3px);
+      mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 100%);
+    }
+
+    .brush-divider {
+      width: min(100%, 940px);
+      height: 54px;
+      margin: 0 auto clamp(4rem, 7vw, 6rem);
+      overflow: visible;
+    }
+
+    .brush-divider path {
+      fill: none;
+      stroke: var(--ink);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: var(--path-length, 1200);
+      stroke-dashoffset: var(--path-length, 1200);
+      opacity: .7;
+      transition: stroke-dashoffset 1.8s .15s var(--ease-ink);
+    }
+
+    .brush-divider .dry {
+      opacity: .17;
+      stroke-dasharray: 3 8;
+      stroke-dashoffset: 0;
+    }
+
+    .brush-divider.is-visible path:not(.dry) {
+      stroke-dashoffset: 0;
+    }
+
+    .section-eyebrow {
+      margin: 0 0 1rem;
+      color: var(--seal);
+      font-family: var(--serif);
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .38em;
+      text-transform: uppercase;
+    }
+
+    .reveal-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .03em;
+      margin: 0;
+      font-family: var(--calligraphy);
+      font-size: clamp(2.7rem, 6vw, 5.3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: .06em;
+    }
+
+    .reveal-heading.centered {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .reveal-heading .reveal-char {
+      display: inline-block;
+      opacity: 0;
+      filter: blur(4px);
+      transform: translateY(18px);
+      transition:
+        opacity .75s var(--ease-ink),
+        transform .75s var(--ease-ink),
+        filter .75s ease;
+      transition-delay: calc(var(--char-index) * 100ms);
+    }
+
+    .reveal-heading.is-visible .reveal-char {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+
+    .philosophy {
+      min-height: 840px;
+      background:
+        radial-gradient(ellipse at 16% 50%, rgba(58, 58, 58, .075), transparent 35%),
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-light) 45%, var(--paper) 100%);
+    }
+
+    .philosophy-layout {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: clamp(3rem, 9vw, 9rem);
+      min-height: 510px;
+    }
+
+    .vertical-copy {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      height: 480px;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+    }
+
+    .vertical-title {
+      margin: 0;
+      font-family: var(--calligraphy);
+      font-size: clamp(2.8rem, 5vw, 4.8rem);
+      font-weight: 400;
+      line-height: 1.3;
+      letter-spacing: .18em;
+    }
+
+    .vertical-lead {
+      margin: 0;
+      color: var(--ink-mid);
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      line-height: 2.15;
+      letter-spacing: .22em;
+    }
+
+    .vertical-note {
+      margin: 3.5rem 0 0;
+      color: var(--mist);
+      font-family: var(--serif);
+      font-size: .82rem;
+      line-height: 2;
+      letter-spacing: .18em;
+    }
+
+    .poem-column {
+      position: relative;
+      height: 430px;
+      padding: 2.2rem 1.6rem;
+      border-left: 1px solid rgba(26, 26, 26, .14);
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+    }
+
+    .poem-column p {
+      margin: 0;
+      font-family: var(--calligraphy);
+      font-size: 1.38rem;
+      line-height: 2.15;
+      letter-spacing: .2em;
+    }
+
+    .poem-column::after {
+      position: absolute;
+      bottom: 0;
+      left: -1rem;
+      width: 2.15rem;
+      aspect-ratio: 1;
+      content: "意境";
+      color: var(--paper);
+      background: var(--seal);
+      border-radius: 3px 5px 2px 4px;
+      writing-mode: horizontal-tb;
+      font-family: var(--calligraphy);
+      font-size: .72rem;
+      line-height: 2.15rem;
+      letter-spacing: 0;
+      text-align: center;
+      transform: rotate(-4deg);
+    }
+
+    .philosophy-ink {
+      position: absolute;
+      bottom: 9%;
+      left: 3%;
+      z-index: -1;
+      width: min(34vw, 430px);
+      aspect-ratio: 1.55;
+      opacity: .11;
+      background:
+        radial-gradient(ellipse at 48% 54%, #1a1a1a 0 10%, transparent 12%),
+        radial-gradient(ellipse at 59% 44%, #1a1a1a 0 22%, transparent 25%),
+        radial-gradient(ellipse at 34% 63%, #1a1a1a 0 15%, transparent 18%);
+      filter: blur(15px);
+      transform: rotate(-8deg);
+      mix-blend-mode: multiply;
+    }
+
+    .features {
+      padding-top: 7rem;
+    }
+
+    .section-intro {
+      max-width: 690px;
+      margin-bottom: clamp(3.5rem, 7vw, 6rem);
+    }
+
+    .section-intro.centered {
+      margin-right: auto;
+      margin-left: auto;
+      text-align: center;
+    }
+
+    .section-intro p:last-child {
+      margin: 1.4rem 0 0;
+      color: rgba(26, 26, 26, .62);
+      font-family: var(--serif);
+      font-size: 1rem;
+      line-height: 2;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.2rem, 3vw, 2.4rem);
+    }
+
+    .ink-card {
+      --splash-x: 50%;
+      --splash-y: 50%;
+      position: relative;
+      min-height: 390px;
+      padding: clamp(2rem, 3.5vw, 3.25rem);
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 92% 4%, rgba(58, 58, 58, .12), transparent 31%),
+        linear-gradient(145deg, rgba(255, 255, 255, .62), rgba(238, 229, 216, .34));
+      box-shadow: var(--shadow-ink);
+      isolation: isolate;
+      transition:
+        transform .55s var(--ease-ink),
+        box-shadow .55s ease;
+    }
+
+    .ink-card:nth-child(2) {
+      transform: translateY(2rem);
+    }
+
+    .ink-card::before {
+      position: absolute;
+      top: var(--splash-y);
+      left: var(--splash-x);
+      z-index: -1;
+      width: 190px;
+      aspect-ratio: 1;
+      content: "";
+      opacity: 0;
+      background:
+        radial-gradient(ellipse at center, rgba(26, 26, 26, .13) 0 8%, transparent 12%),
+        radial-gradient(circle at 25% 38%, rgba(26, 26, 26, .16) 0 2%, transparent 3%),
+        radial-gradient(circle at 72% 63%, rgba(26, 26, 26, .13) 0 3%, transparent 4%),
+        radial-gradient(circle at 63% 19%, rgba(26, 26, 26, .1) 0 2%, transparent 3%);
+      filter: blur(.7px);
+      transform: translate(-50%, -50%) scale(0);
+      transition:
+        opacity .3s ease,
+        transform .7s var(--ease-ink);
+      pointer-events: none;
+    }
+
+    .ink-card:hover {
+      transform: translateY(-7px) rotate(-.35deg);
+      box-shadow: 0 30px 70px rgba(26, 26, 26, .13);
+    }
+
+    .ink-card:nth-child(2):hover {
+      transform: translateY(calc(2rem - 7px)) rotate(.35deg);
+    }
+
+    .ink-card:hover::before {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .card-border {
+      position: absolute;
+      inset: 10px;
+      z-index: 2;
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .card-border path {
+      fill: none;
+      stroke: rgba(26, 26, 26, .5);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .card-number {
+      display: inline-block;
+      margin-bottom: 3.5rem;
+      color: var(--seal);
+      font-family: var(--serif);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+    }
+
+    .card-glyph {
+      position: absolute;
+      top: 1.6rem;
+      right: 2rem;
+      z-index: -1;
+      color: rgba(26, 26, 26, .055);
+      font-family: var(--calligraphy);
+      font-size: 8rem;
+      line-height: 1;
+      transform: rotate(6deg);
+    }
+
+    .ink-card h3 {
+      margin: 0 0 1.1rem;
+      font-family: var(--calligraphy);
+      font-size: 2.15rem;
+      font-weight: 400;
+      letter-spacing: .12em;
+    }
+
+    .ink-card p {
+      margin: 0;
+      color: rgba(26, 26, 26, .62);
+      font-family: var(--serif);
+      font-size: .94rem;
+      line-height: 2;
+    }
+
+    .card-link {
+      position: absolute;
+      bottom: 2.4rem;
+      left: clamp(2rem, 3.5vw, 3.25rem);
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      font-family: var(--serif);
+      font-size: .78rem;
+      letter-spacing: .18em;
+    }
+
+    .card-link::after {
+      width: 32px;
+      height: 1px;
+      content: "";
+      background: var(--ink);
+      transition: width .35s ease;
+    }
+
+    .card-link:hover::after {
+      width: 52px;
+    }
+
+    .gallery {
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, transparent, rgba(138, 138, 122, .06) 20%, rgba(58, 58, 58, .07) 55%, transparent),
+        var(--paper);
+    }
+
+    .masonry {
+      columns: 3;
+      column-gap: clamp(1.2rem, 3vw, 2.25rem);
+    }
+
+    .art-piece {
+      --splash-x: 50%;
+      --splash-y: 50%;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      margin: 0 0 clamp(1.2rem, 3vw, 2.25rem);
+      padding: 10px;
+      overflow: hidden;
+      background: rgba(251, 248, 242, .72);
+      border: 1px solid rgba(26, 26, 26, .22);
+      box-shadow: 0 18px 40px rgba(26, 26, 26, .09);
+      break-inside: avoid;
+      transform: rotate(var(--rotation));
+      transition:
+        transform .6s var(--ease-ink),
+        box-shadow .6s ease;
+    }
+
+    .art-piece:hover {
+      z-index: 3;
+      transform: rotate(0) translateY(-6px) scale(1.015);
+      box-shadow: 0 26px 56px rgba(26, 26, 26, .14);
+    }
+
+    .art-piece::after {
+      position: absolute;
+      top: var(--splash-y);
+      left: var(--splash-x);
+      width: 130px;
+      aspect-ratio: 1;
+      content: "";
+      opacity: 0;
+      background:
+        radial-gradient(circle, rgba(26, 26, 26, .1) 0 7%, transparent 9%),
+        radial-gradient(circle at 20% 30%, rgba(26, 26, 26, .18) 0 2%, transparent 3%),
+        radial-gradient(circle at 77% 60%, rgba(26, 26, 26, .12) 0 2%, transparent 3%);
+      transform: translate(-50%, -50%) scale(0);
+      transition: all .55s var(--ease-ink);
+      pointer-events: none;
+    }
+
+    .art-piece:hover::after {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .art-canvas {
+      position: relative;
+      min-height: var(--height);
+      overflow: hidden;
+      background-color: #e9e5dd;
+      isolation: isolate;
+    }
+
+    .art-canvas::before,
+    .art-canvas::after {
+      position: absolute;
+      content: "";
+      mix-blend-mode: multiply;
+    }
+
+    .painting-mountain {
+      background:
+        linear-gradient(160deg, transparent 0 48%, rgba(26, 26, 26, .65) 49% 58%, transparent 59%),
+        linear-gradient(200deg, transparent 0 38%, rgba(58, 58, 58, .42) 39% 55%, transparent 56%),
+        radial-gradient(ellipse at 80% 35%, rgba(196, 30, 58, .32) 0 8%, transparent 9%),
+        linear-gradient(180deg, #f3efe8, #dad8d0);
+    }
+
+    .painting-mountain::before {
+      right: -10%;
+      bottom: -12%;
+      left: -10%;
+      height: 58%;
+      opacity: .4;
+      background: #2f2f2d;
+      clip-path: polygon(0 70%, 15% 42%, 28% 61%, 46% 20%, 61% 52%, 76% 31%, 100% 65%, 100% 100%, 0 100%);
+      filter: blur(2px);
+    }
+
+    .painting-bamboo {
+      background:
+        linear-gradient(82deg, transparent 0 35%, rgba(26, 26, 26, .52) 36% 38%, transparent 39%),
+        linear-gradient(94deg, transparent 0 62%, rgba(26, 26, 26, .38) 63% 65%, transparent 66%),
+        linear-gradient(180deg, #f0ede5, #d7d8ce);
+    }
+
+    .painting-bamboo::before {
+      inset: 8% 8% 10% 10%;
+      opacity: .58;
+      background:
+        radial-gradient(ellipse at 22% 23%, #292927 0 3%, transparent 4%),
+        radial-gradient(ellipse at 32% 34%, #292927 0 4%, transparent 5%),
+        radial-gradient(ellipse at 67% 22%, #292927 0 5%, transparent 6%),
+        radial-gradient(ellipse at 72% 43%, #292927 0 4%, transparent 5%),
+        radial-gradient(ellipse at 43% 58%, #292927 0 5%, transparent 6%),
+        radial-gradient(ellipse at 63% 72%, #292927 0 4%, transparent 5%);
+      filter: blur(.5px);
+      transform: rotate(-15deg);
+    }
+
+    .painting-water {
+      background:
+        repeating-linear-gradient(174deg, transparent 0 13px, rgba(58, 58, 58, .15) 14px, transparent 15px 27px),
+        linear-gradient(180deg, #f1eee7, #cfd1ca);
+    }
+
+    .painting-water::before {
+      top: 16%;
+      left: 13%;
+      width: 45%;
+      height: 54%;
+      opacity: .52;
+      background: #292927;
+      clip-path: polygon(3% 94%, 9% 54%, 24% 42%, 31% 16%, 42% 39%, 55% 29%, 71% 58%, 86% 69%, 100% 96%);
+      filter: blur(1px);
+    }
+
+    .painting-plum {
+      background:
+        radial-gradient(circle at 26% 23%, rgba(196, 30, 58, .76) 0 2%, transparent 2.5%),
+        radial-gradient(circle at 35% 31%, rgba(196, 30, 58, .62) 0 2.5%, transparent 3%),
+        radial-gradient(circle at 52% 22%, rgba(196, 30, 58, .72) 0 2%, transparent 2.5%),
+        radial-gradient(circle at 69% 42%, rgba(196, 30, 58, .68) 0 2.4%, transparent 3%),
+        linear-gradient(180deg, #f3eee5, #ded9cf);
+    }
+
+    .painting-plum::before {
+      inset: 0;
+      background:
+        linear-gradient(33deg, transparent 0 47%, rgba(26, 26, 26, .66) 48% 50%, transparent 51%),
+        linear-gradient(145deg, transparent 0 60%, rgba(26, 26, 26, .43) 61% 63%, transparent 64%);
+      filter: blur(.35px);
+    }
+
+    .painting-crane {
+      background:
+        radial-gradient(ellipse at 51% 50%, rgba(251, 248, 242, .95) 0 12%, transparent 13%),
+        radial-gradient(ellipse at 58% 42%, rgba(26, 26, 26, .75) 0 2%, transparent 3%),
+        linear-gradient(160deg, transparent 0 45%, rgba(58, 58, 58, .28) 46% 50%, transparent 51%),
+        linear-gradient(180deg, #ebe9e2, #d4d5ce);
+    }
+
+    .painting-crane::before {
+      right: -8%;
+      bottom: -10%;
+      left: -8%;
+      height: 40%;
+      opacity: .5;
+      background: #373735;
+      clip-path: polygon(0 78%, 16% 46%, 29% 61%, 49% 30%, 65% 64%, 83% 45%, 100% 71%, 100% 100%, 0 100%);
+      filter: blur(2px);
+    }
+
+    .painting-empty {
+      background:
+        radial-gradient(ellipse at 50% 66%, rgba(26, 26, 26, .52) 0 3%, transparent 18%),
+        radial-gradient(ellipse at 31% 48%, rgba(58, 58, 58, .2) 0 12%, transparent 25%),
+        linear-gradient(180deg, #f5f1e9, #dedbd3);
+    }
+
+    .painting-empty::before {
+      top: 12%;
+      right: 12%;
+      width: 1.9rem;
+      aspect-ratio: 1;
+      content: "空";
+      color: var(--paper);
+      background: var(--seal);
+      border-radius: 4px;
+      font-family: var(--calligraphy);
+      line-height: 1.9rem;
+      text-align: center;
+      transform: rotate(4deg);
+    }
+
+    .art-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.15rem .5rem .45rem;
+      font-family: var(--serif);
+      font-size: .82rem;
+      letter-spacing: .18em;
+    }
+
+    .art-caption span:last-child {
+      color: var(--mist);
+      font-size: .68rem;
+    }
+
+    .pricing {
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, .78), transparent 42%),
+        linear-gradient(180deg, var(--paper), var(--paper-warm) 54%, var(--paper));
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 440px));
+      justify-content: center;
+      gap: clamp(2rem, 7vw, 7rem);
+    }
+
+    .price-card {
+      position: relative;
+      padding: 3rem clamp(2rem, 5vw, 4rem);
+      background: rgba(245, 240, 232, .38);
+      text-align: center;
+    }
+
+    .price-card::before,
+    .price-card::after {
+      position: absolute;
+      right: 0;
+      left: 0;
+      height: 10px;
+      content: "";
+      opacity: .5;
+      background: linear-gradient(90deg, transparent, var(--ink) 11%, var(--ink) 82%, transparent);
+      clip-path: polygon(0 45%, 9% 42%, 16% 55%, 27% 40%, 41% 52%, 55% 39%, 72% 49%, 87% 42%, 100% 54%, 100% 62%, 84% 56%, 67% 65%, 48% 54%, 31% 68%, 14% 53%, 0 61%);
+    }
+
+    .price-card::before {
+      top: 0;
+    }
+
+    .price-card::after {
+      bottom: 0;
+      transform: rotate(180deg);
+    }
+
+    .price-name {
+      margin: 0;
+      font-family: var(--calligraphy);
+      font-size: 3.3rem;
+      font-weight: 400;
+      letter-spacing: .18em;
+    }
+
+    .price-subtitle {
+      margin: .3rem 0 2rem;
+      color: var(--mist);
+      font-family: var(--serif);
+      font-size: .75rem;
+      letter-spacing: .26em;
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: .25rem;
+      margin-bottom: 2.2rem;
+      font-family: var(--serif);
+    }
+
+    .price strong {
+      font-size: 3rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .price span {
+      color: var(--mist);
+      font-size: .78rem;
+    }
+
+    .price-list {
+      display: grid;
+      gap: .85rem;
+      margin: 0 0 2.5rem;
+      padding: 0;
+      list-style: none;
+      font-family: var(--serif);
+      font-size: .88rem;
+    }
+
+    .price-list li::before {
+      margin-right: .65rem;
+      color: var(--seal);
+      content: "、";
+    }
+
+    .price-card .seal-button {
+      width: 5rem;
+      font-size: 1rem;
+    }
+
+    .quote-section {
+      display: grid;
+      min-height: 70vh;
+      overflow: hidden;
+      place-items: center;
+    }
+
+    .quote-section::before {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      z-index: -1;
+      width: min(85vw, 850px);
+      aspect-ratio: 2.4;
+      content: "";
+      opacity: .09;
+      background:
+        radial-gradient(ellipse at 30% 52%, var(--ink) 0 18%, transparent 32%),
+        radial-gradient(ellipse at 57% 45%, var(--ink) 0 24%, transparent 40%),
+        radial-gradient(ellipse at 80% 59%, var(--ink) 0 13%, transparent 27%);
+      filter: blur(24px);
+      transform: translateX(-50%) rotate(-4deg);
+      mix-blend-mode: multiply;
+    }
+
+    .quote-wrap {
+      position: relative;
+      max-width: 970px;
+      text-align: center;
+    }
+
+    blockquote {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5.2vw, 4.8rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.55;
+      letter-spacing: .1em;
+    }
+
+    blockquote .quote-mark {
+      color: var(--seal);
+      font-family: var(--calligraphy);
+      font-size: .7em;
+      font-style: normal;
+    }
+
+    .quote-source {
+      margin: 2rem 0 0;
+      color: var(--mist);
+      font-family: var(--serif);
+      font-size: .82rem;
+      letter-spacing: .3em;
+    }
+
+    .quote-seal {
+      position: absolute;
+      right: 3%;
+      bottom: -3.5rem;
+      display: grid;
+      width: 3.6rem;
+      aspect-ratio: 1;
+      color: var(--paper);
+      background: var(--seal);
+      border-radius: 5px 3px 6px 4px;
+      place-items: center;
+      font-family: var(--calligraphy);
+      line-height: 1.1;
+      transform: rotate(6deg);
+      box-shadow: inset 0 0 0 3px rgba(245, 240, 232, .2);
+    }
+
+    .final-cta {
+      min-height: 82vh;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(245, 240, 232, .02), rgba(26, 26, 26, .6)),
+        radial-gradient(ellipse at 32% 58%, rgba(26, 26, 26, .82), transparent 36%),
+        radial-gradient(ellipse at 70% 44%, rgba(58, 58, 58, .74), transparent 43%),
+        var(--ink-mid);
+      color: var(--paper-light);
+      text-align: center;
+    }
+
+    .final-cta::before {
+      position: absolute;
+      top: -1px;
+      right: -5%;
+      left: -5%;
+      height: 22%;
+      content: "";
+      background: linear-gradient(180deg, var(--paper), rgba(245, 240, 232, .7) 35%, transparent);
+      filter: blur(5px);
+      mask-image: linear-gradient(180deg, #000, rgba(0, 0, 0, .7), transparent);
+    }
+
+    .final-cta::after {
+      position: absolute;
+      right: -8%;
+      bottom: -20%;
+      left: -8%;
+      height: 62%;
+      content: "";
+      opacity: .28;
+      background: #050505;
+      clip-path: polygon(0 69%, 10% 51%, 19% 62%, 28% 30%, 38% 55%, 49% 38%, 60% 61%, 70% 34%, 82% 54%, 91% 41%, 100% 61%, 100% 100%, 0 100%);
+      filter: blur(3px);
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      justify-items: center;
+      padding-top: 5rem;
+    }
+
+    .final-cta .section-eyebrow {
+      color: #e04b61;
+    }
+
+    .final-cta .reveal-heading {
+      max-width: 900px;
+      font-size: clamp(3.1rem, 8vw, 7rem);
+    }
+
+    .cta-copy {
+      max-width: 540px;
+      margin: 2rem auto 2.8rem;
+      color: rgba(245, 240, 232, .67);
+      font-family: var(--serif);
+      letter-spacing: .14em;
+    }
+
+    .final-cta .seal-button {
+      width: 6.5rem;
+      font-size: 1.3rem;
+      box-shadow:
+        inset 0 0 0 4px rgba(245, 240, 232, .16),
+        0 18px 50px rgba(0, 0, 0, .35);
+    }
+
+    .footer {
+      position: relative;
+      padding: 3rem var(--gutter) 3.5rem;
+      color: rgba(245, 240, 232, .58);
+      background: #191918;
+      text-align: center;
+    }
+
+    .footer-brush {
+      width: min(100%, 720px);
+      height: 24px;
+      margin: 0 auto 2.2rem;
+      opacity: .45;
+    }
+
+    .footer-brush path {
+      fill: none;
+      stroke: var(--paper);
+      stroke-linecap: round;
+    }
+
+    .footer p {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: .72rem;
+      letter-spacing: .28em;
+    }
+
+    .reveal-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition:
+        opacity .9s var(--ease-ink),
+        transform .9s var(--ease-ink);
+    }
+
+    .reveal-up.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .feature-grid {
+        grid-template-columns: 1fr;
+        max-width: 620px;
+        margin: 0 auto;
+      }
+
+      .ink-card,
+      .ink-card:nth-child(2) {
+        min-height: 340px;
+        transform: none;
+      }
+
+      .ink-card:nth-child(2):hover {
+        transform: translateY(-7px) rotate(.35deg);
+      }
+
+      .masonry {
+        columns: 2;
+      }
+
+      .pricing-grid {
+        gap: 2rem;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .site-nav {
+        padding-top: 1.2rem;
+      }
+
+      .nav-links li:not(:last-child) {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: clamp(4rem, 22vw, 7rem);
+      }
+
+      .hero-copy {
+        max-width: 20rem;
+        font-size: .88rem;
+        line-height: 1.95;
+      }
+
+      .mountain {
+        right: -22%;
+        left: -22%;
+      }
+
+      .scroll-cue {
+        bottom: 1.25rem;
+      }
+
+      .section {
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+      }
+
+      .philosophy {
+        min-height: 0;
+      }
+
+      .philosophy-layout {
+        display: grid;
+        min-height: 0;
+      }
+
+      .vertical-copy {
+        display: block;
+        height: auto;
+        writing-mode: horizontal-tb;
+      }
+
+      .vertical-title {
+        margin-bottom: 1.5rem;
+        letter-spacing: .1em;
+      }
+
+      .vertical-lead,
+      .vertical-note {
+        margin: 0 0 1.3rem;
+        line-height: 2;
+        letter-spacing: .1em;
+      }
+
+      .poem-column {
+        height: auto;
+        padding: 1.5rem 0 1.5rem 1.2rem;
+        border-top: 1px solid rgba(26, 26, 26, .14);
+        border-left: 0;
+        writing-mode: horizontal-tb;
+      }
+
+      .poem-column p {
+        font-size: 1.15rem;
+        line-height: 2;
+        letter-spacing: .12em;
+      }
+
+      .poem-column::after {
+        right: 0;
+        bottom: -2.5rem;
+        left: auto;
+      }
+
+      .masonry {
+        columns: 1;
+      }
+
+      .art-piece {
+        transform: rotate(calc(var(--rotation) * .45));
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      blockquote {
+        font-size: clamp(1.8rem, 8vw, 3rem);
+      }
+
+      .quote-seal {
+        right: 6%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+
+      .hero-title .char,
+      .hero-kicker,
+      .hero-copy,
+      .hero-content .seal-button,
+      .reveal-up,
+      .reveal-heading .reveal-char {
+        opacity: 1;
+        filter: none;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">直入画境</a>
+
+  <header class="hero" id="top">
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="墨境首页">
+        <span class="brand-mark" aria-hidden="true">墨</span>
+        <span>墨境</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#philosophy">心法</a></li>
+        <li><a href="#features">笔意</a></li>
+        <li><a href="#gallery">画卷</a></li>
+        <li><a href="#pricing">入境</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-sun" aria-hidden="true"></div>
+
+    <div class="mountain-scene" aria-hidden="true">
+      <div class="mountain mountain-far" data-parallax="0.035"></div>
+      <div class="mist-bank mist-bank-one"></div>
+      <div class="mountain mountain-mid" data-parallax="0.06"></div>
+      <div class="mist-bank mist-bank-two"></div>
+      <div class="mountain mountain-near" data-parallax="0.095"></div>
+      <div class="mountain mountain-front" data-parallax="0.13"></div>
+    </div>
+
+    <div class="particles" aria-hidden="true">
+      <span class="particle" style="--left: 4%; --size: 3px; --duration: 18s; --delay: -2s; --drift: 52px; --alpha: .18;"></span>
+      <span class="particle" style="--left: 11%; --size: 7px; --duration: 24s; --delay: -11s; --drift: -35px; --alpha: .12; --blur: 2px;"></span>
+      <span class="particle" style="--left: 18%; --size: 4px; --duration: 20s; --delay: -5s; --drift: 68px; --alpha: .16;"></span>
+      <span class="particle" style="--left: 27%; --size: 2px; --duration: 17s; --delay: -14s; --drift: -42px; --alpha: .2;"></span>
+      <span class="particle" style="--left: 34%; --size: 6px; --duration: 27s; --delay: -7s; --drift: 30px; --alpha: .1; --blur: 2px;"></span>
+      <span class="particle" style="--left: 43%; --size: 3px; --duration: 19s; --delay: -16s; --drift: -58px; --alpha: .17;"></span>
+      <span class="particle" style="--left: 51%; --size: 8px; --duration: 29s; --delay: -3s; --drift: 44px; --alpha: .09; --blur: 3px;"></span>
+      <span class="particle" style="--left: 59%; --size: 4px; --duration: 21s; --delay: -9s; --drift: -64px; --alpha: .15;"></span>
+      <span class="particle" style="--left: 67%; --size: 2px; --duration: 16s; --delay: -13s; --drift: 38px; --alpha: .2;"></span>
+      <span class="particle" style="--left: 75%; --size: 6px; --duration: 26s; --delay: -18s; --drift: -29px; --alpha: .11; --blur: 2px;"></span>
+      <span class="particle" style="--left: 83%; --size: 3px; --duration: 18s; --delay: -6s; --drift: 55px; --alpha: .18;"></span>
+      <span class="particle" style="--left: 91%; --size: 5px; --duration: 23s; --delay: -15s; --drift: -47px; --alpha: .13;"></span>
+      <span class="particle" style="--left: 96%; --size: 2px; --duration: 15s; --delay: -1s; --drift: 22px; --alpha: .19;"></span>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-kicker">东方数字美学 · 甲辰新章</p>
+
+      <h1 class="hero-title" aria-label="水墨·境界">
+        <span class="char" aria-hidden="true">水</span>
+        <span class="char" aria-hidden="true">墨</span>
+        <span class="char" aria-hidden="true">·</span>
+        <span class="char" aria-hidden="true">境</span>
+        <span class="char" aria-hidden="true">界</span>
+      </h1>
+
+      <p class="hero-copy">以一滴墨，化万千意象。让你的数字产品，在留白与呼吸之间，自成山水。</p>
+
+      <a class="seal-button" href="#features" aria-label="开始入境">
+        <span>入<br>境</span>
+      </a>
+    </div>
+
+    <a class="scroll-cue" href="#main">展卷</a>
+  </header>
+
+  <main id="main">
+    <section class="section philosophy wash-top" id="philosophy">
+      <div class="section-shell">
+        <svg class="brush-divider observe" viewBox="0 0 1000 54" aria-hidden="true" preserveAspectRatio="none">
+          <path d="M18 29 C75 25 94 34 151 28 C226 20 281 31 344 25 C423 17 480 32 552 25 C637 17 706 31 773 24 C846 18 904 27 982 22" stroke-width="5.4" pathLength="1200"></path>
+          <path d="M26 34 C162 31 256 36 389 30 C530 24 695 34 852 27 C905 25 941 28 975 25" stroke-width="1.1" pathLength="1200"></path>
+          <path class="dry" d="M44 38 C203 35 317 39 468 34 C612 30 761 37 954 30" stroke-width="1"></path>
+        </svg>
+
+        <div class="philosophy-layout reveal-up observe">
+          <div class="vertical-copy">
+            <h2 class="vertical-title">道法自然</h2>
+            <p class="vertical-lead">不堆砌，不喧哗。我们以水墨的浓淡、虚实与留白，重塑数字界面的秩序。</p>
+            <p class="vertical-note">每一次交互，皆如落笔。<br>每一处留白，皆有回声。</p>
+          </div>
+
+          <div class="poem-column">
+            <p>远山含黛，近水无声。<br>墨分五色，心纳万境。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="philosophy-ink" aria-hidden="true"></div>
+    </section>
+
+    <section class="section features" id="features">
+      <div class="section-shell">
+        <div class="section-intro">
+          <p class="section-eyebrow">三重笔意 · Three Essences</p>
+          <h2 class="reveal-heading observe" data-reveal-text="一笔之间，万象自生">一笔之间，万象自生</h2>
+          <p>从品牌气韵到产品体验，将东方审美转译为可用、可感、可生长的数字系统。</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="ink-card reveal-up observe interactive-ink">
+            <svg class="card-border" viewBox="0 0 400 440" aria-hidden="true" preserveAspectRatio="none">
+              <path d="M8 17 C69 9 145 14 203 10 C274 7 327 13 390 9 C396 89 388 156 393 226 C397 301 389 371 392 429 C311 435 248 427 185 433 C116 438 61 429 9 434 C13 353 7 284 11 212 C15 138 8 72 8 17 Z" stroke-width="2.1"></path>
+              <path d="M15 22 C87 17 147 20 205 16 C286 11 343 17 384 14" stroke-width=".7" opacity=".35"></path>
+            </svg>
+            <span class="card-number">壹 · ESSENCE</span>
+            <span class="card-glyph" aria-hidden="true">气</span>
+            <h3>气韵生动</h3>
+            <p>让界面不止于静态陈列。流动的层次、呼吸的节奏，使品牌拥有可被感知的生命力。</p>
+            <a class="card-link" href="#gallery">观其气象</a>
+          </article>
+
+          <article class="ink-card reveal-up observe interactive-ink">
+            <svg class="card-border" viewBox="0 0 400 440" aria-hidden="true" preserveAspectRatio="none">
+              <path d="M11 12 C82 17 151 8 212 13 C276 18 333 8 391 15 C386 81 395 155 389 222 C383 294 396 361 388 430 C317 425 252 436 192 430 C123 424 68 435 12 427 C17 349 7 292 14 219 C21 147 8 73 11 12 Z" stroke-width="2.4"></path>
+              <path d="M19 421 C88 425 152 418 214 423 C274 428 335 417 379 421" stroke-width=".8" opacity=".32"></path>
+            </svg>
+            <span class="card-number">贰 · BALANCE</span>
+            <span class="card-glyph" aria-hidden="true">白</span>
+            <h3>计白当黑</h3>
+            <p>留白不是空缺，而是信息的呼吸。以克制建立焦点，让每一项内容都恰在其位。</p>
+            <a class="card-link" href="#gallery">察其虚实</a>
+          </article>
+
+          <article class="ink-card reveal-up observe interactive-ink">
+            <svg class="card-border" viewBox="0 0 400 440" aria-hidden="true" preserveAspectRatio="none">
+              <path d="M9 14 C78 8 141 19 206 12 C280 4 337 18 390 11 C394 85 385 149 392 220 C399 296 387 359 393 428 C326 435 257 424 198 432 C129 440 72 425 10 434 C5 360 17 292 9 222 C1 151 14 82 9 14 Z" stroke-width="2"></path>
+              <path d="M16 24 C105 14 173 27 257 18 C311 13 352 19 383 17" stroke-width="1" opacity=".28"></path>
+            </svg>
+            <span class="card-number">叁 · SYSTEM</span>
+            <span class="card-glyph" aria-hidden="true">法</span>
+            <h3>笔墨成法</h3>
+            <p>将色彩、字阶、动效与组件沉淀为体系，既保留手作温度，也支持产品持续生长。</p>
+            <a class="card-link" href="#pricing">得其章法</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section gallery wash-top" id="gallery">
+      <div class="section-shell">
+        <svg class="brush-divider observe" viewBox="0 0 1000 54" aria-hidden="true" preserveAspectRatio="none">
+          <path d="M22 31 C108 22 179 33 254 27 C333 20 392 33 471 24 C551 16 626 32 704 25 C790 18 867 28 978 20" stroke-width="6" pathLength="1200"></path>
+          <path d="M32 37 C174 31 297 39 421 31 C558 23 693 35 834 27 C891 24 939 27 969 24" stroke-width="1.2" pathLength="1200"></path>
+          <path class="dry" d="M75 41 C213 36 348 42 488 36 C659 29 799 38 938 31" stroke-width=".8"></path>
+        </svg>
+
+        <div class="section-intro centered">
+          <p class="section-eyebrow">流动画卷 · Selected Works</p>
+          <h2 class="reveal-heading centered observe" data-reveal-text="于方寸间，见天地">于方寸间，见天地</h2>
+          <p>每一种表达都从内容出发，让墨色成为叙事，而非装饰。</p>
+        </div>
+
+        <div class="masonry">
+          <figure class="art-piece interactive-ink reveal-up observe" style="--rotation: -1.4deg;">
+            <div class="art-canvas painting-mountain" style="--height: 410px;"></div>
+            <figcaption class="art-caption">
+              <span>远岫 · 品牌叙事</span>
+              <span>甲辰 01</span>
+            </figcaption>
+          </figure>
+
+          <figure class="art-piece interactive-ink reveal-up observe" style="--rotation: 1.8deg;">
+            <div class="art-canvas painting-bamboo" style="--height: 285px;"></div>
+            <figcaption class="art-caption">
+              <span>修篁 · 内容系统</span>
+              <span>甲辰 02</span>
+            </figcaption>
+          </figure>
+
+          <figure class="art-piece interactive-ink reveal-up observe" style="--rotation: .9deg;">
+            <div class="art-canvas painting-water" style="--height: 335px;"></div>
+            <figcaption class="art-caption">
+              <span>听泉 · 数据体验</span>
+              <span>甲辰 03</span>
+            </figcaption>
+          </figure>
+
+          <figure class="art-piece interactive-ink reveal-up observe" style="--rotation: -2.1deg;">
+            <div class="art-canvas painting-plum" style="--height: 455px;"></div>
+            <figcaption class="art-caption">
+              <span>疏影 · 产品发布</span>
+              <span>甲辰 04</span>
+            </figcaption>
+          </figure>
+
+          <figure class="art-piece interactive-ink reveal-up observe" style="--rotation: 1.3deg;">
+            <div class="art-canvas painting-crane" style="--height: 370px;"></div>
+            <figcaption class="art-caption">
+              <span>云鹤 · 服务体验</span>
+              <span>甲辰 05</span>
+            </figcaption>
+          </figure>
+
+          <figure class="art-piece interactive-ink reveal-up observe" style="--rotation: -1deg;">
+            <div class="art-canvas painting-empty" style="--height: 270px;"></div>
+            <figcaption class="art-caption">
+              <span>空山 · 极简界面</span>
+              <span>甲辰 06</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pricing" id="pricing">
+      <div class="section-shell">
+        <div class="section-intro centered">
+          <p class="section-eyebrow">择境而入 · Plans</p>
+          <h2 class="reveal-heading centered observe" data-reveal-text="由心起笔，随境而深">由心起笔，随境而深</h2>
+          <p>无繁复条目，只选择与你当下相合的一卷。</p>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="price-card reveal-up observe">
+            <h3 class="price-name">初心</h3>
+            <p class="price-subtitle">一方清境 · FOR BEGINNING</p>
+            <div class="price">
+              <strong>¥ 99</strong>
+              <span>/ 月</span>
+            </div>
+            <ul class="price-list">
+              <li>一套完整东方视觉主题</li>
+              <li>十二种水墨交互组件</li>
+              <li>个人与商业项目授权</li>
+              <li>每月新作持续入卷</li>
+            </ul>
+            <a class="seal-button" href="#final-cta"><span>选<br>此</span></a>
+          </article>
+
+          <article class="price-card reveal-up observe">
+            <h3 class="price-name">觉悟</h3>
+            <p class="price-subtitle">万象归一 · FOR MASTERY</p>
+            <div class="price">
+              <strong>¥ 299</strong>
+              <span>/ 月</span>
+            </div>
+            <ul class="price-list">
+              <li>全部东方视觉主题</li>
+              <li>品牌气韵定制工作坊</li>
+              <li>团队协作与无限项目</li>
+              <li>新作优先与专属支持</li>
+            </ul>
+            <a class="seal-button" href="#final-cta"><span>入<br>此</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section quote-section wash-top">
+      <div class="quote-wrap reveal-up observe">
+        <blockquote>
+          <span class="quote-mark">「</span>墨非墨，乃心之迹；<br>境非境，乃意之所至。<span class="quote-mark">」</span>
+        </blockquote>
+        <p class="quote-source">— 墨境 · 造物札记</p>
+        <span class="quote-seal" aria-hidden="true">心<br>印</span>
+      </div>
+    </section>
+
+    <section class="section final-cta" id="final-cta">
+      <div class="section-shell cta-content">
+        <p class="section-eyebrow">画卷未尽 · The Scroll Continues</p>
+        <h2 class="reveal-heading centered observe" data-reveal-text="落下你的第一笔">落下你的第一笔</h2>
+        <p class="cta-copy">山水有相逢，灵感亦有归处。现在，让你的产品拥有自己的东方气韵。</p>
+        <a class="seal-button" href="mailto:hello@mojing.example" aria-label="立即启卷">
+          <span>启<br>卷</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <svg class="footer-brush" viewBox="0 0 800 24" aria-hidden="true" preserveAspectRatio="none">
+      <path d="M14 13 C103 8 176 16 258 11 C350 5 440 16 526 10 C620 5 687 13 784 8" stroke-width="2.2"></path>
+      <path d="M63 17 C206 13 318 18 445 13 C560 9 665 15 748 11" stroke-width=".7" opacity=".45"></path>
+    </svg>
+    <p>墨境 · 以数字为纸，以心意为墨 · 二〇二六</p>
+  </footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const prepareHeadings = () => {
+        const headings = document.querySelectorAll("[data-reveal-text]");
+
+        headings.forEach((heading) => {
+          const text = heading.dataset.revealText || heading.textContent.trim();
+          const fragment = document.createDocumentFragment();
+
+          heading.textContent = "";
+          heading.setAttribute("aria-label", text);
+
+          Array.from(text).forEach((character, index) => {
+            const span = document.createElement("span");
+            span.className = "reveal-char";
+            span.setAttribute("aria-hidden", "true");
+            span.style.setProperty("--char-index", index);
+            span.textContent = character === " " ? "\u00A0" : character;
+            fragment.appendChild(span);
+          });
+
+          heading.appendChild(fragment);
+        });
+      };
+
+      prepareHeadings();
+
+      const observedElements = document.querySelectorAll(".observe");
+
+      if ("IntersectionObserver" in window && !reduceMotion) {
+        const revealObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) {
+                return;
+              }
+
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          {
+            root: null,
+            rootMargin: "0px 0px -12% 0px",
+            threshold: 0.14
+          }
+        );
+
+        observedElements.forEach((element) => revealObserver.observe(element));
+      } else {
+        observedElements.forEach((element) => element.classList.add("is-visible"));
+      }
+
+      const mountains = Array.from(document.querySelectorAll("[data-parallax]"));
+      let scrollTicking = false;
+
+      const updateParallax = () => {
+        const scrollY = Math.min(window.scrollY, window.innerHeight * 1.25);
+
+        mountains.forEach((mountain) => {
+          const speed = Number(mountain.dataset.parallax) || 0;
+          mountain.style.setProperty("--parallax-y", `${scrollY * speed}px`);
+        });
+
+        scrollTicking = false;
+      };
+
+      if (!reduceMotion) {
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (scrollTicking) {
+              return;
+            }
+
+            scrollTicking = true;
+            window.requestAnimationFrame(updateParallax);
+          },
+          { passive: true }
+        );
+
+        updateParallax();
+      }
+
+      const interactiveInkElements = document.querySelectorAll(".interactive-ink");
+
+      interactiveInkElements.forEach((element) => {
+        element.addEventListener("pointerenter", (event) => {
+          const bounds = element.getBoundingClientRect();
+          const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+          const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+
+          element.style.setProperty("--splash-x", `${x}%`);
+          element.style.setProperty("--splash-y", `${y}%`);
+        });
+      });
+
+      const sealButtons = document.querySelectorAll(".seal-button");
+
+      sealButtons.forEach((button) => {
+        button.addEventListener("pointerdown", (event) => {
+          const bounds = button.getBoundingClientRect();
+          const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+          const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+
+          button.style.setProperty("--splash-x", `${x}%`);
+          button.style.setProperty("--splash-y", `${y}%`);
+          button.classList.remove("splash");
+          void button.offsetWidth;
+          button.classList.add("splash");
+        });
+
+        button.addEventListener("animationend", (event) => {
+          if (event.animationName === "seal-splash") {
+            button.classList.remove("splash");
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
