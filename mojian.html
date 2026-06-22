@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="description" content="墨剑——以墨为剑，绘气为形。沉浸式东方数字艺术体验。">
+  <title>墨剑 · Ink Sword</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { ink:'#0f0f0f', paper:'#f5f0e6', gold:'#C9A959', seal:'#9f2721' } } } }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#0f0f0f;--paper:#f5f0e6;--gold:#c9a959;--seal:#9f2721;--serif:'Noto Serif SC',serif;--sans:'Noto Sans SC',sans-serif;--calligraphy:'Ma Shan Zheng','Noto Serif SC',serif}
+    *{box-sizing:border-box} html{scroll-behavior:smooth;background:var(--ink)} body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--serif);overflow-x:hidden;-webkit-font-smoothing:antialiased} button,a,input{-webkit-tap-highlight-color:transparent} button{font:inherit}
+    ::selection{background:var(--seal);color:var(--paper)}
+    body:before{content:"";position:fixed;inset:0;z-index:1000;pointer-events:none;opacity:.12;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E")}
+    .nav-shell{background:linear-gradient(135deg,rgba(15,15,15,.7),rgba(36,36,32,.28));border:1px solid rgba(245,240,230,.13);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 50px rgba(0,0,0,.18)}
+    .hero{min-height:100svh;isolation:isolate;background:radial-gradient(circle at 65% 40%,rgba(201,169,89,.09),transparent 28%),linear-gradient(180deg,#0c0d0d 0%,#161715 65%,#0f0f0f 100%)}
+    .hero-glow{background:radial-gradient(ellipse,rgba(245,240,230,.12),transparent 65%);filter:blur(24px)}
+    .mountain{position:absolute;left:-5%;width:110%;pointer-events:none;will-change:transform;filter:drop-shadow(0 20px 20px rgba(0,0,0,.5))}
+    .mountain.far{bottom:18%;height:42%;opacity:.25}.mountain.mid{bottom:1%;height:47%;opacity:.53}.mountain.near{bottom:-13%;height:47%;opacity:.9}
+    .mist{position:absolute;width:90%;height:18%;left:5%;border-radius:50%;background:rgba(214,214,204,.11);filter:blur(38px);animation:drift 14s ease-in-out infinite alternate;pointer-events:none}
+    @keyframes drift{to{transform:translate3d(8%,1%,0) scale(1.08);opacity:.55}}
+    .bamboo{position:absolute;right:2%;bottom:0;width:min(31vw,460px);height:82%;opacity:.19;transform-origin:bottom;animation:sway 8s ease-in-out infinite alternate;pointer-events:none}
+    @keyframes sway{to{transform:rotate(.8deg) translateX(5px)}}
+    .hero-title{font-family:var(--calligraphy);font-size:clamp(6.8rem,19vw,15rem);line-height:.75;letter-spacing:.08em;text-shadow:0 0 50px rgba(245,240,230,.11),8px 13px 1px rgba(0,0,0,.28);background:linear-gradient(160deg,#fffdf4 16%,#aaa99f 59%,#f1e5c0 91%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 20px 28px #000)}
+    .hero-title:after{content:"";position:absolute;left:8%;right:4%;bottom:-22%;height:28%;background:linear-gradient(90deg,transparent,rgba(201,169,89,.7),transparent);clip-path:polygon(0 48%,94% 40%,100% 55%,5% 59%);filter:blur(1px);opacity:.65}
+    .seal{font-family:var(--calligraphy);border:1px solid rgba(245,240,230,.8);background:var(--seal);box-shadow:inset 0 0 0 3px rgba(245,240,230,.15);transform:rotate(5deg)}
+    .cta{position:relative;overflow:hidden;border:1px solid rgba(245,240,230,.22);transition:.45s cubic-bezier(.2,.8,.2,1)}.cta:before{content:"";position:absolute;inset:-2px;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.16),transparent 70%);transform:translateX(-120%);transition:.7s}.cta:hover:before{transform:translateX(120%)}.cta:hover{border-color:rgba(201,169,89,.7);transform:translateY(-2px);box-shadow:0 12px 38px rgba(201,169,89,.1)}
+    .section-kicker{font-family:var(--sans);letter-spacing:.42em;text-transform:uppercase;color:var(--gold);font-size:.68rem}.brush-title{font-family:var(--calligraphy);font-weight:400}
+    .paper-section{color:#171715;background:radial-gradient(circle at 14% 30%,rgba(255,255,255,.7),transparent 28%),radial-gradient(circle at 83% 60%,rgba(82,80,70,.06),transparent 33%),var(--paper)}
+    .paper-section:before{content:"";position:absolute;inset:0;opacity:.17;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.12' numOctaves='3' seed='12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.22'/%3E%3C/svg%3E")}
+    .ink-circle{border:1px solid rgba(15,15,15,.15);box-shadow:inset 0 0 50px rgba(15,15,15,.06);border-radius:50% 48% 52% 46%;animation:breathe 7s ease-in-out infinite alternate}@keyframes breathe{to{transform:scale(1.025) rotate(1deg);box-shadow:inset 0 0 90px rgba(15,15,15,.1)}}
+    .reveal{opacity:0;transform:translateY(34px);filter:blur(7px);transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.2,.8,.2,1),filter 1.1s}.reveal.visible{opacity:1;transform:none;filter:none}
+    .studio-shell{background:linear-gradient(150deg,#20211f,#0b0c0c);border:1px solid rgba(245,240,230,.13);box-shadow:0 42px 110px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.05)}
+    .canvas-wrap{position:relative;min-height:clamp(460px,68vh,760px);overflow:hidden;background:#eee9de;cursor:crosshair;touch-action:none;isolation:isolate}
+    .canvas-wrap:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 72% 18%,#fffdf7 0,transparent 26%),linear-gradient(135deg,rgba(71,68,58,.035) 25%,transparent 25%) 0 0/9px 9px,#eee9de}
+    #inkCanvas,#fxCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}#fxCanvas{pointer-events:none}
+    .canvas-empty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:rgba(15,15,15,.27);pointer-events:none;transition:opacity .5s}.canvas-empty.hide{opacity:0}.canvas-empty .glyph{font-family:var(--calligraphy);font-size:clamp(3rem,7vw,6.5rem)}
+    .mode-btn.active{color:#111;background:var(--gold);border-color:var(--gold);box-shadow:0 0 24px rgba(201,169,89,.25)}
+    input[type=range]{appearance:none;width:100%;height:2px;background:rgba(245,240,230,.2);outline:none}input[type=range]::-webkit-slider-thumb{appearance:none;width:15px;height:15px;border-radius:50%;background:var(--paper);border:3px solid #242521;box-shadow:0 0 0 1px var(--gold);cursor:pointer}
+    .art-card{position:relative;overflow:hidden;background:#171816;border:1px solid rgba(245,240,230,.1)}.art-card img{transition:transform 1.2s cubic-bezier(.2,.8,.2,1),filter 1.2s;filter:saturate(.55) contrast(1.1)}.art-card:hover img{transform:scale(1.045);filter:saturate(.9) contrast(1.18)}.art-card:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(201,169,89,.12),transparent 64%);transform:translateX(-100%);transition:1s}.art-card:hover:after{transform:translateX(100%)}
+    .art-svg{width:100%;height:100%;transition:transform 1.2s}.art-card:hover .art-svg{transform:scale(1.04)}
+    .footer-input{background:transparent;border:0;border-bottom:1px solid rgba(245,240,230,.25);outline:none;transition:.3s}.footer-input:focus{border-color:var(--gold)}
+    .toast{position:fixed;left:50%;bottom:32px;z-index:2000;transform:translate(-50%,130px);opacity:0;background:rgba(15,15,15,.9);border:1px solid rgba(201,169,89,.4);padding:12px 20px;backdrop-filter:blur(12px);transition:.45s;color:var(--paper);font-size:.82rem;letter-spacing:.12em}.toast.show{transform:translate(-50%,0);opacity:1}
+    @media(max-width:768px){.hero-title{letter-spacing:0}.bamboo{width:52vw;opacity:.12}.canvas-wrap{min-height:58vh}.mountain{width:150%;left:-25%}.nav-links{display:none}.studio-shell{border-radius:0}.studio-section{padding-left:0!important;padding-right:0!important}.controls{padding-left:1.25rem;padding-right:1.25rem}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header class="fixed top-0 inset-x-0 z-50 px-4 sm:px-7 pt-4">
+    <nav class="nav-shell max-w-7xl mx-auto h-16 px-5 sm:px-7 flex items-center justify-between rounded-sm" aria-label="主导航">
+      <a href="#top" class="flex items-center gap-3"><span class="text-3xl leading-none brush-title">墨剑</span><span class="hidden sm:block text-[9px] tracking-[.38em] text-stone-400">INK SWORD</span></a>
+      <div class="nav-links flex gap-10 text-sm tracking-[.24em] text-stone-300"><a class="hover:text-gold transition" href="#experience">体验</a><a class="hover:text-gold transition" href="#works">作品</a><a class="hover:text-gold transition" href="#philosophy">理念</a></div>
+      <a href="#experience" class="w-9 h-9 grid place-items-center border border-white/15 rounded-full hover:border-gold/70 transition" aria-label="进入体验"><span class="text-gold -rotate-45">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero relative grid place-items-center overflow-hidden">
+      <div class="hero-glow absolute inset-[15%_10%]"></div>
+      <svg class="mountain far parallax" data-speed=".07" viewBox="0 0 1440 500" preserveAspectRatio="none"><path fill="#a9aaa3" d="M0 410Q130 330 230 370Q350 190 480 350Q575 250 690 360Q825 165 950 342Q1090 240 1195 360Q1310 280 1440 390V500H0Z"/><path fill="none" stroke="#d7d6cd" stroke-width="3" opacity=".28" d="M230 370L390 220M690 360L840 200M950 342L1060 270"/></svg>
+      <svg class="mountain mid parallax" data-speed=".13" viewBox="0 0 1440 520" preserveAspectRatio="none"><defs><filter id="blur"><feGaussianBlur stdDeviation="4"/></filter></defs><path fill="#4d4e49" d="M0 420Q100 350 205 394Q330 165 505 390Q600 315 708 400Q830 120 1042 390Q1180 260 1280 392Q1370 330 1440 380V520H0Z"/><path fill="#888983" opacity=".22" filter="url(#blur)" d="M265 390L380 210L480 390M780 400L905 180L1030 390Z"/></svg>
+      <svg class="mountain near parallax" data-speed=".2" viewBox="0 0 1440 460" preserveAspectRatio="none"><path fill="#111210" d="M0 330Q160 242 300 340Q430 220 560 350Q760 250 875 350Q1050 195 1190 348Q1310 290 1440 350V460H0Z"/><path fill="#242521" d="M0 380Q300 320 560 390T1020 375T1440 390V460H0Z"/></svg>
+      <div class="mist top-[33%]"></div><div class="mist top-[58%]" style="animation-delay:-7s;opacity:.5"></div>
+      <svg class="bamboo" viewBox="0 0 360 700"><g stroke="#d8d4c8" fill="none" stroke-linecap="round"><path stroke-width="12" d="M275 710Q250 430 275 30"/><path stroke-width="7" d="M276 490Q210 400 120 365M270 305Q320 240 350 182M268 205Q210 135 165 106"/><g fill="#d8d4c8" stroke-width="2"><path d="M215 410Q150 360 98 370Q155 410 215 410Z"/><path d="M178 380Q115 325 63 333Q120 380 178 380Z"/><path d="M306 250Q342 185 360 174Q354 235 306 250Z"/><path d="M230 150Q175 90 138 94Q174 143 230 150Z"/></g></g></svg>
+      <div class="relative z-10 text-center px-5 pt-16">
+        <div class="flex items-center justify-center gap-4 mb-7 text-[10px] tracking-[.55em] text-stone-400"><span class="w-12 h-px bg-gold/50"></span>东方数字艺术<span class="w-12 h-px bg-gold/50"></span></div>
+        <div class="relative inline-block"><h1 class="hero-title">墨剑</h1><span class="seal absolute -right-7 sm:-right-12 top-1/2 w-10 h-10 sm:w-12 sm:h-12 grid place-items-center text-sm">气</span></div>
+        <p class="mt-10 sm:mt-14 text-lg sm:text-2xl tracking-[.28em] text-stone-200 font-light">以墨为剑，绘气为形</p>
+        <p class="mt-4 text-xs tracking-[.2em] text-stone-500">一笔入境 · 万象由心</p>
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#experience" class="cta bg-paper text-ink px-8 py-4 min-w-52 text-sm tracking-[.2em]">进入墨境体验 <span class="ml-3">↓</span></a>
+          <button id="demoBtn" class="cta bg-black/20 px-8 py-4 min-w-52 text-sm tracking-[.2em]">观看风格演示 <span class="ml-3 text-gold">▷</span></button>
+        </div>
+      </div>
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-[9px] tracking-[.35em] text-stone-500 flex flex-col items-center gap-3"><span>SCROLL TO UNFOLD</span><span class="h-10 w-px bg-gradient-to-b from-gold/70 to-transparent"></span></div>
+    </section>
+
+    <section id="philosophy" class="paper-section relative overflow-hidden py-28 sm:py-40 px-6">
+      <div class="max-w-6xl mx-auto relative z-10 grid md:grid-cols-[.8fr_1.2fr] gap-14 md:gap-24 items-center">
+        <div class="reveal relative"><div class="ink-circle aspect-square max-w-sm mx-auto grid place-items-center"><span class="brush-title text-[9rem] leading-none text-ink/90">意</span><span class="absolute text-[10px] tracking-[.42em] rotate-90 -right-7">INK BECOMES INTENT</span></div></div>
+        <div class="reveal"><p class="section-kicker">The language of ink</p><h2 class="brush-title text-5xl sm:text-7xl mt-5">剑起于心，墨生万象</h2><div class="w-20 h-px bg-seal my-9"></div><p class="text-lg sm:text-xl leading-[2.1] text-stone-700 font-light">水墨之妙，不在形似，而在气韵。我们取宣纸上的渗化、枯润与飞白，赋予它速度、重力与呼吸；让每一滴墨，沿着人的意念生长。</p><p class="mt-6 leading-[2] text-stone-500">当古老笔触遇见粒子运动，剑气便不再是被描绘的光，而是一场由手势唤醒的能量。克制的留白承载静寂，迸裂的墨点刻下锋芒——一静一动之间，构成属于数字时代的东方叙事。</p><div class="mt-10 flex gap-10 text-xs tracking-[.22em]"><span><b class="block text-2xl font-normal mb-1">01</b>墨韵</span><span><b class="block text-2xl font-normal mb-1">02</b>剑气</span><span><b class="block text-2xl font-normal mb-1">03</b>留白</span></div></div>
+      </div>
+    </section>
+
+    <section id="experience" class="studio-section bg-ink py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+      <div class="max-w-[1500px] mx-auto">
+        <div class="reveal max-w-3xl mb-14 px-2"><p class="section-kicker">Interactive atelier · 交互墨场</p><h2 class="brush-title text-6xl sm:text-8xl mt-5">以墨练剑</h2><p class="text-stone-400 mt-5 leading-8 max-w-xl">落笔有轻重，挥毫见锋芒。慢行聚墨，疾行生风；开启剑气，让笔迹带起金石之声。</p></div>
+        <div class="studio-shell reveal rounded-sm overflow-hidden">
+          <div class="controls px-5 sm:px-8 py-5 flex flex-wrap items-center gap-x-7 gap-y-5 border-b border-white/10">
+            <div class="flex items-center gap-2 p-1 border border-white/10 bg-black/20" role="group" aria-label="绘制模式">
+              <button class="mode-btn active px-5 py-2 text-xs tracking-[.18em] border border-transparent transition" data-mode="ink">墨笔</button>
+              <button class="mode-btn px-5 py-2 text-xs tracking-[.18em] border border-transparent text-stone-400 transition" data-mode="sword">剑气</button>
+            </div>
+            <label class="w-40 text-[10px] tracking-[.18em] text-stone-400">笔锋 <span id="sizeVal" class="float-right text-paper">34</span><input id="brushSize" class="mt-3" type="range" min="10" max="72" value="34"></label>
+            <label class="w-40 text-[10px] tracking-[.18em] text-stone-400">墨色 <span id="densityVal" class="float-right text-paper">82%</span><input id="inkDensity" class="mt-3" type="range" min="25" max="100" value="82"></label>
+            <div class="sm:ml-auto flex gap-3">
+              <button id="clearBtn" class="cta border-white/15 px-5 py-3 text-xs tracking-[.18em]">洗墨</button>
+              <button id="saveBtn" class="cta border-gold/50 text-gold px-5 py-3 text-xs tracking-[.18em]">保存作品</button>
+            </div>
+          </div>
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="inkCanvas" aria-label="可触控的水墨绘画画布"></canvas>
+            <canvas id="fxCanvas" aria-hidden="true"></canvas>
+            <div class="canvas-empty" id="canvasEmpty"><div class="glyph">一念起笔</div><div class="mt-3 text-[10px] tracking-[.3em]">按住并挥动 · HOLD &amp; DRAW</div></div>
+            <div class="absolute left-5 bottom-4 text-[9px] tracking-[.24em] text-black/30 pointer-events-none">INK ENGINE / 60 FPS</div>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-7 mt-8 text-xs text-stone-500 leading-6"><p><span class="text-gold mr-2">壹</span>缓慢行笔，墨色沉积，边缘自然晕染。</p><p><span class="text-gold mr-2">贰</span>快速挥动，速度转化为飞白与墨滴。</p><p><span class="text-gold mr-2">叁</span>剑气模式，金色粒子沿锋刃迸发。</p></div>
+      </div>
+    </section>
+
+    <section id="works" class="bg-[#121311] py-28 sm:py-40 px-6">
+      <div class="max-w-7xl mx-auto"><div class="reveal flex flex-col sm:flex-row sm:items-end justify-between gap-7 mb-14"><div><p class="section-kicker">Selected works · 数字藏卷</p><h2 class="brush-title text-6xl sm:text-8xl mt-4">剑气成卷</h2></div><p class="max-w-sm text-sm leading-7 text-stone-500">每一幅作品，都是一次手势、算法与偶然性的相逢。</p></div>
+        <div class="grid md:grid-cols-12 gap-5">
+          <article class="art-card reveal md:col-span-7 aspect-[16/11]"><svg class="art-svg" viewBox="0 0 800 550" preserveAspectRatio="xMidYMid slice"><rect width="800" height="550" fill="#eae5d9"/><filter id="t1"><feTurbulence baseFrequency=".018" numOctaves="3"/><feDisplacementMap in="SourceGraphic" scale="24"/></filter><path d="M-30 490Q130 270 290 430Q390 95 540 420Q650 275 840 460V570H-30Z" fill="#161715" filter="url(#t1)"/><path d="M50 390L720 145" stroke="#c9a959" stroke-width="3"/><path d="M80 405L700 155" stroke="#fff" stroke-width="1" opacity=".8"/><g fill="#c9a959"><circle cx="585" cy="204" r="5"/><circle cx="630" cy="181" r="3"/><circle cx="682" cy="159" r="2"/></g></svg><div class="absolute inset-x-0 bottom-0 p-7 bg-gradient-to-t from-black/80 to-transparent"><h3 class="text-2xl">破晓 · Dawn Cut</h3><p class="text-xs text-stone-400 mt-2 tracking-[.18em]">金石 / 墨山 / 2026</p></div></article>
+          <article class="art-card reveal md:col-span-5 aspect-[16/11]"><svg class="art-svg" viewBox="0 0 600 550"><rect width="600" height="550" fill="#dcd8ce"/><filter id="t2"><feTurbulence baseFrequency=".035" numOctaves="4"/><feDisplacementMap in="SourceGraphic" scale="35"/></filter><circle cx="315" cy="278" r="160" fill="none" stroke="#151615" stroke-width="48" stroke-dasharray="790 220" filter="url(#t2)"/><path d="M120 430Q300 300 480 100" stroke="#f3efe5" stroke-width="5"/><path d="M130 440Q310 305 500 95" stroke="#a32620" stroke-width="2"/></svg><div class="absolute inset-x-0 bottom-0 p-7 bg-gradient-to-t from-black/80 to-transparent"><h3 class="text-2xl">一念 · One Thought</h3><p class="text-xs text-stone-400 mt-2 tracking-[.18em]">圆寂 / 赤锋 / 2026</p></div></article>
+          <article class="art-card reveal md:col-span-5 aspect-[16/11]"><svg class="art-svg" viewBox="0 0 600 500"><rect width="600" height="500" fill="#111210"/><filter id="t3"><feTurbulence baseFrequency=".02" numOctaves="3"/><feDisplacementMap in="SourceGraphic" scale="30"/></filter><path d="M-30 410Q140 140 290 410Q400 210 650 420" stroke="#5f615c" stroke-width="90" fill="none" filter="url(#t3)"/><g stroke="#c9a959" opacity=".8"><path d="M60 380L510 120"/><path d="M110 415L555 145" opacity=".4"/></g></svg><div class="absolute inset-x-0 bottom-0 p-7 bg-gradient-to-t from-black/90 to-transparent"><h3 class="text-2xl">听风 · Listen to Wind</h3><p class="text-xs text-stone-400 mt-2 tracking-[.18em]">夜岭 / 游锋 / 2026</p></div></article>
+          <article class="art-card reveal md:col-span-7 aspect-[16/11]"><svg class="art-svg" viewBox="0 0 800 500"><rect width="800" height="500" fill="#e7e2d7"/><filter id="t4"><feTurbulence baseFrequency=".025" numOctaves="3"/><feDisplacementMap in="SourceGraphic" scale="25"/></filter><g filter="url(#t4)" fill="#151615"><path d="M100 500Q150 180 205 55Q180 340 260 500Z"/><path d="M260 500Q350 220 400 90Q380 350 450 500Z"/><path d="M470 500Q560 250 625 110Q580 360 680 500Z"/></g><circle cx="600" cy="110" r="55" fill="#a32620" opacity=".8"/></svg><div class="absolute inset-x-0 bottom-0 p-7 bg-gradient-to-t from-black/80 to-transparent"><h3 class="text-2xl">赤月 · Vermilion Moon</h3><p class="text-xs text-stone-400 mt-2 tracking-[.18em]">竹影 / 月痕 / 2026</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="relative overflow-hidden py-32 sm:py-44 px-6 bg-ink text-center"><div class="absolute inset-0 opacity-30" style="background:radial-gradient(circle at 50% 50%,rgba(201,169,89,.17),transparent 35%)"></div><div class="reveal relative max-w-3xl mx-auto"><p class="section-kicker">The scroll is still unfolding</p><h2 class="brush-title text-6xl sm:text-8xl mt-6">下一笔，由你落下</h2><p class="mt-7 text-stone-400 leading-8">加入墨剑内测名单，率先体验完整的创作工具与沉浸画境。</p><form id="waitlistForm" class="mt-12 max-w-lg mx-auto flex gap-4"><label class="sr-only" for="email">电子邮箱</label><input id="email" required type="email" placeholder="留下你的电子邮箱" class="footer-input flex-1 py-4 px-1 text-sm text-paper placeholder:text-stone-600"><button class="cta px-6 sm:px-8 py-4 text-xs tracking-[.2em] text-gold border-gold/40">入境</button></form></div></section>
+  </main>
+  <footer class="border-t border-white/10 py-8 px-6 flex flex-col sm:flex-row gap-4 justify-between text-[9px] tracking-[.22em] text-stone-600"><span>© 2026 墨剑 INK SWORD</span><span>以数字之术 · 续东方之意</span></footer>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script>
+  (() => {
+    'use strict';
+    const $ = s => document.querySelector(s);
+    const canvas = $('#inkCanvas'), fxCanvas=$('#fxCanvas'), wrap = $('#canvasWrap');
+    const ctx = canvas.getContext('2d', { alpha:true }), fctx=fxCanvas.getContext('2d', { alpha:true });
+    const sizeInput = $('#brushSize'), densityInput = $('#inkDensity'), empty = $('#canvasEmpty');
+    let dpr=1, cssW=0, cssH=0, drawing=false, mode='ink', last=null, particles=[], washAlpha=0, washActive=false, hasDrawing=false;
+    const MAX_PARTICLES = 850;
+
+    // 画布按设备像素比初始化；重设尺寸时保留用户已完成的笔迹。
+    function resizeCanvas(){
+      const rect=wrap.getBoundingClientRect(), old=document.createElement('canvas');
+      old.width=canvas.width; old.height=canvas.height; if(old.width) old.getContext('2d').drawImage(canvas,0,0);
+      dpr=Math.min(window.devicePixelRatio||1,2); cssW=rect.width; cssH=rect.height;
+      canvas.width=Math.round(cssW*dpr); canvas.height=Math.round(cssH*dpr);fxCanvas.width=canvas.width;fxCanvas.height=canvas.height;ctx.setTransform(dpr,0,0,dpr,0,0);fctx.setTransform(dpr,0,0,dpr,0,0);
+      if(old.width && hasDrawing) ctx.drawImage(old,0,0,old.width,old.height,0,0,cssW,cssH);
+      ctx.lineCap='round'; ctx.lineJoin='round';
+    }
+
+    function point(e){ const r=canvas.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now(),p:e.pressure||.5}; }
+    function inkColor(a){ const d=+densityInput.value/100; return `rgba(12,13,12,${a*d})`; }
+    function spawn(x,y,count,speed,kind='ink',angle=Math.random()*Math.PI*2){
+      const room=MAX_PARTICLES-particles.length; count=Math.min(count,room);
+      for(let i=0;i<count;i++){
+        const a=kind==='sword' ? angle+(Math.random()-.5)*1.15 : Math.random()*Math.PI*2;
+        const v=speed*(.25+Math.random());
+        particles.push({x,y,px:x,py:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-(kind==='ink'?Math.random()*.35:0),life:1,decay:.012+Math.random()*.025,size:kind==='sword'?.7+Math.random()*2.2:.6+Math.random()*4.8,kind,glow:Math.random()>.58});
+      }
+    }
+
+    // 毛笔宽度与移动速度反向关联：慢则墨聚、线宽；快则收锋、产生飞白与飞溅。
+    function stroke(a,b){
+      const dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy),dt=Math.max(8,b.t-a.t),speed=dist/dt;
+      const pressure=(b.p||.5)*.65+.68;
+      const base=+sizeInput.value, width=Math.max(base*.18,base*(1-Math.min(speed/2.1,.78)))*pressure;
+      const angle=Math.atan2(dy,dx), density=+densityInput.value/100;
+      ctx.save(); ctx.globalCompositeOperation='source-over';
+      // 多层偏移制造真实毛束和边缘渗墨。
+      for(let layer=3;layer>=0;layer--){
+        const jitter=(layer-1.5)*width*.055, nx=-Math.sin(angle)*jitter,ny=Math.cos(angle)*jitter;
+        ctx.beginPath();ctx.moveTo(a.x+nx,a.y+ny);ctx.quadraticCurveTo((a.x+b.x)/2+nx,(a.y+b.y)/2+ny,b.x+nx,b.y+ny);
+        ctx.strokeStyle=inkColor((.08+layer*.15)*(mode==='sword' ? .8 : 1));ctx.lineWidth=width*(1+layer*.08);ctx.shadowBlur=layer===3?width*.22:0;ctx.shadowColor=inkColor(.22);ctx.stroke();
+      }
+      // 高速时留出纸白，形成枯笔飞白。
+      if(speed>.75 && Math.random()<.55){ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,0,0,${Math.min(.28,speed*.12)})`;ctx.lineWidth=Math.max(1,width*.08);ctx.stroke()}
+      if(mode==='sword'){
+        ctx.globalCompositeOperation='source-over';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(201,169,89,${.35+density*.35})`;ctx.shadowBlur=15;ctx.shadowColor='#e5c66f';ctx.lineWidth=Math.max(1.1,width*.07);ctx.stroke();
+        spawn(b.x,b.y,Math.min(8,2+Math.floor(speed*3)),1.8+speed*2.5,'sword',angle+Math.PI);
+      }
+      ctx.restore();
+      if(speed>.7){const n=Math.min(14,Math.floor(speed*6));spawn(b.x,b.y,n,1+speed*2.2,'ink',angle+Math.PI)}
+      else if(Math.random()<.15) spawn(b.x,b.y,1,.45,'ink');
+    }
+    function down(e){e.preventDefault();canvas.setPointerCapture?.(e.pointerId);drawing=true;last=point(e);hasDrawing=true;empty.classList.add('hide');spawn(last.x,last.y,mode==='sword'?12:3,1.3,mode);}
+    function move(e){if(!drawing)return;e.preventDefault();const p=point(e),distance=Math.hypot(p.x-last.x,p.y-last.y),steps=Math.max(1,Math.ceil(distance/8));for(let i=1;i<=steps;i++){const q={x:last.x+(p.x-last.x)*i/steps,y:last.y+(p.y-last.y)*i/steps,t:last.t+(p.t-last.t)*i/steps,p:p.p};stroke(i===1?last:{x:last.x+(p.x-last.x)*(i-1)/steps,y:last.y+(p.y-last.y)*(i-1)/steps,t:last.t+(p.t-last.t)*(i-1)/steps,p:p.p},q)}last=p;}
+    function up(){if(!drawing)return;drawing=false;if(last)spawn(last.x,last.y,mode==='sword'?22:5,mode==='sword'?4:1.2,mode);last=null;}
+    canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+
+    // 粒子使用独立透明层逐帧清除，避免短暂剑气污染永久墨迹。
+    function animate(){
+      fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fxCanvas.width,fxCanvas.height);fctx.setTransform(dpr,0,0,dpr,0,0);
+      for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.px=p.x;p.py=p.y;p.x+=p.vx;p.y+=p.vy;p.vx*=.985;p.vy=p.kind==='ink'?p.vy*.98+.018:p.vy*.975;p.life-=p.decay;if(p.life<=0){particles.splice(i,1);continue}fctx.save();fctx.globalCompositeOperation=p.kind==='sword'?'lighter':'source-over';fctx.beginPath();fctx.moveTo(p.px,p.py);fctx.lineTo(p.x,p.y);fctx.strokeStyle=p.kind==='sword'?`rgba(${p.glow?'230,205,132':'180,205,220'},${p.life*.78})`:inkColor(p.life*.55);fctx.lineWidth=p.size*p.life;if(p.kind==='sword'){fctx.shadowBlur=p.glow?12:5;fctx.shadowColor='#d9ba65'}fctx.stroke();fctx.restore()}
+      ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);
+      if(washActive){washAlpha+=.018;ctx.globalCompositeOperation='source-over';ctx.fillStyle=`rgba(238,233,222,${Math.min(.12,washAlpha*.12)})`;ctx.fillRect(0,0,cssW,cssH);if(washAlpha>=1){ctx.clearRect(0,0,cssW,cssH);particles=[];washActive=false;washAlpha=0;hasDrawing=false;empty.classList.remove('hide')}}
+      ctx.restore();requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+    new ResizeObserver(resizeCanvas).observe(wrap);
+
+    document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');mode=btn.dataset.mode;showToast(mode==='sword'?'剑气已启 · 疾笔可见锋芒':'墨笔已启 · 缓行可见浓淡')}));
+    sizeInput.addEventListener('input',()=>$('#sizeVal').textContent=sizeInput.value);densityInput.addEventListener('input',()=>$('#densityVal').textContent=densityInput.value+'%');
+    $('#clearBtn').addEventListener('click',()=>{if(hasDrawing)washActive=true});
+    $('#saveBtn').addEventListener('click',()=>{
+      const out=document.createElement('canvas'), scale=2;out.width=cssW*scale;out.height=cssH*scale;const o=out.getContext('2d');o.fillStyle='#eee9de';o.fillRect(0,0,out.width,out.height);o.drawImage(canvas,0,0,out.width,out.height);const a=document.createElement('a');a.download=`墨剑-${new Date().toISOString().slice(0,10)}.png`;a.href=out.toDataURL('image/png',1);a.click();showToast('作品已保存 · 高清 PNG');
+    });
+
+    // 自动演示在画布中写出一记弧形剑势。
+    $('#demoBtn').addEventListener('click',()=>{$('#experience').scrollIntoView({behavior:'smooth'});setTimeout(()=>{empty.classList.add('hide');hasDrawing=true;mode='sword';document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='sword'));let i=0,prev=null;const demo=()=>{const t=i/90,x=cssW*(.13+.74*t),y=cssH*(.67-.4*Math.sin(t*Math.PI)+.08*Math.sin(t*Math.PI*3)),p={x,y,t:performance.now(),p:.5};if(prev)stroke(prev,p);prev=p;i++;if(i<=90)requestAnimationFrame(demo);else spawn(x,y,70,5,'sword',-.2)};demo()},900)});
+
+    const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+    let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{const y=scrollY;document.querySelectorAll('.parallax').forEach(el=>el.style.transform=`translate3d(0,${y*(+el.dataset.speed)}px,0)`);ticking=false});ticking=true}},{passive:true});
+    let toastTimer;function showToast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200)}
+    $('#waitlistForm').addEventListener('submit',e=>{e.preventDefault();showToast('已收录 · 静候开卷');e.target.reset()});
+  })();
+  </script>
+</body>
+</html>
