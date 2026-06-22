@@ -1,165 +1,115 @@
 /**
- * Template Shop — Auth System v2
- * 设备指纹 + Cloudflare Worker 后端 + 本地缓存
- * 支持两种模式: 有 Worker (真·设备绑定) / 无 Worker (本地模式)
+ * Template Shop — Auth System v3 (Simplified)
+ * Pure local mode: key validated against format, stored in localStorage + cookie
  */
 (function () {
-  // ─── Config ────────────────────────────────────────────────────
   const STORAGE_KEY = 'tmpl_auth_level';
-  const STORAGE_KEY_VAL = 'tmpl_auth_key';
   const STORAGE_FP = 'tmpl_device_fp';
-  const STORAGE_BINDINGS = 'tmpl_bindings';
 
-  // Cloudflare Worker URL (部署后填入, 留空=本地模式)
-  // 例如: 'https://template-shop-auth.YOUR_SUBDOMAIN.workers.dev'
-  const WORKER_URL = window.__AUTH_API__ || 'https://template-shop-auth.zizegak916.workers.dev';
-
-  // ─── Device Fingerprint ────────────────────────────────────────
-  // Uses a stable random UUID stored in localStorage.
-  // Does NOT depend on UA/screen/canvas — survives Chrome mobile↔desktop switches.
-
-  function getOrCreateFingerprint() {
-    let cached = localStorage.getItem(STORAGE_FP);
-    if (cached) return cached;
-    // Generate a random UUID v4
-    const fp = 'fp_' + crypto.randomUUID();
-    localStorage.setItem(STORAGE_FP, fp);
-    return fp;
-  }
-
-  // ─── SHA-256 ───────────────────────────────────────────────────
-
-  async function sha256(str) {
-    const buf = new TextEncoder().encode(str);
-    const hash = await crypto.subtle.digest('SHA-256', buf);
-    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  // ─── Local Validation (fallback) ──────────────────────────────
-
-  async function validateKeyLocal(key) {
-    const normalized = key.trim().toUpperCase();
-    const hash = await sha256(normalized);
-    return window.__VALID_HASHES && window.__VALID_HASHES.includes(hash);
-  }
-
-  // ─── Server Validation ────────────────────────────────────────
-
-  async function validateKeyServer(key, fingerprint, action = 'login') {
-    const resp = await fetch(`${WORKER_URL}/api/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, key: key.trim().toUpperCase(), fingerprint }),
-    });
-    return await resp.json();
-  }
-
-  // ─── Local Binding Check ──────────────────────────────────────
-
-  function getLocalBinding(keyHash) {
-    try {
-      const bindings = JSON.parse(localStorage.getItem(STORAGE_BINDINGS) || '{}');
-      return bindings[keyHash] || null;
-    } catch { return null; }
-  }
-
-  function setLocalBinding(keyHash, fingerprint) {
-    try {
-      const bindings = JSON.parse(localStorage.getItem(STORAGE_BINDINGS) || '{}');
-      bindings[keyHash] = { fingerprint, boundAt: new Date().toISOString() };
-      localStorage.setItem(STORAGE_BINDINGS, JSON.stringify(bindings));
-    } catch (e) { /* ignore */ }
-  }
-
-  // ─── Auth State ───────────────────────────────────────────────
-  // Dual storage: localStorage + cookie fallback
-  // Survives Chrome mobile↔desktop mode switches that may clear localStorage
-
+  // ── Cookie helpers ──────────────────────────────────────────
   function setCookie(name, value, days) {
     var d = new Date();
     d.setTime(d.getTime() + days * 86400000);
-    document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    document.cookie = name + '=' + encodeURIComponent(value) +
+      ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
   }
 
   function getCookie(name) {
-    var v = document.cookie.match('(^|;)\\s*' + name + '=([^;]*)');
-    return v ? decodeURIComponent(v[2]) : null;
+    var match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[2]) : null;
   }
 
+  // ── Auth state (dual: localStorage + cookie) ───────────────
   function getAuth() {
     var v = localStorage.getItem(STORAGE_KEY);
-    if (!v) v = getCookie(STORAGE_KEY);
-    return v;
-  }
-
-  function setAuth(level, key) {
-    localStorage.setItem(STORAGE_KEY, level);
-    setCookie(STORAGE_KEY, level, 365);
-    if (key) {
-      localStorage.setItem(STORAGE_KEY_VAL, key);
-      setCookie(STORAGE_KEY_VAL, key, 365);
+    if (v) return v;
+    // Fallback: try cookie (survives Chrome mode switch that clears localStorage)
+    var c = getCookie(STORAGE_KEY);
+    if (c) {
+      // Restore to localStorage so we don't need cookie fallback next time
+      try { localStorage.setItem(STORAGE_KEY, c); } catch (e) {}
+      return c;
     }
+    return null;
   }
 
-  // ─── UI Helpers ────────────────────────────────────────────────
+  function setAuth(level) {
+    try { localStorage.setItem(STORAGE_KEY, level); } catch (e) {}
+    setCookie(STORAGE_KEY, level, 365);
+  }
 
+  function clearAuth() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_FP);
+    } catch (e) {}
+    setCookie(STORAGE_KEY, '', -1);
+  }
+
+  // ── Fingerprint ─────────────────────────────────────────────
+  function getFingerprint() {
+    var fp = localStorage.getItem(STORAGE_FP);
+    if (fp) return fp;
+    fp = 'fp_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
+    try { localStorage.setItem(STORAGE_FP, fp); } catch (e) {}
+    return fp;
+  }
+
+  // ── UI ──────────────────────────────────────────────────────
   function showWall() {
-    const wall = document.getElementById('auth-wall');
-    if (wall) { wall.style.display = 'flex'; requestAnimationFrame(() => wall.classList.add('show')); }
+    var wall = document.getElementById('auth-wall');
+    if (wall) { wall.style.display = 'flex'; requestAnimationFrame(function() { wall.classList.add('show'); }); }
     document.body.style.overflow = 'hidden';
   }
 
   function hideWall() {
-    const wall = document.getElementById('auth-wall');
+    var wall = document.getElementById('auth-wall');
     if (wall) {
       wall.classList.remove('show');
-      setTimeout(() => { wall.style.display = 'none'; }, 400);
+      setTimeout(function() { wall.style.display = 'none'; }, 400);
     }
     document.body.style.overflow = '';
   }
 
   function setDownloadState(enabled) {
-    // Lock both card-bottom and hover-overlay download buttons
-    document.querySelectorAll('.tpl-btn.secondary, .preview-hover-btn.secondary').forEach(btn => {
+    document.querySelectorAll('.tpl-btn.secondary, .preview-hover-btn.secondary').forEach(function (btn) {
       btn.style.opacity = enabled ? '1' : '0.3';
       btn.style.pointerEvents = enabled ? 'auto' : 'none';
       btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
-      // Remove/restore download attribute to block direct file save
       if (enabled) {
         btn.removeAttribute('data-locked');
-        if (btn.dataset.origHref) { btn.href = btn.dataset.origHref; }
+        if (btn.dataset.origHref) btn.href = btn.dataset.origHref;
       } else {
         if (!btn.dataset.origHref) btn.dataset.origHref = btn.href;
         btn.removeAttribute('download');
         btn.setAttribute('data-locked', '1');
         btn.href = '#';
       }
-      const lock = btn.querySelector('.lock-icon');
+      var lock = btn.querySelector('.lock-icon');
       if (enabled && lock) lock.remove();
       if (!enabled && !lock) {
-        const l = document.createElement('span');
+        var l = document.createElement('span');
         l.className = 'lock-icon';
-        l.innerHTML = '&nbsp;🔒';
+        l.innerHTML = '&nbsp;\uD83D\uDD12';
         l.style.fontSize = '12px';
         btn.appendChild(l);
       }
     });
-    const notice = document.getElementById('guest-notice');
+    var notice = document.getElementById('guest-notice');
     if (notice) notice.style.display = enabled ? 'none' : 'flex';
   }
 
-  function showToast(msg, type = 'info') {
-    const existing = document.querySelector('.toast');
+  function showToast(msg, type) {
+    var existing = document.querySelector('.toast');
     if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + (type || 'info');
     toast.textContent = msg;
     document.body.appendChild(toast);
-    requestAnimationFrame(() => toast.classList.add('show'));
-    setTimeout(() => {
+    requestAnimationFrame(function() { toast.classList.add('show'); });
+    setTimeout(function() {
       toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
+      setTimeout(function() { toast.remove(); }, 300);
     }, 3000);
   }
 
@@ -174,18 +124,25 @@
     }
   }
 
-  // ─── Main Init ────────────────────────────────────────────────
+  function shakeInput(el) {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'shake .4s ease';
+    setTimeout(function() { el.style.animation = ''; }, 500);
+  }
 
-  window.addEventListener('DOMContentLoaded', async () => {
-    const auth = getAuth();
-    const fingerprint = getOrCreateFingerprint();
+  // ── Init ────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    var auth = getAuth();
+    var fp = getFingerprint();
 
-    if (auth === 'key') {
-      // Already logged in — trust local auth state
-      // (No server re-verification on page load to avoid forced re-login
-      // when switching between mobile/desktop Chrome which changes fingerprint)
+    if (auth === 'key' || auth === 'guest') {
       hideWall();
-      setDownloadState(true);
+      setDownloadState(auth === 'key');
+      if (auth === 'guest') {
+        var notice = document.getElementById('guest-notice');
+        if (notice) notice.style.display = 'flex';
+      }
       return;
     }
 
@@ -193,14 +150,13 @@
     showWall();
     setDownloadState(false);
 
-    // ─── Key Login ─────────────────────────────────────────────
-    const keyInput = document.getElementById('key-input');
-    const keyBtn = document.getElementById('key-submit');
-    const keyError = document.getElementById('key-error');
-    const keySuccess = document.getElementById('key-success');
+    var keyInput = document.getElementById('key-input');
+    var keyBtn = document.getElementById('key-submit');
+    var keyError = document.getElementById('key-error');
+    var keySuccess = document.getElementById('key-success');
 
-    async function tryKeyLogin() {
-      const val = keyInput.value.trim();
+    function tryKeyLogin() {
+      var val = keyInput.value.trim();
       if (!val) {
         keyError.textContent = '请输入密钥';
         keyError.style.display = 'block';
@@ -208,11 +164,11 @@
         return;
       }
 
-      // Format check
       if (!/^TMPL-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$/.test(val)) {
         keyError.textContent = '密钥格式: TMPL-XXXX-XXXX-XXXX';
         keyError.style.display = 'block';
         keyInput.focus();
+        shakeInput(keyInput);
         return;
       }
 
@@ -220,81 +176,24 @@
       keyError.style.display = 'none';
       keySuccess.style.display = 'none';
 
-      try {
-        // Step 1: Validate key hash
-        const valid = await validateKeyLocal(val);
-        if (!valid) {
-          keyError.textContent = '密钥无效，请检查后重试';
-          keyError.style.display = 'block';
-          keyInput.value = '';
-          keyInput.focus();
-          shakeInput(keyInput);
-          setLoading(keyBtn, false);
-          return;
-        }
-
-        // Step 2: Server binding check (if Worker configured)
-        if (WORKER_URL) {
-          try {
-            const result = await validateKeyServer(val, fingerprint, 'login');
-            if (!result.success) {
-              keyError.textContent = result.message || '验证失败';
-              keyError.style.display = 'block';
-              keyInput.value = '';
-              keyInput.focus();
-              shakeInput(keyInput);
-              setLoading(keyBtn, false);
-              return;
-            }
-            // Show binding info
-            if (result.bound) {
-              showToast('✅ 设备验证通过', 'success');
-            } else {
-              showToast('🔒 密钥已绑定到当前设备', 'success');
-            }
-          } catch (e) {
-            // Server unreachable — fall back to local mode
-            console.warn('Worker unreachable, using local mode:', e);
-            checkLocalBinding(val);
-          }
-        } else {
-          // Local-only mode
-          checkLocalBinding(val);
-        }
-
-        // Login success
-        setAuth('key', val);
+      // Accept any valid-format key (pure local mode)
+      setTimeout(function() {
+        setAuth('key');
         keySuccess.style.display = 'block';
         keyError.style.display = 'none';
-        setTimeout(() => { hideWall(); setDownloadState(true); }, 600);
-
-      } catch (e) {
-        keyError.textContent = '网络错误，请重试';
-        keyError.style.display = 'block';
-      }
-
-      setLoading(keyBtn, false);
-    }
-
-    function checkLocalBinding(key) {
-      const keyHash = key.trim().toUpperCase();
-      // We need the hash, but for local mode just store the key
-      const localBind = getLocalBinding(keyHash);
-      if (localBind && localBind.fingerprint !== fingerprint) {
-        showToast('⚠️ 本地模式：密钥已在其他会话使用', 'info');
-      } else {
-        setLocalBinding(keyHash, fingerprint);
-      }
+        showToast('✅ 登录成功', 'success');
+        setTimeout(function() { hideWall(); setDownloadState(true); }, 600);
+        setLoading(keyBtn, false);
+      }, 400);
     }
 
     keyBtn.addEventListener('click', tryKeyLogin);
-    keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryKeyLogin(); });
+    keyInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryKeyLogin(); });
 
     // Auto-format key input
-    keyInput.addEventListener('input', (e) => {
-      let val = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-      // Auto-insert dashes
-      const raw = val.replace(/-/g, '');
+    keyInput.addEventListener('input', function (e) {
+      var val = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+      var raw = val.replace(/-/g, '');
       if (raw.length > 4 && raw.length <= 8) {
         val = raw.slice(0, 4) + '-' + raw.slice(4);
       } else if (raw.length > 8) {
@@ -303,44 +202,33 @@
       e.target.value = val;
     });
 
-    // ─── Guest Login ───────────────────────────────────────────
-    document.getElementById('guest-btn').addEventListener('click', () => {
+    // Guest login
+    document.getElementById('guest-btn').addEventListener('click', function () {
       setAuth('guest');
       hideWall();
       setDownloadState(false);
       showToast('游客模式 — 可预览，不可下载', 'info');
     });
 
-    // ─── Bottom bar "输入密钥" button ──────────────────────────
-    document.getElementById('open-auth-btn')?.addEventListener('click', () => {
-      showWall();
-      switchAuthTab('key');
-    });
+    // Bottom bar button
+    var openBtn = document.getElementById('open-auth-btn');
+    if (openBtn) {
+      openBtn.addEventListener('click', function () { showWall(); });
+    }
   });
 
-  // ─── Shake animation for wrong input ──────────────────────────
-  function shakeInput(el) {
-    el.style.animation = 'none';
-    el.offsetHeight; // reflow
-    el.style.animation = 'shake .4s ease';
-    setTimeout(() => { el.style.animation = ''; }, 500);
-  }
+  // ── Logout ──────────────────────────────────────────────────
+  window.__logout = function () {
+    clearAuth();
+    location.reload();
+  };
 
-  // ─── Auth Tab Switch ──────────────────────────────────────────
+  // ── Tab switch ──────────────────────────────────────────────
   window.switchAuthTab = function (tab) {
-    document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    document.querySelectorAll('.auth-tab').forEach(function (t, i) {
       t.classList.toggle('active', (tab === 'key' && i === 0) || (tab === 'guest' && i === 1));
     });
     document.getElementById('panel-key').classList.toggle('active', tab === 'key');
     document.getElementById('panel-guest').classList.toggle('active', tab === 'guest');
-  };
-
-  // ─── Logout ───────────────────────────────────────────────────
-  window.__logout = function () {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STORAGE_KEY_VAL);
-    setCookie(STORAGE_KEY, '', -1);
-    setCookie(STORAGE_KEY_VAL, '', -1);
-    location.reload();
   };
 })();
