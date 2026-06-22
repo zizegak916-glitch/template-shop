@@ -3,25 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#faf8f3">
-  <meta name="description" content="水墨丹青——以浓墨、淡墨与留白，展开一幅当代东方画卷。">
-  <title>水墨丹青 · 浓墨新境</title>
+  <meta name="theme-color" content="#f7f3ec">
+  <meta name="description" content="墨序——一页如水墨动画般展开的数字叙事。">
+  <title>墨序 · 水墨动画式数字叙事</title>
   <style>
     :root {
-      --paper: #faf8f3;
-      --paper-pure: #fff;
-      --paper-shade: #f0ede6;
-      --ink: #0d0d0d;
-      --ink-2: #333;
-      --ink-3: #555;
-      --ink-light: #999;
-      --ink-faint: #bbb;
+      --paper: #f7f3ec;
+      --dense: #121010;
+      --heavy: #2a2525;
+      --medium: #5c5555;
+      --light: #9e9595;
+      --faint: #d4cfca;
       --seal: #c41e3a;
-      --serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
-      --brush: STKaiti, "FZQingKeBenYueSongS-R-GB", "KaiTi", serif;
-      --gutter: clamp(1.25rem, 6vw, 7rem);
-      --content: 1240px;
-      --ease-ink: cubic-bezier(.2,.7,.2,1);
+      --serif: STKaiti, "FZQingKeBenYueSongS-R-GB", "Noto Serif SC", "Songti SC", SimSun, serif;
+      --ease-ink: cubic-bezier(.16, .76, .3, 1);
+      --gutter: clamp(1.4rem, 5vw, 6rem);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -29,304 +25,445 @@
     body {
       margin: 0;
       overflow-x: hidden;
-      color: var(--ink);
+      color: var(--heavy);
       background: var(--paper);
       font-family: var(--serif);
       line-height: 2.05;
-      letter-spacing: .08em;
+      letter-spacing: .06em;
+      -webkit-font-smoothing: antialiased;
     }
-    body::before {
+    body::after {
       position: fixed;
       inset: 0;
       z-index: 1000;
       pointer-events: none;
       content: "";
-      opacity: .18;
+      opacity: .16;
       mix-blend-mode: multiply;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' seed='27'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .2 0 0 0 0 .2 0 0 0 .13 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg width='180' height='180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='4' seed='19'/%3E%3CfeColorMatrix values='.45 0 0 0 .18 .35 0 0 0 .15 .28 0 0 0 .12 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
     }
-    ::selection { color: var(--paper); background: var(--ink); }
+    ::selection { color: var(--paper); background: var(--heavy); }
     a { color: inherit; text-decoration: none; }
-    button, a { -webkit-tap-highlight-color: transparent; }
     svg { display: block; }
-    .skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 2000; padding: .4rem .9rem; color: var(--paper); background: var(--ink); transform: translateY(-180%); }
-    .skip-link:focus { transform: translateY(0); }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 1px solid var(--heavy); outline-offset: 5px; }
 
-    .nav {
-      position: absolute;
-      inset: 0 0 auto;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.6rem var(--gutter);
-      font-size: .82rem;
+    .skip-link {
+      position: fixed; top: 1rem; left: 1rem; z-index: 1100;
+      padding: .4rem 1rem; color: var(--paper); background: var(--heavy);
+      transform: translateY(-180%); transition: transform .2s;
     }
-    .brand { font-family: var(--brush); font-size: 1.25rem; font-weight: 900; letter-spacing: .3em; }
-    .nav ul { display: flex; gap: clamp(1rem, 3vw, 3rem); margin: 0; padding: 0; list-style: none; }
-    .nav a { position: relative; }
-    .nav a::after { position: absolute; right: 0; bottom: -.15rem; left: 0; height: 2px; content: ""; background: var(--ink); transform: scaleX(0); transform-origin: right; transition: transform .3s var(--ease-ink); }
-    .nav a:hover::after, .nav a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+    .skip-link:focus { transform: none; }
 
-    .hero {
-      position: relative;
-      min-height: 100svh;
-      overflow: hidden;
-      background: var(--paper);
-      isolation: isolate;
+    .site-nav {
+      position: absolute; inset: 0 0 auto; z-index: 20;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.5rem var(--gutter); font-size: .8rem; letter-spacing: .24em;
     }
-    .hero-copy { position: absolute; top: 20%; right: clamp(7vw, 12vw, 11rem); z-index: 8; display: flex; align-items: flex-start; gap: 1.4rem; }
-    .hero-title { margin: 0; font-family: var(--brush); font-size: clamp(4rem, 9vw, 8.5rem); font-weight: 900; line-height: .92; letter-spacing: .08em; writing-mode: vertical-rl; text-shadow: 1px 0 0 var(--ink); }
-    .hero-kicker { margin: .5rem 0 0; color: var(--ink-2); font-size: .75rem; letter-spacing: .4em; writing-mode: vertical-rl; }
-    .hero-note { position: absolute; top: 24%; left: var(--gutter); z-index: 8; max-width: 16rem; margin: 0; color: var(--ink-3); font-size: .82rem; }
-    .hero-note strong { display: block; margin-bottom: .7rem; color: var(--ink); font-family: var(--brush); font-size: 1.45rem; letter-spacing: .2em; }
+    .brand { font-weight: 700; font-size: 1rem; color: var(--dense); }
+    .nav-links { display: flex; gap: clamp(1rem, 3vw, 2.8rem); margin: 0; padding: 0; list-style: none; }
+    .nav-links a { position: relative; padding-block: .25rem; }
+    .nav-links a::after {
+      position: absolute; right: 3%; bottom: 0; left: 0; height: 1px;
+      content: ""; background: var(--medium); transform: scaleX(0) rotate(-1deg);
+      transform-origin: right; transition: transform .55s var(--ease-ink);
+    }
+    .nav-links a:hover::after { transform: scaleX(1) rotate(-1deg); transform-origin: left; }
 
-    .mountains { position: absolute; right: -4%; bottom: 8%; left: -3%; width: 107%; height: 72%; overflow: visible; }
-    .mountain-layer { transform: translate3d(0, var(--parallax, 0px), 0); will-change: transform; }
-    .back { fill: #777; opacity: .88; }
-    .mid { fill: #333; opacity: .96; }
-    .front { fill: var(--ink); }
-    .dry-brush { fill: none; stroke: var(--paper); stroke-width: 3; stroke-linecap: round; opacity: .24; }
-    .mist-dot { position: absolute; z-index: 7; width: var(--size); height: var(--size); border-radius: 50%; background: var(--ink); opacity: var(--alpha); animation: drift var(--speed) ease-in-out infinite alternate; will-change: transform; }
-    @keyframes drift { to { transform: translate3d(var(--drift), -26px, 0); } }
+    .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; }
+    .hero-copy {
+      position: absolute; top: 20%; left: clamp(8%, 10vw, 13%); z-index: 4;
+      display: flex; align-items: flex-start; gap: 2.1rem;
+    }
+    .hero h1 {
+      margin: 0; color: var(--dense); font-size: clamp(3.3rem, 7vw, 7.4rem);
+      line-height: 1.02; letter-spacing: .12em; writing-mode: vertical-rl;
+      font-weight: 800;
+    }
+    .hero-kicker {
+      margin: 4.7rem 0 0; color: var(--medium); font-size: .78rem;
+      letter-spacing: .3em; writing-mode: vertical-rl;
+    }
+    .hero-landscape {
+      position: absolute; right: -4vw; bottom: -2%; z-index: 1;
+      width: min(78vw, 1180px); height: 82%; overflow: visible;
+      will-change: clip-path, opacity, transform;
+      clip-path: polygon(47% 50%, 52% 48%, 55% 52%, 50% 55%);
+      opacity: 0;
+      transform: translate3d(1.5%, 2%, 0) scale(.98);
+      animation: mountain-bleed 2.8s .15s var(--ease-ink) forwards;
+    }
+    @keyframes mountain-bleed {
+      0% { opacity: .08; clip-path: polygon(49% 51%, 52% 48%, 54% 52%, 51% 55%); transform: translate3d(1.5%, 2%, 0) scale(.96); filter: blur(5px); }
+      42% { opacity: .7; clip-path: polygon(25% 42%, 49% 5%, 69% 20%, 98% 63%, 90% 99%, 34% 94%, 3% 72%); }
+      100% { opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+    }
+    .hero-caption {
+      position: absolute; right: var(--gutter); bottom: 2.2rem; z-index: 5;
+      color: var(--medium); font-size: .67rem; letter-spacing: .22em;
+    }
+    .scroll-mark {
+      position: absolute; bottom: 2rem; left: var(--gutter); z-index: 4;
+      display: flex; align-items: center; gap: .8rem; color: var(--light);
+      font-size: .65rem; letter-spacing: .24em; writing-mode: vertical-rl;
+    }
+    .scroll-mark::before { width: 1px; height: 3rem; content: ""; background: var(--faint); transform: rotate(1deg); }
 
-    .hero-river { position: absolute; right: -3%; bottom: -1px; left: -3%; z-index: 10; width: 106%; height: 18%; }
-    .river-shadow, .river-flow { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-    .river-shadow { stroke: var(--ink); stroke-width: 17; opacity: .12; }
-    .river-flow { stroke: var(--ink); stroke-width: 6; stroke-dasharray: 12 22 55 10; animation: river 6s linear infinite; }
-    .river-edge { fill: none; stroke: var(--ink-2); stroke-width: 1.5; opacity: .6; }
-    @keyframes river {
-      from { stroke-dashoffset: var(--river-scroll, 0px); }
-      to { stroke-dashoffset: calc(var(--river-scroll, 0px) - 198px); }
+    .divider { position: relative; height: clamp(90px, 13vw, 170px); overflow: hidden; }
+    .divider svg { width: 100%; height: 100%; overflow: visible; }
+    .brush-path {
+      fill: none; stroke: var(--heavy); stroke-linecap: round; opacity: .76;
+      stroke-dasharray: 1300; stroke-dashoffset: 1300;
+      filter: url(#brush-bleed); transition: stroke-dashoffset 1.8s var(--ease-ink);
+    }
+    .divider.visible .brush-path { stroke-dashoffset: 0; }
+
+    .section { position: relative; padding-inline: var(--gutter); }
+    .section-label { margin: 0; color: var(--light); font-size: .68rem; letter-spacing: .28em; text-transform: uppercase; }
+    .section-title { margin: .3rem 0 0; color: var(--dense); font-size: clamp(2.4rem, 5vw, 5.2rem); line-height: 1.2; letter-spacing: .12em; }
+
+    .bold-section { min-height: 115vh; padding-top: 6vh; padding-bottom: 8vh; }
+    .bold-heading { margin-left: 5vw; }
+    .cards { position: relative; max-width: 1160px; min-height: 760px; margin: 1.5rem auto 0; }
+    .ink-card {
+      position: absolute; width: min(48%, 520px); padding: clamp(1rem, 2vw, 1.6rem);
+      isolation: isolate; background: rgba(247, 243, 236, .58); cursor: default;
+      filter: url(#card-edge); transform: translate3d(0, 0, 0); will-change: transform;
+      transition: transform .7s var(--ease-ink);
+    }
+    .ink-card::before {
+      position: absolute; inset: 0; z-index: -1; content: "";
+      background: var(--faint); opacity: .38;
+      clip-path: polygon(1% 3%, 99% 1%, 98% 96%, 81% 99%, 4% 97%, 0 72%);
+    }
+    .ink-card:hover { transform: translate3d(0, -7px, 0) rotate(.2deg); }
+    .card-one { top: 10%; left: 2%; transform: rotate(-.8deg); }
+    .card-two { top: 36%; right: 0; transform: rotate(.55deg); }
+    .card-art { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: var(--faint); }
+    .card-art svg { width: 100%; height: 100%; filter: grayscale(1) contrast(1.2) sepia(.1); }
+    .card-copy { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; padding: 1.25rem .4rem .4rem; }
+    .card-number { color: var(--light); font-size: .75rem; }
+    .ink-card h3 { margin: 0 0 .4rem; color: var(--dense); font-size: 1.3rem; letter-spacing: .13em; }
+    .ink-card p { max-width: 33em; margin: 0; color: var(--medium); font-size: .82rem; line-height: 2; }
+    .splatter { position: absolute; z-index: 4; width: var(--s); height: var(--s); pointer-events: none; border-radius: 47% 53% 38% 62%; background: var(--heavy); animation: splat .72s ease-out forwards; }
+    @keyframes splat { to { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) scale(.25); } }
+
+    .wash-section {
+      position: relative; min-height: 88vh; display: grid; place-items: center;
+      overflow: hidden; padding-block: 12vh; isolation: isolate;
+    }
+    .wash-bg { position: absolute; inset: -15%; z-index: -1; width: 130%; height: 130%; }
+    .quote { width: min(80vw, 860px); margin: 0; text-align: center; color: var(--heavy); }
+    .quote p {
+      margin: 0; font-size: clamp(2rem, 4.7vw, 5rem); font-weight: 700;
+      line-height: 1.65; letter-spacing: .14em; opacity: .78;
+      animation: ink-dry 5s ease-in-out infinite alternate;
+    }
+    .quote footer { margin-top: 2.4rem; color: var(--medium); font-size: .75rem; letter-spacing: .3em; }
+    @keyframes ink-dry { to { opacity: 1; filter: contrast(1.05); } }
+
+    .pause-section { position: relative; min-height: 105vh; overflow: hidden; }
+    .pause-label { position: absolute; top: 13%; right: 14%; text-align: right; }
+    .pause-mark { position: absolute; top: 57%; left: 24%; width: 88px; height: 70px; opacity: .58; }
+    .pause-note { position: absolute; top: 65%; left: calc(24% + 110px); color: var(--light); font-size: .7rem; letter-spacing: .26em; }
+
+    .cta-section { min-height: 70vh; display: grid; place-items: center; padding: 12vh var(--gutter); text-align: center; }
+    .cta-wrap h2 { margin: 0 0 2.7rem; color: var(--dense); font-size: clamp(1.8rem, 4vw, 3.7rem); letter-spacing: .12em; }
+    .seal-button {
+      position: relative; display: inline-grid; min-width: 9.2rem; min-height: 4.2rem;
+      padding: .9rem 1.8rem; place-items: center; overflow: hidden;
+      color: var(--paper); background: var(--seal); font-weight: 700; letter-spacing: .22em;
+      clip-path: polygon(3% 8%, 96% 1%, 100% 89%, 91% 100%, 4% 95%, 0 22%);
+      filter: url(#seal-edge); transition: transform .5s var(--ease-ink);
+    }
+    .seal-button:hover { transform: translate3d(0, -4px, 0) rotate(-.6deg); }
+    .seal-button::after {
+      position: absolute; inset: 4px; content: ""; border: 1px solid rgba(247, 243, 236, .38);
+      clip-path: polygon(1% 4%, 97% 1%, 100% 93%, 3% 98%);
     }
 
-    .section { position: relative; padding: clamp(7rem, 13vw, 12rem) var(--gutter); }
-    .inner { width: min(100%, var(--content)); margin-inline: auto; }
-    .section-heading { display: flex; align-items: end; gap: 1.5rem; margin-bottom: clamp(3rem, 7vw, 6rem); }
-    .section-no { color: var(--ink-light); font-size: .72rem; letter-spacing: .3em; }
-    .section-title { margin: 0; font-family: var(--brush); font-size: clamp(3.8rem, 8vw, 7.5rem); font-weight: 900; line-height: .9; letter-spacing: .08em; }
-    .section-subtitle { max-width: 19rem; margin: 0 0 .2rem auto; color: var(--ink-3); font-size: .82rem; }
+    .site-footer {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      min-height: 24vh; padding: 3rem var(--gutter); color: var(--light);
+      font-size: .68rem; letter-spacing: .2em;
+    }
+    .footer-mark { color: var(--heavy); font-size: 1.1rem; letter-spacing: .3em; }
 
-    .heavy { background: var(--paper-pure); }
-    .cards { display: grid; grid-template-columns: 1.12fr .88fr .98fr; align-items: start; gap: clamp(1rem, 3vw, 2.5rem); }
-    .ink-card { position: relative; overflow: hidden; border: 2px solid var(--ink); background: var(--paper); isolation: isolate; }
-    .ink-card:nth-child(2) { margin-top: 5rem; }
-    .ink-card:nth-child(3) { margin-top: 1.5rem; }
-    .ink-card::after { position: absolute; top: var(--y, 50%); left: var(--x, 50%); z-index: -1; width: 12px; aspect-ratio: 1; border-radius: 43% 57% 51% 49%; content: ""; background: var(--ink); opacity: 0; transform: translate(-50%, -50%) scale(0); transition: transform .65s var(--ease-ink), opacity .25s; }
-    .ink-card:hover::after { opacity: 1; transform: translate(-50%, -50%) scale(55); }
-    .card-art { width: 100%; aspect-ratio: 4 / 3; filter: grayscale(1) contrast(1.4) brightness(.7); transition: filter .5s, transform .7s var(--ease-ink); will-change: transform; }
-    .ink-card:hover .card-art { filter: grayscale(1) contrast(1.65) brightness(.55); transform: scale(1.025); }
-    .card-body { position: relative; padding: 1.6rem 1.8rem 2rem; background: var(--paper); transition: color .3s, background .3s; }
-    .ink-card:hover .card-body { color: var(--paper); background: transparent; }
-    .card-index { font-size: .65rem; letter-spacing: .25em; }
-    .card-title { margin: .45rem 0 .5rem; font-family: var(--brush); font-size: 1.8rem; font-weight: 900; line-height: 1.2; }
-    .card-body p { margin: 0; color: var(--ink-3); font-size: .78rem; transition: color .3s; }
-    .ink-card:hover p { color: var(--paper-shade); }
+    #ink-trail { position: fixed; inset: 0; z-index: 900; pointer-events: none; overflow: hidden; }
+    .ink-dot {
+      position: absolute; width: var(--size); height: var(--size); margin: calc(var(--size) / -2);
+      border-radius: 43% 57% 64% 36%; background: var(--heavy); opacity: .24;
+      filter: blur(var(--blur)); transform: rotate(var(--turn));
+      animation: dot-fade 1s ease-out forwards; will-change: opacity, transform;
+    }
+    @keyframes dot-fade { to { opacity: 0; transform: scale(1.8) rotate(calc(var(--turn) + 28deg)); } }
 
-    .brush-divider { position: relative; z-index: 3; width: 100%; height: clamp(38px, 6vw, 76px); margin-block: -1px; background: var(--paper-pure); }
-    .brush-divider svg { width: 100%; height: 100%; }
-    .light { min-height: 88vh; display: grid; place-items: center; background: var(--paper-shade); text-align: center; }
-    .light .inner { position: relative; }
-    .light-label { margin: 0 0 2.5rem; font-family: var(--brush); font-size: 1rem; font-weight: 900; letter-spacing: .8em; }
-    blockquote { max-width: 920px; margin: 0 auto; font-family: var(--brush); font-size: clamp(2.1rem, 5vw, 5.2rem); font-weight: 900; line-height: 1.55; letter-spacing: .12em; }
-    blockquote span { display: inline-block; position: relative; }
-    blockquote span::after { position: absolute; right: -2%; bottom: .1em; left: -2%; z-index: -1; height: .22em; content: ""; background: var(--ink); opacity: .16; transform: skewX(-14deg); }
-    .quote-by { margin: 2.4rem 0 0; color: var(--ink-3); font-size: .72rem; letter-spacing: .38em; }
-    .branch { position: absolute; right: -4vw; bottom: -9rem; width: min(32vw, 350px); color: var(--ink-light); opacity: .7; }
-
-    .space { min-height: 100vh; display: grid; place-items: center; background: var(--paper-pure); text-align: center; }
-    .space-mark { display: grid; width: clamp(9rem, 18vw, 15rem); aspect-ratio: 1; border: 1px solid var(--ink-faint); border-radius: 50%; place-items: center; }
-    .space-mark span { font-family: var(--brush); font-size: clamp(2.8rem, 5vw, 5rem); font-weight: 900; letter-spacing: .12em; }
-    .space-copy { margin: 2.2rem 0 0; color: var(--ink-3); font-size: .74rem; letter-spacing: .42em; }
-
-    .cta-area { padding: 1rem var(--gutter) clamp(8rem, 12vw, 11rem); background: var(--paper-pure); text-align: center; }
-    .cta { display: inline-grid; min-width: 10.5rem; min-height: 3.5rem; padding: .65rem 1.5rem; border: 1px solid var(--seal); color: var(--paper-pure); background: var(--seal); font-family: var(--serif); font-weight: 700; letter-spacing: .28em; place-items: center; transition: transform .3s var(--ease-ink), box-shadow .3s; }
-    .cta:hover, .cta:focus-visible { box-shadow: 6px 7px 0 var(--ink); transform: translate(-3px, -3px); }
-    footer { display: flex; justify-content: space-between; gap: 2rem; padding: 2rem var(--gutter); border-top: 1px solid var(--ink); color: var(--ink-2); background: var(--paper); font-size: .68rem; letter-spacing: .24em; }
-
-    .reveal { opacity: 0; filter: blur(8px); clip-path: inset(0 100% 0 0); transform: translate3d(0, 28px, 0); transition: opacity .8s, filter 1s, clip-path 1.1s var(--ease-ink), transform 1s var(--ease-ink); will-change: opacity, filter, clip-path, transform; }
-    .reveal.visible { opacity: 1; filter: blur(0); clip-path: inset(0); transform: translate3d(0, 0, 0); }
-    .ripple { position: fixed; z-index: 900; width: 16px; height: 16px; pointer-events: none; border: 2px solid var(--ink); border-radius: 50%; opacity: .65; transform: translate(-50%, -50%) scale(.25); animation: ripple .9s ease-out forwards; will-change: transform, opacity; }
-    @keyframes ripple { to { opacity: 0; transform: translate(-50%, -50%) scale(5); } }
+    .reveal { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 1s ease, transform 1.2s var(--ease-ink); }
+    .reveal.visible { opacity: 1; transform: translate3d(0, 0, 0); }
 
     @media (max-width: 760px) {
-      .nav ul { display: none; }
-      .hero-copy { top: 16%; right: 8vw; }
-      .hero-title { font-size: clamp(4.8rem, 20vw, 7rem); }
-      .hero-note { top: auto; bottom: 28%; max-width: 12rem; }
-      .mountains { bottom: 9%; left: -32%; width: 155%; height: 60%; }
-      .section-heading { align-items: flex-start; flex-wrap: wrap; }
-      .section-subtitle { width: 100%; margin: 1rem 0 0; }
-      .cards { grid-template-columns: 1fr; }
-      .ink-card:nth-child(2), .ink-card:nth-child(3) { margin-top: 1rem; }
-      .light { min-height: 78vh; }
-      .branch { right: -10vw; bottom: -7rem; width: 48vw; }
-      footer { flex-direction: column; }
+      .site-nav { padding-top: 1.1rem; }
+      .nav-links li:nth-child(2) { display: none; }
+      .hero-copy { top: 18%; left: 10%; gap: 1rem; }
+      .hero h1 { font-size: clamp(3rem, 16vw, 5rem); }
+      .hero-kicker { margin-top: 2.5rem; }
+      .hero-landscape { right: -30%; bottom: 0; width: 125vw; height: 67%; }
+      .hero-caption { display: none; }
+      .bold-section { min-height: auto; padding-bottom: 5rem; }
+      .bold-heading { margin-left: 0; }
+      .cards { display: grid; gap: 5rem; min-height: auto; margin-top: 4rem; }
+      .ink-card { position: relative; inset: auto; width: 94%; }
+      .card-two { margin-left: 6%; }
+      .wash-section { min-height: 75vh; }
+      .quote { width: 88vw; }
+      .quote p { font-size: clamp(1.65rem, 8vw, 2.6rem); }
+      .pause-label { top: 10%; right: 9%; }
+      .pause-mark { left: 16%; }
+      .pause-note { top: 68%; left: 16%; }
+      .site-footer { min-height: 19vh; }
+      #ink-trail { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-      .reveal { opacity: 1; filter: none; clip-path: none; transform: none; }
-      .ripple { display: none; }
+      .hero-landscape { opacity: 1; clip-path: none; transform: none; }
+      .brush-path { stroke-dashoffset: 0; }
+      .reveal { opacity: 1; transform: none; }
+      #ink-trail { display: none; }
     }
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">跳至内容</a>
+  <a class="skip-link" href="#main">跳至正文</a>
+
+  <svg width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="ink-wash" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency=".018 .055" numOctaves="4" seed="8" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="5.5"/>
+      </filter>
+      <filter id="ink-wash-soft" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".012 .04" numOctaves="3" seed="21" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" result="moved"/>
+        <feGaussianBlur in="moved" stdDeviation="12"/>
+      </filter>
+      <filter id="brush-bleed" x="-10%" y="-100%" width="120%" height="300%">
+        <feTurbulence type="fractalNoise" baseFrequency=".025 .2" numOctaves="3" seed="14" result="grain"/>
+        <feDisplacementMap in="SourceGraphic" in2="grain" scale="5"/>
+        <feGaussianBlur stdDeviation=".6"/>
+      </filter>
+      <filter id="card-edge" x="-8%" y="-8%" width="116%" height="116%">
+        <feTurbulence type="fractalNoise" baseFrequency=".015 .04" numOctaves="3" seed="6" result="rough"/>
+        <feDisplacementMap in="SourceGraphic" in2="rough" scale="4"/>
+      </filter>
+      <filter id="seal-edge" x="-12%" y="-12%" width="124%" height="124%">
+        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="3" seed="31" result="rough"/>
+        <feDisplacementMap in="SourceGraphic" in2="rough" scale="3"/>
+      </filter>
+    </defs>
+  </svg>
+
   <header class="hero" id="top">
-    <nav class="nav" aria-label="主导航">
-      <a class="brand" href="#top">墨境</a>
-      <ul>
-        <li><a href="#heavy">浓墨</a></li>
-        <li><a href="#light">淡墨</a></li>
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand" href="#top">墨序</a>
+      <ul class="nav-links">
+        <li><a href="#bold">浓墨</a></li>
+        <li><a href="#wash">渲染</a></li>
         <li><a href="#space">留白</a></li>
       </ul>
     </nav>
 
     <div class="hero-copy">
-      <h1 class="hero-title">水墨丹青</h1>
-      <p class="hero-kicker">一笔入境 · 万象由心</p>
+      <h1>墨随心生</h1>
+      <p class="hero-kicker">一笔入境 · 万象无声</p>
     </div>
-    <p class="hero-note"><strong>纸白 · 墨重</strong>摒弃柔弱的晕染，以最深的墨，在最白的纸上写东方精神。</p>
 
-    <svg class="mountains" viewBox="0 0 1600 760" preserveAspectRatio="none" aria-hidden="true">
-      <g class="mountain-layer back" data-speed=".05">
-        <path d="M-30 610C90 556 152 438 250 462c61 15 91-57 151-98 67-46 108-19 167-102 70-99 127-154 188-90 49 51 80 157 143 173 68 17 91-99 168-123 76-24 116 77 173 117 50 35 89-4 143-59 83-85 145 4 267 148l120 182v170H-30Z"/>
+    <svg class="hero-landscape" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMax meet" aria-label="层叠于云雾中的水墨山景" role="img">
+      <g filter="url(#ink-wash-soft)" opacity=".38" fill="#5c5555">
+        <path d="M80 650 C180 550 220 410 315 325 C350 292 382 232 420 174 C461 251 514 299 570 373 C631 303 681 235 741 117 C793 212 828 287 907 347 C996 415 1080 532 1200 595 L1200 760 L18 760 Z"/>
+        <path d="M330 630 C450 518 500 458 580 394 C662 328 703 261 754 186 C809 301 867 383 960 455 C1052 527 1120 596 1200 630 L1200 760 L260 760 Z" opacity=".55"/>
       </g>
-      <g class="mountain-layer mid" data-speed=".11">
-        <path d="M-40 642c114-21 166-145 258-142 78 2 113 91 187 54 63-31 78-186 157-230 56-31 103 38 145 134 36 82 87 71 139 26 46-40 82-140 144-151 72-13 105 129 172 163 61 32 107-70 181-69 83 1 132 135 297 195l85 70v88H-40Z"/>
+      <g opacity=".72" fill="#2a2525" filter="url(#ink-wash)">
+        <path d="M191 725 C248 665 309 613 353 515 C388 436 435 397 478 316 C513 389 549 427 607 481 C648 421 695 373 751 251 C803 381 853 472 940 529 C1017 580 1066 651 1182 700 L1200 760 L131 760 Z"/>
+        <path d="M510 728 C586 650 630 587 681 524 C727 467 752 410 781 343 C821 447 877 515 947 565 C1015 614 1087 675 1200 711 L1200 760 L451 760 Z" opacity=".56"/>
       </g>
-      <g class="mountain-layer front" data-speed=".18">
-        <path d="M-40 662c123 22 171-92 271-69 86 20 115 82 206 40 65-30 82-155 151-171 67-16 101 122 180 132 71 8 101-102 167-119 81-20 110 138 199 139 77 1 108-90 187-72 70 16 102 95 279 101l70 137H-40Z"/>
-        <path d="M0 715c203-68 318-19 442-35 169-21 245-95 411-61 174 36 258-34 422-10 135 20 214 67 365 61v110H0Z"/>
-        <path d="M127 645c80-26 140-45 235-28M524 586c53-33 97-52 153-28M970 560c55-33 108-27 162 2" class="dry-brush"/>
+      <path d="M0 740 C116 682 180 625 251 580 C299 548 327 478 365 409 C410 502 457 555 533 596 C589 626 620 659 686 689 C790 736 893 699 995 718 C1060 729 1111 741 1200 749 L1200 760 L0 760 Z" fill="#121010" filter="url(#ink-wash)" opacity=".94"/>
+      <g fill="#f7f3ec" opacity=".74" filter="url(#ink-wash-soft)">
+        <path d="M67 585 C194 520 308 557 413 528 C523 497 604 526 705 501 C812 474 921 513 1068 491 L1180 571 C1010 609 864 573 731 611 C580 654 445 597 327 636 C216 673 118 641 25 664 Z"/>
+        <path d="M184 670 C316 630 422 648 536 629 C662 608 778 643 895 619 C1004 597 1081 621 1200 609 L1200 692 C1080 713 971 687 855 711 C738 735 625 700 506 724 C384 749 286 718 157 740 Z" opacity=".58"/>
+      </g>
+      <g fill="none" stroke="#d4cfca" stroke-width="3" opacity=".35">
+        <path d="M466 317 C489 362 512 394 535 418"/>
+        <path d="M751 252 C770 319 790 362 822 405"/>
       </g>
     </svg>
-
-    <i class="mist-dot" style="left:18%;top:25%;--size:5px;--alpha:.75;--speed:5s;--drift:20px"></i>
-    <i class="mist-dot" style="left:31%;top:39%;--size:3px;--alpha:.48;--speed:7s;--drift:-14px"></i>
-    <i class="mist-dot" style="left:57%;top:21%;--size:7px;--alpha:.36;--speed:6s;--drift:24px"></i>
-    <i class="mist-dot" style="left:72%;top:47%;--size:3px;--alpha:.7;--speed:4s;--drift:-19px"></i>
-    <i class="mist-dot" style="left:12%;top:58%;--size:9px;--alpha:.22;--speed:8s;--drift:31px"></i>
-
-    <svg class="hero-river" viewBox="0 0 1600 160" preserveAspectRatio="none" aria-hidden="true">
-      <path class="river-shadow" d="M-30 55C193 15 281 135 492 87 651 51 727 18 893 77c183 66 295-35 486 12 104 25 162 20 251-5"/>
-      <path class="river-flow" d="M-30 55C193 15 281 135 492 87 651 51 727 18 893 77c183 66 295-35 486 12 104 25 162 20 251-5"/>
-      <path class="river-edge" d="M-30 76C188 34 286 151 498 106 657 72 737 39 899 94c181 62 292-31 487 13 104 24 159 18 244-2"/>
-    </svg>
+    <span class="scroll-mark">向下</span>
+    <span class="hero-caption">山无定形 · 墨有余韵</span>
   </header>
 
   <main id="main">
-    <section class="section heavy" id="heavy">
-      <div class="inner">
-        <div class="section-heading reveal">
-          <span class="section-no">第一章 / 01</span>
-          <h2 class="section-title">浓墨</h2>
-          <p class="section-subtitle">墨分五色，浓处见骨。让力量落在每一道干裂的笔锋里。</p>
-        </div>
-        <div class="cards">
-          <article class="ink-card reveal">
-            <svg class="card-art" viewBox="0 0 600 450" role="img" aria-label="峭壁云山水墨画">
-              <rect width="600" height="450" fill="#faf8f3"/><path d="M0 376c88-84 119-181 199-203 61-17 83 76 130 55 62-27 68-168 148-175 66-6 82 169 123 222v175H0Z" fill="#555"/><path d="M0 399c100-54 174-115 265-83 77 27 113-52 179-67 73-17 102 65 156 89v112H0Z" fill="#0d0d0d"/><path d="M360 260c34-81 66-139 112-185M392 262c39-56 57-114 84-177" fill="none" stroke="#faf8f3" stroke-width="7" opacity=".38"/>
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path class="brush-path" stroke-width="11" d="M-40 97 C184 66 339 105 522 79 C716 51 891 87 1083 69 C1228 55 1344 71 1490 42"/></svg>
+    </div>
+
+    <section class="section bold-section" id="bold">
+      <header class="bold-heading reveal">
+        <p class="section-label">01 — Bold strokes</p>
+        <h2 class="section-title">浓墨</h2>
+      </header>
+      <div class="cards">
+        <article class="ink-card card-one reveal">
+          <div class="card-art" aria-hidden="true">
+            <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice">
+              <rect width="640" height="360" fill="#d4cfca"/>
+              <g filter="url(#ink-wash-soft)" fill="#9e9595"><path d="M0 290 C86 214 143 185 211 98 C264 182 307 224 367 261 C424 212 459 137 518 79 C555 158 595 221 660 257 L660 380 L0 380Z"/></g>
+              <g filter="url(#ink-wash)" fill="#2a2525" opacity=".8"><path d="M-20 337 C109 292 141 202 225 159 C267 235 329 292 408 305 C474 316 521 269 569 219 C595 263 622 295 670 319 L670 380 L-20 380Z"/></g>
+              <path d="M474 202 Q480 169 481 121 M462 151 Q481 163 500 143" fill="none" stroke="#5c5555" stroke-width="3" opacity=".7"/>
             </svg>
-            <div class="card-body"><span class="card-index">壹 / 山骨</span><h3 class="card-title">墨落成山</h3><p>重墨勾骨，焦墨点苔，于锋芒之间立起千仞。</p></div>
-          </article>
-          <article class="ink-card reveal">
-            <svg class="card-art" viewBox="0 0 600 450" role="img" aria-label="松林水墨画">
-              <rect width="600" height="450" fill="#faf8f3"/><g stroke="#0d0d0d" stroke-linecap="round"><path d="M165 450c-4-132 13-249 55-418M335 450c8-145 3-268-22-415M460 450c-10-95-1-194 37-297" stroke-width="22"/><path d="M214 97 83 180m122-42 156 83m-24-109 146 73m-169-11-152 89m320-44-131 73m108-27 105 66" stroke-width="13"/></g><g fill="#333"><ellipse cx="99" cy="171" rx="78" ry="25"/><ellipse cx="333" cy="204" rx="110" ry="31"/><ellipse cx="488" cy="292" rx="91" ry="27"/></g>
+          </div>
+          <div class="card-copy"><span class="card-number">壹</span><div><h3>落笔有势</h3><p>以最少的形，留下最深的意。每一次显现，都像湿墨触纸，迅疾而有重量。</p></div></div>
+        </article>
+
+        <article class="ink-card card-two reveal">
+          <div class="card-art" aria-hidden="true">
+            <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice">
+              <rect width="640" height="360" fill="#f7f3ec"/>
+              <g filter="url(#ink-wash-soft)" fill="#9e9595" opacity=".75"><path d="M-30 319 C94 247 190 266 267 178 C331 105 405 72 491 108 C552 134 595 196 681 223 L681 380 L-30 380Z"/></g>
+              <g filter="url(#ink-wash)" fill="#121010" opacity=".73"><path d="M239 350 C278 284 309 226 338 134 C370 214 408 254 453 289 C493 320 543 326 610 345 L640 380 L209 380Z"/></g>
+              <g fill="#5c5555" opacity=".65"><ellipse cx="109" cy="283" rx="5" ry="18"/><ellipse cx="124" cy="290" rx="3" ry="12"/><path d="M109 282 Q124 256 141 272" fill="none" stroke="#5c5555" stroke-width="2"/></g>
             </svg>
-            <div class="card-body"><span class="card-index">贰 / 松声</span><h3 class="card-title">风过成林</h3><p>老干如铁，枝叶如涛，静纸之上自有万壑松风。</p></div>
-          </article>
-          <article class="ink-card reveal">
-            <svg class="card-art" viewBox="0 0 600 450" role="img" aria-label="江河孤舟水墨画">
-              <rect width="600" height="450" fill="#faf8f3"/><path d="M0 153c101 46 178-66 289-34 102 29 127-42 311-59v203c-145 20-234-9-337 26C155 325 84 269 0 302Z" fill="#555" opacity=".7"/><path d="M0 275c130-35 211 42 336 9 90-24 171-11 264 23v143H0Z" fill="#0d0d0d"/><path d="m250 278 86 0-25 14h-39Z" fill="#faf8f3"/><path d="M292 276v-68l43 60Z" fill="#faf8f3"/></svg>
-            <div class="card-body"><span class="card-index">叁 / 江流</span><h3 class="card-title">一苇横江</h3><p>黑水奔涌，孤舟留白，动与静只隔一线墨痕。</p></div>
-          </article>
-        </div>
+          </div>
+          <div class="card-copy"><span class="card-number">贰</span><div><h3>随形而化</h3><p>不追求机械的齐整。边缘会呼吸，层次会游移，让秩序与偶然共同完成画面。</p></div></div>
+        </article>
       </div>
     </section>
 
-    <div class="brush-divider" aria-hidden="true"><svg viewBox="0 0 1600 80" preserveAspectRatio="none"><path d="M-40 31C181 14 320 54 511 31c222-27 376 21 581-2 179-20 330 14 548-6v39c-224 18-376-6-552 12-211 22-363-27-580-1C308 97 171 55-40 72Z" fill="#0d0d0d"/><path d="M73 18c101 4 158 5 242-7M1130 69c145-9 230-9 378 0" fill="none" stroke="#333" stroke-width="5" stroke-linecap="round"/></svg></div>
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path class="brush-path" stroke-width="8" d="M-50 52 C183 84 348 46 529 76 C710 105 868 63 1052 87 C1207 107 1348 68 1490 82"/></svg>
+    </div>
 
-    <section class="section light" id="light">
-      <div class="inner reveal">
-        <p class="light-label">淡墨</p>
-        <blockquote>墨淡不是轻，<br><span>是将万言收进一笔。</span></blockquote>
-        <p class="quote-by">水有灵 · 墨有韵 · 心有境</p>
-        <svg class="branch" viewBox="0 0 360 430" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round"><path d="M345 418C244 317 230 196 73 31" stroke-width="8"/><path d="M258 304c-74-26-120-79-157-145M218 240c30-72 37-118 16-194M152 145c-52-10-86-36-116-69" stroke-width="4"/></g><g fill="currentColor"><circle cx="92" cy="145" r="8"/><circle cx="112" cy="176" r="6"/><circle cx="225" cy="86" r="9"/><circle cx="238" cy="54" r="5"/><circle cx="51" cy="79" r="8"/><circle cx="28" cy="62" r="5"/></g></svg>
-      </div>
+    <section class="wash-section" id="wash">
+      <svg class="wash-bg" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+        <g filter="url(#ink-wash-soft)">
+          <path fill="#d4cfca" opacity=".78" d="M-80 242 C182 118 390 207 568 143 C790 64 1030 189 1520 83 L1520 742 C1265 681 1073 788 832 717 C568 640 343 791 -80 681Z"/>
+          <path fill="#9e9595" opacity=".38" d="M-100 364 C140 242 361 377 605 268 C813 176 1008 355 1540 209 L1540 643 C1242 768 1050 581 812 681 C586 775 336 596 -100 779Z"/>
+          <path fill="#5c5555" opacity=".16" d="M-90 506 C196 351 413 475 623 404 C853 326 1072 463 1530 338 L1530 584 C1209 677 1011 539 780 617 C539 698 296 549 -90 705Z"/>
+        </g>
+      </svg>
+      <blockquote class="quote reveal">
+        <p>计白当黑，知止而后有余韵。</p>
+        <footer>— 在未落墨处，故事仍在继续</footer>
+      </blockquote>
     </section>
 
-    <div class="brush-divider" aria-hidden="true"><svg viewBox="0 0 1600 80" preserveAspectRatio="none"><path d="M-40 17c187 28 347-11 543 15 201 27 364-23 562 3 189 25 338-20 575 7v29c-225-20-383 18-574-4-200-23-364 24-565-1C303 42 149 79-40 53Z" fill="#0d0d0d"/></svg></div>
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path class="brush-path" stroke-width="5" d="M-30 83 C156 65 319 96 484 75 C650 54 818 86 970 71 C1168 52 1304 89 1470 63"/></svg>
+    </div>
 
-    <section class="section space" id="space">
-      <div class="reveal">
-        <div class="space-mark"><span>留白</span></div>
-        <p class="space-copy">无画处 · 皆成妙境</p>
+    <section class="section pause-section" id="space">
+      <header class="pause-label reveal">
+        <p class="section-label">03 — The unspoken</p>
+        <h2 class="section-title">留白</h2>
+      </header>
+      <svg class="pause-mark reveal" viewBox="0 0 100 80" aria-hidden="true">
+        <path d="M2 68 C21 57 31 43 43 20 C52 38 59 46 72 53 C79 45 84 34 90 20 C93 38 97 50 104 59 L104 80 L0 80Z" fill="#5c5555" filter="url(#ink-wash)"/>
+      </svg>
+      <span class="pause-note reveal">静，亦是叙事。</span>
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-wrap reveal">
+        <h2>让下一笔，由你落下</h2>
+        <a class="seal-button" href="#top">入 境</a>
       </div>
     </section>
-    <div class="cta-area"><a class="cta" href="#top">了解更多</a></div>
   </main>
 
-  <footer><span>水墨丹青 · 当代东方视觉</span><span>© 2026 墨境</span></footer>
+  <footer class="site-footer">
+    <span class="footer-mark">墨序</span>
+    <span>一纸 · 一境 · 一念</span>
+  </footer>
+
+  <div id="ink-trail" aria-hidden="true"></div>
 
   <script>
     (() => {
       const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const reveals = document.querySelectorAll('.reveal');
-      if ('IntersectionObserver' in window && !reduceMotion) {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: .14 });
-        reveals.forEach((element, index) => {
-          element.style.transitionDelay = `${Math.min(index % 4, 3) * 90}ms`;
-          observer.observe(element);
+      const revealables = document.querySelectorAll('.reveal, .divider');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
         });
-      } else {
-        reveals.forEach((element) => element.classList.add('visible'));
-      }
+      }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+      revealables.forEach((el) => observer.observe(el));
 
-      const layers = [...document.querySelectorAll('.mountain-layer')];
-      const flow = document.querySelector('.river-flow');
-      let ticking = false;
-      const paintScroll = () => {
-        const y = scrollY;
-        layers.forEach((layer) => layer.style.setProperty('--parallax', `${y * Number(layer.dataset.speed)}px`));
-        flow.style.setProperty('--river-scroll', `${-(y * .32)}px`);
-        ticking = false;
-      };
-      if (!reduceMotion) {
-        addEventListener('scroll', () => {
-          if (!ticking) { requestAnimationFrame(paintScroll); ticking = true; }
+      if (!reduceMotion && matchMedia('(pointer: fine)').matches) {
+        const trail = document.querySelector('#ink-trail');
+        let lastX = -100, lastY = -100, lastTime = 0;
+        addEventListener('pointermove', (event) => {
+          const now = performance.now();
+          const distance = Math.hypot(event.clientX - lastX, event.clientY - lastY);
+          if (distance < 12 || now - lastTime < 24) return;
+          lastX = event.clientX; lastY = event.clientY; lastTime = now;
+          const dot = document.createElement('i');
+          const size = 4 + Math.random() * 10;
+          dot.className = 'ink-dot';
+          dot.style.left = event.clientX + 'px';
+          dot.style.top = event.clientY + 'px';
+          dot.style.setProperty('--size', size + 'px');
+          dot.style.setProperty('--blur', (Math.random() * 1.4) + 'px');
+          dot.style.setProperty('--turn', (Math.random() * 180) + 'deg');
+          trail.appendChild(dot);
+          dot.addEventListener('animationend', () => dot.remove(), { once: true });
         }, { passive: true });
       }
 
-      document.querySelectorAll('.ink-card').forEach((card) => {
-        card.addEventListener('pointermove', (event) => {
-          const box = card.getBoundingClientRect();
-          card.style.setProperty('--x', `${event.clientX - box.left}px`);
-          card.style.setProperty('--y', `${event.clientY - box.top}px`);
+      if (!reduceMotion) {
+        document.querySelectorAll('.ink-card').forEach((card) => {
+          let ready = true;
+          card.addEventListener('pointermove', (event) => {
+            if (!ready || Math.random() > .12) return;
+            ready = false;
+            const rect = card.getBoundingClientRect();
+            for (let i = 0; i < 5; i++) {
+              const dot = document.createElement('i');
+              const angle = Math.random() * Math.PI * 2;
+              const distance = 18 + Math.random() * 42;
+              dot.className = 'splatter';
+              dot.style.left = (event.clientX - rect.left) + 'px';
+              dot.style.top = (event.clientY - rect.top) + 'px';
+              dot.style.setProperty('--s', (2 + Math.random() * 5) + 'px');
+              dot.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+              dot.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
+              card.appendChild(dot);
+              dot.addEventListener('animationend', () => dot.remove(), { once: true });
+            }
+            setTimeout(() => { ready = true; }, 320);
+          }, { passive: true });
         });
-      });
+      }
 
-      if (!reduceMotion && matchMedia('(pointer:fine)').matches) {
-        let lastRipple = 0;
-        addEventListener('pointermove', (event) => {
-          const now = performance.now();
-          if (now - lastRipple < 90) return;
-          lastRipple = now;
-          const ripple = document.createElement('i');
-          ripple.className = 'ripple';
-          ripple.style.left = `${event.clientX}px`;
-          ripple.style.top = `${event.clientY}px`;
-          document.body.appendChild(ripple);
-          ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+      if (!reduceMotion && matchMedia('(pointer: coarse)').matches) {
+        let lastScroll = 0;
+        addEventListener('scroll', () => {
+          const y = scrollY;
+          if (Math.abs(y - lastScroll) < 90) return;
+          lastScroll = y;
+          const trail = document.querySelector('#ink-trail');
+          trail.style.display = 'block';
+          const dot = document.createElement('i');
+          const edge = Math.random() > .5 ? 9 : innerWidth - 9;
+          dot.className = 'ink-dot'; dot.style.left = edge + 'px';
+          dot.style.top = (innerHeight * (.25 + Math.random() * .5)) + 'px';
+          dot.style.setProperty('--size', (7 + Math.random() * 8) + 'px');
+          dot.style.setProperty('--blur', '1px'); dot.style.setProperty('--turn', '0deg');
+          trail.appendChild(dot);
+          dot.addEventListener('animationend', () => dot.remove(), { once: true });
         }, { passive: true });
       }
     })();
