@@ -1,54 +1,44 @@
 <!DOCTYPE html>
-<html lang="zh" data-theme="dark">
+<html lang="zh" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>月华 · 月光银着陆页</title>
-  <!-- 优雅细体字型 -->
+  <title>月华 · Moonlight Landing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* ----- CSS 自定义属性 (主题) ----- */
     :root {
       --midnight: #1a1a3e;
       --silver: #c0c0c0;
       --moonlight: #f0f0ff;
       --lavender: #b7a9e0;
-      --deep-blue: #1b1b4a;
+      --deep-purple: #2a2a5a;
       --silver-white: #e8e8f8;
-      --glass-bg: rgba(240, 240, 255, 0.05);
-      --border-glow: rgba(192, 192, 192, 0.3);
-      --shadow-moon: rgba(240, 240, 255, 0.2);
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(192, 192, 192, 0.4);
+      --shadow-moon: rgba(240, 240, 255, 0.3);
       --text-primary: var(--moonlight);
       --text-secondary: var(--silver);
-      --card-bg: rgba(26, 26, 62, 0.5);
-      --gradient-hero: linear-gradient(145deg, #1a1a3e 0%, #2a2a5a 40%, #8a7ac0 80%, #e0e0f0 100%);
-      --gradient-cta: linear-gradient(135deg, #c0c0c0 0%, #f0f0ff 60%, #c0c0c0 100%);
+      --card-bg: rgba(26, 26, 62, 0.6);
+      --gradient-hero: linear-gradient(180deg, #1a1a3e 0%, #2a2a5a 35%, #8a7ac0 65%, #c0c0c0 85%, #f0f0ff 100%);
+      --gradient-cta: linear-gradient(135deg, #b0b0d0 0%, #e0e0ff 50%, #c0c0e0 100%);
       --btn-text: #1a1a3e;
-      --footer-bg: #13132e;
+      --footer-bg: #0f0f2a;
+      --moon-glow: rgba(240, 240, 255, 0.5);
     }
 
-    [data-theme="light"] {
-      --midnight: #f5f0ff;
-      --silver: #5a5a7a;
-      --moonlight: #1e1e3a;
-      --lavender: #6b5b9e;
-      --deep-blue: #d0c8f0;
-      --silver-white: #2a2a4a;
-      --glass-bg: rgba(26, 26, 62, 0.08);
-      --border-glow: rgba(100, 100, 180, 0.3);
-      --shadow-moon: rgba(120, 100, 200, 0.15);
-      --text-primary: #1e1e3a;
-      --text-secondary: #3a3a5a;
-      --card-bg: rgba(255, 255, 255, 0.6);
-      --gradient-hero: linear-gradient(145deg, #e8e0ff 0%, #f5f0ff 40%, #d0c8f0 80%, #fafaff 100%);
-      --gradient-cta: linear-gradient(135deg, #b0a0d0 0%, #e8e0ff 60%, #b0a0d0 100%);
-      --btn-text: #f0f0ff;
-      --footer-bg: #d8d0ec;
+    [data-theme="dark"] {
+      --midnight: #1a1a3e;
+      --silver: #c0c0c0;
+      --moonlight: #f0f0ff;
+      --text-primary: var(--moonlight);
+      --text-secondary: var(--silver);
+      --card-bg: rgba(26, 26, 62, 0.6);
+      --gradient-hero: linear-gradient(180deg, #1a1a3e 0%, #2a2a5a 35%, #8a7ac0 65%, #c0c0c0 85%, #f0f0ff 100%);
+      --footer-bg: #0f0f2a;
     }
 
-    /* ----- 全局重置 & 基础 ----- */
     * {
       margin: 0;
       padding: 0;
@@ -60,105 +50,116 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-weight: 200;
       background: var(--midnight);
       color: var(--text-primary);
-      line-height: 1.6;
-      transition: background 0.4s ease, color 0.3s ease;
+      line-height: 1.7;
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background 0.4s ease, color 0.3s ease;
     }
 
-    /* 主题切换按钮 (月亮/太阳) */
     .theme-toggle {
       position: fixed;
-      top: 1.2rem;
-      right: 1.2rem;
-      z-index: 999;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
       background: var(--glass-bg);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border-glow);
-      border-radius: 60px;
-      width: 2.8rem;
-      height: 2.8rem;
+      border-radius: 50%;
+      width: 3rem;
+      height: 3rem;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 0 20px rgba(192, 192, 192, 0.1);
-      transition: all 0.3s ease;
-      color: var(--text-primary);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 20px rgba(192, 192, 192, 0.15);
     }
-    .theme-toggle:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 30px var(--shadow-moon);
-    }
-    .theme-toggle svg {
-      width: 1.6rem;
-      height: 1.6rem;
-      fill: currentColor;
-      transition: transform 0.4s ease;
-    }
-    [data-theme="dark"] .theme-toggle .sun-icon { display: block; }
-    [data-theme="dark"] .theme-toggle .moon-icon { display: none; }
-    [data-theme="light"] .theme-toggle .sun-icon { display: none; }
-    [data-theme="light"] .theme-toggle .moon-icon { display: block; }
 
-    /* 星星画布 (背景动画) */
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 6px 30px var(--shadow-moon);
+    }
+
+    .theme-toggle svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      fill: var(--text-primary);
+      transition: transform 0.4s ease, fill 0.3s ease;
+    }
+
     #starCanvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      z-index: 0;
+      z-index: 1;
     }
 
-    /* 主容器 */
     .container {
       position: relative;
-      z-index: 2;
-      max-width: 1200px;
+      z-index: 10;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 1.5rem;
+      padding: 0 1.5rem;
     }
 
-    /* ----- 英雄区 (月亮 + 月华) ----- */
+    /* Hero Section */
     .hero {
-      min-height: 90vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      background: var(--gradient-hero);
-      border-radius: 0 0 4rem 4rem;
-      box-shadow: inset 0 -10px 40px rgba(0,0,0,0.2);
-      margin-bottom: 3rem;
       position: relative;
+      padding: 6rem 1rem 4rem;
       overflow: hidden;
-      padding: 2rem 1.5rem 5rem;
     }
 
     .hero::before {
       content: '';
       position: absolute;
-      width: 320px;
-      height: 320px;
-      background: radial-gradient(circle at 30% 30%, #f0f0ff, #b7a9e0 60%, transparent 76%);
-      top: 5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle at 35% 35%, #f8f8ff 0%, #e0d8f8 30%, var(--lavender) 60%, transparent 75%);
+      border-radius: 50%;
+      top: 8%;
       left: 50%;
       transform: translateX(-50%);
-      border-radius: 50%;
-      box-shadow: 0 0 120px #c0c0c0, 0 0 200px var(--lavender);
-      opacity: 0.6;
-      animation: moonGlow 5s infinite alternate ease-in-out;
+      animation: moonPulse 6s ease-in-out infinite alternate;
+      z-index: 0;
     }
-    @keyframes moonGlow {
-      0% { box-shadow: 0 0 80px #e0e0ff, 0 0 140px var(--lavender); opacity: 0.5; transform: translateX(-50%) scale(0.98); }
-      100% { box-shadow: 0 0 160px #f0f0ff, 0 0 260px var(--silver); opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(240, 240, 255, 0.12) 0%, rgba(183, 169, 224, 0.08) 40%, transparent 70%);
+      border-radius: 50%;
+      top: -2%;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: moonPulse 8s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes moonPulse {
+      0% {
+        box-shadow: 0 0 80px rgba(240, 240, 255, 0.4), 0 0 160px rgba(183, 169, 224, 0.3), 0 0 240px rgba(192, 192, 192, 0.15);
+        transform: translateX(-50%) scale(0.97);
+      }
+      100% {
+        box-shadow: 0 0 120px rgba(240, 240, 255, 0.6), 0 0 240px rgba(183, 169, 224, 0.4), 0 0 360px rgba(192, 192, 192, 0.2);
+        transform: translateX(-50%) scale(1.04);
+      }
     }
 
     .hero-content {
@@ -167,308 +168,428 @@
     }
 
     .hero h1 {
-      font-size: clamp(3.8rem, 12vw, 7rem);
+      font-size: clamp(4rem, 14vw, 8rem);
       font-weight: 200;
-      letter-spacing: 0.2em;
-      text-shadow: 0 0 30px rgba(192,192,192,0.5);
+      letter-spacing: 0.3em;
+      text-shadow: 0 0 40px rgba(240, 240, 255, 0.5), 0 0 80px rgba(183, 169, 224, 0.3);
       color: var(--moonlight);
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
     }
 
-    .hero .sub {
-      font-size: 1.2rem;
+    .hero-subtitle {
+      font-size: 1.1rem;
       font-weight: 300;
-      letter-spacing: 0.4em;
+      letter-spacing: 0.5em;
       color: var(--silver);
-      background: var(--glass-bg);
-      backdrop-filter: blur(4px);
       display: inline-block;
-      padding: 0.4rem 2rem;
-      border-radius: 60px;
+      padding: 0.5rem 2.5rem;
       border: 1px solid var(--border-glow);
+      border-radius: 50px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
 
-    .hero p {
-      max-width: 600px;
-      margin: 2rem auto 0;
+    .hero-desc {
+      max-width: 550px;
+      margin: 2.5rem auto 0;
       font-weight: 200;
       color: var(--text-secondary);
+      font-size: 1.05rem;
+      line-height: 1.9;
     }
 
-    /* 星星点缀 (hero 内小星星) */
-    .star-group {
+    .star-dots {
       position: absolute;
       width: 100%;
       height: 100%;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       pointer-events: none;
     }
-    .star-group span {
+
+    .star-dots span {
       position: absolute;
-      width: 4px;
-      height: 4px;
-      background: white;
+      background: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 0 12px var(--moonlight);
-      animation: twinkle var(--dur, 3s) infinite alternate;
-    }
-    @keyframes twinkle {
-      0% { opacity: 0.1; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1.4); }
+      animation: twinkle 3s ease-in-out infinite alternate;
     }
 
-    /* ----- 特性网格 (新月图标) ----- */
+    @keyframes twinkle {
+      0% { opacity: 0.15; transform: scale(0.7); }
+      50% { opacity: 0.9; transform: scale(1.3); }
+      100% { opacity: 0.2; transform: scale(0.8); }
+    }
+
+    /* Features Section */
+    .section-title {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 200;
+      letter-spacing: 0.15em;
+      color: var(--text-primary);
+      margin-bottom: 3rem;
+    }
+
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
-      margin: 5rem 0;
+      margin: 4rem 0;
     }
 
     .feature-card {
       background: var(--card-bg);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid var(--border-glow);
-      border-radius: 2.5rem;
-      padding: 2.2rem 1.8rem;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
       text-align: center;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       opacity: 0;
       transform: translateY(30px);
-      transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1), transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
     }
+
     .feature-card.revealed {
       opacity: 1;
       transform: translateY(0);
     }
+
     .feature-card:hover {
       border-color: var(--silver);
-      box-shadow: 0 0 40px var(--shadow-moon), 0 10px 30px rgba(0,0,0,0.3);
-      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 12px 48px rgba(192, 192, 192, 0.15), 0 0 60px var(--shadow-moon);
+      transform: translateY(-6px);
     }
 
-    /* 新月 SVG 图标 */
     .crescent-icon {
-      display: inline-block;
-      width: 48px;
-      height: 48px;
-      margin-bottom: 1rem;
-      color: var(--silver);
-      filter: drop-shadow(0 0 12px var(--lavender));
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1.5rem;
+      display: block;
+      filter: drop-shadow(0 0 16px rgba(183, 169, 224, 0.5));
     }
+
+    .crescent-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
     .feature-card h3 {
       font-weight: 300;
-      font-size: 1.6rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.8rem;
       color: var(--text-primary);
     }
+
     .feature-card p {
       font-weight: 200;
       color: var(--text-secondary);
+      line-height: 1.8;
     }
 
-    /* ----- 统计 / 推荐 ----- */
+    /* Stats Section */
     .stats-section {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 2.5rem 4rem;
-      margin: 4rem 0 5rem;
-      padding: 2rem 0;
+      gap: 4rem;
+      margin: 5rem 0;
+      padding: 3rem 0;
       border-top: 1px solid var(--border-glow);
       border-bottom: 1px solid var(--border-glow);
+      flex-wrap: wrap;
     }
+
     .stat-item {
       text-align: center;
       opacity: 0;
       transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .stat-item.revealed {
       opacity: 1;
       transform: translateY(0);
     }
+
     .stat-number {
-      font-size: 2.8rem;
+      font-size: 3rem;
       font-weight: 200;
       color: var(--moonlight);
-      text-shadow: 0 0 20px var(--shadow-moon);
-    }
-    .stat-label {
-      font-weight: 200;
-      letter-spacing: 0.2em;
-      color: var(--text-secondary);
-      margin-top: 0.2rem;
+      text-shadow: 0 0 30px var(--shadow-moon);
+      line-height: 1.2;
     }
 
-    /* 简短推荐 (testimonial) */
+    .stat-label {
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+
+    /* Testimonial */
     .testimonial {
-      max-width: 700px;
-      margin: 2rem auto 4rem;
+      max-width: 680px;
+      margin: 4rem auto;
       background: var(--card-bg);
-      backdrop-filter: blur(6px);
-      padding: 2rem 2.5rem;
-      border-radius: 4rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 2.5rem 3rem;
+      border-radius: 2rem;
       border: 1px solid var(--border-glow);
       text-align: center;
-      font-weight: 200;
-      font-style: italic;
-      box-shadow: 0 0 40px rgba(192,192,192,0.08);
-    }
-    .testimonial p {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-    }
-    .testimonial cite {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 300;
-      color: var(--silver);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* ----- CTA 银色渐变按钮 ----- */
-    .cta-wrapper {
-      text-align: center;
-      margin: 4rem 0 3rem;
+    .testimonial.revealed {
+      opacity: 1;
+      transform: translateY(0);
     }
+
+    .testimonial p {
+      font-size: 1.15rem;
+      font-weight: 200;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.9;
+    }
+
+    .testimonial cite {
+      display: block;
+      margin-top: 1.2rem;
+      font-weight: 300;
+      color: var(--silver);
+      font-style: normal;
+      letter-spacing: 0.1em;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      margin: 5rem 0 4rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cta-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .cta-button {
       display: inline-block;
       background: var(--gradient-cta);
       color: var(--btn-text);
       font-weight: 400;
-      letter-spacing: 0.2em;
-      padding: 1.2rem 3.5rem;
+      letter-spacing: 0.25em;
+      padding: 1.3rem 4rem;
       border-radius: 60px;
       border: none;
-      font-size: 1.3rem;
-      box-shadow: 0 0 60px rgba(192,192,192,0.3);
-      transition: all 0.3s ease;
-      cursor: pointer;
+      font-size: 1.25rem;
       text-decoration: none;
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .cta-button:hover {
-      transform: scale(1.05) translateY(-4px);
-      box-shadow: 0 0 80px var(--silver), 0 15px 30px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 40px rgba(192, 192, 192, 0.25), 0 0 80px rgba(183, 169, 224, 0.1);
+      position: relative;
+      overflow: hidden;
     }
 
-    /* ----- 页脚 ----- */
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .cta-button:hover::before {
+      left: 100%;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 60px rgba(192, 192, 192, 0.35), 0 0 100px rgba(183, 169, 224, 0.15);
+    }
+
+    /* Footer */
     footer {
       background: var(--footer-bg);
-      border-radius: 3rem 3rem 0 0;
+      border-radius: 2rem 2rem 0 0;
       padding: 3rem 2rem 2rem;
-      margin-top: 5rem;
       text-align: center;
       border-top: 1px solid var(--border-glow);
+      margin-top: 3rem;
+    }
+
+    footer p {
       font-weight: 200;
       color: var(--text-secondary);
-    }
-    footer small {
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
       opacity: 0.7;
     }
 
-    /* ----- 响应式 & 工具 ----- */
-    @media (max-width: 640px) {
-      .hero { min-height: 70vh; padding: 2rem 1rem 4rem; }
-      .hero h1 { letter-spacing: 0.1em; }
-      .features-grid { gap: 1.5rem; }
-      .stat-number { font-size: 2rem; }
-      .cta-button { padding: 1rem 2rem; font-size: 1rem; }
-    }
-    @media (min-width: 1024px) {
-      .features-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    /* Intersection Observer 辅助 */
+    /* Reveal utility */
     .reveal {
       opacity: 0;
       transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .reveal.revealed {
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        min-height: 85vh;
+        padding: 5rem 1rem 3rem;
+      }
+
+      .hero h1 {
+        letter-spacing: 0.15em;
+      }
+
+      .hero-subtitle {
+        font-size: 0.9rem;
+        letter-spacing: 0.3em;
+        padding: 0.4rem 1.5rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin: 3rem 0;
+      }
+
+      .stats-section {
+        gap: 2rem;
+        margin: 3rem 0;
+      }
+
+      .stat-number {
+        font-size: 2.2rem;
+      }
+
+      .cta-button {
+        padding: 1rem 2.5rem;
+        font-size: 1rem;
+      }
+
+      .testimonial {
+        padding: 2rem 1.5rem;
+        margin: 3rem 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: clamp(3rem, 12vw, 5rem);
+      }
+
+      .features-grid {
+        gap: 1.2rem;
+      }
+
+      .feature-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .stats-section {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- 星星画布 (背景闪烁) -->
   <canvas id="starCanvas"></canvas>
 
-  <!-- 主题切换按钮 -->
-  <div class="theme-toggle" id="themeToggle" aria-label="切换深色/浅色主题">
-    <!-- 太阳 (light) -->
-    <svg class="sun-icon" viewBox="0 0 24 24" width="24" height="24">
-      <circle cx="12" cy="12" r="5" fill="currentColor"/>
-      <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <line x1="12" y1="1" x2="12" y2="4"/>
-        <line x1="12" y1="20" x2="12" y2="23"/>
-        <line x1="4" y1="4" x2="6" y2="6"/>
-        <line x1="18" y1="18" x2="20" y2="20"/>
-        <line x1="1" y1="12" x2="4" y2="12"/>
-        <line x1="20" y1="12" x2="23" y2="12"/>
-        <line x1="4" y1="20" x2="6" y2="18"/>
-        <line x1="18" y1="6" x2="20" y2="4"/>
+  <div class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <svg viewBox="0 0 24 24" class="sun-icon">
+      <circle cx="12" cy="12" r="5" />
+      <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="12" y1="1" x2="12" y2="4" />
+        <line x1="12" y1="20" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" />
+        <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="4" y2="12" />
+        <line x1="20" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" />
+        <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" />
       </g>
     </svg>
-    <!-- 月亮 (dark) -->
-    <svg class="moon-icon" viewBox="0 0 24 24" width="24" height="24">
-      <path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 1-6-18 10 10 0 0 1 6-2z"/>
+    <svg viewBox="0 0 24 24" class="moon-icon" style="display:none;">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
     </svg>
   </div>
 
   <main class="container">
-    <!-- 英雄区 -->
     <section class="hero" id="hero">
+      <div class="star-dots" id="heroStars"></div>
       <div class="hero-content">
         <h1>月华</h1>
-        <span class="sub">月光银 · 静谧之夜</span>
-        <p>深蓝紫渐变至银白，如月华流泻。优雅细体、新月微光，沉浸于银色星河。</p>
+        <div class="hero-subtitle">月光银 · 静谧之夜</div>
+        <p class="hero-desc">深蓝紫渐变至银白，如月华流泻。优雅细体、新月微光，沉浸于银色星河的静谧世界。</p>
       </div>
-      <!-- 随机星星 (点缀) -->
-      <div class="star-group" id="heroStars"></div>
     </section>
 
-    <!-- 特性网格 (新月图标) -->
     <div class="features-grid" id="featuresGrid">
       <div class="feature-card reveal">
-        <svg class="crescent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1 9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.2"/>
-          <path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.1"/>
-        </svg>
+        <div class="crescent-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="18" stroke="var(--lavender)" stroke-width="1.5" fill="none"/>
+            <path d="M24 6a18 18 0 0 1 0 36" fill="var(--lavender)" fill-opacity="0.25"/>
+            <circle cx="20" cy="24" r="8" fill="var(--moonlight)" fill-opacity="0.15"/>
+          </svg>
+        </div>
         <h3>银月轮廓</h3>
-        <p>新月微光，银色边框与辉光交织。细体字重现月光优雅。</p>
+        <p>新月微光，银色边框与柔和辉光交织。细体字重现月光的优雅弧线。</p>
       </div>
       <div class="feature-card reveal">
-        <svg class="crescent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1 9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.2"/>
-          <path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.1"/>
-        </svg>
+        <div class="crescent-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <path d="M14 14l4-4m0 0l4-4m-4 4l-4-4m4 4l-4 4" stroke="var(--silver)" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M34 14l4-4m0 0l4-4m-4 4l-4-4m4 4l-4 4" stroke="var(--silver)" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+            <path d="M24 34l4-4m0 0l4-4m-4 4l-4-4m4 4l-4 4" stroke="var(--lavender)" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="24" cy="24" r="3" fill="var(--moonlight)" fill-opacity="0.4"/>
+          </svg>
+        </div>
         <h3>星河闪烁</h3>
         <p>滚动触发星芒闪烁，画布粒子随目光流动，沉浸感十足。</p>
       </div>
       <div class="feature-card reveal">
-        <svg class="crescent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1 9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.2"/>
-          <path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.1"/>
-        </svg>
+        <div class="crescent-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="14" stroke="var(--lavender)" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+            <circle cx="24" cy="24" r="8" fill="var(--lavender)" fill-opacity="0.15"/>
+            <path d="M18 24a6 6 0 0 1 12 0" stroke="var(--moonlight)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
         <h3>薰衣草紫</h3>
         <p>淡紫与银白交织，月光辉映，卡片悬浮于夜色之中。</p>
       </div>
-      <div class="feature-card reveal">
-        <svg class="crescent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1 9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.2"/>
-          <path d="M12 3a9 9 0 0 0 9 9 9 9 0 0 0-9-9z" stroke="currentColor" fill="currentColor" fill-opacity="0.1"/>
-        </svg>
-        <h3>细体优雅</h3>
-        <p>全站Inter 200极细字重，搭配柔和对比，月光银美学。</p>
-      </div>
     </div>
 
-    <!-- 统计 + 推荐 -->
     <div class="stats-section" id="statsSection">
       <div class="stat-item reveal">
         <div class="stat-number">128+</div>
@@ -485,168 +606,183 @@
     </div>
 
     <div class="testimonial reveal">
-      <p>“月华主题让整个页面沉浸在银色月光中，细体字与新月图标完美呼应，每次滚动都像拨动星光。” </p>
+      <p>"月华主题让整个页面沉浸在银色月光中，细体字与新月图标完美呼应，每次滚动都像拨动星光。"</p>
       <cite>—— 设计总监 · 陈银</cite>
     </div>
 
-    <!-- CTA 银渐变 -->
-    <div class="cta-wrapper reveal">
+    <div class="cta-section reveal">
       <a href="#" class="cta-button">步入月光 · 立即体验</a>
     </div>
   </main>
 
   <footer>
-    <small>© 月华 · 月光银着陆页 · 深蓝至银白渐变 | 新月微光</small>
+    <p>© 月华 · 月光银着陆页 · 深蓝至银白渐变 | 新月微光</p>
   </footer>
 
   <script>
     (function() {
-      // ----- 1. 星星画布 (动态粒子) -----
-      const canvas = document.getElementById('starCanvas');
-      const ctx = canvas.getContext('2d');
-      let stars = [];
-      let W, H;
+      /* ---- Star Canvas ---- */
+      var canvas = document.getElementById('starCanvas');
+      var ctx = canvas.getContext('2d');
+      var stars = [];
+      var W, H;
+      var dpr = window.devicePixelRatio || 1;
 
-      function resizeCanvas() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-
-      // 生成星星 (200颗)
-      const STAR_COUNT = 200;
-      for (let i = 0; i < STAR_COUNT; i++) {
-        stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          r: Math.random() * 2.2 + 0.8,
-          alpha: Math.random() * 0.8 + 0.2,
-          speed: Math.random() * 0.005 + 0.002,
-          phase: Math.random() * Math.PI * 2
-        });
+      function resize() {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        initStars();
       }
 
-      function drawStars(time) {
+      function initStars() {
+        stars = [];
+        var count = Math.min(180, Math.floor(W * H / 8000));
+        for (var i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 2 + 0.5,
+            alpha: Math.random() * 0.7 + 0.3,
+            speed: Math.random() * 0.008 + 0.002,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      function draw(t) {
         ctx.clearRect(0, 0, W, H);
-        const theme = document.documentElement.getAttribute('data-theme');
-        const baseColor = theme === 'light' ? '60, 50, 100' : '220, 220, 255';
-        for (let s of stars) {
-          const flicker = 0.5 + 0.5 * Math.sin(time * s.speed + s.phase);
-          const alpha = s.alpha * flicker;
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var rgb = isDark ? '220,220,255' : '60,50,100';
+        for (var i = 0; i < stars.length; i++) {
+          var s = stars[i];
+          var flicker = 0.5 + 0.5 * Math.sin(t * s.speed + s.phase);
+          var a = s.alpha * flicker;
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${baseColor}, ${alpha})`;
-          ctx.fill();
-          // 辉光
-          if (s.r > 1.5) {
-            ctx.shadowBlur = 14;
-            ctx.shadowColor = `rgba(200, 200, 255, ${alpha*0.3})`;
-            ctx.fill();
+          ctx.fillStyle = 'rgba(' + rgb + ',' + a + ')';
+          if (s.r > 1.4) {
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = 'rgba(200,200,255,' + (a * 0.4) + ')';
+          } else {
             ctx.shadowBlur = 0;
           }
+          ctx.fill();
         }
-        requestAnimationFrame(drawStars);
-      }
-      drawStars(0);
-
-      // 当窗口改变时更新星星位置 (比例)
-      window.addEventListener('resize', () => {
-        stars.forEach(s => {
-          s.x = Math.random() * window.innerWidth;
-          s.y = Math.random() * window.innerHeight;
-        });
-      });
-
-      // ----- 2. 英雄区小星星 (点缀) 生成 -----
-      const heroStarsContainer = document.getElementById('heroStars');
-      for (let i = 0; i < 30; i++) {
-        const span = document.createElement('span');
-        const size = Math.random() * 5 + 2;
-        span.style.width = size + 'px';
-        span.style.height = size + 'px';
-        span.style.left = Math.random() * 100 + '%';
-        span.style.top = Math.random() * 100 + '%';
-        span.style.setProperty('--dur', (Math.random() * 4 + 2) + 's');
-        span.style.animationDelay = Math.random() * 3 + 's';
-        span.style.boxShadow = `0 0 ${size+4}px var(--moonlight)`;
-        heroStarsContainer.appendChild(span);
+        ctx.shadowBlur = 0;
+        requestAnimationFrame(draw);
       }
 
-      // ----- 3. 主题切换 (data-theme) -----
-      const toggleBtn = document.getElementById('themeToggle');
-      const html = document.documentElement;
-      toggleBtn.addEventListener('click', () => {
-        const current = html.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        // 切换后星星颜色适应 (通过画布重绘)
+      window.addEventListener('resize', resize);
+      resize();
+      requestAnimationFrame(draw);
+
+      /* ---- Hero Stars ---- */
+      var heroEl = document.getElementById('heroStars');
+      for (var i = 0; i < 25; i++) {
+        var sp = document.createElement('span');
+        var sz = Math.random() * 4 + 2;
+        sp.style.width = sz + 'px';
+        sp.style.height = sz + 'px';
+        sp.style.left = Math.random() * 100 + '%';
+        sp.style.top = Math.random() * 100 + '%';
+        sp.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        sp.style.animationDelay = (Math.random() * 4) + 's';
+        sp.style.boxShadow = '0 0 ' + (sz + 4) + 'px rgba(240,240,255,0.6)';
+        heroEl.appendChild(sp);
+      }
+
+      /* ---- Theme Toggle ---- */
+      var toggle = document.getElementById('themeToggle');
+      var sunIcon = toggle.querySelector('.sun-icon');
+      var moonIcon = toggle.querySelector('.moon-icon');
+
+      function updateIcons() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        sunIcon.style.display = isDark ? 'none' : 'block';
+        moonIcon.style.display = isDark ? 'block' : 'none';
+      }
+
+      toggle.addEventListener('click', function() {
+        var current = document.documentElement.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        updateIcons();
       });
 
-      // ----- 4. Intersection Observer (reveal动画) -----
-      const revealElements = document.querySelectorAll('.reveal');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            // 如果统计项目或特性卡片，额外处理
-            if (entry.target.classList.contains('stat-item') || entry.target.classList.contains('feature-card')) {
-              // 已经由revealed控制
-            }
-            // 可选：只观察一次
-            // observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.2, rootMargin: '0px 0px -30px 0px' });
+      updateIcons();
 
-      revealElements.forEach(el => observer.observe(el));
+      /* ---- Scroll Reveal ---- */
+      var revealEls = document.querySelectorAll('.feature-card, .stat-item, .testimonial, .cta-section');
 
-      // 额外处理特性卡片 (grid 内)
-      const cards = document.querySelectorAll('.feature-card');
-      cards.forEach(c => observer.observe(c));
-
-      // 统计项
-      document.querySelectorAll('.stat-item').forEach(s => observer.observe(s));
-
-      // testimonial / cta
-      document.querySelectorAll('.testimonial, .cta-wrapper').forEach(el => observer.observe(el));
-
-      // 由于部分元素已经有 .reveal 类，直接监听
-      // 但 feature-card 默认没有 .reveal？已经添加了 .reveal 类 (在html)
-      // 确保所有动画元素都有reveal类
-
-      // 手动触发一次已可见元素
-      setTimeout(() => {
-        revealElements.forEach(el => {
-          const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight - 80) {
+      function checkReveal() {
+        for (var i = 0; i < revealEls.length; i++) {
+          var el = revealEls[i];
+          var rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 60) {
             el.classList.add('revealed');
           }
-        });
-      }, 200);
+        }
+      }
 
-      // 滚动时额外触发星星闪烁 (动态效果) - 通过画布已经动态
-      // 另外加上: 鼠标移动产生微妙互动 (可选)
-      // 这里不加过多负载
-
-      // 5. 星星闪烁与滚动无关，但保持常亮
-
-      // 6. 平滑滚动 (内部锚点)
-      document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', function(e) {
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth' });
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
           }
         });
-      });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-      // 额外: 当主题切换时，让星星画布适应 (颜色微调)
-      // 但颜色已通过主题变量影响，画布颜色在draw时获取当前主题
-      // 调整drawStar使用主题色? 目前使用baseColor根据theme，但requestAnimationLoop已经动态
-      // 改进: 在drawStars中判断主题
-      // 已经通过 baseColor 动态读取，完美
+      revealEls.forEach(function(el) { observer.observe(el); });
+
+      /* ---- Scroll-triggered star twinkle boost ---- */
+      var scrollBoost = 0;
+      var lastScroll = 0;
+
+      window.addEventListener('scroll', function() {
+        var st = window.pageYOffset || document.documentElement.scrollTop;
+        var delta = Math.abs(st - lastScroll);
+        scrollBoost = Math.min(delta * 0.05, 1);
+        lastScroll = st;
+      }, { passive: true });
+
+      /* boost star alpha on scroll */
+      var origDraw = draw;
+      function drawWithBoost(t) {
+        ctx.clearRect(0, 0, W, H);
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var rgb = isDark ? '220,220,255' : '60,50,100';
+        for (var i = 0; i < stars.length; i++) {
+          var s = stars[i];
+          var flicker = 0.5 + 0.5 * Math.sin(t * s.speed + s.phase);
+          var a = Math.min(1, s.alpha * flicker + scrollBoost * 0.3);
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r * (1 + scrollBoost * 0.15), 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + rgb + ',' + a + ')';
+          if (s.r > 1.4) {
+            ctx.shadowBlur = 14 + scrollBoost * 10;
+            ctx.shadowColor = 'rgba(200,200,255,' + (a * 0.5) + ')';
+          } else {
+            ctx.shadowBlur = 0;
+          }
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+        scrollBoost *= 0.92;
+        requestAnimationFrame(drawWithBoost);
+      }
+
+      cancelAnimationFrame(draw);
+      requestAnimationFrame(drawWithBoost);
+
+      /* ---- Stagger reveal delay ---- */
+      setTimeout(function() {
+        checkReveal();
+      }, 100);
     })();
   </script>
 </body>

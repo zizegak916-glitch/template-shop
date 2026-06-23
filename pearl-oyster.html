@@ -3,56 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
-  <title>珍珠之母 · 奢华登录页</title>
-  <!-- 谷歌字体：优雅圆润排版 -->
+  <title>珍珠</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ----- CSS 自定义属性（主题变量 + 珍珠光效） ----- */
     :root {
-      --pearl-white: #fcf8f2;
+      --pearl-white: #fdf8f6;
       --soft-pink: #fce4ec;
-      --soft-blue: #e0f0ff;
-      --iridescent-shimmer1: rgba(255, 220, 240, 0.3);
-      --iridescent-shimmer2: rgba(180, 220, 255, 0.3);
-      --pearl-border: linear-gradient(135deg, #f8e5ee, #d4e4f7, #fce4ec);
-      --pearl-glow: 0 8px 30px rgba(210, 180, 200, 0.3);
-      --bg-gradient: linear-gradient(145deg, var(--pearl-white) 0%, var(--soft-pink) 40%, var(--soft-blue) 90%);
-      --card-bg: rgba(255, 245, 245, 0.45);
-      --text-primary: #3a2e3a;
-      --text-secondary: #5e4b5e;
-      --shadow-pearl: 0 12px 40px -10px rgba(190, 150, 180, 0.3);
-      --font-family: 'Quicksand', sans-serif;
-      --shell-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' opacity='0.08'%3E%3Cpath d='M20 30 Q40 20 60 30 Q80 40 75 60 Q70 80 50 85 Q30 90 20 70 Q10 50 20 30' fill='%23f8d0e0'/%3E%3Cpath d='M70 20 Q85 25 88 40 Q90 55 78 65 Q65 75 55 60 Q45 45 55 30 Q65 15 70 20' fill='%23c0d8f0'/%3E%3C/svg%3E");
+      --soft-blue: #e3f0fd;
+      --iridescent-1: rgba(255, 210, 230, 0.35);
+      --iridescent-2: rgba(170, 215, 255, 0.35);
+      --iridescent-3: rgba(220, 255, 240, 0.25);
+      --pearl-border: linear-gradient(135deg, #f8d4e8, #d0e4f8, #f8d4e8, #c8ddf5);
+      --pearl-glow: 0 8px 32px rgba(210, 170, 200, 0.28);
+      --bg-gradient: linear-gradient(160deg, var(--pearl-white) 0%, var(--soft-pink) 35%, var(--soft-blue) 70%, var(--pearl-white) 100%);
+      --card-bg: rgba(255, 248, 250, 0.5);
+      --text-primary: #3a2e3c;
+      --text-secondary: #6b5a6b;
+      --text-accent: #a06088;
+      --shadow-pearl: 0 14px 44px -10px rgba(190, 145, 175, 0.28);
+      --font-serif: 'Noto Serif SC', serif;
+      --font-sans: 'Quicksand', 'Noto Serif SC', sans-serif;
+      --shell-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120' opacity='0.06'%3E%3Cpath d='M30 25 Q60 10 90 25 Q110 45 100 75 Q85 105 60 110 Q35 105 20 75 Q10 45 30 25Z' fill='%23e0a0c0'/%3E%3Cpath d='M65 30 Q85 38 88 58 Q85 78 65 82 Q45 78 42 58 Q45 38 65 30Z' fill='%23a0c0e8'/%3E%3C/svg%3E");
     }
 
-    /* 深色主题：微调珍珠粉彩，保持柔和 */
     [data-theme="dark"] {
-      --pearl-white: #1e1a22;
-      --soft-pink: #2f222c;
-      --soft-blue: #1f2833;
-      --iridescent-shimmer1: rgba(220, 150, 200, 0.15);
-      --iridescent-shimmer2: rgba(130, 180, 240, 0.15);
-      --pearl-border: linear-gradient(135deg, #634b5a, #3a4f6b, #6a4a5a);
-      --pearl-glow: 0 8px 30px rgba(100, 70, 100, 0.4);
-      --bg-gradient: linear-gradient(145deg, #1a1620 0%, #2a1e2a 40%, #1a2430 90%);
-      --card-bg: rgba(40, 30, 40, 0.5);
-      --text-primary: #f0e6f0;
-      --text-secondary: #cfc0cf;
-      --shadow-pearl: 0 12px 40px -8px rgba(120, 80, 120, 0.4);
+      --pearl-white: #181420;
+      --soft-pink: #28202e;
+      --soft-blue: #1a2230;
+      --iridescent-1: rgba(220, 140, 190, 0.14);
+      --iridescent-2: rgba(120, 170, 240, 0.14);
+      --iridescent-3: rgba(160, 220, 200, 0.1);
+      --pearl-border: linear-gradient(135deg, #5e3d50, #36485e, #5e3d50);
+      --pearl-glow: 0 8px 32px rgba(90, 60, 90, 0.4);
+      --bg-gradient: linear-gradient(160deg, #141018 0%, #221822 35%, #14202a 70%, #181420 100%);
+      --card-bg: rgba(35, 28, 38, 0.55);
+      --text-primary: #f0e4ee;
+      --text-secondary: #c8b8c6;
+      --text-accent: #d89cc0;
+      --shadow-pearl: 0 14px 44px -8px rgba(100, 70, 110, 0.38);
     }
 
-    /* ----- 全局重置 & 基础 ----- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html {
       scroll-behavior: smooth;
-      font-family: var(--font-family);
+      font-family: var(--font-sans);
       background: var(--bg-gradient);
       color: var(--text-primary);
       transition: background 0.4s ease, color 0.3s ease;
@@ -61,48 +58,72 @@
     body {
       min-height: 100vh;
       background: var(--bg-gradient);
-      backdrop-filter: blur(1px);
-      line-height: 1.5;
+      line-height: 1.6;
       font-weight: 400;
       padding: 0 1.5rem;
       transition: background 0.4s;
+      overflow-x: hidden;
     }
 
-    /* 容器 */
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 1.5rem 0 2rem;
+      padding: 0 0 2rem;
     }
 
-    /* ----- 珍珠光泽动画 (珠光闪烁 + 色移) ----- */
-    @keyframes iridescentShift {
+    /* ─── iridescent shimmer keyframes ─── */
+    @keyframes shimmer {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    .iridescent-shimmer {
-      background: linear-gradient(125deg, 
-        var(--iridescent-shimmer1) 0%, 
-        var(--iridescent-shimmer2) 40%, 
-        rgba(240, 220, 250, 0.2) 70%, 
-        var(--iridescent-shimmer1) 100%);
-      background-size: 300% 300%;
-      animation: iridescentShift 8s ease-in-out infinite;
-      transition: background 0.3s;
+    @keyframes shimmerRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
     }
 
-    /* 卡片珍珠边框 + 光晕 */
+    @keyframes nacreShift {
+      0%, 100% { background-position: 0% 0%; }
+      25% { background-position: 100% 0%; }
+      50% { background-position: 100% 100%; }
+      75% { background-position: 0% 100%; }
+    }
+
+    @keyframes floatPearl {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-14px) scale(1.018); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(220, 170, 200, 0.25), 0 0 80px rgba(170, 200, 240, 0.15); }
+      50% { box-shadow: 0 0 60px rgba(220, 170, 200, 0.4), 0 0 120px rgba(170, 200, 240, 0.25); }
+    }
+
+    @keyframes ctaShimmer {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .iridescent-shimmer {
+      background: linear-gradient(125deg,
+        var(--iridescent-1) 0%,
+        var(--iridescent-2) 30%,
+        var(--iridescent-3) 60%,
+        var(--iridescent-1) 100%);
+      background-size: 300% 300%;
+      animation: shimmer 8s ease-in-out infinite;
+    }
+
+    /* ─── pearl card ─── */
     .pearl-card {
       background: var(--card-bg);
-      backdrop-filter: blur(6px);
-      border-radius: 3rem 1.5rem 3rem 1.5rem;
+      backdrop-filter: blur(8px);
+      border-radius: 2.8rem 1.2rem 2.8rem 1.2rem;
       border: 1px solid transparent;
-      background-clip: padding-box;
       position: relative;
       box-shadow: var(--pearl-glow), var(--shadow-pearl);
-      transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1), box-shadow 0.4s;
+      transition: transform 0.4s cubic-bezier(0.22, 0.9, 0.3, 1.1), box-shadow 0.4s;
     }
 
     .pearl-card::before {
@@ -111,231 +132,348 @@
       inset: -2px;
       border-radius: inherit;
       background: var(--pearl-border);
+      background-size: 300% 300%;
+      animation: nacreShift 10s ease-in-out infinite;
       z-index: -1;
-      opacity: 0.6;
-      transition: opacity 0.3s;
+      opacity: 0.55;
+      transition: opacity 0.35s;
     }
 
     .pearl-card:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 0 20px 50px -12px rgba(180, 140, 170, 0.4);
+      transform: translateY(-7px) scale(1.012);
+      box-shadow: 0 22px 55px -12px rgba(180, 135, 170, 0.38);
     }
 
     .pearl-card:hover::before {
       opacity: 1;
     }
 
-    /* ----- 主题切换按钮 (日/月) ----- */
+    /* ─── theme toggle ─── */
     .theme-toggle {
       position: fixed;
       top: 1.2rem;
       right: 1.5rem;
       z-index: 999;
-      background: rgba(255, 240, 245, 0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 220, 230, 0.5);
-      border-radius: 40px;
-      width: 48px;
-      height: 48px;
+      background: rgba(255, 240, 245, 0.45);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 220, 230, 0.45);
+      border-radius: 50px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(180, 140, 160, 0.2);
+      box-shadow: 0 4px 18px rgba(180, 140, 160, 0.18);
       transition: 0.3s;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       color: var(--text-primary);
     }
+
     .theme-toggle:hover {
-      transform: scale(1.08);
-      background: rgba(255, 220, 230, 0.7);
-    }
-    .theme-toggle .icon {
-      line-height: 1;
-      transition: transform 0.3s;
+      transform: scale(1.1);
+      background: rgba(255, 220, 230, 0.65);
     }
 
-    /* ----- 标题 & 文字 ----- */
+    /* ─── typography ─── */
     h1, h2, h3 {
+      font-family: var(--font-serif);
       font-weight: 500;
-      letter-spacing: 0.02em;
-      line-height: 1.2;
+      letter-spacing: 0.04em;
+      line-height: 1.25;
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 3rem;
       font-weight: 600;
-      background: linear-gradient(135deg, #b48bb0, #7a9bcb, #d4a0b0);
+      background: linear-gradient(135deg, #c88ab0, #7a9bcb, #d4a0b8);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 0 0 10px rgba(200, 160, 200, 0.2);
+      text-shadow: 0 0 12px rgba(200, 160, 200, 0.15);
     }
 
     h2 {
-      font-size: 2.2rem;
+      font-size: 2.1rem;
       font-weight: 500;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
 
     .subtitle {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: var(--text-secondary);
       font-weight: 300;
+      font-family: var(--font-sans);
     }
 
-    /* ----- 按钮 (珍珠渐变) ----- */
+    /* ─── pearl button ─── */
     .pearl-btn {
       display: inline-block;
-      padding: 0.9rem 2.5rem;
+      padding: 0.85rem 2.6rem;
       border-radius: 60px;
-      background: linear-gradient(145deg, #f5dae6, #cfe0f5, #f5dae6);
+      background: linear-gradient(145deg, #f5d8e4, #cce0f5, #f5d8e4);
       background-size: 200% 200%;
-      animation: iridescentShift 6s ease infinite;
-      border: none;
-      color: #2f2430;
+      animation: shimmer 6s ease infinite;
+      border: 1px solid rgba(255, 240, 245, 0.5);
+      color: #2e2230;
       font-weight: 600;
-      font-size: 1.2rem;
-      letter-spacing: 0.03em;
-      backdrop-filter: blur(2px);
-      box-shadow: 0 6px 24px rgba(190, 140, 170, 0.25);
-      transition: all 0.3s;
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+      box-shadow: 0 6px 26px rgba(190, 138, 170, 0.22);
+      transition: all 0.35s;
       cursor: pointer;
       text-decoration: none;
-      border: 1px solid rgba(255, 240, 245, 0.5);
+      font-family: var(--font-sans);
     }
+
     .pearl-btn:hover {
-      transform: scale(1.04);
-      box-shadow: 0 12px 40px rgba(190, 140, 180, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 14px 42px rgba(190, 138, 180, 0.38);
       background: linear-gradient(145deg, #fce4ee, #d4e8ff, #fce4ee);
     }
 
-    /* ----- 布局 & 区块 ----- */
-    section {
-      padding: 3.5rem 0;
-    }
-
-    /* 英雄区 (大珍珠球) */
+    /* ─── hero section ─── */
     .hero {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 2.2rem;
-      padding-top: 2rem;
+      gap: 2.5rem;
+      padding: 3rem 0 1rem;
+      position: relative;
     }
 
-    .hero .pearl-sphere {
-      width: 200px;
-      height: 200px;
+    .hero-bg {
+      position: absolute;
+      inset: -60px -40px;
+      background: radial-gradient(ellipse at 50% 40%, rgba(255, 220, 235, 0.3), rgba(200, 220, 250, 0.2) 60%, transparent 80%);
+      pointer-events: none;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff8fc, #fad6e8 50%, #bcd4f0 80%, #d0b0d0);
-      box-shadow: 0 20px 70px -10px rgba(190, 140, 180, 0.5), inset 0 -6px 20px rgba(255, 255, 255, 0.6);
-      transition: transform 0.3s;
-      animation: floatPearl 6s ease-in-out infinite;
+      z-index: 0;
     }
 
-    @keyframes floatPearl {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-12px) scale(1.02); }
+    .pearl-sphere {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #fff8fc 0%, #fad6e8 40%, #bcd4f0 70%, #d8b8d8 100%);
+      box-shadow:
+        0 24px 80px -10px rgba(190, 140, 180, 0.45),
+        inset 0 -8px 24px rgba(255, 255, 255, 0.55),
+        inset 0 8px 24px rgba(200, 180, 220, 0.2);
+      animation: floatPearl 6s ease-in-out infinite, glowPulse 4s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
     }
 
-    .hero .hero-content {
-      max-width: 700px;
+    .pearl-sphere::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(220,200,240,0.2) 100%);
+      animation: shimmerRotate 12s linear infinite;
     }
 
-    /* 特色网格 (3~4项) */
+    .hero-content {
+      max-width: 600px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 3.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #c88ab0, #8aaad0, #d4a0b8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero .subtitle {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-desc {
+      max-width: 480px;
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    /* ─── features (shell shapes, 3 items) ─── */
+    .features-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
     .features-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
-      margin: 2.5rem 0;
+      gap: 1.8rem;
+      margin: 0 0 1rem;
     }
 
     .feature-item {
-      padding: 2rem 1.8rem;
+      padding: 2.2rem 2rem;
       position: relative;
       overflow: hidden;
     }
-    .feature-item .shell-icon {
-      font-size: 2.8rem;
-      display: inline-block;
-      margin-bottom: 0.6rem;
-      filter: drop-shadow(0 4px 8px rgba(200, 150, 180, 0.3));
-    }
-    .feature-item h3 {
-      font-size: 1.6rem;
-      margin-bottom: 0.5rem;
-    }
-    .feature-item p {
-      color: var(--text-secondary);
+
+    .shell-decoration {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      width: 90px;
+      height: 90px;
+      opacity: 0.1;
+      pointer-events: none;
     }
 
-    /* 统计区 / 推荐 (testimonials) */
+    .shell-decoration svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(248, 210, 230, 0.5), rgba(200, 225, 250, 0.5));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 16px rgba(190, 160, 180, 0.2);
+    }
+
+    .feature-item h3 {
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .feature-item p {
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+      line-height: 1.65;
+    }
+
+    /* ─── stats ─── */
+    .stats-section {
+      padding: 2.5rem 0;
+    }
+
     .stats-wrapper {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 2.5rem 4rem;
-      margin: 2rem 0;
+      gap: 2rem 4.5rem;
     }
+
     .stat-item {
       text-align: center;
-      min-width: 110px;
+      min-width: 120px;
     }
+
     .stat-number {
-      font-size: 2.6rem;
-      font-weight: 600;
-      background: linear-gradient(135deg, #d4a8c0, #a0b8e0);
+      font-size: 2.8rem;
+      font-weight: 700;
+      font-family: var(--font-serif);
+      background: linear-gradient(135deg, #d4a0b8, #9ab0e0);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
+
     .stat-label {
       color: var(--text-secondary);
-      letter-spacing: 0.02em;
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+      margin-top: 0.2rem;
     }
 
+    /* ─── testimonial ─── */
     .testimonial-card {
-      max-width: 500px;
-      margin: 2rem auto;
-      padding: 2rem 2.2rem;
-      text-align: left;
-      border-radius: 2.5rem 1rem 2.5rem 1rem;
+      max-width: 520px;
+      margin: 2.5rem auto;
+      padding: 2.2rem 2.4rem;
+      text-align: center;
+      border-radius: 2.4rem 1rem 2.4rem 1rem;
+    }
+
+    .testimonial-card .quote {
+      font-size: 1.15rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-secondary);
       font-style: normal;
     }
-    .testimonial-card p {
-      font-size: 1.2rem;
-      font-weight: 300;
-      line-height: 1.6;
-    }
+
     .testimonial-author {
       margin-top: 1.2rem;
       font-weight: 500;
-      color: var(--text-secondary);
+      color: var(--text-accent);
+      font-size: 0.95rem;
     }
 
-    /* CTA 区块 */
+    /* ─── CTA section ─── */
     .cta-section {
-      background: linear-gradient(145deg, rgba(255, 230, 240, 0.2), rgba(200, 220, 250, 0.2));
-      border-radius: 4rem 1.5rem 4rem 1.5rem;
-      padding: 3rem 2rem;
+      background: linear-gradient(145deg, rgba(255, 230, 240, 0.25), rgba(200, 220, 250, 0.25));
+      border-radius: 3.5rem 1.2rem 3.5rem 1.2rem;
+      padding: 3.5rem 2rem;
       text-align: center;
-      backdrop-filter: blur(10px);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+      position: relative;
+      overflow: hidden;
     }
 
-    /* 页脚 + 贝壳图案 */
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,220,240,0.15), rgba(200,225,250,0.15), transparent);
+      background-size: 200% 100%;
+      animation: ctaShimmer 5s linear infinite;
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section .subtitle {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0.5rem auto 2rem;
+    }
+
+    .cta-section .pearl-btn {
+      position: relative;
+      z-index: 1;
+      font-size: 1.25rem;
+      padding: 1rem 3.2rem;
+    }
+
+    /* ─── footer ─── */
     footer {
-      padding: 3rem 0 1.5rem;
+      padding: 3rem 0 1.8rem;
       margin-top: 3rem;
-      background-image: var(--shell-pattern);
-      background-size: 120px 120px;
+      background-image: var(--shell-svg);
+      background-size: 130px 130px;
       background-repeat: repeat;
-      border-top: 1px solid rgba(200, 170, 190, 0.2);
+      border-top: 1px solid rgba(200, 170, 190, 0.18);
       text-align: center;
       color: var(--text-secondary);
     }
+
     .footer-links {
       display: flex;
       flex-wrap: wrap;
@@ -343,22 +481,40 @@
       gap: 1.8rem;
       margin-bottom: 1.2rem;
     }
+
     .footer-links a {
       color: var(--text-secondary);
       text-decoration: none;
       font-weight: 400;
+      font-size: 0.95rem;
       border-bottom: 1px solid transparent;
-      transition: 0.2s;
-    }
-    .footer-links a:hover {
-      border-bottom-color: var(--text-secondary);
+      transition: 0.25s;
     }
 
-    /* ----- 滚动显现动画 (Intersection Observer) ----- */
+    .footer-links a:hover {
+      border-bottom-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .footer-copy {
+      font-size: 0.88rem;
+      opacity: 0.7;
+      margin-top: 0.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .footer-tagline {
+      font-size: 0.82rem;
+      opacity: 0.55;
+      margin-top: 0.4rem;
+    }
+
+    /* ─── scroll reveal ─── */
     .reveal {
       opacity: 0;
-      transform: translateY(40px) scale(0.96);
-      transition: opacity 0.8s cubic-bezier(0.15, 0.85, 0.35, 1), transform 0.8s cubic-bezier(0.15, 0.85, 0.35, 1);
+      transform: translateY(42px) scale(0.97);
+      transition: opacity 0.85s cubic-bezier(0.15, 0.85, 0.35, 1),
+                  transform 0.85s cubic-bezier(0.15, 0.85, 0.35, 1);
     }
 
     .reveal.revealed {
@@ -366,124 +522,162 @@
       transform: translateY(0) scale(1);
     }
 
-    /* ----- 响应式 (移动优先) ----- */
+    /* ─── responsive ─── */
     @media (min-width: 640px) {
-      h1 { font-size: 3.6rem; }
-      .hero .pearl-sphere { width: 240px; height: 240px; }
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .cta-section {
-        padding: 4rem 3rem;
-      }
+      h1, .hero-title { font-size: 4rem; }
+      .pearl-sphere { width: 260px; height: 260px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-section { padding: 4rem 3rem; }
     }
 
     @media (min-width: 1024px) {
       body { padding: 0 2rem; }
-      h1 { font-size: 4.2rem; }
-      .hero { flex-direction: row; text-align: left; gap: 4rem; }
-      .features-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      .stats-wrapper {
-        gap: 4rem 6rem;
-      }
-      .cta-section {
-        padding: 5rem 6rem;
-      }
+      h1, .hero-title { font-size: 4.5rem; }
+      .hero { flex-direction: row; text-align: left; gap: 4rem; padding-top: 4rem; }
+      .hero-bg { inset: -80px -60px; }
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+      .stats-wrapper { gap: 3rem 6rem; }
+      .cta-section { padding: 5rem 5rem; }
     }
 
-    /* 微调 */
-    .text-balance {
-      text-wrap: balance;
+    /* ─── nacre surface layer (on cards) ─── */
+    .nacre-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        linear-gradient(125deg,
+          rgba(255, 200, 220, 0.08) 0%,
+          rgba(180, 210, 250, 0.08) 35%,
+          rgba(200, 240, 220, 0.06) 65%,
+          rgba(255, 200, 220, 0.08) 100%);
+      background-size: 400% 400%;
+      animation: nacreShift 12s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
     }
-    .mt-2 { margin-top: 1.2rem; }
-    .mb-1 { margin-bottom: 0.8rem; }
-    .gap-1 { gap: 1rem; }
+
+    .feature-item .nacre-layer {
+      border-radius: inherit;
+    }
+
+    /* ─── shell icon SVG inline helper ─── */
+    .shell-svg-icon {
+      fill: none;
+      stroke: var(--text-accent);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
-  <!-- 主题切换按钮 (月亮/太阳) -->
   <div class="theme-toggle" id="themeToggle" aria-label="切换主题">
-    <span class="icon" id="themeIcon">🌙</span>
+    <span id="themeIcon">🌙</span>
   </div>
 
   <main class="container">
-    <!-- 英雄区 -->
+    <!-- Hero -->
     <section class="hero reveal">
-      <div class="pearl-sphere iridescent-shimmer"></div>
+      <div class="hero-bg iridescent-shimmer"></div>
+      <div class="pearl-sphere"></div>
       <div class="hero-content">
-        <h1>珍珠之母 · 灵光</h1>
-        <p class="subtitle" style="font-size:1.4rem; margin: 0.8rem 0 1.2rem;">奢华贝壳之光 · 柔润如初</p>
-        <p style="max-width: 500px; color: var(--text-secondary);">每一颗珍珠都蕴含海洋的温柔，珠光流转，静谧而高贵。</p>
+        <div class="hero-title">珍珠</div>
+        <p class="subtitle">海洋之心 · 虹彩永恒</p>
+        <p class="hero-desc">每一颗珍珠，都凝结了深海万年的温柔与光辉。珠光流转间，映照出母贝最纯净的灵魂。</p>
         <div style="margin-top: 2rem;">
-          <a href="#cta" class="pearl-btn">探索系列</a>
+          <a href="#cta" class="pearl-btn">探索珍珠</a>
         </div>
       </div>
     </section>
 
-    <!-- 特色网格 (4项) -->
+    <!-- Features (3 items with shell decorations) -->
     <section>
-      <div style="text-align: center; margin-bottom: 1rem;" class="reveal">
+      <div class="features-header reveal">
         <h2>贝壳 · 珍艺</h2>
         <p class="subtitle">天然母贝光泽，历久弥新</p>
       </div>
       <div class="features-grid">
+        <!-- Feature 1 -->
         <div class="feature-item pearl-card reveal">
-          <div class="shell-icon">🐚</div>
+          <div class="nacre-layer"></div>
+          <div class="shell-decoration">
+            <svg viewBox="0 0 100 100">
+              <path d="M20 30 Q40 18 65 28 Q85 40 80 62 Q72 85 50 90 Q28 88 16 68 Q8 48 20 30Z" class="shell-svg-icon"/>
+              <path d="M50 20 Q65 25 68 42 Q66 60 50 65 Q34 60 32 42 Q35 25 50 20Z" class="shell-svg-icon" stroke-opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="feature-icon">🐚</div>
           <h3>虹彩珠光</h3>
-          <p>多层折射产生变幻光晕，如晨曦映照珍珠层。</p>
+          <p>多层折射产生变幻光晕，如晨曦映照珍珠层，光影交错间尽显天然之美。</p>
         </div>
+        <!-- Feature 2 -->
         <div class="feature-item pearl-card reveal">
-          <div class="shell-icon">✨</div>
+          <div class="nacre-layer"></div>
+          <div class="shell-decoration">
+            <svg viewBox="0 0 100 100">
+              <path d="M25 35 Q45 22 68 32 Q86 45 80 65 Q70 84 48 88 Q26 84 18 62 Q10 42 25 35Z" class="shell-svg-icon"/>
+              <path d="M48 28 Q62 32 64 46 Q62 60 48 63 Q34 60 32 46 Q34 32 48 28Z" class="shell-svg-icon" stroke-opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="feature-icon">✨</div>
           <h3>母贝镶嵌</h3>
-          <p>手工甄选贝壳内层，保留天然纹理与温度。</p>
+          <p>手工甄选贝壳内层，保留天然纹理与温度，每一枚都独一无二。</p>
         </div>
+        <!-- Feature 3 -->
         <div class="feature-item pearl-card reveal">
-          <div class="shell-icon">🌊</div>
+          <div class="nacre-layer"></div>
+          <div class="shell-decoration">
+            <svg viewBox="0 0 100 100">
+              <path d="M22 32 Q42 20 66 30 Q84 42 78 64 Q68 86 46 90 Q24 86 14 66 Q6 46 22 32Z" class="shell-svg-icon"/>
+              <path d="M46 24 Q60 28 62 44 Q60 58 46 62 Q32 58 30 44 Q32 28 46 24Z" class="shell-svg-icon" stroke-opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="feature-icon">🌊</div>
           <h3>海洋灵感</h3>
-          <p>每一道曲线都源自潮汐与浪花的低语。</p>
-        </div>
-        <div class="feature-item pearl-card reveal">
-          <div class="shell-icon">🕊️</div>
-          <h3>永恒温柔</h3>
-          <p>经典设计搭配珠光渐变，历久弥新。</p>
+          <p>每一道曲线都源自潮汐与浪花的低语，设计中藏着大海最深处的宁静。</p>
         </div>
       </div>
     </section>
 
-    <!-- 统计 & 推荐 testimonial -->
-    <section class="reveal">
-      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-around; gap: 2rem;">
-        <div class="stats-wrapper">
-          <div class="stat-item">
-            <div class="stat-number">12k+</div>
-            <div class="stat-label">珍珠珍品</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">98%</div>
-            <div class="stat-label">满意光晕</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">150+</div>
-            <div class="stat-label">贝壳工艺</div>
-          </div>
+    <!-- Stats -->
+    <section class="stats-section reveal">
+      <div class="stats-wrapper">
+        <div class="stat-item">
+          <div class="stat-number">12k+</div>
+          <div class="stat-label">珍珠珍品</div>
         </div>
-        <div class="testimonial-card pearl-card reveal" style="max-width: 420px;">
-          <p>“珠光流转间，仿佛触摸到月光下的海面。每一处细节都透着母贝特有的温润，令人爱不释手。”</p>
-          <div class="testimonial-author">—— 沈女士 · 收藏家</div>
+        <div class="stat-item">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">满意光晕</div>
         </div>
+        <div class="stat-item">
+          <div class="stat-number">150+</div>
+          <div class="stat-label">贝壳工艺</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">30+</div>
+          <div class="stat-label">年匠心传承</div>
+        </div>
+      </div>
+
+      <!-- Testimonial -->
+      <div class="testimonial-card pearl-card reveal">
+        <div class="nacre-layer"></div>
+        <p class="quote">"珠光流转间，仿佛触摸到月光下的海面。每一处细节都透着母贝特有的温润，令人爱不释手。"</p>
+        <div class="testimonial-author">—— 沈女士 · 收藏家</div>
       </div>
     </section>
 
-    <!-- CTA 区块 -->
+    <!-- CTA -->
     <section id="cta" class="cta-section reveal">
-      <h2 style="font-weight: 500;">开启您的珍珠之旅</h2>
-      <p class="subtitle" style="max-width: 500px; margin: 0.5rem auto 1.8rem;">从海洋到颈间，每一颗珍珠都为您闪耀。</p>
-      <a href="#" class="pearl-btn" style="font-size: 1.3rem; padding: 1rem 3rem;">预约鉴赏</a>
+      <h2>开启您的珍珠之旅</h2>
+      <p class="subtitle">从海洋到颈间，每一颗珍珠都为您闪耀。</p>
+      <a href="#" class="pearl-btn">预约鉴赏</a>
     </section>
 
-    <!-- 页脚 (贝壳图案) -->
+    <!-- Footer -->
     <footer class="reveal">
       <div class="footer-links">
         <a href="#">关于珍珠</a>
@@ -492,73 +686,63 @@
         <a href="#">联系</a>
         <a href="#">隐私</a>
       </div>
-      <p style="font-size: 0.9rem; letter-spacing: 0.03em;">© 珍珠之母 · 海洋遗产</p>
-      <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem;">灵感源于贝壳内层的虹彩 · 每一抹光都是自然的馈赠</p>
+      <p class="footer-copy">© 珍珠之母 · 海洋遗产</p>
+      <p class="footer-tagline">灵感源于贝壳内层的虹彩 · 每一抹光都是自然的馈赠</p>
     </footer>
   </main>
 
   <script>
-    (function() {
+    (function () {
       "use strict";
 
-      // ---------- 主题切换 ----------
-      const html = document.documentElement;
-      const toggleBtn = document.getElementById('themeToggle');
-      const iconSpan = document.getElementById('themeIcon');
+      var html = document.documentElement;
+      var toggleBtn = document.getElementById('themeToggle');
+      var iconSpan = document.getElementById('themeIcon');
 
       function setTheme(theme) {
         html.setAttribute('data-theme', theme);
         iconSpan.textContent = theme === 'dark' ? '☀️' : '🌙';
-        localStorage.setItem('pearl-theme', theme);
+        try { localStorage.setItem('pearl-theme', theme); } catch (e) {}
       }
 
-      // 从 localStorage 恢复
-      const savedTheme = localStorage.getItem('pearl-theme') || 'light';
-      setTheme(savedTheme);
+      var saved = (function () {
+        try { return localStorage.getItem('pearl-theme'); } catch (e) { return null; }
+      })() || 'light';
+      setTheme(saved);
 
-      toggleBtn.addEventListener('click', function(e) {
-        const current = html.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        setTheme(next);
+      toggleBtn.addEventListener('click', function () {
+        var cur = html.getAttribute('data-theme');
+        setTheme(cur === 'dark' ? 'light' : 'dark');
       });
 
-      // ---------- Intersection Observer 显现动画 ----------
-      const revealElements = document.querySelectorAll('.reveal');
-
-      if (revealElements.length > 0) {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
+      var reveals = document.querySelectorAll('.reveal');
+      if (reveals.length) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
             if (entry.isIntersecting) {
               entry.target.classList.add('revealed');
-              // 可以继续观察，但为了性能，显现后取消观察
-              observer.unobserve(entry.target);
+              obs.unobserve(entry.target);
             }
           });
-        }, { 
-          threshold: 0.1,
-          rootMargin: '0px 0px -40px 0px'
-        });
+        }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
 
-        revealElements.forEach(el => observer.observe(el));
+        reveals.forEach(function (el) { obs.observe(el); });
       }
 
-      // 手动触发一次已经可见的元素（防止有些元素在加载时就在视口）
-      window.addEventListener('load', function() {
-        revealElements.forEach(el => {
-          const rect = el.getBoundingClientRect();
-          const winHeight = window.innerHeight || document.documentElement.clientHeight;
-          if (rect.top < winHeight - 60) {
+      window.addEventListener('load', function () {
+        var wh = window.innerHeight || document.documentElement.clientHeight;
+        reveals.forEach(function (el) {
+          if (el.getBoundingClientRect().top < wh - 50) {
             el.classList.add('revealed');
           }
         });
       });
 
-      // 平滑滚动 (锚点)
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-          const href = this.getAttribute('href');
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          var href = this.getAttribute('href');
           if (href === '#') return;
-          const target = document.querySelector(href);
+          var target = document.querySelector(href);
           if (target) {
             e.preventDefault();
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });

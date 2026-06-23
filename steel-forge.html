@@ -2,470 +2,1148 @@
 <html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>暗钢铸造 · 工业着陆</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>铸铁 · 重型锻造工坊</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800;900&family=Noto+Sans+SC:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ----- RESET & THEME ----- */
-    * {
+    /* ===== RESET ===== */
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
+    /* ===== THEME VARIABLES ===== */
     :root {
-      --bg-deep: #0e0e0e;
-      --bg-card: #1a1a1a;
-      --steel-light: #b0b5b9;
-      --steel-mid: #7a8085;
-      --steel-dark: #3d4247;
-      --text-primary: #e8eaed;
-      --text-secondary: #a8aeb3;
+      --bg-base: #111111;
+      --bg-raised: #1a1a1a;
+      --bg-panel: #222222;
+      --bg-deep: #0a0a0a;
+      --steel-100: #e0e3e6;
+      --steel-200: #b8bcc0;
+      --steel-300: #8d9298;
+      --steel-400: #6b7178;
+      --steel-500: #4a5057;
+      --steel-600: #353a3f;
+      --steel-700: #25292d;
       --fire-orange: #f97316;
-      --fire-glow: #ff8c42;
-      --rivet-size: 6px;
-      --border-metallic: 1px solid #4a4f54;
-      --shadow-card: 0 12px 28px rgba(0,0,0,0.8), 0 0 0 1px #3a3f44 inset;
+      --fire-bright: #fb923c;
+      --fire-deep: #c2410c;
+      --fire-glow: rgba(249, 115, 22, 0.4);
+      --text-h1: #f0f2f4;
+      --text-body: #c8ccd0;
+      --text-muted: #8d9298;
+      --border-steel: #3a3f44;
+      --border-rivet: #2a2e32;
+      --shadow-heavy: 0 16px 48px rgba(0, 0, 0, 0.85), 0 4px 12px rgba(0, 0, 0, 0.6);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      --shadow-glow: 0 0 40px rgba(249, 115, 22, 0.15);
+      --font-display: 'Oswald', 'Noto Sans SC', sans-serif;
+      --font-body: 'Noto Sans SC', 'Segoe UI', sans-serif;
+      --rivet: 6px;
     }
 
-    /* light theme (optional, kept minimal) */
     [data-theme="light"] {
-      --bg-deep: #d9dcdd;
-      --bg-card: #eef0f1;
-      --steel-light: #2f353a;
-      --steel-mid: #4f555a;
-      --steel-dark: #1f2429;
-      --text-primary: #1a1e22;
-      --text-secondary: #3a3f44;
-      --border-metallic: 1px solid #8a8f94;
-      --shadow-card: 0 12px 28px rgba(0,0,0,0.2), 0 0 0 1px #9a9fa4 inset;
+      --bg-base: #d8dade;
+      --bg-raised: #e8eaec;
+      --bg-panel: #f0f1f3;
+      --bg-deep: #c8cace;
+      --steel-100: #1a1e22;
+      --steel-200: #333840;
+      --steel-300: #555b62;
+      --steel-400: #6b7178;
+      --steel-500: #8d9298;
+      --steel-600: #b8bcc0;
+      --steel-700: #d0d4d8;
+      --fire-orange: #ea580c;
+      --fire-bright: #f97316;
+      --fire-deep: #9a3412;
+      --text-h1: #111316;
+      --text-body: #374151;
+      --text-muted: #6b7280;
+      --border-steel: #a0a5ab;
+      --border-rivet: #9ca1a7;
+      --shadow-heavy: 0 16px 48px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      --shadow-glow: 0 0 40px rgba(249, 115, 22, 0.1);
     }
 
     body {
-      font-family: 'Heebo', 'Noto Sans SC', sans-serif;
-      background-color: var(--bg-deep);
-      color: var(--text-primary);
-      line-height: 1.5;
-      font-weight: 400;
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-body);
+      line-height: 1.6;
       min-height: 100vh;
-      transition: background 0.3s ease, color 0.2s;
+      overflow-x: hidden;
+      transition: background 0.35s ease, color 0.25s;
     }
 
-    /* ----- THEME TOGGLE (sun/moon) ----- */
+    /* ===== SPARK CANVAS ===== */
+    #spark-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ===== THEME TOGGLE ===== */
     .theme-toggle {
       position: fixed;
-      top: 1.2rem;
+      top: 1.5rem;
       right: 1.5rem;
-      z-index: 99;
-      background: var(--bg-card);
-      border: var(--border-metallic);
-      border-radius: 40px;
-      width: 48px;
-      height: 48px;
+      z-index: 1000;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--bg-raised);
+      border: 2px solid var(--border-steel);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-      transition: all 0.25s;
-      color: var(--steel-light);
-      font-size: 1.6rem;
-    }
-    .theme-toggle:hover {
-      transform: scale(1.08);
-      background: #2a2e33;
-      border-color: var(--fire-orange);
-    }
-    .theme-toggle .icon {
-      line-height: 1;
-      transition: transform 0.3s;
-    }
-    [data-theme="light"] .theme-toggle .icon {
-      transform: rotate(20deg);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
     }
 
-    /* ----- PARTICLE CANVAS (sparks) ----- */
-    #spark-canvas {
-      position: fixed;
+    .theme-toggle:hover {
+      border-color: var(--fire-orange);
+      transform: rotate(15deg) scale(1.05);
+      box-shadow: 0 0 24px var(--fire-glow);
+    }
+
+    .theme-toggle svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--steel-200);
+      transition: fill 0.25s;
+    }
+
+    .theme-toggle:hover svg {
+      fill: var(--fire-orange);
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    /* ===== METALLIC TEXT ===== */
+    .metallic-text {
+      background: linear-gradient(
+        180deg,
+        #e0e3e6 0%,
+        #b8bcc0 30%,
+        #8d9298 55%,
+        #b8bcc0 80%,
+        #e0e3e6 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .fire-text {
+      background: linear-gradient(135deg, var(--fire-bright), var(--fire-orange), var(--fire-deep));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== CARD BASE ===== */
+    .card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border-steel);
+      border-radius: 6px;
+      position: relative;
+      overflow: visible;
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--fire-orange);
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+    }
+
+    /* ===== RIVETS ===== */
+    .rivet {
+      position: absolute;
+      width: var(--rivet);
+      height: var(--rivet);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #a0a5ab, #4a5057);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6),
+                  0 1px 1px rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .rivet-tl { top: 8px; left: 8px; }
+    .rivet-tr { top: 8px; right: 8px; }
+    .rivet-bl { bottom: 8px; left: 8px; }
+    .rivet-br { bottom: 8px; right: 8px; }
+
+    [data-theme="light"] .rivet {
+      background: radial-gradient(circle at 35% 35%, #f0f1f3, #8d9298);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3),
+                  0 1px 1px rgba(255, 255, 255, 0.6);
+    }
+
+    /* ===== CTA BUTTON ===== */
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--fire-orange), var(--fire-deep));
+      color: #fff;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 1rem 2.8rem;
+      border: 2px solid var(--fire-bright);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-cta::before {
+      content: '';
+      position: absolute;
       top: 0;
-      left: 0;
+      left: -100%;
       width: 100%;
       height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-cta:hover::before { left: 100%; }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.5);
+      border-color: var(--fire-bright);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--steel-200);
+      border: 2px solid var(--border-steel);
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--fire-orange);
+      color: var(--fire-orange);
+      box-shadow: 0 0 24px var(--fire-glow);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 30% 40%, rgba(249, 115, 22, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 70% 60%, rgba(141, 146, 152, 0.08) 0%, transparent 60%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.008) 2px,
+          rgba(255, 255, 255, 0.008) 4px
+        );
+      z-index: 1;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(to top, var(--bg-base), transparent);
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-raised);
+      border: 1px solid var(--border-steel);
+      border-radius: 100px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--steel-300);
+      margin-bottom: 2rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
+    }
+
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--fire-orange);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.4; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 18vw, 12rem);
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: 0.06em;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      background: linear-gradient(
+        180deg,
+        #f0f2f4 0%,
+        #d0d4d8 20%,
+        #b8bcc0 40%,
+        #8d9298 60%,
+        #b8bcc0 80%,
+        #f0f2f4 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--steel-300);
+      max-width: 560px;
+      margin: 0 auto 3rem;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-steel);
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-value {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--fire-bright), var(--fire-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .hero-stat-label {
+      font-size: 0.8rem;
+      color: var(--steel-400);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-top: 0.3rem;
+      font-family: var(--font-display);
+    }
+
+    /* ===== DIVIDER ===== */
+    .steel-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--steel-500), transparent);
+      border: none;
+      margin: 0;
+    }
+
+    .steel-divider-heavy {
+      height: 4px;
+      background: linear-gradient(90deg, transparent 5%, var(--steel-600) 20%, var(--steel-400) 50%, var(--steel-600) 80%, transparent 95%);
+      border: none;
+      margin: 0;
+      position: relative;
+    }
+
+    .steel-divider-heavy::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle at 40% 40%, var(--steel-300), var(--steel-600));
+      border-radius: 50%;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ===== SECTION HEADER ===== */
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+      background: linear-gradient(
+        180deg,
+        #e0e3e6 0%,
+        #b8bcc0 35%,
+        #8d9298 60%,
+        #b8bcc0 85%,
+        #e0e3e6 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-header p {
+      color: var(--steel-400);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ===== FEATURES (3 items) ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .feature-card {
+      padding: 2.5rem 2rem;
+      text-align: center;
+      background: var(--bg-raised);
+    }
+
+    .feature-icon-wrap {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.8rem;
+      border-radius: 50%;
+      background: var(--bg-panel);
+      border: 2px solid var(--border-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: border-color 0.3s ease;
+    }
+
+    .card:hover .feature-icon-wrap {
+      border-color: var(--fire-orange);
+    }
+
+    .feature-icon-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid var(--steel-600);
+      opacity: 0.4;
+    }
+
+    .feature-icon-wrap svg {
+      width: 36px;
+      height: 36px;
+      fill: var(--steel-200);
+      transition: fill 0.3s ease;
+    }
+
+    .card:hover .feature-icon-wrap svg {
+      fill: var(--fire-orange);
+    }
+
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-h1);
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .feature-card p {
+      color: var(--steel-400);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .feature-card .tag {
+      display: inline-block;
+      margin-top: 1.2rem;
+      padding: 0.3rem 1rem;
+      border: 1px solid var(--steel-600);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: var(--steel-300);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--font-display);
+    }
+
+    .card:hover .feature-card .tag {
+      border-color: var(--fire-orange);
+      color: var(--fire-orange);
+    }
+
+    /* ===== STATS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: var(--bg-raised);
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(
+        180deg,
+        #f0f2f4 0%,
+        #c8ccd0 30%,
+        #b8bcc0 50%,
+        #c8ccd0 70%,
+        #f0f2f4 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-unit {
+      font-size: 0.5em;
+      opacity: 0.7;
+    }
+
+    .stat-label {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      color: var(--steel-400);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 500;
+    }
+
+    .stat-card::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--steel-500), transparent);
+      margin: 1rem auto 0;
+    }
+
+    .stat-card:hover::after {
+      background: linear-gradient(90deg, transparent, var(--fire-orange), transparent);
+    }
+
+    /* ===== PROCESS ===== */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+
+    .process-grid::before {
+      content: '';
+      position: absolute;
+      top: 44px;
+      left: 12.5%;
+      right: 12.5%;
+      height: 2px;
+      background: var(--steel-600);
+      z-index: 0;
+    }
+
+    .process-step {
+      text-align: center;
+      padding: 0 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-number {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg-base);
+      border: 3px solid var(--steel-500);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--steel-300);
+      margin-bottom: 1.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .step-number::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid var(--steel-600);
+    }
+
+    .process-step:hover .step-number {
+      border-color: var(--fire-orange);
+      color: var(--fire-orange);
+      box-shadow: 0 0 24px var(--fire-glow);
+    }
+
+    .process-step h4 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-h1);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .process-step p {
+      color: var(--steel-400);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    /* ===== CTA SECTION ===== */
+    .cta-section {
+      background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-base) 50%, var(--bg-deep) 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 40% 50% at 50% 50%, rgba(249, 115, 22, 0.05) 0%, transparent 70%);
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+      background: linear-gradient(
+        180deg,
+        #f0f2f4 0%,
+        #b8bcc0 50%,
+        #f0f2f4 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cta-section p {
+      color: var(--steel-400);
+      font-size: 1.15rem;
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===== FOOTER ===== */
+    .industrial-footer {
+      border-top: 4px solid var(--steel-600);
+      padding: 3rem 0;
+      position: relative;
+    }
+
+    .industrial-footer::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--steel-600), var(--steel-400), var(--steel-600));
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(180deg, #e0e3e6, #8d9298);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.06em;
+    }
+
+    .footer-tagline {
+      color: var(--steel-500);
+      font-size: 0.85rem;
+      padding-left: 0.8rem;
+      border-left: 1px solid var(--steel-600);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--steel-400);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--fire-orange);
+    }
+
+    .footer-copy {
+      width: 100%;
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--steel-600);
+      color: var(--steel-500);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+                  transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .process-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+      .process-grid::before { display: none; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-brand { flex-direction: column; }
+      .footer-tagline { border-left: none; padding-left: 0; border-top: 1px solid var(--steel-600); padding-top: 0.5rem; }
+      .footer-links { justify-content: center; }
+      .hero-stats-bar { gap: 1.5rem; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: clamp(4rem, 20vw, 8rem); }
+      section { padding: 4rem 0; }
+      .theme-toggle { top: 1rem; right: 1rem; width: 44px; height: 44px; }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ===== METALLIC SHEEN ON CARDS ===== */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        transparent 40%,
+        transparent 60%,
+        rgba(255, 255, 255, 0.02) 100%
+      );
       pointer-events: none;
       z-index: 1;
     }
 
-    /* ----- LAYOUT & UTILITY ----- */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-      position: relative;
+    [data-theme="light"] .card::before {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        transparent 40%,
+        transparent 60%,
+        rgba(255, 255, 255, 0.2) 100%
+      );
+    }
+
+    /* ===== AMBIENT GLOW AT BOTTOM OF HERO ===== */
+    .hero-glow {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 120px;
+      background: radial-gradient(ellipse, var(--fire-glow), transparent 70%);
+      opacity: 0.3;
       z-index: 2;
+      pointer-events: none;
     }
-
-    section {
-      padding: 5rem 0;
-      position: relative;
-    }
-
-    /* ----- METALLIC TEXTURE & EFFECTS (global) ----- */
-    .metallic-gradient {
-      background: linear-gradient(145deg, #7a8085 0%, #b0b5b9 40%, #5a6065 80%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    }
-
-    .metallic-border-card {
-      background: var(--bg-card);
-      border: 1px solid #4a4f54;
-      border-radius: 24px;
-      box-shadow: var(--shadow-card);
-      position: relative;
-      transition: transform 0.25s ease, box-shadow 0.3s;
-      /* rivets via pseudo */
-    }
-    .metallic-border-card::before,
-    .metallic-border-card::after {
-      content: '';
-      position: absolute;
-      width: var(--rivet-size);
-      height: var(--rivet-size);
-      background: radial-gradient(circle at 30% 30%, #c0c5c9, #3d4247);
-      border-radius: 50%;
-      box-shadow: 0 0 0 1px #1a1e22 inset;
-    }
-    .metallic-border-card::before { top: 10px; left: 10px; }
-    .metallic-border-card::after { bottom: 10px; right: 10px; }
-
-    .metallic-border-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 32px rgba(0,0,0,0.9), 0 0 0 1px #f97316 inset;
-      border-color: #f97316;
-    }
-
-    /* rivets on all four corners? we add more via extra class */
-    .rivet-corners::before,
-    .rivet-corners::after {
-      /* already used, we add two more pseudo via extra element? we'll use data attr */
-    }
-    /* we will add extra rivet spans via JS? better: use extra pseudo elements with :before and :after on inner. we add extra rivets in HTML (small spans) */
-    .rivet {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      background: radial-gradient(circle at 30% 30%, #c0c5c9, #3d4247);
-      border-radius: 50%;
-      position: absolute;
-      box-shadow: 0 0 0 1px #1a1e22 inset;
-    }
-
-    /* ----- BUTTONS (fire-orange) ----- */
-    .btn-cta {
-      display: inline-block;
-      background: linear-gradient(135deg, #f97316, #d65d0e);
-      border: none;
-      border-radius: 60px;
-      padding: 1rem 2.8rem;
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: 0.04em;
-      color: #0e0e0e;
-      text-transform: uppercase;
-      box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: 1px solid #ff9f4b;
-      text-decoration: none;
-    }
-    .btn-cta:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 36px rgba(249, 115, 22, 0.7);
-      background: linear-gradient(135deg, #ff8c42, #f97316);
-    }
-
-    /* ----- HERO ----- */
-    .hero {
-      min-height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding-top: 2rem;
-      background: radial-gradient(circle at 20% 30%, #2a2e33 0%, #0e0e0e 90%);
-      border-bottom: 2px solid #3d4247;
-      position: relative;
-    }
-    .hero h1 {
-      font-size: clamp(4rem, 16vw, 8rem);
-      font-weight: 900;
-      line-height: 1;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 6px;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.3 0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.2"/></svg>');
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 20px #f9731660, 0 8px 24px black;
-    }
-    .hero .sub {
-      font-size: 1.4rem;
-      color: var(--steel-light);
-      max-width: 700px;
-      margin: 0 auto 2rem;
-      border-top: 2px solid #4a4f54;
-      padding-top: 1rem;
-      display: inline-block;
-    }
-
-    /* ----- FEATURES GRID (3-4 items) ----- */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
-    }
-    .feature-card {
-      padding: 2.2rem 1.8rem;
-      text-align: center;
-    }
-    .feature-icon {
-      font-size: 3.8rem;
-      filter: drop-shadow(0 0 8px #f97316);
-      margin-bottom: 1rem;
-    }
-    .feature-card h3 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 0.75rem;
-    }
-
-    /* ----- STATS / TESTIMONIALS (two in one) ----- */
-    .stats-testimonials {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2.5rem;
-      justify-content: center;
-    }
-    .stat-item {
-      flex: 1 1 180px;
-      background: var(--bg-card);
-      border: var(--border-metallic);
-      border-radius: 40px;
-      padding: 2rem 1.2rem;
-      box-shadow: var(--shadow-card);
-      text-align: center;
-      position: relative;
-    }
-    .stat-number {
-      font-size: 4rem;
-      font-weight: 900;
-      background: linear-gradient(145deg, #f97316, #ffac6f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1;
-    }
-    .stat-label {
-      color: var(--steel-light);
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-    .testimonial-card {
-      flex: 2 1 320px;
-      background: var(--bg-card);
-      border: var(--border-metallic);
-      border-radius: 40px;
-      padding: 2rem 2.2rem;
-      box-shadow: var(--shadow-card);
-      position: relative;
-    }
-    .testimonial-card p {
-      font-size: 1.2rem;
-      font-style: italic;
-      color: var(--text-secondary);
-    }
-
-    /* ----- CTA section ----- */
-    .cta-section {
-      background: linear-gradient(0deg, #0e0e0e 0%, #1a1a1a 100%);
-      border-top: 2px solid #3d4247;
-      border-bottom: 2px solid #3d4247;
-      text-align: center;
-    }
-    .cta-section h2 {
-      font-size: 3rem;
-      font-weight: 900;
-      margin-bottom: 1.5rem;
-    }
-
-    /* ----- FOOTER ----- */
-    .industrial-footer {
-      border-top: 6px double #4a4f54;
-      padding: 2.5rem 0;
-      text-align: center;
-      color: var(--steel-mid);
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-
-    /* ----- REVEAL ANIMATIONS (intersection observer) ----- */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px) scale(0.96);
-      transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    /* responsive */
-    @media (max-width: 640px) {
-      .hero h1 { letter-spacing: 2px; }
-      .features-grid { grid-template-columns: 1fr; }
-      .stat-item { flex: 1 1 100%; }
-    }
-    @media (min-width: 1024px) {
-      .features-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    /* additional rivet spans positions */
-    .rivet-tl { top: 10px; left: 10px; }
-    .rivet-tr { top: 10px; right: 10px; }
-    .rivet-bl { bottom: 10px; left: 10px; }
-    .rivet-br { bottom: 10px; right: 10px; }
-    .metallic-border-card { position: relative; }
   </style>
 </head>
 <body>
-  <!-- Theme toggle -->
-  <div class="theme-toggle" id="themeToggle" aria-label="切换主题">
-    <span class="icon" id="themeIcon">🌙</span>
-  </div>
-
-  <!-- Spark particles canvas -->
+  <!-- Spark particle canvas -->
   <canvas id="spark-canvas"></canvas>
 
-  <!-- ========== HERO ========== -->
+  <!-- Theme toggle -->
+  <div class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <svg id="themeIcon" viewBox="0 0 24 24">
+      <path d="M21.752 15.002A9.72 9.72 0 0 1 12 2.25a9.72 9.72 0 0 1-9.752 12.752A10.13 10.13 0 0 0 12 21.75a10.13 10.13 0 0 0 9.752-6.748ZM12 18.75a6.75 6.75 0 1 1 0-13.5 6.75 6.75 0 0 1 0 13.5Z" />
+    </svg>
+  </div>
+
+  <!-- ===== HERO ===== -->
   <section class="hero">
-    <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge reveal">
+        <span class="dot"></span>
+        重型锻造工坊
+      </div>
       <h1 class="reveal">铸铁</h1>
-      <div class="sub reveal">暗钢铸造 · 重型工业装备</div>
-      <br>
-      <a href="#features" class="btn-cta reveal" style="margin-top:1.5rem;">探索锻造</a>
+      <p class="hero-sub reveal">
+        以烈焰为笔，以钢铁为墨。传承百年锻造工艺，铸就重型工业的不朽基石。
+      </p>
+      <div class="hero-actions reveal">
+        <a href="#features" class="btn-cta">探索锻造</a>
+        <a href="#process" class="btn-outline btn-cta">工艺流程</a>
+      </div>
+      <div class="hero-stats-bar reveal">
+        <div class="hero-stat">
+          <div class="hero-stat-value">1,280+</div>
+          <div class="hero-stat-label">锻造批次</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">98.6%</div>
+          <div class="hero-stat-label">强度合格率</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">47</div>
+          <div class="hero-stat-label">全球工坊</div>
+        </div>
+      </div>
     </div>
+    <div class="hero-glow"></div>
   </section>
 
-  <!-- ========== FEATURES (3-4 items) ========== -->
-  <section id="features" style="padding-top: 4rem;">
+  <hr class="steel-divider-heavy">
+
+  <!-- ===== FEATURES ===== -->
+  <section id="features">
     <div class="container">
-      <h2 class="metallic-gradient reveal" style="font-size: 3rem; font-weight: 900; text-align:center;">核心铸艺</h2>
+      <div class="section-header reveal">
+        <h2>核心铸艺</h2>
+        <p>三大核心锻造技术，定义重型工业的极致标准</p>
+      </div>
       <div class="features-grid">
-        <div class="feature-card metallic-border-card reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <div class="feature-icon">⚙️</div>
+        <!-- Card 1: Gear -->
+        <div class="card feature-card reveal reveal-delay-1">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
+          <div class="feature-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1s.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64L19.43 12.97Z"/></svg>
+          </div>
           <h3>齿轮传动</h3>
-          <p style="color:var(--text-secondary);">精密铸造 · 重型齿轮组</p>
+          <p>精密铸造重型齿轮组，承载扭矩突破极限。纳米级公差控制，确保每一轮啮合万无一失。</p>
+          <span class="tag">精密 · 重型</span>
         </div>
-        <div class="feature-card metallic-border-card reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <div class="feature-icon">🔨</div>
+        <!-- Card 2: Anvil -->
+        <div class="card feature-card reveal reveal-delay-2">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
+          <div class="feature-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11h20V9c0-1.1-.9-2-2-2zm-6 0h-4V4h4v3z"/><path d="M4 9v11h16V9H4zm2 2h3v3H6v-3zm0 5h3v3H6v-3zm5-5h3v3h-3v-3zm0 5h3v3h-3v-3zm5-5h3v3h-3v-3zm0 5h3v3h-3v-3z"/></svg>
+          </div>
           <h3>锻压铁砧</h3>
-          <p style="color:var(--text-secondary);">高强抗冲击 · 一体成型</p>
+          <p>万吨级液压锻压，一体成型无焊缝工艺。军工级抗冲击测试，每一寸钢板都经得起烈火淬炼。</p>
+          <span class="tag">军工 · 一体</span>
         </div>
-        <div class="feature-card metallic-border-card reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <div class="feature-icon">🔥</div>
+        <!-- Card 3: Flame -->
+        <div class="card feature-card reveal reveal-delay-3">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
+          <div class="feature-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
+          </div>
           <h3>烈焰淬火</h3>
-          <p style="color:var(--text-secondary);">火橙回火 · 硬度升级</p>
-        </div>
-        <div class="feature-card metallic-border-card reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <div class="feature-icon">⛓️</div>
-          <h3>重型链条</h3>
-          <p style="color:var(--text-secondary);">工业级负载 · 安全冗余</p>
+          <p>1600°C精确控温回火，分子级晶格重组。火橙色高温淬炼，赋予钢铁超越极限的硬度与韧性。</p>
+          <span class="tag">高温 · 极硬</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ========== STATS & TESTIMONIALS ========== -->
-  <section>
+  <hr class="steel-divider">
+
+  <!-- ===== STATS ===== -->
+  <section id="stats">
     <div class="container">
-      <h2 class="metallic-gradient reveal" style="font-size: 2.8rem; font-weight: 900; text-align:center; margin-bottom:2rem;">数字铸铁</h2>
-      <div class="stats-testimonials">
-        <div class="stat-item reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <div class="stat-number">1,280</div>
+      <div class="section-header reveal">
+        <h2>数字铸铁</h2>
+        <p>每一个数字，都是对钢铁意志的无声证明</p>
+      </div>
+      <div class="stats-grid">
+        <div class="card stat-card reveal reveal-delay-1">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
+          <div class="stat-number">1,280<span class="stat-unit">+</span></div>
           <div class="stat-label">锻造批次</div>
         </div>
-        <div class="stat-item reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <div class="stat-number">98.6%</div>
+        <div class="card stat-card reveal reveal-delay-2">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
+          <div class="stat-number">98.6<span class="stat-unit">%</span></div>
           <div class="stat-label">强度合格率</div>
         </div>
-        <div class="stat-item reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+        <div class="card stat-card reveal reveal-delay-3">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
           <div class="stat-number">47</div>
           <div class="stat-label">全球工坊</div>
         </div>
-        <div class="testimonial-card reveal">
-          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
-          <p>“暗钢铸铁的质感无可比拟，从 rivets 到 spark 粒子，每一处都像真正的重工业。” </p>
-          <div style="margin-top:1rem; font-weight:800; color:var(--steel-light);">—— 首席铸造师·陈钢</div>
+        <div class="card stat-card reveal reveal-delay-4">
+          <span class="rivet rivet-tl"></span>
+          <span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span>
+          <span class="rivet rivet-br"></span>
+          <div class="stat-number">2.4<span class="stat-unit">万</span></div>
+          <div class="stat-label">吨年产钢</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ========== CTA (fire-orange gradient) ========== -->
-  <section class="cta-section">
+  <hr class="steel-divider">
+
+  <!-- ===== PROCESS ===== -->
+  <section id="process">
     <div class="container">
-      <h2 class="reveal" style="font-weight: 900;">准备铸造？</h2>
-      <p class="reveal" style="font-size:1.3rem; color:var(--steel-light); margin-bottom:2rem;">立即联络工坊，获取暗钢样品与报价</p>
-      <a href="#" class="btn-cta reveal">🔥 点燃熔炉</a>
+      <div class="section-header reveal">
+        <h2>工艺流程</h2>
+        <p>从矿石到钢铁，四步锻造极致工艺</p>
+      </div>
+      <div class="process-grid">
+        <div class="process-step reveal reveal-delay-1">
+          <div class="step-number">01</div>
+          <h4>选矿熔炼</h4>
+          <p>精选高纯度铁矿石，1600°C高温熔炼，去除一切杂质</p>
+        </div>
+        <div class="process-step reveal reveal-delay-2">
+          <div class="step-number">02</div>
+          <h4>锻压成型</h4>
+          <p>万吨级液压机反复锻压，分子级致密化处理</p>
+        </div>
+        <div class="process-step reveal reveal-delay-3">
+          <div class="step-number">03</div>
+          <h4>淬火回火</h4>
+          <p>精确控温淬火工艺，晶格重组赋予极限硬度</p>
+        </div>
+        <div class="process-step reveal reveal-delay-4">
+          <div class="step-number">04</div>
+          <h4>检测出品</h4>
+          <p>全维度无损检测，合格品方可冠以铸铁之名</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ========== FOOTER ========== -->
+  <hr class="steel-divider">
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="reveal">准备铸造？</h2>
+        <p class="reveal">联络工坊，获取暗钢样品与专属锻造方案</p>
+        <div class="cta-actions reveal">
+          <a href="#" class="btn-cta">点燃熔炉</a>
+          <a href="#" class="btn-outline btn-cta">下载手册</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
   <footer class="industrial-footer">
     <div class="container">
-      <p style="font-size:1.1rem;">© 暗钢铸造 · 工业遗产 2025</p>
-      <p style="color:var(--steel-mid); margin-top:0.3rem;">铸铁 · 锻钢 · 永不妥协</p>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">铸铁</span>
+          <span class="footer-tagline">重型锻造 · 永不妥协</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#features">核心铸艺</a></li>
+          <li><a href="#stats">数字铸铁</a></li>
+          <li><a href="#process">工艺流程</a></li>
+          <li><a href="#">联络工坊</a></li>
+        </ul>
+      </div>
+      <div class="footer-copy">
+        © 2025 铸铁重型锻造工坊 · 以烈焰铸就不朽
+      </div>
     </div>
   </footer>
 
   <script>
-    (function() {
-      // ----- THEME TOGGLE (sun/moon) -----
-      const html = document.documentElement;
-      const toggleBtn = document.getElementById('themeToggle');
-      const iconSpan = document.getElementById('themeIcon');
-      const updateIcon = () => {
-        const theme = html.getAttribute('data-theme');
-        iconSpan.textContent = theme === 'light' ? '☀️' : '🌙';
-      };
-      toggleBtn.addEventListener('click', () => {
-        const current = html.getAttribute('data-theme');
-        html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    (function () {
+      /* ===== THEME TOGGLE ===== */
+      var html = document.documentElement;
+      var toggleBtn = document.getElementById('themeToggle');
+      var icon = document.getElementById('themeIcon');
+      var sunPath = 'M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM11 1h2v3h-2V1Zm0 19h2v3h-2v-3ZM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93ZM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121ZM1 11h3v2H1v-2Zm19 0h3v2h-3v-2ZM3.515 19.071l2.121-2.121 1.414 1.414-2.121 2.121-1.414-1.414ZM16.95 5.636l2.121-2.121 1.414 1.414-2.121 2.121-1.414-1.414Z';
+      var moonPath = 'M21.752 15.002A9.72 9.72 0 0 1 12 2.25a9.72 9.72 0 0 1-9.752 12.752A10.13 10.13 0 0 0 12 21.75a10.13 10.13 0 0 0 9.752-6.748ZM12 18.75a6.75 6.75 0 1 1 0-13.5 6.75 6.75 0 0 1 0 13.5Z';
+      function updateIcon() {
+        var isDark = html.getAttribute('data-theme') === 'dark';
+        icon.querySelector('path').setAttribute('d', isDark ? moonPath : sunPath);
+      }
+      toggleBtn.addEventListener('click', function () {
+        var cur = html.getAttribute('data-theme');
+        html.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
         updateIcon();
       });
       updateIcon();
 
-      // ----- SPARK PARTICLES (bright dots rising) -----
-      const canvas = document.getElementById('spark-canvas');
-      const ctx = canvas.getContext('2d');
-      let w, h;
+      /* ===== SPARK PARTICLES ===== */
+      var canvas = document.getElementById('spark-canvas');
+      var ctx = canvas.getContext('2d');
+      var w, h;
+
       function resize() {
         w = canvas.width = window.innerWidth;
         h = canvas.height = window.innerHeight;
@@ -473,90 +1151,66 @@
       window.addEventListener('resize', resize);
       resize();
 
-      const particles = [];
-      const PARTICLE_COUNT = 80;
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push({
+      var sparks = [];
+      var COUNT = 90;
+      for (var i = 0; i < COUNT; i++) {
+        sparks.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          size: Math.random() * 3.2 + 1.2,
-          speedY: -(Math.random() * 0.6 + 0.25),
-          speedX: (Math.random() - 0.5) * 0.3,
-          life: Math.random() * 0.8 + 0.2,
-          alpha: Math.random() * 0.7 + 0.3,
+          r: Math.random() * 2.5 + 0.8,
+          vy: -(Math.random() * 0.8 + 0.2),
+          vx: (Math.random() - 0.5) * 0.25,
+          a: Math.random() * 0.7 + 0.3,
+          life: Math.random()
         });
       }
 
-      function drawSparks() {
+      function draw() {
         ctx.clearRect(0, 0, w, h);
-        const isDark = html.getAttribute('data-theme') !== 'light';
-        for (let p of particles) {
-          // update
-          p.x += p.speedX;
-          p.y += p.speedY;
-          p.alpha -= 0.002;
-          if (p.alpha <= 0.02 || p.y < -20 || p.x < -20 || p.x > w + 20) {
-            p.x = Math.random() * w;
-            p.y = h + 10 + Math.random() * 20;
-            p.alpha = Math.random() * 0.6 + 0.4;
-            p.size = Math.random() * 3.2 + 1.2;
-            p.speedY = -(Math.random() * 0.7 + 0.2);
+        for (var i = 0; i < sparks.length; i++) {
+          var s = sparks[i];
+          s.x += s.vx;
+          s.y += s.vy;
+          s.a -= 0.0015;
+          if (s.a <= 0.01 || s.y < -10) {
+            s.x = Math.random() * w;
+            s.y = h + Math.random() * 40;
+            s.a = Math.random() * 0.6 + 0.4;
+            s.r = Math.random() * 2.5 + 0.8;
+            s.vy = -(Math.random() * 0.8 + 0.2);
           }
-          // draw bright dot
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          const gradient = ctx.createRadialGradient(p.x-1, p.y-1, 0, p.x, p.y, p.size*2);
-          const baseColor = isDark ? '255, 180, 100' : '220, 120, 40';
-          gradient.addColorStop(0, `rgba(${baseColor}, ${p.alpha})`);
-          gradient.addColorStop(0.7, `rgba(${baseColor}, ${p.alpha*0.5})`);
-          gradient.addColorStop(1, `rgba(${baseColor}, 0)`);
-          ctx.fillStyle = gradient;
-          ctx.shadowColor = isDark ? '#f97316' : '#d65d0e';
-          ctx.shadowBlur = 16;
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          var g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 3);
+          g.addColorStop(0, 'rgba(255,180,100,' + s.a + ')');
+          g.addColorStop(0.5, 'rgba(249,115,22,' + (s.a * 0.5) + ')');
+          g.addColorStop(1, 'rgba(249,115,22,0)');
+          ctx.fillStyle = g;
+          ctx.shadowColor = '#f97316';
+          ctx.shadowBlur = 12;
           ctx.fill();
+          ctx.shadowBlur = 0;
         }
-        requestAnimationFrame(drawSparks);
+        requestAnimationFrame(draw);
       }
-      drawSparks();
+      draw();
 
-      // ----- INTERSECTION OBSERVER (reveal) -----
-      const revealElements = document.querySelectorAll('.reveal');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-          }
+      /* ===== INTERSECTION OBSERVER ===== */
+      var revealEls = document.querySelectorAll('.reveal');
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) e.target.classList.add('active');
         });
-      }, { threshold: 0.2, rootMargin: '0px 0px -30px 0px' });
-      revealElements.forEach(el => observer.observe(el));
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      revealEls.forEach(function (el) { observer.observe(el); });
 
-      // additionally set active for hero quickly
-      setTimeout(() => {
-        document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('active'));
-      }, 100);
-
-      // extra rivet spans: we already added in HTML for each card/stat. fine.
+      /* ===== HERO FAST REVEAL ===== */
+      setTimeout(function () {
+        document.querySelectorAll('.hero .reveal').forEach(function (el) {
+          el.classList.add('active');
+        });
+      }, 120);
     })();
   </script>
-
-  <!-- ensure rivet corners for all metallic cards, we placed spans inside each card -->
-  <!-- additional rivets for stat items already inside -->
-  <!-- extra style for rivet spans -->
-  <style>
-    .rivet {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: radial-gradient(circle at 30% 30%, #c0c5c9, #3d4247);
-      border-radius: 50%;
-      box-shadow: 0 0 0 1px #1a1e22 inset;
-      pointer-events: none;
-      z-index: 3;
-    }
-    .metallic-border-card, .stat-item, .testimonial-card {
-      position: relative;
-    }
-    /* ensure no overflow hidden */
-  </style>
 </body>
 </html>

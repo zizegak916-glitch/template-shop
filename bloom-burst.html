@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>春绽 · 花舞</title>
-    <!-- Google Fonts: 现代清爽字体 -->
+    <title>绽放 · 春日花园</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ----- CSS 自定义属性 (主题) ----- */
         :root {
-            --bloom-pink: #ffb7c5;
+            --blossom-pink: #ffb7c5;
             --spring-green: #90ee90;
             --soft-white: #fff9f5;
             --lavender: #d8d0f0;
-            --petal-shadow: rgba(255, 183, 197, 0.3);
-            --card-radius: 2rem 1rem 2rem 1rem;
-            --transition-smooth: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --bg-gradient: linear-gradient(145deg, #fffcf9 0%, #ffeef0 45%, #eaf7e6 100%);
-            --card-bg: rgba(255, 255, 255, 0.7);
-            --text-primary: #2d3a2d;
-            --text-secondary: #4a5a4a;
-            --border-floral: #ffb7c5;
+            --petal-shadow: rgba(255, 183, 197, 0.25);
+            --card-radius: 2.2rem 1rem 2.2rem 1rem;
+            --smooth: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --font: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            --bg: linear-gradient(160deg, #fffcf9 0%, #ffeef2 40%, #e8f5e3 100%);
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --text-main: #2d3a2d;
+            --text-sub: #556b55;
+            --border-floral: rgba(255, 183, 197, 0.45);
+            --accent-glow: rgba(255, 183, 197, 0.18);
         }
 
         [data-theme="dark"] {
-            --bg-gradient: linear-gradient(145deg, #1f261f 0%, #2d2a2a 45%, #253025 100%);
-            --card-bg: rgba(40, 45, 40, 0.8);
-            --text-primary: #f0efe7;
-            --text-secondary: #c0cbb5;
-            --border-floral: #b38b9a;
-            --petal-shadow: rgba(180, 130, 150, 0.4);
-            --bloom-pink: #d99aa8;
+            --bg: linear-gradient(160deg, #1a1f1a 0%, #252025 40%, #1f2a1f 100%);
+            --card-bg: rgba(45, 50, 45, 0.75);
+            --text-main: #f0efe7;
+            --text-sub: #b8c8a8;
+            --border-floral: rgba(180, 130, 150, 0.35);
+            --blossom-pink: #d99aa8;
             --spring-green: #6fb06f;
             --soft-white: #2f2f2a;
             --lavender: #8f86a8;
+            --petal-shadow: rgba(180, 130, 150, 0.3);
+            --accent-glow: rgba(180, 130, 150, 0.12);
         }
 
-        /* ----- 基础重置 & 排版 ----- */
         * {
             margin: 0;
             padding: 0;
@@ -52,52 +51,51 @@
         }
 
         body {
-            font-family: var(--font-family);
-            background: var(--bg-gradient);
-            color: var(--text-primary);
-            line-height: 1.5;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.65;
             min-height: 100vh;
             transition: background 0.6s ease, color 0.4s ease;
             overflow-x: hidden;
         }
 
-        /* 主题切换按钮 (太阳/月亮) */
+        /* ====== THEME TOGGLE ====== */
         .theme-toggle {
             position: fixed;
             top: 1.2rem;
             right: 1.2rem;
-            z-index: 999;
+            z-index: 1000;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            border: 1.5px solid var(--blossom-pink);
             background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(6px);
-            border: 1px solid var(--bloom-pink);
-            border-radius: 60px;
-            width: 2.8rem;
-            height: 2.8rem;
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 6px 18px rgba(255, 183, 197, 0.2);
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-            font-size: 1.4rem;
-        }
-        .theme-toggle:hover {
-            transform: scale(1.08) rotate(10deg);
-            background: rgba(255, 255, 255, 0.7);
-            border-color: var(--spring-green);
-        }
-        .theme-toggle:active {
-            transform: scale(0.92);
+            box-shadow: 0 8px 24px rgba(255, 183, 197, 0.18);
+            transition: all 0.35s ease;
+            font-size: 1.35rem;
+            color: var(--text-main);
         }
 
-        /* ----- 浮动花瓣 (CSS 动画) ----- */
-        .petal-field {
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(12deg);
+            border-color: var(--spring-green);
+            box-shadow: 0 10px 30px rgba(144, 238, 144, 0.22);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+
+        /* ====== FLOATING PETALS ====== */
+        .petal-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             pointer-events: none;
             z-index: 0;
             overflow: hidden;
@@ -105,470 +103,1075 @@
 
         .petal {
             position: absolute;
+            top: -40px;
+            border-radius: 80% 0 80% 0;
+            opacity: 0;
+            filter: blur(0.3px);
+            animation: petalFall linear infinite;
+        }
+
+        .petal::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: inherit;
+            background: inherit;
+            opacity: 0.4;
+        }
+
+        @keyframes petalFall {
+            0% {
+                transform: translateY(-5vh) translateX(0) rotate(0deg) scale(0.7);
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.55;
+            }
+            50% {
+                transform: translateY(50vh) translateX(60px) rotate(360deg) scale(1);
+            }
+            85% {
+                opacity: 0.35;
+            }
+            100% {
+                transform: translateY(108vh) translateX(-20px) rotate(720deg) scale(0.9);
+                opacity: 0;
+            }
+        }
+
+        .petal:nth-child(1) {
+            left: 6%;
+            width: 22px;
+            height: 22px;
+            background: var(--blossom-pink);
+            animation-duration: 14s;
+            animation-delay: 0s;
+        }
+
+        .petal:nth-child(2) {
+            left: 18%;
+            width: 16px;
+            height: 16px;
+            background: var(--lavender);
+            animation-duration: 19s;
+            animation-delay: 2.5s;
+        }
+
+        .petal:nth-child(3) {
+            left: 32%;
+            width: 28px;
+            height: 28px;
+            background: var(--blossom-pink);
+            animation-duration: 16s;
+            animation-delay: 1s;
+        }
+
+        .petal:nth-child(4) {
+            left: 48%;
+            width: 18px;
+            height: 18px;
+            background: var(--spring-green);
+            animation-duration: 22s;
+            animation-delay: 4s;
+            opacity: 0.35;
+        }
+
+        .petal:nth-child(5) {
+            left: 62%;
+            width: 26px;
+            height: 26px;
+            background: var(--blossom-pink);
+            animation-duration: 13s;
+            animation-delay: 3s;
+        }
+
+        .petal:nth-child(6) {
+            left: 75%;
+            width: 14px;
+            height: 14px;
+            background: #f8c8dc;
+            animation-duration: 20s;
+            animation-delay: 5.5s;
+        }
+
+        .petal:nth-child(7) {
+            left: 88%;
+            width: 32px;
+            height: 32px;
+            background: var(--blossom-pink);
+            animation-duration: 17s;
+            animation-delay: 1.5s;
+            opacity: 0.3;
+        }
+
+        .petal:nth-child(8) {
+            left: 42%;
+            width: 20px;
+            height: 20px;
+            background: var(--lavender);
+            animation-duration: 21s;
+            animation-delay: 6s;
+        }
+
+        .petal:nth-child(9) {
+            left: 94%;
+            width: 17px;
+            height: 17px;
+            background: var(--blossom-pink);
+            animation-duration: 15s;
+            animation-delay: 3.5s;
+        }
+
+        .petal:nth-child(10) {
+            left: 24%;
             width: 24px;
             height: 24px;
-            background: radial-gradient(circle at 30% 30%, var(--bloom-pink), rgba(255, 183, 197, 0.2));
-            border-radius: 80% 0 80% 0;
-            opacity: 0.5;
-            filter: blur(0.4px);
-            box-shadow: 0 0 12px var(--petal-shadow);
-            animation: fall linear infinite;
-            transform-origin: center;
+            background: var(--spring-green);
+            animation-duration: 18s;
+            animation-delay: 7s;
+            opacity: 0.3;
         }
 
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg) scale(0.8); opacity: 0.2; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.4; }
-            100% { transform: translateY(110vh) rotate(720deg) scale(1.1); opacity: 0; }
+        .petal:nth-child(11) {
+            left: 55%;
+            width: 21px;
+            height: 21px;
+            background: var(--blossom-pink);
+            animation-duration: 12s;
+            animation-delay: 0.5s;
         }
 
-        /* 不同花瓣大小与速度 */
-        .petal:nth-child(1) { left: 5%; width: 30px; height: 30px; animation-duration: 13s; animation-delay: 0s; }
-        .petal:nth-child(2) { left: 15%; width: 18px; height: 18px; animation-duration: 18s; animation-delay: 2s; background: var(--lavender); }
-        .petal:nth-child(3) { left: 30%; width: 26px; height: 26px; animation-duration: 15s; animation-delay: 4s; }
-        .petal:nth-child(4) { left: 50%; width: 20px; height: 20px; animation-duration: 20s; animation-delay: 1s; background: var(--spring-green); opacity: 0.3; }
-        .petal:nth-child(5) { left: 70%; width: 28px; height: 28px; animation-duration: 14s; animation-delay: 3s; }
-        .petal:nth-child(6) { left: 85%; width: 16px; height: 16px; animation-duration: 22s; animation-delay: 5s; background: #f8c8dc; }
-        .petal:nth-child(7) { left: 40%; width: 34px; height: 34px; animation-duration: 17s; animation-delay: 6s; opacity: 0.4; }
-        .petal:nth-child(8) { left: 92%; width: 22px; height: 22px; animation-duration: 19s; animation-delay: 2s; background: var(--lavender); }
+        .petal:nth-child(12) {
+            left: 82%;
+            width: 19px;
+            height: 19px;
+            background: var(--lavender);
+            animation-duration: 24s;
+            animation-delay: 8s;
+        }
 
-        /* ----- 内容容器 (z-index 高于花瓣) ----- */
-        .main-content {
+        /* ====== MAIN CONTENT ====== */
+        .main-wrap {
             position: relative;
             z-index: 5;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem 1.5rem 1rem;
+            padding: 1.5rem 1.25rem 0;
         }
 
-        /* ----- 滚动显现动画 (bloom) ----- */
-        .bloom-hidden {
+        /* ====== BLOOM SCROLL ANIMATION ====== */
+        .bloom {
             opacity: 0;
-            transform: scale(0.4) translateY(30px);
-            transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.35) translateY(40px);
+            transition: opacity 0.9s ease, transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .bloom-visible {
+        .bloom.active {
             opacity: 1;
             transform: scale(1) translateY(0);
         }
 
-        /* ----- 通用卡片 & 按钮 ----- */
-        .card-floral {
-            background: var(--card-bg);
-            backdrop-filter: blur(4px);
-            border-radius: var(--card-radius);
-            border: 1px solid var(--border-floral);
-            box-shadow: 0 12px 28px -10px rgba(255, 183, 197, 0.15);
-            padding: 1.8rem 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        /* stagger delay for children */
+        .bloom.stagger-1 { transition-delay: 0.1s; }
+        .bloom.stagger-2 { transition-delay: 0.2s; }
+        .bloom.stagger-3 { transition-delay: 0.3s; }
+
+        /* ====== NAV ====== */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            margin-bottom: 1rem;
         }
 
-        .card-floral::before {
-            content: "🌸";
-            position: absolute;
-            top: -6px;
-            right: 0px;
-            font-size: 1.8rem;
-            opacity: 0.2;
-            transform: rotate(15deg);
-            transition: 0.3s;
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blossom-pink), var(--spring-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 0.04em;
         }
 
-        .card-floral:hover::before {
-            opacity: 0.6;
-            transform: rotate(25deg) scale(1.1);
+        .nav-links {
+            display: flex;
+            gap: 1.6rem;
+            list-style: none;
         }
 
-        .card-floral:hover {
-            transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 20px 36px -12px rgba(144, 238, 144, 0.25);
-            border-color: var(--spring-green);
-        }
-
-        .btn-gradient {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--bloom-pink), var(--spring-green));
-            color: #1f2a1f;
-            font-weight: 600;
-            padding: 0.9rem 2.8rem;
-            border-radius: 60px;
-            border: none;
-            box-shadow: 0 8px 24px rgba(255, 183, 197, 0.3);
-            transition: all 0.3s ease;
+        .nav-links a {
             text-decoration: none;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            font-size: 1.1rem;
+            color: var(--text-sub);
+            font-weight: 400;
+            font-size: 0.92rem;
+            transition: color 0.25s;
         }
 
-        .btn-gradient:hover {
-            transform: scale(1.04);
-            box-shadow: 0 14px 32px rgba(144, 238, 144, 0.4);
-            background: linear-gradient(135deg, var(--spring-green), var(--bloom-pink));
+        .nav-links a:hover {
+            color: var(--blossom-pink);
         }
 
-        /* ----- 布局区块 ----- */
+        /* ====== HERO ====== */
         .hero {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 3rem 0 5rem;
-            gap: 1rem;
+            padding: 4rem 0 6rem;
+            gap: 0.8rem;
+            position: relative;
+        }
+
+        .hero-petals {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 2.4rem;
+            animation: gentleFloat 4s ease-in-out infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-14px); }
         }
 
         .hero h1 {
-            font-size: clamp(3.2rem, 15vw, 6rem);
+            font-size: clamp(3.6rem, 16vw, 7.5rem);
             font-weight: 700;
-            letter-spacing: -0.01em;
-            background: linear-gradient(120deg, var(--bloom-pink), var(--spring-green), var(--lavender));
+            line-height: 1.05;
+            letter-spacing: 0.04em;
+            background: linear-gradient(135deg, var(--blossom-pink) 0%, var(--spring-green) 55%, var(--lavender) 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 8px 24px rgba(255, 183, 197, 0.2);
-            line-height: 1.1;
+            filter: drop-shadow(0 6px 20px var(--accent-glow));
+            position: relative;
         }
 
-        .hero .sub {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            max-width: 600px;
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--text-sub);
             font-weight: 300;
-            letter-spacing: 0.3px;
+            max-width: 520px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
         }
 
-        .hero .floating-petals-inline {
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1.2rem;
+        }
+
+        .btn-primary {
             display: inline-flex;
-            gap: 0.6rem;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--blossom-pink), var(--spring-green));
+            color: #1f2a1f;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 0.85rem 2.6rem;
+            border-radius: 60px;
+            border: none;
+            box-shadow: 0 10px 28px rgba(255, 183, 197, 0.28);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.02em;
+            font-family: var(--font);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 16px 36px rgba(144, 238, 144, 0.32);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 1.05rem;
+            padding: 0.85rem 2.4rem;
+            border-radius: 60px;
+            border: 1.5px solid var(--border-floral);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--blossom-pink);
+            background: rgba(255, 183, 197, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* ====== SECTION TITLE ====== */
+        .section-label {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-label h2 {
             font-size: 2rem;
-            animation: floatPetals 3s ease-in-out infinite;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
         }
 
-        @keyframes floatPetals {
-            0%,100%{ transform: translateY(0); }
-            50%{ transform: translateY(-10px); }
+        .section-label p {
+            color: var(--text-sub);
+            font-weight: 300;
+            font-size: 1.05rem;
         }
 
-        /* features grid */
-        .features-grid {
+        .section-label .decor-line {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blossom-pink), var(--spring-green));
+            border-radius: 3px;
+            margin: 0.8rem auto 0;
+        }
+
+        /* ====== FEATURES (3 cards) ====== */
+        .features-row {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1.8rem;
-            margin: 4rem 0;
+            gap: 1.6rem;
+            margin-bottom: 5rem;
         }
 
-        .feature-icon {
+        .feat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(6px);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-floral);
+            padding: 2.2rem 1.8rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.35s ease;
+            box-shadow: 0 8px 30px -8px var(--accent-glow);
+        }
+
+        .feat-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, var(--blossom-pink) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.12;
+            transition: all 0.4s ease;
+        }
+
+        .feat-card::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, var(--spring-green) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.1;
+            transition: all 0.4s ease;
+        }
+
+        .feat-card:hover {
+            transform: translateY(-8px) scale(1.015);
+            box-shadow: 0 20px 40px -12px rgba(144, 238, 144, 0.22);
+            border-color: var(--spring-green);
+        }
+
+        .feat-card:hover::before {
+            opacity: 0.22;
+            transform: scale(1.3);
+        }
+
+        .feat-card:hover::after {
+            opacity: 0.18;
+            transform: scale(1.2);
+        }
+
+        .feat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, rgba(255,183,197,0.15), rgba(144,238,144,0.15));
+            border: 1px solid var(--border-floral);
+            transition: transform 0.3s;
+        }
+
+        .feat-card:hover .feat-icon {
+            transform: rotate(-8deg) scale(1.08);
+        }
+
+        .feat-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.45rem;
+        }
+
+        .feat-card p {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        .feat-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--blossom-pink);
+            background: rgba(255, 183, 197, 0.1);
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            letter-spacing: 0.03em;
+        }
+
+        /* ====== STATS ====== */
+        .stats-band {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 5rem;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border-floral);
+            border-radius: 2rem 0.8rem 2rem 0.8rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            transition: all 0.35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blossom-pink), var(--spring-green));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-box:hover::before {
+            opacity: 1;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+            border-color: var(--spring-green);
+        }
+
+        .stat-num {
             font-size: 2.6rem;
-            display: block;
-            margin-bottom: 0.8rem;
-            filter: drop-shadow(0 4px 8px var(--petal-shadow));
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blossom-pink), var(--spring-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
         }
 
-        .features-grid h3 {
-            font-size: 1.6rem;
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            margin-top: 0.3rem;
+            font-weight: 400;
+        }
+
+        .stat-emoji {
+            font-size: 1.4rem;
+            margin-top: 0.5rem;
+            display: block;
+            opacity: 0.7;
+        }
+
+        /* ====== GALLERY / SHOWCASE ====== */
+        .showcase {
+            margin-bottom: 5rem;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.4rem;
+        }
+
+        .showcase-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border-floral);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            transition: all 0.35s ease;
+            position: relative;
+        }
+
+        .showcase-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 36px -10px var(--accent-glow);
+        }
+
+        .showcase-visual {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .showcase-card:nth-child(1) .showcase-visual {
+            background: linear-gradient(135deg, rgba(255,183,197,0.12), rgba(216,208,240,0.15));
+        }
+
+        .showcase-card:nth-child(2) .showcase-visual {
+            background: linear-gradient(135deg, rgba(144,238,144,0.1), rgba(255,183,197,0.12));
+        }
+
+        .showcase-card:nth-child(3) .showcase-visual {
+            background: linear-gradient(135deg, rgba(216,208,240,0.15), rgba(144,238,144,0.1));
+        }
+
+        .showcase-card:nth-child(4) .showcase-visual {
+            background: linear-gradient(135deg, rgba(255,183,197,0.12), rgba(144,238,144,0.12));
+        }
+
+        .showcase-info {
+            padding: 1.4rem 1.5rem;
+        }
+
+        .showcase-info h4 {
+            font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.3rem;
         }
 
-        .features-grid p {
-            color: var(--text-secondary);
+        .showcase-info p {
+            font-size: 0.88rem;
+            color: var(--text-sub);
             font-weight: 300;
         }
 
-        /* stats / testimonials 合并区域 */
-        .stats-testimonials {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.8rem;
-            margin: 4rem 0;
-            justify-content: center;
-        }
-
-        .stat-item {
-            flex: 1 1 180px;
-            text-align: center;
+        /* ====== TESTIMONIAL ====== */
+        .testimonial {
             background: var(--card-bg);
-            backdrop-filter: blur(4px);
-            border-radius: 2.5rem 0.8rem 2.5rem 0.8rem;
-            padding: 1.8rem 0.8rem;
-            border: 1px solid var(--lavender);
-            transition: 0.3s;
-        }
-
-        .stat-item:hover {
-            border-color: var(--bloom-pink);
-            transform: scale(1.02);
-        }
-
-        .stat-number {
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: var(--bloom-pink);
-        }
-
-        .testimonial-card {
-            flex: 2 1 300px;
-            background: var(--card-bg);
-            backdrop-filter: blur(4px);
-            border-radius: 2rem 0.8rem 2rem 0.8rem;
-            padding: 1.8rem 2rem;
+            backdrop-filter: blur(6px);
             border: 1px solid var(--spring-green);
+            border-radius: 2.2rem 1rem 2.2rem 1rem;
+            padding: 2.8rem 2.4rem;
+            margin-bottom: 5rem;
             position: relative;
+            overflow: hidden;
         }
 
-        .testimonial-card::after {
-            content: "💮";
+        .testimonial::before {
+            content: '"';
             position: absolute;
-            bottom: 10px;
-            right: 16px;
-            opacity: 0.2;
-            font-size: 2.2rem;
+            top: -10px;
+            left: 20px;
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--blossom-pink);
+            opacity: 0.1;
+            line-height: 1;
         }
 
-        /* CTA */
-        .cta-section {
-            background: linear-gradient(135deg, rgba(255,183,197,0.12), rgba(144,238,144,0.12));
-            border-radius: 3rem 1rem 3rem 1rem;
-            padding: 3rem 2rem;
-            margin: 4rem 0;
-            text-align: center;
-            border: 1px solid var(--border-floral);
-        }
-
-        .cta-section h2 {
+        .testimonial::after {
+            content: '💮';
+            position: absolute;
+            bottom: 16px;
+            right: 24px;
             font-size: 2.4rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+            opacity: 0.15;
         }
 
-        /* footer */
-        .footer {
-            margin-top: 5rem;
-            padding: 2rem 0 1rem;
-            text-align: center;
-            border-top: 1px solid var(--lavender);
-            color: var(--text-secondary);
+        .testimonial blockquote {
+            font-size: 1.15rem;
+            font-style: italic;
             font-weight: 300;
+            line-height: 1.8;
+            color: var(--text-main);
+            margin-bottom: 1.4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author span:first-child {
+            font-size: 1.6rem;
+        }
+
+        .testimonial-author small {
+            display: block;
+            font-weight: 300;
+            color: var(--text-sub);
+            font-size: 0.82rem;
+        }
+
+        /* ====== CTA ====== */
+        .cta-block {
+            background: linear-gradient(135deg, rgba(255,183,197,0.14), rgba(144,238,144,0.14));
+            border: 1px solid var(--border-floral);
+            border-radius: 3rem 1.2rem 3rem 1.2rem;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            margin-bottom: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-block::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(255,183,197,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 80%, rgba(144,238,144,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cta-block h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-block .cta-sub {
+            font-size: 1.05rem;
+            color: var(--text-sub);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-flowers {
+            margin-top: 2rem;
+            font-size: 1.6rem;
+            letter-spacing: 8px;
+            opacity: 0.4;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== FOOTER ====== */
+        .site-footer {
+            padding: 2rem 0 1.5rem;
+            border-top: 1px solid var(--border-floral);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .footer-row {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1.2rem;
-        }
-
-        .footer span {
+            gap: 1rem 2rem;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-weight: 300;
             opacity: 0.7;
         }
 
-        /* ----- 响应式 ----- */
+        .footer-row span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-copy {
+            margin-top: 1rem;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            opacity: 0.5;
+        }
+
+        /* ====== RESPONSIVE ====== */
         @media (min-width: 640px) {
-            .features-grid {
+            .features-row {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .hero h1 {
-                font-size: 5rem;
+
+            .stats-band {
+                gap: 1.8rem;
             }
-            .main-content {
-                padding: 2.5rem 2.5rem 1rem;
+
+            .showcase-grid {
+                gap: 1.8rem;
+            }
+
+            .main-wrap {
+                padding: 2rem 2.5rem 0;
             }
         }
 
-        @media (min-width: 1024px) {
-            .features-grid {
-                grid-template-columns: repeat(4, 1fr);
+        @media (min-width: 960px) {
+            .features-row {
+                grid-template-columns: repeat(3, 1fr);
                 gap: 2rem;
             }
+
             .hero {
-                padding: 5rem 0 6rem;
+                padding: 6rem 0 7rem;
             }
+
             .hero h1 {
-                font-size: 6.5rem;
+                font-size: 7rem;
             }
-            .cta-section {
-                padding: 4rem 6rem;
+
+            .cta-block {
+                padding: 4rem 5rem;
+            }
+
+            .showcase-card:nth-child(3),
+            .showcase-card:nth-child(4) {
+                display: block;
             }
         }
 
-        /* 辅助 */
-        .text-center { text-align: center; }
-        .mt-2 { margin-top: 2rem; }
-        .gap-2 { gap: 1rem; }
-        .flex-center { display: flex; align-items: center; justify-content: center; }
+        @media (max-width: 639px) {
+            .nav-links {
+                display: none;
+            }
+
+            .stats-band {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-box {
+                padding: 1.5rem 0.8rem;
+            }
+
+            .stat-num {
+                font-size: 2.2rem;
+            }
+
+            .testimonial {
+                padding: 2rem 1.4rem;
+            }
+
+            .cta-block {
+                padding: 2.5rem 1.2rem;
+                border-radius: 2rem 0.8rem 2rem 0.8rem;
+            }
+
+            .showcase-card:nth-child(3),
+            .showcase-card:nth-child(4) {
+                display: none;
+            }
+        }
+
+        /* ====== UTILITY ====== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 浮动花瓣背景 (固定) -->
-    <div class="petal-field" aria-hidden="true">
-        <div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>
-        <div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <!-- Floating petals -->
+    <div class="petal-container" aria-hidden="true">
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
+        <div class="petal"></div>
     </div>
 
-    <!-- 主题切换 -->
-    <div class="theme-toggle" id="themeToggle" role="button" aria-label="切换主题" tabindex="0">
-        <span id="themeIcon">☀️</span>
-    </div>
+    <!-- Theme toggle -->
+    <button class="theme-toggle" id="themeBtn" aria-label="切换主题" title="切换明暗主题">
+        <span id="themeIcon">&#9728;&#65039;</span>
+    </button>
 
-    <!-- 主内容 -->
-    <div class="main-content">
+    <div class="main-wrap">
 
-        <!-- HERO 区块 -->
-        <section class="hero bloom-hidden" id="heroSection">
-            <div class="floating-petals-inline">
-                <span>🌸</span><span>🌼</span><span>🌷</span>
+        <!-- NAV -->
+        <nav class="top-nav bloom" id="nav">
+            <div class="logo">绽放</div>
+            <ul class="nav-links">
+                <li><a href="#features">特色</a></li>
+                <li><a href="#stats">数据</a></li>
+                <li><a href="#showcase">展示</a></li>
+                <li><a href="#cta">开始</a></li>
+            </ul>
+        </nav>
+
+        <!-- HERO -->
+        <section class="hero bloom" id="hero">
+            <div class="hero-petals" aria-hidden="true">
+                <span>&#127800;</span>
+                <span>&#127803;</span>
+                <span>&#127793;</span>
             </div>
             <h1>绽放</h1>
-            <p class="sub">春光潋滟 · 万物复苏 · 花舞轻扬</p>
-            <div style="display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem;">
-                <a href="#features" class="btn-gradient">探索春意</a>
-                <a href="#cta" class="btn-gradient" style="background: linear-gradient(135deg, var(--lavender), var(--bloom-pink));">即刻绽放</a>
+            <p class="hero-sub">春日花园 &middot; 万物复苏 &middot; 花瓣轻舞飞扬，感受生命最柔软的脉动</p>
+            <div class="hero-actions">
+                <a href="#features" class="btn-primary">&#127800; 探索春意</a>
+                <a href="#cta" class="btn-outline">&#127793; 立即开始</a>
             </div>
         </section>
 
-        <!-- FEATURES 网格 (4项) 花图标 -->
-        <section id="features" class="features-grid bloom-hidden">
-            <div class="card-floral">
-                <span class="feature-icon">🌸</span>
-                <h3>初樱</h3>
-                <p>粉瓣轻旋，晨露凝香，第一缕春意。</p>
+        <!-- FEATURES -->
+        <section id="features">
+            <div class="section-label bloom">
+                <h2>春日三景</h2>
+                <p>三朵花，三种灵感，为你绽放整个春天</p>
+                <div class="decor-line"></div>
             </div>
-            <div class="card-floral">
-                <span class="feature-icon">🌿</span>
-                <h3>新芽</h3>
-                <p>嫩绿破土，生机盎然，漫野清新。</p>
-            </div>
-            <div class="card-floral">
-                <span class="feature-icon">🌼</span>
-                <h3>迎春</h3>
-                <p>金蕊向阳，柔软的风拂过田埂。</p>
-            </div>
-            <div class="card-floral">
-                <span class="feature-icon">💜</span>
-                <h3>薰衣</h3>
-                <p>淡紫薄雾，静谧花园，浪漫低语。</p>
+            <div class="features-row">
+                <article class="feat-card bloom stagger-1">
+                    <div class="feat-icon">&#127800;</div>
+                    <h3>初樱绽放</h3>
+                    <p>粉瓣轻旋，晨露凝香。清晨第一缕阳光穿过樱花枝桠，春意从这里开始蔓延，每一朵花都承载着新生的希望。</p>
+                    <span class="feat-tag">樱花粉 #ffb7c5</span>
+                </article>
+                <article class="feat-card bloom stagger-2">
+                    <div class="feat-icon">&#127793;</div>
+                    <h3>嫩芽新生</h3>
+                    <p>嫩绿破土，生机盎然。春雨过后，漫野清新，每一株新芽都是大地写给天空的情书，诉说着成长的故事。</p>
+                    <span class="feat-tag">春绿 #90ee90</span>
+                </article>
+                <article class="feat-card bloom stagger-3">
+                    <div class="feat-icon">&#127804;</div>
+                    <h3>薰衣梦境</h3>
+                    <p>淡紫薄雾，静谧花园。薰衣草随风轻摆，浪漫低语在花海间回荡，为心灵营造一片安宁的栖息地。</p>
+                    <span class="feat-tag">薰衣草紫</span>
+                </article>
             </div>
         </section>
 
-        <!-- STATS + 评价 (混合) -->
-        <div class="stats-testimonials bloom-hidden">
-            <div class="stat-item">
-                <div class="stat-number">128+</div>
-                <div>花园设计</div>
-                <div style="font-size: 1.2rem; margin-top: 4px;">🌸</div>
+        <!-- STATS -->
+        <section id="stats">
+            <div class="section-label bloom">
+                <h2>数字见证</h2>
+                <p>用数据讲述春天的故事</p>
+                <div class="decor-line"></div>
             </div>
-            <div class="stat-item">
-                <div class="stat-number">3.2k</div>
-                <div>绽放时刻</div>
-                <div style="font-size: 1.2rem; margin-top: 4px;">🌱</div>
-            </div>
-            <div class="testimonial-card">
-                <p style="font-style: italic; font-weight: 300;">“春绽模板让我们的品牌如沐春风，花瓣动画细腻，色彩柔和，转化率提升了26%。”</p>
-                <div style="margin-top: 1rem; display: flex; gap: 0.6rem; align-items: center;">
-                    <span>🌸</span><span>林语棠 · 花艺工作室</span>
+            <div class="stats-band">
+                <div class="stat-box bloom stagger-1">
+                    <div class="stat-num">256+</div>
+                    <div class="stat-label">花园设计方案</div>
+                    <span class="stat-emoji">&#127800;</span>
+                </div>
+                <div class="stat-box bloom stagger-2">
+                    <div class="stat-num">5.8k</div>
+                    <div class="stat-label">绽放时刻记录</div>
+                    <span class="stat-emoji">&#127793;</span>
+                </div>
+                <div class="stat-box bloom stagger-3">
+                    <div class="stat-num">98%</div>
+                    <div class="stat-label">用户满意度</div>
+                    <span class="stat-emoji">&#127803;</span>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- SHOWCASE -->
+        <section id="showcase" class="showcase">
+            <div class="section-label bloom">
+                <h2>灵感展示</h2>
+                <p>每一处细节，都是春天的注脚</p>
+                <div class="decor-line"></div>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-card bloom stagger-1">
+                    <div class="showcase-visual">&#127800;&#127803;&#127804;</div>
+                    <div class="showcase-info">
+                        <h4>花园晨光</h4>
+                        <p>清晨露珠在花瓣上闪烁</p>
+                    </div>
+                </div>
+                <div class="showcase-card bloom stagger-2">
+                    <div class="showcase-visual">&#127793;&#127807;&#127811;</div>
+                    <div class="showcase-info">
+                        <h4>绿野仙踪</h4>
+                        <p>春日草地的无限延展</p>
+                    </div>
+                </div>
+                <div class="showcase-card bloom stagger-1">
+                    <div class="showcase-visual">&#127800;&#127800;&#127800;</div>
+                    <div class="showcase-info">
+                        <h4>樱花雨落</h4>
+                        <p>粉色花瓣随风飘散的浪漫</p>
+                    </div>
+                </div>
+                <div class="showcase-card bloom stagger-2">
+                    <div class="showcase-visual">&#127803;&#127804;&#127800;</div>
+                    <div class="showcase-info">
+                        <h4>花团锦簇</h4>
+                        <p>色彩交织的春日画卷</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIAL -->
+        <section class="testimonial bloom">
+            <blockquote>
+                "绽放模板让我们的品牌焕然一新，花瓣动画细腻温柔，色彩搭配恰到好处。上线首月用户转化率提升了32%，团队成员都赞不绝口。"
+            </blockquote>
+            <div class="testimonial-author">
+                <span>&#127800;</span>
+                <div>
+                    林语棠
+                    <small>花语工作室 &middot; 创始人</small>
+                </div>
+            </div>
+        </section>
 
         <!-- CTA -->
-        <section id="cta" class="cta-section bloom-hidden">
-            <h2>一起迎接盛放</h2>
-            <p style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-secondary);">粉绿渐变 · 春日礼赞</p>
-            <a href="#" class="btn-gradient" style="font-size: 1.3rem; padding: 1rem 3.6rem;">开启花漾</a>
-            <div style="margin-top: 1.8rem; font-size: 1.8rem; letter-spacing: 6px;">🌸 🌼 🌷 🌿</div>
+        <section id="cta" class="cta-block bloom">
+            <h2>一起迎接春日盛放</h2>
+            <p class="cta-sub">粉绿渐变 &middot; 春日礼赞 &middot; 让灵感在此刻绽放</p>
+            <a href="#" class="btn-primary" style="font-size:1.15rem; padding:1rem 3.4rem;">&#127800; 开启花漾之旅</a>
+            <div class="cta-flowers" aria-hidden="true">&#127800; &#127803; &#127804; &#127793;</div>
         </section>
 
         <!-- FOOTER -->
-        <footer class="footer">
-            <span>© 2025 春绽 · 花舞模板</span>
-            <span>🌱 自然灵感</span>
-            <span>🌸 樱花粉 #ffb7c5</span>
-            <span>🌿 春绿 #90ee90</span>
+        <footer class="site-footer">
+            <div class="footer-row">
+                <span>&#127800; 樱花粉 #ffb7c5</span>
+                <span>&#127793; 春日绿 #90ee90</span>
+                <span>&#128156; 薰衣紫 #d8d0f0</span>
+                <span>&#127800; 自然灵感</span>
+            </div>
+            <div class="footer-copy">&copy; 2025 绽放 &middot; 春日花园模板</div>
         </footer>
+
     </div>
 
     <script>
-        (function() {
-            // ----- 主题切换 -----
-            const toggle = document.getElementById('themeToggle');
-            const icon = document.getElementById('themeIcon');
-            const html = document.documentElement;
+        (function () {
+            // Theme toggle
+            var btn = document.getElementById('themeBtn');
+            var icon = document.getElementById('themeIcon');
+            var root = document.documentElement;
 
-            function setTheme(theme) {
-                html.setAttribute('data-theme', theme);
-                icon.textContent = theme === 'dark' ? '🌙' : '☀️';
-                localStorage.setItem('theme-preference', theme);
+            function applyTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                icon.innerHTML = theme === 'dark' ? '&#127769;' : '&#9728;&#65039;';
+                try { localStorage.setItem('bloom-theme', theme); } catch (e) {}
             }
 
-            // 初始主题: 根据存储或系统偏好
-            const stored = localStorage.getItem('theme-preference');
-            if (stored) {
-                setTheme(stored);
-            } else {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                setTheme(prefersDark ? 'dark' : 'light');
-            }
+            (function initTheme() {
+                var saved = null;
+                try { saved = localStorage.getItem('bloom-theme'); } catch (e) {}
+                if (saved) {
+                    applyTheme(saved);
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    applyTheme('dark');
+                } else {
+                    applyTheme('light');
+                }
+            })();
 
-            toggle.addEventListener('click', function(e) {
-                const current = html.getAttribute('data-theme');
-                setTheme(current === 'dark' ? 'light' : 'dark');
+            btn.addEventListener('click', function () {
+                var current = root.getAttribute('data-theme');
+                applyTheme(current === 'dark' ? 'light' : 'dark');
             });
 
-            // ----- Intersection Observer 绽放动画 (bloom) -----
-            const bloomElements = document.querySelectorAll('.bloom-hidden');
+            // Scroll bloom animation
+            var bloomEls = document.querySelectorAll('.bloom');
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('bloom-visible');
-                        // 可以只触发一次
+                        entry.target.classList.add('active');
                         observer.unobserve(entry.target);
                     }
                 });
             }, {
-                threshold: 0.2,
-                rootMargin: '0px 0px -30px 0px'
+                threshold: 0.15,
+                rootMargin: '0px 0px -40px 0px'
             });
 
-            bloomElements.forEach(el => observer.observe(el));
+            bloomEls.forEach(function (el) {
+                observer.observe(el);
+            });
 
-            // 手动预先检查已经在视口内的元素 (防止有些元素初始可见但未触发)
-            setTimeout(() => {
-                bloomElements.forEach(el => {
-                    const rect = el.getBoundingClientRect();
-                    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-                    if (rect.top < windowHeight - 100) {
-                        el.classList.add('bloom-visible');
-                        observer.unobserve(el);
-                    }
-                });
-            }, 200);
+            // Fallback: reveal elements already in viewport
+            requestAnimationFrame(function () {
+                setTimeout(function () {
+                    bloomEls.forEach(function (el) {
+                        var rect = el.getBoundingClientRect();
+                        if (rect.top < window.innerHeight - 60) {
+                            el.classList.add('active');
+                            observer.unobserve(el);
+                        }
+                    });
+                }, 150);
+            });
 
-            // 平滑滚动 (内部链接)
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    const targetEl = document.querySelector(targetId);
-                    if (targetEl) {
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+                a.addEventListener('click', function (e) {
+                    var id = this.getAttribute('href');
+                    if (id === '#') return;
+                    var target = document.querySelector(id);
+                    if (target) {
                         e.preventDefault();
-                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 });
             });
-
-            // 额外：花瓣动态调整 (不必须)
-            console.log('🌸 春绽 · 花舞已加载');
         })();
     </script>
 
-    <!-- 后备样式：确保bloom-visible如果js未加载也可见 (但通常js会运行) -->
     <noscript>
         <style>
-            .bloom-hidden { opacity: 1 !important; transform: none !important; }
+            .bloom { opacity: 1 !important; transform: none !important; }
         </style>
     </noscript>
+
 </body>
 </html>

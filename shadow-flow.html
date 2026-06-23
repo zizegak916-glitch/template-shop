@@ -3,47 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>暗流 · 深影流動</title>
-  <!-- Google Fonts: 現代幾何體 -->
+  <title>暗流 · Dark Flow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* ----- CSS 自訂屬性 (主題) ----- */
+    /* ===== CSS Custom Properties ===== */
     :root {
-      --bg-deep: #050508;
-      --bg-card: rgba(10, 10, 20, 0.45);
-      --glass-edge: rgba(120, 80, 200, 0.2);
-      --glass-edge-hover: rgba(160, 120, 255, 0.5);
-      --text-primary: #eaeef5;
-      --text-secondary: #b0b8cf;
-      --gradient-text: linear-gradient(135deg, #b8a0ff, #6f8cff, #a47eff);
-      --gradient-card-border: linear-gradient(145deg, rgba(140, 100, 230, 0.3), rgba(70, 100, 220, 0.1));
-      --gradient-cta: linear-gradient(145deg, #3b2a6b, #1b2b5e);
-      --glow-cta: 0 0 20px rgba(120, 80, 220, 0.5);
-      --shadow-wave: rgba(40, 20, 80, 0.4);
-      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-      --radius-card: 1.5rem;
-      --transition-fast: 0.25s ease;
+      --bg-primary: #050508;
+      --bg-card: rgba(8, 8, 18, 0.7);
+      --bg-card-hover: rgba(12, 12, 25, 0.85);
+      --glass-border: rgba(100, 60, 180, 0.15);
+      --glass-border-hover: rgba(140, 100, 220, 0.35);
+      --text-primary: #eef0f7;
+      --text-secondary: #9ca3bf;
+      --text-muted: #6b728e;
+      --gradient-title: linear-gradient(135deg, #c9a0ff 0%, #7b9cff 40%, #a87eff 100%);
+      --gradient-border: linear-gradient(145deg, rgba(120, 70, 210, 0.25), rgba(60, 80, 180, 0.08));
+      --gradient-cta: linear-gradient(145deg, #2d1a5e, #15284d);
+      --glow-primary: rgba(110, 70, 200, 0.5);
+      --glow-secondary: rgba(60, 80, 200, 0.4);
+      --shadow-deep: rgba(0, 0, 0, 0.7);
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      --radius-lg: 1.5rem;
+      --radius-full: 9999px;
+      --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* 淺色主題 (保留切換能力, 但預設深色) */
+    /* Light theme (toggle preserved) */
     [data-theme="light"] {
-      --bg-deep: #f0eff7;
-      --bg-card: rgba(255, 255, 255, 0.6);
-      --glass-edge: rgba(80, 60, 180, 0.15);
-      --glass-edge-hover: rgba(100, 70, 220, 0.4);
-      --text-primary: #12101f;
-      --text-secondary: #3f3b5c;
-      --gradient-text: linear-gradient(135deg, #4a3a8a, #2f5be0);
-      --gradient-card-border: linear-gradient(145deg, rgba(100, 70, 200, 0.2), rgba(60, 80, 200, 0.05));
-      --gradient-cta: linear-gradient(145deg, #6240b0, #2a4ba0);
-      --glow-cta: 0 0 20px rgba(80, 50, 200, 0.3);
-      --shadow-wave: rgba(70, 50, 150, 0.2);
+      --bg-primary: #f2f1f8;
+      --bg-card: rgba(255, 255, 255, 0.65);
+      --bg-card-hover: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(80, 50, 160, 0.12);
+      --glass-border-hover: rgba(100, 60, 190, 0.3);
+      --text-primary: #12101e;
+      --text-secondary: #4a4660;
+      --text-muted: #7a7590;
+      --gradient-title: linear-gradient(135deg, #5a3a9a, #2f52d4);
+      --gradient-border: linear-gradient(145deg, rgba(90, 60, 180, 0.15), rgba(50, 70, 170, 0.05));
+      --gradient-cta: linear-gradient(145deg, #5a3590, #2a4aa0);
+      --glow-primary: rgba(80, 50, 170, 0.3);
+      --glow-secondary: rgba(50, 60, 180, 0.25);
+      --shadow-deep: rgba(50, 30, 100, 0.15);
     }
 
-    /* ----- 全域重置 & 基礎 ----- */
-    * {
+    /* ===== Reset & Base ===== */
+    *,
+    *::before,
+    *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -54,111 +62,166 @@
     }
 
     body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-deep);
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
       color: var(--text-primary);
-      line-height: 1.5;
+      line-height: 1.6;
       min-height: 100vh;
       overflow-x: hidden;
-      transition: background 0.3s, color 0.3s;
+      transition: background-color 0.4s, color 0.4s;
     }
 
-    /* 背景動態流體 (暗色流動漸層 + 陰影波) */
+    /* ===== Animated Fluid Background ===== */
     .bg-fluid {
       position: fixed;
       inset: 0;
-      z-index: -2;
-      background: radial-gradient(circle at 20% 30%, #140b2e, #050508 70%);
-      animation: fluidShift 18s infinite alternate ease-in-out;
+      z-index: -3;
+      background: var(--bg-primary);
+    }
+
+    .bg-fluid::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(ellipse 800px 600px at 25% 35%, rgba(50, 20, 90, 0.5) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 500px at 75% 65%, rgba(20, 40, 90, 0.45) 0%, transparent 55%);
+      animation: fluidMorph 20s ease-in-out infinite alternate;
     }
 
     .bg-fluid::after {
       content: '';
       position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 80% 70%, #0f1a3a, transparent 60%);
-      opacity: 0.5;
-      animation: fluidShift2 22s infinite alternate;
+      inset: -30%;
+      width: 160%;
+      height: 160%;
+      background:
+        radial-gradient(ellipse 600px 400px at 60% 20%, rgba(60, 25, 100, 0.35) 0%, transparent 50%),
+        radial-gradient(ellipse 500px 400px at 30% 80%, rgba(25, 45, 100, 0.3) 0%, transparent 50%);
+      animation: fluidMorph2 25s ease-in-out infinite alternate-reverse;
     }
 
-    @keyframes fluidShift {
-      0% { filter: hue-rotate(0deg) saturate(1.2); }
-      50% { filter: hue-rotate(10deg) saturate(1.6); }
-      100% { filter: hue-rotate(-5deg) saturate(1.0); }
-    }
-    @keyframes fluidShift2 {
-      0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
-      100% { transform: scale(1.3) translate(-5%, 5%); opacity: 0.6; }
+    @keyframes fluidMorph {
+      0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        filter: hue-rotate(0deg);
+      }
+      33% {
+        transform: translate(-3%, 2%) rotate(2deg) scale(1.02);
+        filter: hue-rotate(5deg);
+      }
+      66% {
+        transform: translate(2%, -2%) rotate(-1deg) scale(1.01);
+        filter: hue-rotate(-3deg);
+      }
+      100% {
+        transform: translate(-1%, 3%) rotate(1deg) scale(1.03);
+        filter: hue-rotate(8deg);
+      }
     }
 
-    /* 陰影波浪背景 (動畫) */
+    @keyframes fluidMorph2 {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translate(4%, -3%) scale(1.05);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translate(-2%, 4%) scale(1.02);
+        opacity: 0.6;
+      }
+    }
+
+    /* ===== Shadow Waves ===== */
     .shadow-waves {
       position: fixed;
       inset: 0;
-      z-index: -1;
+      z-index: -2;
       pointer-events: none;
       overflow: hidden;
     }
 
-    .shadow-waves span {
+    .shadow-wave {
       position: absolute;
-      width: 300%;
-      height: 300%;
-      top: -50%;
-      left: -50%;
-      background: radial-gradient(circle at 30% 40%, rgba(70, 30, 120, 0.15) 0%, transparent 55%);
-      animation: waveFloat 28s infinite alternate;
-      mix-blend-mode: soft-light;
+      width: 250%;
+      height: 250%;
+      top: -75%;
+      left: -75%;
+      border-radius: 45%;
     }
 
-    .shadow-waves span:nth-child(2) {
-      background: radial-gradient(circle at 80% 60%, rgba(30, 60, 150, 0.2) 0%, transparent 50%);
-      animation-duration: 32s;
-      animation-delay: -6s;
+    .shadow-wave:nth-child(1) {
+      background: radial-gradient(ellipse at 30% 40%, rgba(55, 25, 100, 0.12) 0%, transparent 50%);
+      animation: waveFloat1 30s linear infinite;
     }
 
-    @keyframes waveFloat {
-      0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-      100% { transform: translate(-8%, 6%) scale(1.2); opacity: 0.7; }
+    .shadow-wave:nth-child(2) {
+      background: radial-gradient(ellipse at 70% 60%, rgba(25, 50, 110, 0.14) 0%, transparent 45%);
+      animation: waveFloat2 35s linear infinite reverse;
     }
 
-    /* ----- 版式 & 工具 ----- */
+    .shadow-wave:nth-child(3) {
+      background: radial-gradient(ellipse at 50% 30%, rgba(60, 30, 95, 0.1) 0%, transparent 48%);
+      animation: waveFloat3 40s linear infinite;
+    }
+
+    @keyframes waveFloat1 {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(10%, -8%) rotate(360deg); }
+    }
+
+    @keyframes waveFloat2 {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-12%, 10%) rotate(360deg); }
+    }
+
+    @keyframes waveFloat3 {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(8%, 6%) rotate(360deg); }
+    }
+
+    /* ===== Layout Utilities ===== */
     .container {
-      max-width: 1200px;
+      max-width: 1140px;
       margin: 0 auto;
       padding: 0 1.5rem;
     }
 
-    /* 主題切換按鈕 (固定右上) */
+    /* ===== Theme Toggle ===== */
     .theme-toggle {
       position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      z-index: 999;
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-edge);
-      border-radius: 40px;
+      top: 1.25rem;
+      right: 1.25rem;
+      z-index: 1000;
       width: 3rem;
       height: 3rem;
+      border-radius: var(--radius-full);
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: var(--text-primary);
-      font-size: 1.4rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-      transition: var(--transition-fast), border-color 0.2s;
+      box-shadow: 0 8px 24px var(--shadow-deep);
+      transition: var(--transition-base);
     }
 
     .theme-toggle:hover {
-      border-color: var(--glass-edge-hover);
-      transform: scale(1.05);
+      border-color: var(--glass-border-hover);
+      transform: scale(1.08);
+      box-shadow: 0 12px 32px var(--shadow-deep);
     }
 
     .theme-toggle .icon-sun,
     .theme-toggle .icon-moon {
+      font-size: 1.3rem;
       transition: opacity 0.25s;
     }
 
@@ -167,11 +230,12 @@
     [data-theme="light"] .theme-toggle .icon-sun { display: none; }
     [data-theme="light"] .theme-toggle .icon-moon { display: inline; }
 
-    /* 通用 reveal (Intersection Observer) */
+    /* ===== Reveal Animation ===== */
     .reveal {
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.1, 1), transform 0.7s cubic-bezier(0.2, 0.9, 0.1, 1);
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .reveal.visible {
@@ -179,442 +243,787 @@
       transform: translateY(0);
     }
 
-    /* ----- 玻璃卡片 mixin ----- */
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ===== Glass Card ===== */
     .glass-card {
       background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid transparent;
-      border-image: var(--gradient-card-border) 1;
-      border-radius: var(--radius-card);
-      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
-      transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.4s;
+      border-image: var(--gradient-border) 1;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 50px -12px var(--shadow-deep),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.4s,
+                  border-color 0.3s;
     }
 
     .glass-card:hover {
-      transform: translateY(-6px) scale(1.01);
-      border-color: var(--glass-edge-hover);
-      box-shadow: 0 25px 45px -12px rgba(70, 40, 160, 0.4);
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px -15px rgba(80, 50, 180, 0.35),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-color: var(--glass-border-hover);
     }
 
-    /* ----- 按鈕 & CTA 風格 ----- */
-    .btn-cta {
-      display: inline-block;
-      background: var(--gradient-cta);
-      border: none;
-      padding: 0.9rem 2.5rem;
-      border-radius: 60px;
+    /* ===== Buttons ===== */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.95rem 2.6rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
       font-weight: 600;
-      font-size: 1.2rem;
-      color: white;
-      letter-spacing: 0.02em;
-      box-shadow: var(--glow-cta);
-      transition: all 0.25s ease;
+      font-size: 1.05rem;
+      color: #fff;
+      background: var(--gradient-cta);
+      border: 1px solid rgba(140, 100, 230, 0.2);
+      box-shadow: 0 0 30px var(--glow-primary),
+                  0 8px 20px var(--shadow-deep);
       text-decoration: none;
-      border: 1px solid rgba(160, 130, 255, 0.15);
+      cursor: pointer;
+      transition: var(--transition-base);
     }
 
-    .btn-cta:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 40px rgba(130, 80, 255, 0.6);
-      background: linear-gradient(145deg, #4f36a0, #25408a);
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 0 50px var(--glow-primary),
+                  0 12px 30px var(--shadow-deep);
+      border-color: rgba(160, 120, 255, 0.4);
     }
 
-    /* ----- 各區塊樣式 ----- */
-    /* HERO */
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.95rem 2.6rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--glass-border-hover);
+      background: rgba(100, 60, 180, 0.08);
+      transform: translateY(-2px);
+    }
+
+    /* ===== Hero Section ===== */
     .hero {
-      min-height: 90vh;
+      position: relative;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 6rem 0 4rem;
-      position: relative;
+      padding: 8rem 0 5rem;
     }
 
     .hero-content {
-      max-width: 900px;
+      max-width: 820px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-full);
+      background: rgba(100, 60, 180, 0.1);
+      border: 1px solid rgba(120, 80, 210, 0.15);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a070ff;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
     }
 
     .hero h1 {
-      font-size: clamp(3.8rem, 16vw, 7rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      background: var(--gradient-text);
+      font-size: clamp(4rem, 18vw, 8rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      background: var(--gradient-title);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin-bottom: 1rem;
-      line-height: 1.1;
-      text-shadow: 0 0 40px rgba(100, 60, 200, 0.3);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 60px rgba(120, 80, 220, 0.2);
     }
 
-    .hero p {
-      font-size: 1.3rem;
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
       color: var(--text-secondary);
-      max-width: 600px;
-      margin: 1.2rem auto 2.5rem;
       font-weight: 300;
-      letter-spacing: 0.01em;
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
     }
 
-    .hero-cta-group {
+    .hero-actions {
       display: flex;
       gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
     }
 
-    /* 特性網格 */
+    .hero-scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      animation: floatBounce 2.5s ease-in-out infinite;
+    }
+
+    .hero-scroll-indicator .arrow {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--text-muted), transparent);
+    }
+
+    @keyframes floatBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ===== Features Section ===== */
+    .features {
+      padding: 6rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #a070ff;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
     .features-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 2rem;
-      padding: 4rem 0;
     }
 
-    @media (min-width: 640px) {
+    @media (min-width: 768px) {
       .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 1024px) {
-      .features-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
     .feature-card {
-      padding: 2rem 1.8rem;
+      padding: 2.5rem 2rem;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .feature-icon {
-      font-size: 2.8rem;
-      margin-bottom: 1.2rem;
-      display: inline-block;
-      filter: drop-shadow(0 0 12px rgba(140, 100, 255, 0.3));
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(120, 80, 220, 0.4), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-icon-wrap {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      background: rgba(80, 40, 150, 0.1);
+      border: 1px solid rgba(100, 60, 180, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      transition: var(--transition-base);
+    }
+
+    .feature-card:hover .feature-icon-wrap {
+      background: rgba(100, 50, 180, 0.18);
+      border-color: rgba(120, 80, 210, 0.3);
+      transform: scale(1.08);
+      box-shadow: 0 0 25px rgba(100, 60, 180, 0.2);
     }
 
     .feature-card h3 {
-      font-size: 1.6rem;
-      font-weight: 600;
-      margin-bottom: 0.6rem;
-      background: var(--gradient-text);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
     }
 
     .feature-card p {
       color: var(--text-secondary);
       font-weight: 300;
       font-size: 0.95rem;
+      line-height: 1.7;
     }
 
-    /* 統計 / 證言 (合併) */
-    .stats-section {
-      padding: 3rem 0;
+    /* ===== Stats Section ===== */
+    .stats {
+      padding: 5rem 0;
     }
 
     .stats-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem 3rem;
-      margin-bottom: 3rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
     .stat-item {
       text-align: center;
-      min-width: 140px;
+      padding: 2rem 1rem;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .stat-number {
-      font-size: 3.5rem;
-      font-weight: 800;
-      background: var(--gradient-text);
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      font-weight: 900;
+      background: var(--gradient-title);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      line-height: 1.1;
       letter-spacing: -0.02em;
-      line-height: 1;
+      margin-bottom: 0.35rem;
     }
 
     .stat-label {
       color: var(--text-secondary);
-      font-weight: 300;
-      margin-top: 0.3rem;
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    /* ===== Testimonial Section ===== */
+    .testimonial {
+      padding: 5rem 0;
     }
 
     .testimonial-card {
-      max-width: 700px;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 2.5rem 2rem;
+      padding: 3rem 2.5rem;
       text-align: center;
+      position: relative;
     }
 
-    .testimonial-card p {
-      font-size: 1.3rem;
+    .testimonial-quote {
+      font-size: clamp(1.15rem, 2.5vw, 1.4rem);
       font-weight: 300;
       font-style: italic;
       color: var(--text-primary);
-      margin-bottom: 1.5rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .testimonial-quote::before {
+      content: '\201C';
+      font-size: 4rem;
+      line-height: 1;
+      background: var(--gradient-title);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: block;
+      margin-bottom: 0.5rem;
     }
 
     .testimonial-author {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
+      gap: 0.75rem;
       color: var(--text-secondary);
     }
 
     .testimonial-author strong {
       color: var(--text-primary);
+      font-weight: 600;
     }
 
-    /* CTA 區塊 */
-    .cta-section {
-      padding: 5rem 0 4rem;
-      text-align: center;
+    .testimonial-divider {
+      color: rgba(120, 80, 200, 0.4);
+    }
+
+    /* ===== CTA Section ===== */
+    .cta {
+      padding: 6rem 0 5rem;
     }
 
     .cta-box {
       background: var(--gradient-cta);
-      border-radius: 4rem;
-      padding: 4rem 2rem;
-      border: 1px solid rgba(160, 130, 255, 0.2);
-      box-shadow: 0 0 60px rgba(90, 50, 200, 0.25);
-      transition: box-shadow 0.4s;
+      border-radius: 2rem;
+      padding: 4.5rem 2.5rem;
+      text-align: center;
+      border: 1px solid rgba(140, 100, 230, 0.15);
+      box-shadow: 0 0 80px rgba(80, 40, 180, 0.2),
+                  0 20px 50px var(--shadow-deep);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(145deg, rgba(160, 120, 255, 0.2), transparent, rgba(60, 80, 200, 0.15));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
     }
 
     .cta-box:hover {
-      box-shadow: 0 0 90px rgba(120, 70, 255, 0.4);
+      box-shadow: 0 0 100px rgba(100, 60, 200, 0.3),
+                  0 25px 60px var(--shadow-deep);
     }
 
     .cta-box h2 {
-      font-size: 2.8rem;
-      font-weight: 700;
-      margin-bottom: 1.2rem;
-      background: linear-gradient(135deg, #ffffff, #d6ccff);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff, #d8ccff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
     .cta-box p {
-      color: rgba(255, 255, 255, 0.75);
-      max-width: 500px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
+      font-size: 1.1rem;
+      max-width: 480px;
       margin: 0 auto 2rem;
-      font-weight: 300;
+      line-height: 1.7;
     }
 
-    /* 頁尾 */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2.8rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #0a0a1a;
+      background: linear-gradient(135deg, #e8e0ff, #c8b8ff);
+      border: none;
+      box-shadow: 0 0 40px rgba(200, 180, 255, 0.3);
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 0 60px rgba(200, 180, 255, 0.45),
+                  0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ===== Footer ===== */
     .footer {
-      padding: 2.5rem 0 1.5rem;
-      border-top: 1px solid rgba(120, 100, 200, 0.1);
+      padding: 3rem 0 2rem;
+      border-top: 1px solid rgba(100, 80, 180, 0.08);
       text-align: center;
-      color: var(--text-secondary);
-      font-weight: 300;
-      font-size: 0.9rem;
     }
 
-    .footer small {
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: var(--gradient-title);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 400;
+      transition: color 0.25s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 300;
       opacity: 0.7;
     }
 
-    /* 響應式微調 */
+    /* ===== Responsive ===== */
     @media (max-width: 640px) {
-      .hero h1 { font-size: 4.5rem; }
-      .hero p { font-size: 1.1rem; }
-      .stat-number { font-size: 2.8rem; }
-      .cta-box h2 { font-size: 2rem; }
+      .hero h1 {
+        font-size: 3.5rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        padding: 0.85rem 2rem;
+        font-size: 0.95rem;
+      }
+
+      .feature-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .cta-box {
+        padding: 3rem 1.5rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- 背景流體 + 陰影波浪 -->
+  <!-- Animated Background Layers -->
   <div class="bg-fluid"></div>
   <div class="shadow-waves">
-    <span></span>
-    <span></span>
+    <div class="shadow-wave"></div>
+    <div class="shadow-wave"></div>
+    <div class="shadow-wave"></div>
   </div>
 
-  <!-- 主題切換按鈕 (固定) -->
-  <div class="theme-toggle" id="themeToggle" aria-label="切換主題">
-    <span class="icon-sun">☀️</span>
-    <span class="icon-moon">🌙</span>
-  </div>
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <span class="icon-sun">☀</span>
+    <span class="icon-moon">☾</span>
+  </button>
 
-  <!-- 主內容容器 -->
   <main>
-    <!-- HERO 區塊 -->
+    <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content reveal">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          深影流動 · 无界感知
+        </div>
         <h1>暗流</h1>
-        <p>深影流動 · 無界感知。以暗色幾何與動態波浪，重塑數位邊界。</p>
-        <div class="hero-cta-group">
-          <a href="#features" class="btn-cta">探索流動</a>
-          <a href="#cta" class="btn-cta" style="background: transparent; border: 1px solid rgba(180,150,255,0.3); box-shadow: none;">了解更多</a>
+        <p class="hero-subtitle">
+          暗色几何与动态波浪交织的数字体验。<br>
+          以深邃渐变重塑视觉边界，探索无尽流动。
+        </p>
+        <div class="hero-actions">
+          <a href="#features" class="btn-primary">
+            探索流动
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="#cta" class="btn-secondary">了解更多</a>
         </div>
+      </div>
+      <div class="hero-scroll-indicator">
+        <span>SCROLL</span>
+        <div class="arrow"></div>
       </div>
     </section>
 
-    <!-- 特色網格 (流/波 icon) -->
-    <section id="features" class="container">
-      <div class="features-grid">
-        <div class="feature-card glass-card reveal">
-          <div class="feature-icon">🌊</div>
-          <h3>深流波動</h3>
-          <p>動態漸層模擬暗流韻律，背景色彩緩慢蛻變，沉浸無窮。</p>
-        </div>
-        <div class="feature-card glass-card reveal">
-          <div class="feature-icon">🌀</div>
-          <h3>幾何暗影</h3>
-          <p>現代幾何字體搭配玻璃卡片，邊緣微光流轉，層次深邃。</p>
-        </div>
-        <div class="feature-card glass-card reveal">
-          <div class="feature-icon">🌌</div>
-          <h3>波浪邊界</h3>
-          <p>陰影波浪於背景浮動，呼應暗流主題，低調而富有生命力。</p>
-        </div>
-        <div class="feature-card glass-card reveal">
-          <div class="feature-icon">✨</div>
-          <h3>流光數據</h3>
-          <p>統計數字採用漸層發光，呼應整體暗色調中的霓虹脈動。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 統計 + 證言 -->
-    <section class="stats-section container reveal">
-      <div class="stats-grid">
-        <div class="stat-item">
-          <div class="stat-number" data-target="128">0</div>
-          <div class="stat-label">暗流節點</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number" data-target="3400">0</div>
-          <div class="stat-label">沉浸時數</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number" data-target="96">0%</div>
-          <div class="stat-label">滿意流動</div>
-        </div>
-      </div>
-
-      <!-- 證言卡片 -->
-      <div class="testimonial-card glass-card reveal">
-        <p>「暗影流動的設計語言令人著迷，每一次滾動都像在深海中探索光芒。」</p>
-        <div class="testimonial-author">
-          <span>✦</span>
-          <strong>林 深</strong>
-          <span> · 流動設計師</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA 區塊 -->
-    <section id="cta" class="cta-section container reveal">
-      <div class="cta-box">
-        <h2>加入暗流</h2>
-        <p>解鎖高階流動範本，讓你的產品擁有深影靈魂。</p>
-        <a href="#" class="btn-cta" style="background: white; color: #0a0a18; box-shadow: 0 0 30px rgba(200,180,255,0.3);">立即啟用</a>
-      </div>
-    </section>
-
-    <!-- 頁尾 -->
-    <footer class="footer">
+    <!-- Features Section -->
+    <section id="features" class="features">
       <div class="container">
-        <small>© 暗流 · 深影流動 landing 模板 | 幾何暗色 · 波浪邊界</small>
+        <div class="section-header reveal">
+          <span class="section-label">核心能力</span>
+          <h2 class="section-title">流动的力量</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card glass-card reveal reveal-delay-1">
+            <div class="feature-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M4 20c2-4 4-8 8-8s6 4 8 4 4-6 8-4" stroke="#a070ff" stroke-width="2" stroke-linecap="round"/>
+                <path d="M4 14c2-4 4-8 8-8s6 4 8 4 4-6 8-4" stroke="#7090ff" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                <path d="M4 26c2-4 4-8 8-8s6 4 8 4 4-6 8-4" stroke="#a070ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+              </svg>
+            </div>
+            <h3>深流波动</h3>
+            <p>动态渐层模拟暗流韵律，背景色彩缓慢蜕变，带来沉浸式视觉体验。</p>
+          </div>
+          <div class="feature-card glass-card reveal reveal-delay-2">
+            <div class="feature-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="10" stroke="#a070ff" stroke-width="2" opacity="0.3"/>
+                <circle cx="16" cy="16" r="6" stroke="#7090ff" stroke-width="2" opacity="0.6"/>
+                <circle cx="16" cy="16" r="2" fill="#a070ff"/>
+                <path d="M16 6v4M16 22v4M6 16h4M22 16h4" stroke="#a070ff" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+              </svg>
+            </div>
+            <h3>几何暗影</h3>
+            <p>现代几何字体搭配玻璃卡片，边缘微光流转，层次深邃而富有韵律。</p>
+          </div>
+          <div class="feature-card glass-card reveal reveal-delay-3">
+            <div class="feature-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M2 16c3-6 6-10 10-10s7 4 10 10" stroke="#a070ff" stroke-width="2" stroke-linecap="round"/>
+                <path d="M6 20c2-4 4-7 8-7s5 3 7 7" stroke="#7090ff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                <path d="M10 24c1.5-3 3-5 6-5s4 2 5 5" stroke="#a070ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+              </svg>
+            </div>
+            <h3>波浪边界</h3>
+            <p>阴影波浪于背景浮动，呼应暗流主题，低调而富有生命力的动态美感。</p>
+          </div>
+        </div>
       </div>
-    </footer>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item reveal reveal-delay-1">
+            <div class="stat-number" data-target="128">0</div>
+            <div class="stat-label">暗流节点</div>
+          </div>
+          <div class="stat-item reveal reveal-delay-1">
+            <div class="stat-number" data-target="3400">0</div>
+            <div class="stat-label">沉浸时数</div>
+          </div>
+          <div class="stat-item reveal reveal-delay-2">
+            <div class="stat-number" data-target="96" data-suffix="%">0</div>
+            <div class="stat-label">满意度</div>
+          </div>
+          <div class="stat-item reveal reveal-delay-2">
+            <div class="stat-number" data-target="50" data-suffix="+">0</div>
+            <div class="stat-label">流动模板</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial">
+      <div class="container">
+        <div class="testimonial-card glass-card reveal">
+          <div class="testimonial-quote">
+            暗影流动的设计语言令人着迷，每一次滚动都像在深海中探索光芒。这种沉浸感是前所未有的。
+          </div>
+          <div class="testimonial-author">
+            <strong>林深</strong>
+            <span class="testimonial-divider">·</span>
+            <span>流动设计师</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="cta">
+      <div class="container">
+        <div class="cta-box reveal">
+          <h2>加入暗流</h2>
+          <p>解锁高阶流动模板，让你的产品拥有深影灵魂。</p>
+          <a href="#" class="cta-btn">
+            立即启用
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M4 9h10M10 5l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">暗流</div>
+        <ul class="footer-links">
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">使用条款</a></li>
+          <li><a href="#">隐私政策</a></li>
+          <li><a href="#">联系我们</a></li>
+        </ul>
+        <div class="footer-copy">© 2026 暗流 · 深影流动 landing 模板</div>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    (function() {
+    (function () {
       'use strict';
 
-      // ---------- 主題切換 ----------
-      const html = document.documentElement;
-      const toggleBtn = document.getElementById('themeToggle');
-      const currentTheme = localStorage.getItem('theme') || 'dark';
-      html.setAttribute('data-theme', currentTheme);
+      // Theme Toggle
+      var html = document.documentElement;
+      var toggleBtn = document.getElementById('themeToggle');
+      var savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
 
-      toggleBtn.addEventListener('click', function(e) {
-        const theme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
+      toggleBtn.addEventListener('click', function () {
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
       });
 
-      // ---------- Intersection Observer (reveal 動畫) ----------
-      const revealElements = document.querySelectorAll('.reveal');
-      if (revealElements.length > 0) {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
+      // Intersection Observer for reveal animations
+      var revealEls = document.querySelectorAll('.reveal');
+      if (revealEls.length > 0) {
+        var revealObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
             if (entry.isIntersecting) {
               entry.target.classList.add('visible');
-              // 可選：只觸發一次
-              // observer.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-        revealElements.forEach(el => observer.observe(el));
+        revealEls.forEach(function (el) {
+          revealObserver.observe(el);
+        });
       }
 
-      // ---------- 統計數字漸增動畫 (配合 Intersection) ----------
-      function animateNumbers() {
-        const statNumbers = document.querySelectorAll('.stat-number');
-        if (!statNumbers.length) return;
-
-        // 使用單獨的 observer 觸發數字增加
-        const numberObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
+      // Stat number counter animation
+      var statNumbers = document.querySelectorAll('.stat-number');
+      if (statNumbers.length > 0) {
+        var numberObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-              const el = entry.target;
-              // 防止重複觸發
+              var el = entry.target;
               if (el.dataset.animated) return;
-              el.dataset.animated = 'true';
+              el.dataset.animated = '1';
 
-              const targetText = el.dataset.target || el.textContent;
-              // 處理百分比或純數字
-              const isPercent = targetText.includes('%');
-              const targetNum = parseFloat(targetText.replace(/[^0-9.]/g, ''));
-              if (isNaN(targetNum)) return;
+              var target = parseInt(el.dataset.target, 10);
+              var suffix = el.dataset.suffix || '';
+              if (isNaN(target)) return;
 
-              let current = 0;
-              const duration = 1500; // ms
-              const step = Math.max(1, Math.floor(targetNum / 60));
-              const isFloat = targetNum % 1 !== 0;
+              var duration = 1800;
+              var startTime = null;
 
-              const update = () => {
-                current += step;
-                if (current >= targetNum) {
-                  el.textContent = isPercent ? Math.round(targetNum) + '%' : Math.round(targetNum).toString();
-                  return;
+              function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                var progress = Math.min((timestamp - startTime) / duration, 1);
+                var eased = 1 - Math.pow(1 - progress, 3);
+                var current = Math.floor(eased * target);
+                el.textContent = current + suffix;
+                if (progress < 1) {
+                  requestAnimationFrame(step);
+                } else {
+                  el.textContent = target + suffix;
                 }
-                el.textContent = isPercent ? Math.round(current) + '%' : Math.round(current).toString();
-                requestAnimationFrame(() => setTimeout(update, 20));
-              };
-              update();
+              }
+
+              requestAnimationFrame(step);
             }
           });
         }, { threshold: 0.5 });
 
-        statNumbers.forEach(num => numberObserver.observe(num));
+        statNumbers.forEach(function (num) {
+          numberObserver.observe(num);
+        });
       }
 
-      animateNumbers();
-
-      // ---------- 平滑滾動 (內部錨點) ----------
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-          const href = this.getAttribute('href');
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener('click', function (e) {
+          var href = this.getAttribute('href');
           if (href === '#') return;
-          const target = document.querySelector(href);
+          var target = document.querySelector(href);
           if (target) {
             e.preventDefault();
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -622,15 +1031,15 @@
         });
       });
 
-      // 強制 reveal 初始可見 (如果已在視口)
-      setTimeout(() => {
-        document.querySelectorAll('.reveal').forEach(el => {
-          const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight - 80) {
+      // Initial reveal check for elements already in viewport
+      setTimeout(function () {
+        document.querySelectorAll('.reveal').forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 60) {
             el.classList.add('visible');
           }
         });
-      }, 200);
+      }, 150);
     })();
   </script>
 </body>

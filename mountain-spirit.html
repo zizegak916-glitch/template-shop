@@ -4,76 +4,111 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>山魂 · 水墨之境</title>
-  <!-- Google Fonts: Noto Serif SC for Chinese aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ----- CSS custom properties / theming ----- */
+    /* ========================================
+       CSS Custom Properties / Theme System
+       ======================================== */
     :root {
       --bg-primary: #0a0a12;
-      --bg-card: #14141f;
+      --bg-secondary: #0e0e1a;
+      --bg-card: #12121e;
+      --bg-card-hover: #181828;
       --text-primary: #f0ede6;
       --text-secondary: #b8b2a8;
+      --text-muted: #7a7568;
       --accent-gold: #d4a853;
       --accent-gold-soft: #c9a04b;
-      --mist-light: rgba(220, 215, 200, 0.08);
-      --mist-medium: rgba(200, 195, 180, 0.15);
-      --shadow-gold: 0 8px 24px rgba(212, 168, 83, 0.2);
-      --mountain-dark: #0d0d18;
-      --mountain-mid: #1a1a2e;
-      --mountain-light: #2a2a44;
+      --accent-gold-dim: rgba(212, 168, 83, 0.15);
+      --accent-gold-glow: rgba(212, 168, 83, 0.3);
+      --mist-light: rgba(220, 215, 200, 0.06);
+      --mist-medium: rgba(200, 195, 180, 0.12);
+      --mist-strong: rgba(200, 195, 180, 0.2);
+      --shadow-gold: 0 8px 32px rgba(212, 168, 83, 0.25);
+      --shadow-deep: 0 20px 60px rgba(0, 0, 0, 0.6);
+      --mountain-back: #0d0d18;
+      --mountain-mid: #14142a;
+      --mountain-front: #1e1e3a;
+      --mountain-peak: #282848;
       --card-radius: 1.2rem;
       --transition-smooth: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      --transition-bounce: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --font-chinese: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+      --font-body: 'Inter', 'Noto Serif SC', system-ui, sans-serif;
     }
 
-    /* light theme (optional, but we keep dark as primary) */
     [data-theme="light"] {
       --bg-primary: #f5f2ed;
+      --bg-secondary: #eae5dc;
       --bg-card: #ffffff;
+      --bg-card-hover: #faf8f5;
       --text-primary: #1a1a1a;
       --text-secondary: #4a4a4a;
+      --text-muted: #8a8a8a;
       --accent-gold: #b8863a;
       --accent-gold-soft: #a0742f;
-      --mist-light: rgba(60, 50, 40, 0.04);
-      --mist-medium: rgba(60, 50, 40, 0.08);
-      --shadow-gold: 0 8px 24px rgba(184, 134, 58, 0.15);
-      --mountain-dark: #c8c0b0;
-      --mountain-mid: #d8d0c0;
-      --mountain-light: #e8e0d0;
+      --accent-gold-dim: rgba(184, 134, 58, 0.1);
+      --accent-gold-glow: rgba(184, 134, 58, 0.2);
+      --mist-light: rgba(60, 50, 40, 0.03);
+      --mist-medium: rgba(60, 50, 40, 0.06);
+      --mist-strong: rgba(60, 50, 40, 0.12);
+      --shadow-gold: 0 8px 32px rgba(184, 134, 58, 0.15);
+      --shadow-deep: 0 20px 60px rgba(0, 0, 0, 0.08);
+      --mountain-back: #d0c8b8;
+      --mountain-mid: #c0b8a8;
+      --mountain-front: #b0a898;
+      --mountain-peak: #a09888;
     }
 
-    * {
+    /* ========================================
+       Reset & Base Styles
+       ======================================== */
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    body {
-      font-family: 'Inter', 'Noto Serif SC', serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.5;
-      overflow-x: hidden;
-      transition: background-color 0.4s ease, color 0.3s ease;
-    }
-
-    /* smooth scroll */
     html {
       scroll-behavior: smooth;
+      font-size: 16px;
     }
 
-    /* ----- reusable animations / keyframes ----- */
-    @keyframes floatCloud {
-      0% { transform: translateX(-10%) scale(1); opacity: 0.3; }
-      50% { opacity: 0.7; }
-      100% { transform: translateX(110%) scale(1.2); opacity: 0.1; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background-color 0.4s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ========================================
+       Keyframe Animations
+       ======================================== */
+    @keyframes cloudDrift {
+      0% { transform: translateX(-100%); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateX(100vw); opacity: 0; }
+    }
+
+    @keyframes mistFloat {
+      0% { transform: translateX(-20%) translateY(0); opacity: 0.15; }
+      25% { opacity: 0.35; }
+      50% { transform: translateX(20%) translateY(-10px); opacity: 0.2; }
+      75% { opacity: 0.4; }
+      100% { transform: translateX(-20%) translateY(0); opacity: 0.15; }
     }
 
     @keyframes mistPulse {
-      0% { opacity: 0.15; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.05); }
-      100% { opacity: 0.15; transform: scale(1); }
+      0% { opacity: 0.1; transform: scaleY(1); }
+      50% { opacity: 0.3; transform: scaleY(1.1); }
+      100% { opacity: 0.1; transform: scaleY(1); }
     }
 
     @keyframes goldShimmer {
@@ -81,34 +116,59 @@
       100% { background-position: 200% center; }
     }
 
-    /* ----- theme toggle (sun/moon) ----- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes peakGlow {
+      0%, 100% { box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,168,83,0.05); }
+      50% { box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(212,168,83,0.15); }
+    }
+
+    /* ========================================
+       Theme Toggle Button
+       ======================================== */
     .theme-toggle {
       position: fixed;
-      top: 1.2rem;
+      top: 1.5rem;
       right: 1.5rem;
-      z-index: 999;
+      z-index: 1000;
       background: var(--bg-card);
-      border: 1px solid var(--accent-gold-soft);
+      border: 1px solid var(--accent-gold-dim);
       color: var(--accent-gold);
-      width: 48px;
-      height: 48px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.6rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: all 0.3s ease;
-      backdrop-filter: blur(4px);
+      font-size: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.35s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .theme-toggle:hover {
-      transform: scale(1.08);
-      box-shadow: var(--shadow-gold);
-    }
-    .theme-toggle:active { transform: scale(0.95); }
 
-    /* ----- mountain hero with parallax layers & mist ----- */
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-gold);
+      border-color: var(--accent-gold);
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.95);
+    }
+
+    /* ========================================
+       Hero Section — Mountain Landscape
+       ======================================== */
     .hero {
       position: relative;
       min-height: 100vh;
@@ -122,79 +182,123 @@
       background: var(--bg-primary);
     }
 
-    /* mountain silhouettes (layered gradients) + parallax simulation via transform */
-    .mountain-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-
+    /* Mountain silhouette layers via gradients */
     .mountain-layer {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      pointer-events: none;
       background-repeat: no-repeat;
       background-position: bottom center;
       background-size: cover;
-      transition: transform 0.1s ease-out; /* for scroll parallax (js) */
+      will-change: transform;
     }
 
-    /* layer 1 (back) – dark indigo */
-    .mountain-1 {
-      background: 
-        radial-gradient(ellipse 120% 40% at 20% 100%, #1a1a3a 0%, transparent 70%),
-        radial-gradient(ellipse 100% 35% at 80% 100%, #16162e 0%, transparent 70%);
-      opacity: 0.9;
+    /* Back layer — darkest indigo */
+    .mountain-layer--back {
+      z-index: 1;
+      background:
+        radial-gradient(ellipse 130% 45% at 15% 100%, var(--mountain-back) 0%, transparent 65%),
+        radial-gradient(ellipse 90% 35% at 55% 100%, #111122 0%, transparent 60%),
+        radial-gradient(ellipse 110% 40% at 85% 100%, var(--mountain-back) 0%, transparent 65%);
+      opacity: 0.95;
     }
-    /* layer 2 (mid) – misty gray */
-    .mountain-2 {
-      background: 
-        radial-gradient(ellipse 150% 30% at 30% 100%, #2a2a44 0%, transparent 70%),
-        radial-gradient(ellipse 130% 25% at 70% 100%, #22223a 0%, transparent 70%);
-      opacity: 0.7;
-      mix-blend-mode: screen;
+
+    /* Mid layer — deep indigo */
+    .mountain-layer--mid {
+      z-index: 2;
+      background:
+        radial-gradient(ellipse 120% 38% at 25% 100%, var(--mountain-mid) 0%, transparent 60%),
+        radial-gradient(ellipse 100% 30% at 65% 100%, #181835 0%, transparent 55%),
+        radial-gradient(ellipse 80% 28% at 90% 100%, var(--mountain-mid) 0%, transparent 60%);
+      opacity: 0.85;
     }
-    /* layer 3 (front) – warm gold accent */
-    .mountain-3 {
-      background: 
-        radial-gradient(ellipse 80% 20% at 50% 100%, #d4a853 0%, transparent 80%);
-      opacity: 0.2;
+
+    /* Front layer — lighter indigo */
+    .mountain-layer--front {
+      z-index: 3;
+      background:
+        radial-gradient(ellipse 100% 30% at 35% 100%, var(--mountain-front) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 22% at 75% 100%, #222244 0%, transparent 50%),
+        radial-gradient(ellipse 90% 26% at 50% 100%, var(--mountain-front) 0%, transparent 55%);
+      opacity: 0.75;
+    }
+
+    /* Peak highlights — warm gold accent */
+    .mountain-layer--peak {
+      z-index: 4;
+      background:
+        radial-gradient(ellipse 60% 18% at 30% 100%, rgba(212, 168, 83, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 15% at 60% 100%, rgba(212, 168, 83, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 12% at 80% 100%, rgba(212, 168, 83, 0.1) 0%, transparent 70%);
+      opacity: 0.6;
       mix-blend-mode: overlay;
     }
 
-    /* animated mist clouds (drifting layers) */
-    .mist-cloud {
+    /* Animated cloud/mist layers */
+    .mist-layer {
       position: absolute;
-      top: 0;
-      left: 0;
       width: 200%;
       height: 100%;
-      background: radial-gradient(circle at 20% 40%, var(--mist-medium) 0%, transparent 50%);
-      animation: floatCloud 22s linear infinite;
+      top: 0;
+      left: 0;
       pointer-events: none;
-      z-index: 1;
-      opacity: 0.6;
-    }
-    .mist-cloud:nth-child(2) {
-      top: 20%;
-      animation-duration: 30s;
-      animation-delay: -6s;
-      background: radial-gradient(circle at 80% 60%, var(--mist-light) 0%, transparent 50%);
-      width: 180%;
-    }
-    .mist-cloud:nth-child(3) {
-      top: 55%;
-      animation-duration: 26s;
-      animation-delay: -12s;
-      background: radial-gradient(circle at 30% 70%, var(--mist-medium) 0%, transparent 60%);
-      width: 220%;
+      z-index: 5;
     }
 
+    .mist-layer--1 {
+      background: radial-gradient(ellipse 40% 25% at 25% 45%, var(--mist-medium) 0%, transparent 65%);
+      animation: mistFloat 25s ease-in-out infinite;
+    }
+
+    .mist-layer--2 {
+      background: radial-gradient(ellipse 50% 20% at 70% 55%, var(--mist-light) 0%, transparent 60%);
+      animation: mistFloat 32s ease-in-out infinite reverse;
+      animation-delay: -8s;
+    }
+
+    .mist-layer--3 {
+      background: radial-gradient(ellipse 35% 30% at 50% 65%, var(--mist-strong) 0%, transparent 55%);
+      animation: mistFloat 28s ease-in-out infinite;
+      animation-delay: -15s;
+    }
+
+    /* Drifting cloud elements */
+    .cloud {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--mist-medium) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .cloud--1 {
+      width: 400px;
+      height: 120px;
+      top: 30%;
+      animation: cloudDrift 40s linear infinite;
+      animation-delay: -5s;
+    }
+
+    .cloud--2 {
+      width: 300px;
+      height: 90px;
+      top: 50%;
+      animation: cloudDrift 55s linear infinite;
+      animation-delay: -20s;
+    }
+
+    .cloud--3 {
+      width: 500px;
+      height: 140px;
+      top: 65%;
+      animation: cloudDrift 45s linear infinite;
+      animation-delay: -30s;
+    }
+
+    /* Hero content */
     .hero-content {
       position: relative;
       z-index: 10;
@@ -202,144 +306,223 @@
     }
 
     .hero-title {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(4rem, 15vw, 8rem);
+      font-family: var(--font-chinese);
+      font-size: clamp(5rem, 18vw, 10rem);
       font-weight: 900;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
       color: transparent;
-      background: linear-gradient(135deg, #f0ede6 30%, #d4a853 70%, #b8944a);
+      background: linear-gradient(
+        135deg,
+        #f0ede6 0%,
+        #d4a853 40%,
+        #e8c96a 60%,
+        #b8944a 100%
+      );
+      background-size: 200% auto;
       -webkit-background-clip: text;
       background-clip: text;
-      text-shadow: 0 0 30px rgba(212,168,83,0.2);
-      margin-bottom: 1rem;
-      animation: mistPulse 6s ease-in-out infinite;
+      text-shadow: 0 0 60px rgba(212, 168, 83, 0.15);
+      margin-bottom: 1.5rem;
+      animation: goldShimmer 8s linear infinite;
+      line-height: 1.1;
     }
 
-    .hero-sub {
-      font-size: clamp(1.2rem, 4vw, 2rem);
+    .hero-subtitle {
+      font-family: var(--font-chinese);
+      font-size: clamp(1rem, 3vw, 1.6rem);
       color: var(--text-secondary);
-      letter-spacing: 0.3em;
-      font-weight: 300;
+      letter-spacing: 0.5em;
+      font-weight: 400;
       margin-bottom: 2rem;
-      border-top: 1px solid var(--accent-gold-soft);
-      border-bottom: 1px solid var(--accent-gold-soft);
       display: inline-block;
-      padding: 0.5rem 2rem;
-      backdrop-filter: blur(2px);
+      padding: 0.6rem 2.5rem;
+      border-top: 1px solid var(--accent-gold-dim);
+      border-bottom: 1px solid var(--accent-gold-dim);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
     .hero-desc {
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
+      font-size: 1.15rem;
+      max-width: 620px;
+      margin: 0 auto 3rem;
       color: var(--text-secondary);
-      line-height: 1.8;
+      line-height: 2;
     }
 
-    .btn-gold {
+    .btn-primary {
       display: inline-block;
       background: transparent;
       border: 2px solid var(--accent-gold);
       color: var(--accent-gold);
-      padding: 0.9rem 3rem;
+      padding: 1rem 3.5rem;
       border-radius: 60px;
       font-weight: 600;
-      letter-spacing: 0.2em;
-      font-size: 1.2rem;
+      letter-spacing: 0.25em;
+      font-size: 1.1rem;
       backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       transition: all 0.4s ease;
       cursor: pointer;
       text-decoration: none;
-      box-shadow: 0 0 15px rgba(212,168,83,0.1);
-    }
-    .btn-gold:hover {
-      background: var(--accent-gold);
-      color: #0a0a12;
-      box-shadow: var(--shadow-gold);
-      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 0 20px rgba(212, 168, 83, 0.08);
+      font-family: var(--font-chinese);
     }
 
-    /* ----- features: mountain-peak shaped cards ----- */
-    .section-title {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(2.5rem, 6vw, 3.8rem);
-      text-align: center;
-      margin-bottom: 3rem;
-      color: var(--text-primary);
+    .btn-primary:hover {
+      background: var(--accent-gold);
+      color: var(--bg-primary);
+      box-shadow: var(--shadow-gold);
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    .btn-primary:active {
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    /* ========================================
+       Section Shared Styles
+       ======================================== */
+    .section {
+      padding: 6rem 1.5rem;
       position: relative;
     }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-title {
+      font-family: var(--font-chinese);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+
     .section-title::after {
-      content: '⛰️';
+      content: '';
       display: block;
-      font-size: 2rem;
-      margin-top: 0.2rem;
-      opacity: 0.5;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+      margin: 1rem auto 0;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto;
+      letter-spacing: 0.1em;
+    }
+
+    /* ========================================
+       Features Grid — Mountain Peak Cards
+       ======================================== */
+    .features {
+      background: var(--bg-primary);
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2.5rem;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
     }
 
-    /* peak-shaped card: clip-path polygon (mountain silhouette) */
     .peak-card {
       background: var(--bg-card);
-      padding: 3rem 1.8rem 2.5rem;
-      border-radius: var(--card-radius);
-      clip-path: polygon(0% 8%, 20% 0%, 40% 10%, 60% 0%, 80% 6%, 100% 0%, 100% 100%, 0% 100%);
-      transition: all var(--transition-smooth);
+      padding: 3.5rem 2rem 3rem;
       text-align: center;
-      border: 1px solid rgba(212,168,83,0.15);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
       position: relative;
       overflow: hidden;
+      border: 1px solid var(--accent-gold-dim);
+      border-radius: var(--card-radius);
+      transition: all var(--transition-smooth);
+      clip-path: polygon(0% 10%, 15% 0%, 35% 12%, 55% 0%, 75% 8%, 100% 0%, 100% 100%, 0% 100%);
     }
+
     .peak-card::before {
       content: '';
       position: absolute;
-      top: -30%;
+      top: -40%;
       left: -20%;
       width: 140%;
       height: 80%;
-      background: radial-gradient(circle at 30% 40%, rgba(212,168,83,0.08), transparent 70%);
+      background: radial-gradient(circle at 50% 30%, var(--accent-gold-dim), transparent 60%);
       opacity: 0;
-      transition: opacity 0.5s;
+      transition: opacity 0.5s ease;
     }
-    .peak-card:hover::before { opacity: 1; }
+
+    .peak-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold-soft), transparent);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
 
     .peak-card:hover {
-      transform: translateY(-12px) scale(1.02);
-      box-shadow: 0 24px 48px rgba(0,0,0,0.7), 0 0 0 1px var(--accent-gold-soft);
+      transform: translateY(-16px) scale(1.02);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--accent-gold);
       border-color: var(--accent-gold);
+      background: var(--bg-card-hover);
+    }
+
+    .peak-card:hover::before {
+      opacity: 1;
+    }
+
+    .peak-card:hover::after {
+      opacity: 1;
     }
 
     .peak-icon {
       font-size: 3.5rem;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
       display: block;
+      animation: gentleFloat 4s ease-in-out infinite;
     }
+
+    .peak-card:nth-child(2) .peak-icon {
+      animation-delay: -1s;
+    }
+
+    .peak-card:nth-child(3) .peak-icon {
+      animation-delay: -2s;
+    }
+
     .peak-card h3 {
-      font-size: 1.8rem;
+      font-family: var(--font-chinese);
+      font-size: 1.6rem;
       font-weight: 700;
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
       color: var(--accent-gold);
+      letter-spacing: 0.1em;
     }
+
     .peak-card p {
       color: var(--text-secondary);
       font-size: 0.95rem;
-      line-height: 1.6;
+      line-height: 1.8;
     }
 
-    /* ----- stats / testimonials section ----- */
-    .stats-section {
-      background: linear-gradient(180deg, var(--bg-primary) 0%, #0f0f1e 100%);
-      padding: 5rem 1.5rem;
-      text-align: center;
+    /* ========================================
+       Stats Section
+       ======================================== */
+    .stats {
+      background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
     }
+
     .stats-grid {
       display: flex;
       flex-wrap: wrap;
@@ -348,185 +531,294 @@
       max-width: 1000px;
       margin: 0 auto;
     }
+
     .stat-item {
-      flex: 1 1 160px;
+      flex: 1 1 180px;
+      text-align: center;
+      padding: 2rem 1rem;
     }
+
     .stat-number {
-      font-size: 3.8rem;
+      font-family: var(--font-chinese);
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
       font-weight: 700;
       color: var(--accent-gold);
-      font-family: 'Noto Serif SC', serif;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
     }
+
     .stat-label {
       font-size: 1rem;
       color: var(--text-secondary);
-      letter-spacing: 0.15em;
-      border-top: 1px solid var(--accent-gold-soft);
+      letter-spacing: 0.2em;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--accent-gold-dim);
       display: inline-block;
-      padding-top: 0.5rem;
     }
 
-    .testimonial-card {
-      background: var(--bg-card);
-      max-width: 600px;
-      margin: 3rem auto 0;
-      padding: 2.5rem 2rem;
-      border-radius: 2rem;
-      border-left: 6px solid var(--accent-gold);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-      font-style: italic;
-      transition: transform 0.4s;
-    }
-    .testimonial-card:hover {
-      transform: scale(1.01);
-    }
-    .testimonial-card p {
-      font-size: 1.2rem;
-      line-height: 1.8;
-      color: var(--text-secondary);
-    }
-    .testimonial-author {
-      margin-top: 1.2rem;
-      font-weight: 600;
-      color: var(--accent-gold);
-      font-style: normal;
-    }
-
-    /* ----- CTA section (gold accent) ----- */
-    .cta-section {
-      padding: 6rem 2rem;
+    /* ========================================
+       CTA Section
+       ======================================== */
+    .cta {
+      padding: 8rem 2rem;
       text-align: center;
-      background: radial-gradient(ellipse at 50% 100%, #14141f, #0a0a12);
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 100%, var(--bg-card) 0%, var(--bg-primary) 70%);
     }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse 50% 30% at 30% 70%, rgba(212, 168, 83, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 25% at 70% 60%, rgba(212, 168, 83, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
     .cta-title {
-      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-family: var(--font-chinese);
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
       font-weight: 700;
       margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, #f0ede6, #d4a853);
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-gold));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      position: relative;
+      z-index: 1;
     }
+
     .cta-desc {
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
+      max-width: 560px;
+      margin: 0 auto 3rem;
       color: var(--text-secondary);
-      font-size: 1.2rem;
+      font-size: 1.15rem;
+      line-height: 1.9;
+      position: relative;
+      z-index: 1;
     }
+
     .btn-cta {
       background: var(--accent-gold);
       border: none;
-      color: #0a0a12;
-      padding: 1rem 3.5rem;
+      color: var(--bg-primary);
+      padding: 1.1rem 4rem;
       border-radius: 60px;
       font-weight: 700;
-      font-size: 1.3rem;
-      letter-spacing: 0.1em;
-      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      letter-spacing: 0.15em;
+      transition: all 0.35s ease;
       cursor: pointer;
-      box-shadow: 0 0 30px rgba(212,168,83,0.3);
+      box-shadow: 0 0 40px rgba(212, 168, 83, 0.25);
+      position: relative;
+      z-index: 1;
+      font-family: var(--font-chinese);
     }
+
     .btn-cta:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 50px rgba(212,168,83,0.6);
+      transform: scale(1.08);
+      box-shadow: 0 0 60px rgba(212, 168, 83, 0.5);
       background: #e0b85c;
     }
 
-    /* ----- footer ----- */
+    .btn-cta:active {
+      transform: scale(1.04);
+    }
+
+    /* ========================================
+       Footer
+       ======================================== */
     .footer {
-      padding: 2.5rem 1.5rem;
+      padding: 3rem 1.5rem;
       text-align: center;
-      border-top: 1px solid rgba(212,168,83,0.2);
-      color: var(--text-secondary);
-      font-size: 0.9rem;
+      border-top: 1px solid var(--accent-gold-dim);
       background: var(--bg-primary);
     }
+
+    .footer p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+    }
+
     .footer span {
       color: var(--accent-gold);
     }
 
-    /* ----- intersection observer reveal ----- */
+    .footer-sub {
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    /* ========================================
+       Scroll Reveal
+       ======================================== */
     .reveal {
       opacity: 0;
-      transform: translateY(40px);
+      transform: translateY(30px);
       transition: opacity 0.8s ease, transform 0.8s ease;
     }
+
     .reveal.visible {
       opacity: 1;
       transform: translateY(0);
     }
 
-    /* mobile first */
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    /* ========================================
+       Responsive Design
+       ======================================== */
     @media (max-width: 640px) {
-      .hero-title { font-size: 4.5rem; }
-      .peak-card { clip-path: none; border-radius: 2rem; }
-      .stats-grid { gap: 2rem; }
-    }
-    @media (min-width: 1024px) {
-      .features-grid { grid-template-columns: repeat(3, 1fr); }
+      .hero-title {
+        font-size: 4rem;
+      }
+
+      .hero-subtitle {
+        letter-spacing: 0.3em;
+        padding: 0.5rem 1.5rem;
+      }
+
+      .peak-card {
+        clip-path: none;
+        border-radius: 1.5rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .stats-grid {
+        gap: 2rem;
+      }
+
+      .stat-item {
+        flex: 1 1 140px;
+      }
+
+      .cta {
+        padding: 5rem 1.5rem;
+      }
+
+      .cloud {
+        display: none;
+      }
     }
 
-    /* scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0a0a12; }
-    ::-webkit-scrollbar-thumb { background: #2a2a44; border-radius: 20px; }
+    @media (min-width: 641px) and (max-width: 1023px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* ========================================
+       Scrollbar
+       ======================================== */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--mountain-front);
+      border-radius: 20px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-gold-dim);
+    }
+
+    /* ========================================
+       Selection
+       ======================================== */
+    ::selection {
+      background: var(--accent-gold-dim);
+      color: var(--text-primary);
+    }
   </style>
 </head>
 <body>
-  <!-- theme toggle -->
+  <!-- Theme Toggle -->
   <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
 
-  <!-- Hero with mountain layers + mist -->
+  <!-- Hero Section -->
   <section class="hero" id="hero">
-    <div class="mountain-bg">
-      <div class="mountain-layer mountain-1" id="parallax1"></div>
-      <div class="mountain-layer mountain-2" id="parallax2"></div>
-      <div class="mountain-layer mountain-3" id="parallax3"></div>
-      <!-- mist clouds -->
-      <div class="mist-cloud"></div>
-      <div class="mist-cloud"></div>
-      <div class="mist-cloud"></div>
-    </div>
+    <!-- Mountain Silhouette Layers -->
+    <div class="mountain-layer mountain-layer--back" id="mtBack"></div>
+    <div class="mountain-layer mountain-layer--mid" id="mtMid"></div>
+    <div class="mountain-layer mountain-layer--front" id="mtFront"></div>
+    <div class="mountain-layer mountain-layer--peak" id="mtPeak"></div>
 
+    <!-- Mist / Cloud Layers -->
+    <div class="mist-layer mist-layer--1"></div>
+    <div class="mist-layer mist-layer--2"></div>
+    <div class="mist-layer mist-layer--3"></div>
+    <div class="cloud cloud--1"></div>
+    <div class="cloud cloud--2"></div>
+    <div class="cloud cloud--3"></div>
+
+    <!-- Hero Content -->
     <div class="hero-content">
       <h1 class="hero-title">山魂</h1>
-      <div class="hero-sub">水墨 · 靈境</div>
-      <p class="hero-desc">群山巍峨，雲霧繚繞。傳統東方美學與現代設計交織，呈現沉靜而深邃的山靈之境。</p>
-      <a href="#features" class="btn-gold">探索峰巒</a>
+      <div class="hero-subtitle">水墨 · 靈境</div>
+      <p class="hero-desc">
+        群山巍峨，雲霧繚繞。傳統東方美學與現代設計交織，呈現沉靜而深邃的山靈之境。
+      </p>
+      <a href="#features" class="btn-primary">探索峰巒</a>
     </div>
   </section>
 
-  <!-- Features: mountain-peak cards -->
-  <section id="features" style="padding-top: 2rem;">
-    <h2 class="section-title reveal">峰 · 韻</h2>
+  <!-- Features Section -->
+  <section class="section features" id="features">
+    <div class="section-header">
+      <h2 class="section-title reveal">峰 · 韻</h2>
+      <p class="section-subtitle reveal">三座山峰，三重意境</p>
+    </div>
     <div class="features-grid">
-      <div class="peak-card reveal">
+      <div class="peak-card reveal reveal-delay-1">
         <span class="peak-icon">🏔️</span>
         <h3>層巒疊嶂</h3>
-        <p>墨色山影層層遞進，深淺交錯之間，展現東方山水畫的無限意境。</p>
+        <p>墨色山影層層遞進，深淺交錯之間，展現東方山水畫的無限意境與空間感。</p>
       </div>
-      <div class="peak-card reveal">
+      <div class="peak-card reveal reveal-delay-2">
         <span class="peak-icon">🌫️</span>
         <h3>雲霧流轉</h3>
-        <p>動態霧氣如絹如紗，在山巒之間緩緩流動，營造虛實相生的靈動感。</p>
+        <p>動態霧氣如絹如紗，在山巒之間緩緩流動，營造虛實相生的靈動之美。</p>
       </div>
-      <div class="peak-card reveal">
+      <div class="peak-card reveal reveal-delay-3">
         <span class="peak-icon">✨</span>
         <h3>金墨點睛</h3>
-        <p>溫暖的金色點綴於深邃底色，如破曉時分的第一縷光，喚醒山魂。</p>
-      </div>
-      <div class="peak-card reveal">
-        <span class="peak-icon">🎋</span>
-        <h3>傳統氣韻</h3>
-        <p>從水墨筆觸到版式留白，每個細節皆蘊含東方美學的當代演繹。</p>
+        <p>溫暖的金色點綴於深邃底色，如破曉時分的第一縷光，喚醒沉睡的山魂。</p>
       </div>
     </div>
   </section>
 
-  <!-- Stats / Testimonials -->
-  <section class="stats-section">
-    <h2 class="section-title reveal">山 · 語</h2>
+  <!-- Stats Section -->
+  <section class="section stats" id="stats">
+    <div class="section-header">
+      <h2 class="section-title reveal">山 · 語</h2>
+      <p class="section-subtitle reveal">數據背後的東方意韻</p>
+    </div>
     <div class="stats-grid reveal">
       <div class="stat-item">
         <div class="stat-number">三千+</div>
@@ -541,85 +833,138 @@
         <div class="stat-label">靜心體驗</div>
       </div>
     </div>
-
-    <div class="testimonial-card reveal">
-      <p>「山魂系列完美捕捉了東方山水的神韻，每一次滾動都像在雲霧中行走，金墨點綴讓設計有了呼吸。」</p>
-      <div class="testimonial-author">—— 林懷遠 · 藝術總監</div>
-    </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta-section">
+  <!-- CTA Section -->
+  <section class="cta" id="cta">
     <h2 class="cta-title reveal">入山 · 見魂</h2>
-    <p class="cta-desc reveal">解鎖這套融合傳統美學與現代交互的山水模板，讓你的數位作品擁有山靈之氣。</p>
+    <p class="cta-desc reveal">
+      解鎖這套融合傳統美學與現代交互的山水模板，讓你的數位作品擁有山靈之氣。
+    </p>
     <button class="btn-cta reveal">立即啟程</button>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
     <p>© 山魂 · <span>水墨之境</span> · 東方美學現代演繹</p>
-    <p style="margin-top: 0.5rem; font-size: 0.8rem;">暗夜山靈 · 金墨點綴</p>
+    <p class="footer-sub">暗夜山靈 · 金墨點綴</p>
   </footer>
 
+  <!-- JavaScript — NO external dependencies -->
   <script>
-    (function() {
-      // ----- THEME TOGGLE (dark/light) -----
-      const toggleBtn = document.getElementById('themeToggle');
-      const html = document.documentElement;
-      let currentTheme = html.getAttribute('data-theme') || 'dark';
+    (function () {
+      /* ========================================
+         Theme Toggle
+         ======================================== */
+      var toggleBtn = document.getElementById('themeToggle');
+      var html = document.documentElement;
+      var currentTheme = html.getAttribute('data-theme') || 'dark';
 
-      toggleBtn.addEventListener('click', function() {
-        if (currentTheme === 'dark') {
-          html.setAttribute('data-theme', 'light');
-          toggleBtn.textContent = '☀️';
-          currentTheme = 'light';
-        } else {
-          html.setAttribute('data-theme', 'dark');
-          toggleBtn.textContent = '🌙';
-          currentTheme = 'dark';
-        }
+      toggleBtn.addEventListener('click', function () {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', currentTheme);
+        toggleBtn.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
       });
 
-      // ----- INTERSECTION OBSERVER (reveal animations) -----
-      const revealElements = document.querySelectorAll('.reveal');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+      /* ========================================
+         Intersection Observer — Reveal on Scroll
+         ======================================== */
+      var revealEls = document.querySelectorAll('.reveal');
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
           }
         });
-      }, { threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
+      }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
-      revealElements.forEach(el => observer.observe(el));
+      revealEls.forEach(function (el) { observer.observe(el); });
 
-      // ----- PARALLAX on mountain layers (scroll effect) -----
-      const mountain1 = document.getElementById('parallax1');
-      const mountain2 = document.getElementById('parallax2');
-      const mountain3 = document.getElementById('parallax3');
+      /* ========================================
+         Parallax — Mountain Layers on Scroll
+         ======================================== */
+      var mtBack = document.getElementById('mtBack');
+      var mtMid = document.getElementById('mtMid');
+      var mtFront = document.getElementById('mtFront');
+      var mtPeak = document.getElementById('mtPeak');
+      var heroEl = document.getElementById('hero');
+      var ticking = false;
 
       function updateParallax() {
-        const scrollY = window.scrollY;
-        const heroHeight = document.getElementById('hero')?.offsetHeight || 800;
-        // only apply within hero area (0 to 1.2 * heroHeight)
-        const factor = Math.min(scrollY / (heroHeight * 0.8), 1.2);
-        // translate layers at different speeds
-        if (mountain1) {
-          mountain1.style.transform = `translateY(${factor * 18}px) scale(${1 + factor * 0.02})`;
+        var scrollY = window.pageYOffset || window.scrollY;
+        var heroH = heroEl ? heroEl.offsetHeight : 800;
+        var progress = Math.min(scrollY / (heroH * 0.7), 1.5);
+
+        if (mtBack) {
+          mtBack.style.transform = 'translateY(' + (progress * 12) + 'px) scale(' + (1 + progress * 0.015) + ')';
         }
-        if (mountain2) {
-          mountain2.style.transform = `translateY(${factor * 30}px) scale(${1 + factor * 0.03})`;
+        if (mtMid) {
+          mtMid.style.transform = 'translateY(' + (progress * 24) + 'px) scale(' + (1 + progress * 0.025) + ')';
         }
-        if (mountain3) {
-          mountain3.style.transform = `translateY(${factor * 50}px) scale(${1 + factor * 0.04})`;
+        if (mtFront) {
+          mtFront.style.transform = 'translateY(' + (progress * 40) + 'px) scale(' + (1 + progress * 0.035) + ')';
         }
+        if (mtPeak) {
+          mtPeak.style.transform = 'translateY(' + (progress * 55) + 'px) scale(' + (1 + progress * 0.045) + ')';
+        }
+        ticking = false;
       }
 
-      window.addEventListener('scroll', updateParallax);
-      // initial call
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      });
+
       updateParallax();
 
-      // ----- smooth hover for peak cards (additional micro interaction) -----
-      // (already in CSS)
+      /* ========================================
+         Counter Animation for Stats
+         ======================================== */
+      var statNumbers = document.querySelectorAll('.stat-number');
+      var statsObserved = false;
+
+      function animateCounters() {
+        if (statsObserved) return;
+        statsObserved = true;
+
+        statNumbers.forEach(function (el) {
+          var text = el.textContent;
+          var match = text.match(/(\d+)/);
+          if (!match) return;
+
+          var target = parseInt(match[1], 10);
+          var suffix = text.replace(match[1], '');
+          var duration = 2000;
+          var start = performance.now();
+
+          function step(now) {
+            var elapsed = now - start;
+            var progress = Math.min(elapsed / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            var current = Math.floor(eased * target);
+            el.textContent = current + suffix;
+            if (progress < 1) {
+              requestAnimationFrame(step);
+            } else {
+              el.textContent = target + suffix;
+            }
+          }
+
+          requestAnimationFrame(step);
+        });
+      }
+
+      var statsSection = document.getElementById('stats');
+      if (statsSection) {
+        var statsObs = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) {
+            animateCounters();
+          }
+        }, { threshold: 0.3 });
+        statsObs.observe(statsSection);
+      }
     })();
   </script>
 </body>
