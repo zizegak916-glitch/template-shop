@@ -297,5 +297,102 @@ window.addEventListener('scroll',()=>{
 // Fallback: ensure visibility after load
 setTimeout(()=>{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))},1500);
 </script>
+
+<style>
+/* ═══ Auth Wall (self-contained) ═══ */
+#auth-wall{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(4,4,10,.88);backdrop-filter:blur(32px) saturate(1.2);opacity:0;transform:scale(.97);transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1)}
+#auth-wall.show{opacity:1;transform:scale(1)}
+.auth-bg-orbs{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.auth-bg-orbs .auth-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.5}
+.auth-bg-orbs .auth-orb:nth-child(1){width:400px;height:400px;background:rgba(108,92,231,.12);top:-100px;left:-100px;animation:authOrbFloat 12s ease-in-out infinite}
+.auth-bg-orbs .auth-orb:nth-child(2){width:300px;height:300px;background:rgba(0,206,201,.08);bottom:-80px;right:-80px;animation:authOrbFloat 12s ease-in-out infinite -6s}
+@keyframes authOrbFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-15px)}}
+.auth-card{background:#141418;border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:48px 40px;max-width:440px;width:92%;text-align:center;position:relative;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.4)}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6c5ce7,#00cec9,#6c5ce7);background-size:200% 100%;animation:authGradShift 4s linear infinite}
+@keyframes authGradShift{0%{background-position:0 0}100%{background-position:200% 0}}
+.auth-icon-wrap{width:64px;height:64px;border-radius:16px;background:rgba(108,92,231,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:authIconFloat 3s ease-in-out infinite}
+.auth-icon-wrap i{width:28px;height:28px;color:#6c5ce7}
+@keyframes authIconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.auth-card h2{font-size:24px;font-weight:800;margin-bottom:6px;letter-spacing:-.02em;color:#f0f0f0}
+.auth-card .auth-sub{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:28px;line-height:1.65}
+.auth-tabs{display:flex;margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:4px}
+.auth-tab{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.45);font-family:inherit;transition:all .3s;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px}
+.auth-tab i{width:15px;height:15px}
+.auth-tab.active{color:#6c5ce7;background:rgba(108,92,231,.1);box-shadow:0 2px 8px rgba(108,92,231,.1)}
+.auth-tab:hover:not(.active){color:#f0f0f0;background:rgba(255,255,255,.03)}
+.auth-panel{display:none;animation:authPanelIn .35s cubic-bezier(.22,1,.36,1)}
+.auth-panel.active{display:block}
+@keyframes authPanelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.key-input-wrap{position:relative;margin-bottom:4px}
+.key-input-wrap i{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:rgba(255,255,255,.45);pointer-events:none;transition:color .3s}
+.key-input{width:100%;padding:16px 16px 16px 44px;border-radius:14px;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#f0f0f0;font-size:16px;font-family:'SF Mono','Fira Code',monospace;letter-spacing:2px;text-transform:uppercase;text-align:center;outline:none;transition:all .3s}
+.key-input:focus{border-color:#6c5ce7;box-shadow:0 0 0 3px rgba(108,92,231,.1),0 0 30px rgba(108,92,231,.06)}
+.key-input:focus+i,.key-input:focus~i{color:#6c5ce7}
+.key-input::placeholder{color:rgba(255,255,255,.3);text-transform:none;letter-spacing:0;font-size:14px;font-family:inherit}
+.auth-btn{width:100%;padding:15px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;margin-top:14px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-btn i{width:18px;height:18px}
+.auth-btn.primary{background:linear-gradient(135deg,#6c5ce7,#5b4bcf);color:#fff;box-shadow:0 4px 20px rgba(108,92,231,.3)}
+.auth-btn.primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(108,92,231,.4)}
+.auth-btn.primary:active{transform:translateY(0)}
+.auth-btn.primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-btn.ghost{background:rgba(255,255,255,.03);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.08);margin-top:8px}
+.auth-btn.ghost:hover{background:rgba(255,255,255,.06);color:#f0f0f0}
+.auth-msg{font-size:13px;margin-top:12px;display:none;padding:12px 16px;border-radius:10px;line-height:1.5;text-align:left}
+.auth-msg.error{color:#f87171;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.1)}
+.auth-msg.success{color:#34d399;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.1)}
+.guest-hint{text-align:left;margin-top:16px;padding:16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.guest-hint p{font-size:12px;color:rgba(255,255,255,.45);line-height:1.7;margin:0}
+.guest-hint strong{color:#f0f0f0}
+/* Guest Notice Bar */
+#guest-notice{position:fixed;bottom:0;left:0;right:0;z-index:100;padding:14px 20px;background:rgba(20,20,24,.92);border-top:1px solid rgba(108,92,231,.15);display:none;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(20px);animation:authSlideUp .4s ease}
+@keyframes authSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#guest-notice span{font-size:12px;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:6px}
+#guest-notice span i{width:14px;height:14px}
+.notice-btn{padding:7px 18px;border-radius:8px;background:linear-gradient(135deg,#6c5ce7,#5b4bcf);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.notice-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(108,92,231,.3)}
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:authSpin .6s linear infinite}
+@keyframes authSpin{to{transform:rotate(360deg)}}
+/* Shake */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+/* Toast */
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-20px);padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:10000;opacity:0;transition:all .3s;pointer-events:none;backdrop-filter:blur(12px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast-success{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.2)}
+.toast-info{background:rgba(108,92,231,.15);color:#a78bfa;border:1px solid rgba(108,92,231,.2)}
+.toast-error{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.2)}
+</style>
+<div id="auth-wall">
+  <div class="auth-bg-orbs"><div class="auth-orb"></div><div class="auth-orb"></div></div>
+  <div class="auth-card">
+    <div class="auth-icon-wrap"><i data-lucide="lock"></i></div>
+    <h2>访问验证</h2>
+    <p class="auth-sub">输入密钥解锁全部功能，或以游客身份浏览</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('key')"><i data-lucide="key"></i> 密钥登录</button>
+      <button class="auth-tab" onclick="switchAuthTab('guest')"><i data-lucide="user"></i> 游客浏览</button>
+    </div>
+    <div class="auth-panel active" id="panel-key">
+      <div class="key-input-wrap">
+        <input type="text" id="key-input" class="key-input" placeholder="TMPL-XXXX-XXXX-XXXX" maxlength="18" autocomplete="off" spellcheck="false">
+        <i data-lucide="key"></i>
+      </div>
+      <button id="key-submit" class="auth-btn primary"><i data-lucide="unlock"></i> 验证并登录</button>
+      <div id="key-error" class="auth-msg error"></div>
+      <div id="key-success" class="auth-msg success">✅ 验证通过，正在进入...</div>
+    </div>
+    <div class="auth-panel" id="panel-guest">
+      <p class="auth-sub" style="margin-bottom:18px">游客模式可<strong style="color:#6c5ce7">预览</strong>全部模板<br>但<strong style="color:#f87171">无法下载</strong>源码文件</p>
+      <button id="guest-btn" class="auth-btn ghost"><i data-lucide="arrow-right"></i> 进入预览</button>
+      <div class="guest-hint"><p>💡 <strong>需要源码？</strong><br>购买密钥后输入即可解锁下载，一个密钥限一台设备。</p></div>
+    </div>
+  </div>
+</div>
+<div id="guest-notice">
+  <span><i data-lucide="lock"></i> 游客模式 — 源码下载已锁定</span>
+  <button class="notice-btn" id="open-auth-btn">输入密钥</button>
+</div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="auth.js"></script>
 </body>
 </html>
