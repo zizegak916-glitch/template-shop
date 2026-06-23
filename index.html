@@ -319,6 +319,7 @@ h1 {
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
+  contain: layout style;
 }
 .tpl-card:hover {
   transform: translateY(-8px);
@@ -931,7 +932,7 @@ h1 {
 <div class="tpl-grid" id="tpl-grid">
 
   <div class="tpl-card reveal" data-cat="dark luxury" data-name="极光" data-desc="北极光动态渐变 · Canvas粒子帘幕 · 玻璃态卡片 · 丝滑滚动" style="--card-accent:#22c55e">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="aurora-borealis.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="aurora-borealis.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="aurora-borealis.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="aurora-borealis.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -949,7 +950,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light luxury" data-name="大理石" data-desc="大理石纹理CSS渐变 · 金色线条 · 视差滚动 · 深阴影卡片" style="--card-accent:#c9a96e">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="marble-luxe.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="marble-luxe.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="marble-luxe.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="marble-luxe.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -967,7 +968,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="霓虹街区" data-desc="赛博霓虹发光 · 故障动画 · 扫描线 · 闪烁灯牌" style="--card-accent:#ff00ff">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="neon-district.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="neon-district.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="neon-district.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="neon-district.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -985,7 +986,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light luxury" data-name="丝路" data-desc="勃艮第+金+奶油色 · 丝绸流动渐变 · 金色粒子尘" style="--card-accent:#c9a96e">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="silk-road.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="silk-road.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="silk-road.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="silk-road.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1003,7 +1004,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="Gemini Flow" data-desc="纯黑白Gemini风格 · 流动渐变 · 玻璃态 · 粒子连线 · 丝滑动画" style="--card-accent:#7c3aed">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="gemini-flow.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="gemini-flow.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="gemini-flow.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="gemini-flow.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1021,7 +1022,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="墨剑" data-desc="《剑来》剑气水墨 · Canvas毛笔 · 飞白飞溅 · 金色剑气粒子" style="--card-accent:#C9A959">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="mojian.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="mojian.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="mojian.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="mojian.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1039,7 +1040,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark luxury" data-name="Noir旗舰" data-desc="纯黑底+银白 · 自定义光标 · 磁力按钮 · 3D倾斜 · 颗粒覆盖" style="--card-accent:#e2e8f0">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="noir.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="noir.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="noir.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="noir.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1057,7 +1058,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light minimal" data-name="云端" data-desc="浮云动画 · 天空渐变 · 呼吸感 · 轻盈卡片" style="--card-accent:#87ceeb">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="cloud-nine.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="cloud-nine.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="cloud-nine.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="cloud-nine.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1075,7 +1076,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="余烬" data-desc="CSS余烬粒子上升 · 火焰渐变 · 篝火氛围" style="--card-accent:#ff6b35">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="ember-glow.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="ember-glow.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ember-glow.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ember-glow.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1093,7 +1094,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark luxury" data-name="金箔" data-desc="Canvas金色粒子闪烁 · 金色渐变文字 · 奢华卡片" style="--card-accent:#c9a96e">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="gold-leaf.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="gold-leaf.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="gold-leaf.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="gold-leaf.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1111,7 +1112,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="破晓" data-desc="日出渐变 · 光线动画 · 晨曦卡片 · 温暖色调" style="--card-accent:#ffb347">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="dawn-break.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="dawn-break.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="dawn-break.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="dawn-break.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1129,7 +1130,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="虚空" data-desc="CSS星空 · 星云渐变 · 虫洞动画 · 宇宙深邃" style="--card-accent:#6b21a8">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="void-space.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="void-space.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="void-space.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="void-space.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1147,7 +1148,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="山魂" data-desc="CSS山峦剪影 · 云雾缭绕 · 水墨远山 · 巍峨壮阔" style="--card-accent:#4a5568">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="mountain-spirit.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="mountain-spirit.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="mountain-spirit.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="mountain-spirit.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1165,7 +1166,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="潮起" data-desc="波浪动画 · 海洋渐变 · 潮汐节奏 · 澎湃力量" style="--card-accent:#0077b6">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="tide-rise.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="tide-rise.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="tide-rise.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="tide-rise.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1183,7 +1184,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light minimal" data-name="月华" data-desc="月光渐变 · 星星点缀 · 银辉卡片 · 静谧优雅" style="--card-accent:#c0c0c0">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="moonlight.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="moonlight.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="moonlight.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="moonlight.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1201,7 +1202,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="水墨雾" data-desc="CSS墨迹扩散 · 雾气动画 · 书法字体 · 水墨卡片" style="--card-accent:#6366f1">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="ink-mist.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="ink-mist.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ink-mist.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ink-mist.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1219,7 +1220,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="丹青水墨" data-desc="Canvas墨迹渲染 · Perlin山脉 · 粒子扩散 · 纸张吸墨" style="--card-accent:#94a3b8">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="ink-wash.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="ink-wash.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ink-wash.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ink-wash.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1237,7 +1238,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="丹青水墨V2" data-desc="水墨进阶版 · 更强墨迹物理模拟 · 交互效果" style="--card-accent:#94a3b8">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="ink-wash-v2.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="ink-wash-v2.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ink-wash-v2.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ink-wash-v2.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1255,7 +1256,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="水墨极致" data-desc="墨分五色 · SVG滤镜 · 留白构图 · 极致水墨" style="--card-accent:#94a3b8">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="ink-ultimate.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="ink-ultimate.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ink-ultimate.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ink-ultimate.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1273,7 +1274,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark ink" data-name="侘寂" data-desc="侘寂美学 · 不完美之美 · 自然质感 · 极简留白" style="--card-accent:#a3927a">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="wabi-sabi.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="wabi-sabi.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="wabi-sabi.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="wabi-sabi.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1291,7 +1292,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="赛博禅" data-desc="赛博朋克+禅意碰撞 · 霓虹+佛系美学" style="--card-accent:#6366f1">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="cyber-zen.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="cyber-zen.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="cyber-zen.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="cyber-zen.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1309,7 +1310,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="赛博朋克" data-desc="经典赛博朋克 · 霓虹灯 · 雨夜 · 全息投影" style="--card-accent:#ff66ff">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="cyberpunk.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="cyberpunk.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="cyberpunk.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="cyberpunk.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1327,7 +1328,7 @@ h1 {
   </div>
 
     <div class="tpl-card reveal" data-cat="dark" data-name="流体渐变" data-desc="动态色彩流动 · 柔和过渡 · 有机形态" style="--card-accent:#a855f7">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="fluid-gradient.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="fluid-gradient.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="fluid-gradient.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="fluid-gradient.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1345,7 +1346,7 @@ h1 {
   </div>
 
 <div class="tpl-card reveal" data-cat="dark" data-name="玻璃态" data-desc="毛玻璃设计 · 半透明卡片 · 模糊背景 · 光影折射" style="--card-accent:#7dd3fc">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="glassmorphism.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="glassmorphism.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="glassmorphism.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="glassmorphism.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1363,7 +1364,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="流体渐变" data-desc="动态色彩流动 · 柔和过渡 · 有机形态" style="--card-accent:#ec4899">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="fluid-gradient.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="fluid-gradient.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="fluid-gradient.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="fluid-gradient.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1381,7 +1382,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark minimal" data-name="暗色极简" data-desc="克制用色 · 大量留白 · 精致排版" style="--card-accent:#6b7280">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="dark-minimal.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="dark-minimal.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="dark-minimal.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="dark-minimal.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1399,7 +1400,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark industry" data-name="暗色SaaS" data-desc="数据可视化 · 功能展示 · 定价表" style="--card-accent:#6366f1">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="dark-saas.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="dark-saas.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="dark-saas.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="dark-saas.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1417,7 +1418,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="像素复古" data-desc="8-bit美学 · 像素字体 · 复古配色" style="--card-accent:#f59e0b">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="pixel-retro.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="pixel-retro.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="pixel-retro.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="pixel-retro.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1435,7 +1436,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="蒸汽波" data-desc="渐变网格 · 古典雕塑 · 故障效果" style="--card-accent:#ec4899">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="vaporwave.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="vaporwave.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="vaporwave.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="vaporwave.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1453,7 +1454,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="极光幻彩" data-desc="多彩渐变 · 流动光效 · 梦幻氛围" style="--card-accent:#22c55e">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="aurora.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="aurora.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="aurora.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="aurora.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1471,7 +1472,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="密林" data-desc="树影婆娑 · 苔藓质感 · 森林呼吸 · 斑驳光影" style="--card-accent:#166534">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="deep-forest.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="deep-forest.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="deep-forest.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="deep-forest.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1489,7 +1490,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark" data-name="暗流" data-desc="流体渐变 · 暗涌动画 · 深邃卡片 · 神秘纹理" style="--card-accent:#1e1b4b">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="shadow-flow.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="shadow-flow.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="shadow-flow.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="shadow-flow.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1507,7 +1508,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="霜晶" data-desc="冰晶图案 · 磨砂玻璃 · 雪花粒子 · 极地蓝调" style="--card-accent:#a8d8ea">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="frost-crystal.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="frost-crystal.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="frost-crystal.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="frost-crystal.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1525,7 +1526,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="植物绿" data-desc="植物绿色 · 自然元素 · 清新配色 · 有机形态" style="--card-accent:#22c55e">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="botanical-green.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="botanical-green.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="botanical-green.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="botanical-green.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1543,7 +1544,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="大胆渐变" data-desc="鲜明色彩 · 活力渐变 · 视觉冲击" style="--card-accent:#ec4899">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="gradient-bold.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="gradient-bold.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="gradient-bold.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1561,7 +1562,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="新粗野主义" data-desc="粗边框 · 高对比 · 原始排版 · 大胆撞色" style="--card-accent:#111">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="neobrutalism.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="neobrutalism.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="neobrutalism.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="neobrutalism.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1579,7 +1580,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="编辑风" data-desc="杂志感布局 · 优雅字体 · 图文混排" style="--card-accent:#374151">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="editorial.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="editorial.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="editorial.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="editorial.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1597,7 +1598,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="画廊" data-desc="作品网格 · 悬停详情 · 画框效果" style="--card-accent:#6b7280">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="gallery.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="gallery.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="gallery.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="gallery.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1615,7 +1616,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="暖色有机" data-desc="自然暖色调 · 有机形态 · 舒适质感" style="--card-accent:#d97706">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="warm-organic.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="warm-organic.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="warm-organic.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="warm-organic.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1633,7 +1634,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light minimal" data-name="竹林" data-desc="竹节装饰 · 竹叶飘动 · 极简留白 · 清新绿调" style="--card-accent:#2d5016">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="bamboo-grove.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="bamboo-grove.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="bamboo-grove.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="bamboo-grove.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1651,7 +1652,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light luxury" data-name="珍珠" data-desc="虹彩渐变 · 贝壳纹理 · 柔光卡片 · 圆润优雅" style="--card-accent:#f0f0ff">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="pearl-oyster.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="pearl-oyster.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="pearl-oyster.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="pearl-oyster.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1669,7 +1670,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light" data-name="绽放" data-desc="花瓣飞舞 · 春日色彩 · 绽放动画 · 生机卡片" style="--card-accent:#ffb7c5">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="bloom-burst.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="bloom-burst.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="bloom-burst.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="bloom-burst.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1687,7 +1688,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="light minimal" data-name="清爽亮色" data-desc="干净整洁 · 充足留白 · 明快配色" style="--card-accent:#3b82f6">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="light-clean.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="light-clean.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="light-clean.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="light-clean.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1705,7 +1706,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="minimal" data-name="极简" data-desc="克制用色 · 大量留白 · 精致排版 · 纯净美学" style="--card-accent:#6b7280">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="minimal.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="minimal.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="minimal.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="minimal.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1723,7 +1724,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark industry" data-name="AI产品" data-desc="科技感界面 · 数据流 · 智能交互 · 未来感" style="--card-accent:#06b6d4">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="ai-product.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="ai-product.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ai-product.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ai-product.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1741,7 +1742,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="industry" data-name="工作室" data-desc="作品集展示 · 团队介绍 · 项目流程 · 服务报价" style="--card-accent:#d4af37">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="agency.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="agency.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="agency.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="agency.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1759,7 +1760,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="industry" data-name="电商" data-desc="产品展示 · 价格对比 · 购买按钮 · 促销信息" style="--card-accent:#ef4444">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="ecommerce.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="ecommerce.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="ecommerce.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="ecommerce.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1777,7 +1778,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="industry" data-name="金融科技" data-desc="数据图表 · 安全认证 · 理财方案 · 信任背书" style="--card-accent:#3b82f6">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="fintech.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="fintech.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="fintech.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="fintech.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1795,7 +1796,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="industry" data-name="移动应用" data-desc="手机mockup · 功能截图 · 下载引导 · 评分展示" style="--card-accent:#f97316">
-    <div class="tpl-preview" style="background:#f8f9fa"><iframe src="mobile-app.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#f8f9fa"><iframe data-src="mobile-app.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="mobile-app.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="mobile-app.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1813,7 +1814,7 @@ h1 {
   </div>
 
   <div class="tpl-card reveal" data-cat="dark luxury" data-name="铸铁" data-desc="金属质感 · 火花飞溅 · 锻造动画 · 硬核风格" style="--card-accent:#71717a">
-    <div class="tpl-preview" style="background:#0a0a0f"><iframe src="steel-forge.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+    <div class="tpl-preview" style="background:#0a0a0f"><iframe data-src="steel-forge.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
       <div class="preview-hover">
         <a href="steel-forge.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
         <a href="steel-forge.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
@@ -1936,6 +1937,20 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// ── Lazy-load iframes (only load when card enters viewport) ──
+const iframeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const iframe = e.target.querySelector('iframe');
+      if (iframe && !iframe.src) {
+        iframe.src = iframe.dataset.src || iframe.getAttribute('src');
+      }
+      iframeObserver.unobserve(e.target);
+    }
+  });
+}, { rootMargin: '200px' });
+document.querySelectorAll('.tpl-preview').forEach(el => iframeObserver.observe(el));
+
 // ── Particles ──
 (function() {
   const canvas = document.getElementById('particles');
@@ -1945,7 +1960,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
-  for (let i = 0; i < 50; i++) particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.5+0.5, dx: (Math.random()-0.5)*0.3, dy: (Math.random()-0.5)*0.3, o: Math.random()*0.3+0.1 });
+  for (let i = 0; i < 24; i++) particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.5+0.5, dx: (Math.random()-0.5)*0.3, dy: (Math.random()-0.5)*0.3, o: Math.random()*0.3+0.1 });
   function draw() {
     ctx.clearRect(0,0,w,h);
     particles.forEach(p => {
