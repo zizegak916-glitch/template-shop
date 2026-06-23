@@ -1,10 +1,11 @@
 /**
- * Template Shop — Auth System v3 (Simplified)
- * Pure local mode: key validated against format, stored in localStorage + cookie
+ * Template Shop — Auth System v4
+ * Key validation against SHA-256 hashes (keys.js)
+ * Dual persistence: localStorage + cookie
  */
 (function () {
-  const STORAGE_KEY = 'tmpl_auth_level';
-  const STORAGE_FP = 'tmpl_device_fp';
+  var STORAGE_KEY = 'tmpl_auth_level';
+  var STORAGE_FP = 'tmpl_device_fp';
 
   // ── Cookie helpers ──────────────────────────────────────────
   function setCookie(name, value, days) {
@@ -23,10 +24,8 @@
   function getAuth() {
     var v = localStorage.getItem(STORAGE_KEY);
     if (v) return v;
-    // Fallback: try cookie (survives Chrome mode switch that clears localStorage)
     var c = getCookie(STORAGE_KEY);
     if (c) {
-      // Restore to localStorage so we don't need cookie fallback next time
       try { localStorage.setItem(STORAGE_KEY, c); } catch (e) {}
       return c;
     }
@@ -46,20 +45,26 @@
     setCookie(STORAGE_KEY, '', -1);
   }
 
-  // ── Fingerprint ─────────────────────────────────────────────
-  function getFingerprint() {
-    var fp = localStorage.getItem(STORAGE_FP);
-    if (fp) return fp;
-    fp = 'fp_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
-    try { localStorage.setItem(STORAGE_FP, fp); } catch (e) {}
-    return fp;
+  // ── SHA-256 hash ───────────────────────────────────────────
+  async function sha256(message) {
+    var msgBuffer = new TextEncoder().encode(message);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
   }
 
   // ── UI ──────────────────────────────────────────────────────
   function showWall() {
     var wall = document.getElementById('auth-wall');
-    if (wall) { wall.style.display = 'flex'; requestAnimationFrame(function() { wall.classList.add('show'); }); }
+    if (wall) {
+      wall.style.display = 'flex';
+      requestAnimationFrame(function() { wall.classList.add('show'); });
+    }
     document.body.style.overflow = 'hidden';
+    // Auto-switch to key tab when opening from guest
+    if (typeof window.switchAuthTab === 'function') {
+      window.switchAuthTab('key');
+    }
   }
 
   function hideWall() {
@@ -134,7 +139,6 @@
   // ── Init ────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
     var auth = getAuth();
-    var fp = getFingerprint();
 
     if (auth === 'key' || auth === 'guest') {
       hideWall();
@@ -155,7 +159,7 @@
     var keyError = document.getElementById('key-error');
     var keySuccess = document.getElementById('key-success');
 
-    function tryKeyLogin() {
+    async function tryKeyLogin() {
       var val = keyInput.value.trim();
       if (!val) {
         keyError.textContent = '请输入密钥';
@@ -176,15 +180,37 @@
       keyError.style.display = 'none';
       keySuccess.style.display = 'none';
 
-      // Accept any valid-format key (pure local mode)
-      setTimeout(function() {
+      // Validate against hashes in keys.js
+      try {
+        var hash = await sha256(val);
+        var validHashes = window.__VALID_HASHES || [];
+        var isValid = validHashes.indexOf(hash) !== -1;
+
+        // Fallback: if no hashes loaded, accept any valid format key
+        if (validHashes.length === 0) isValid = true;
+
+        if (isValid) {
+          setAuth('key');
+          keySuccess.style.display = 'block';
+          keyError.style.display = 'none';
+          showToast('\u2705 登录成功', 'success');
+          setTimeout(function() { hideWall(); setDownloadState(true); }, 600);
+        } else {
+          keyError.textContent = '密钥无效，请检查后重试';
+          keyError.style.display = 'block';
+          keyInput.focus();
+          shakeInput(keyInput);
+        }
+      } catch (e) {
+        // Hash API failed, accept valid format
         setAuth('key');
         keySuccess.style.display = 'block';
         keyError.style.display = 'none';
-        showToast('✅ 登录成功', 'success');
+        showToast('\u2705 登录成功', 'success');
         setTimeout(function() { hideWall(); setDownloadState(true); }, 600);
-        setLoading(keyBtn, false);
-      }, 400);
+      }
+
+      setLoading(keyBtn, false);
     }
 
     keyBtn.addEventListener('click', tryKeyLogin);
@@ -207,13 +233,31 @@
       setAuth('guest');
       hideWall();
       setDownloadState(false);
-      showToast('游客模式 — 可预览，不可下载', 'info');
+      showToast('\u6e38\u5ba2\u6a21\u5f0f \u2014 \u53ef\u9884\u89c8\uff0c\u4e0d\u53ef\u4e0b\u8f7d', 'info');
     });
 
-    // Bottom bar button
+    // Bottom bar "输入密钥" button
     var openBtn = document.getElementById('open-auth-btn');
     if (openBtn) {
-      openBtn.addEventListener('click', function () { showWall(); });
+      openBtn.addEventListener('click', function () {
+        clearAuth();
+        showWall();
+        // Focus key input after wall animation
+        setTimeout(function() {
+          var ki = document.getElementById('key-input');
+          if (ki) ki.focus();
+        }, 500);
+      });
+    }
+
+    // Close wall on background click
+    var wall = document.getElementById('auth-wall');
+    if (wall) {
+      wall.addEventListener('click', function(e) {
+        if (e.target === wall) {
+          // Don't close if no auth
+        }
+      });
     }
   });
 
