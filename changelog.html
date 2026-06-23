@@ -448,15 +448,15 @@ a { color: inherit; text-decoration: none; }
   <p class="sub">记录 Template Shop 的每一次迭代，从首发上线到持续进化。</p>
   <div class="stats-bar">
     <div class="stat-item">
-      <span class="stat-num">3</span>
+      <span class="stat-num">4</span>
       <span class="stat-label">版本发布</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">24</span>
+      <span class="stat-num">28</span>
       <span class="stat-label">模板总数</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">23</span>
+      <span class="stat-num">26</span>
       <span class="stat-label">更新条目</span>
     </div>
     <div class="stat-item">
@@ -469,6 +469,24 @@ a { color: inherit; text-decoration: none; }
 <!-- TIMELINE -->
 <section class="timeline-section">
   <div class="timeline">
+
+    <!-- v2.2 -->
+    <article class="timeline-entry">
+      <div class="timeline-dot green"></div>
+      <div class="timeline-card">
+        <div class="timeline-meta">
+          <span class="timeline-date"><i data-lucide="calendar"></i> 2026-06-23</span>
+          <span class="version-badge fix"><i data-lucide="wrench"></i> v2.2 登录修复</span>
+        </div>
+        <h3 class="timeline-title">登录系统全面修复 · 游客流程打通</h3>
+        <ul class="timeline-changes">
+          <li><span class="tag fix">修复</span> 游客点击「输入密钥」无反应 — 根因：游客模式下事件监听器未绑定（early return 跳过了所有 DOM listener 初始化）</li>
+          <li><span class="tag improve">改进</span> auth.js v5 完全重写 — 所有事件监听器无条件绑定，不再受认证状态影响</li>
+          <li><span class="tag improve">改进</span> 游客点「输入密钥」→ 自动清空认证 → 弹出登录墙 → 自动切密钥 tab → 自动聚焦输入框</li>
+          <li><span class="tag improve">改进</span> 密钥输入自动格式化 + SHA-256 哈希验证 + keys.js 集成</li>
+        </ul>
+      </div>
+    </article>
 
     <!-- v2.1 -->
     <article class="timeline-entry">
