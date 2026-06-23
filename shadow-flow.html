@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>暗流 · 深影流動</title>
+  <!-- Google Fonts: 現代幾何體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    /* ----- CSS 自訂屬性 (主題) ----- */
+    :root {
+      --bg-deep: #050508;
+      --bg-card: rgba(10, 10, 20, 0.45);
+      --glass-edge: rgba(120, 80, 200, 0.2);
+      --glass-edge-hover: rgba(160, 120, 255, 0.5);
+      --text-primary: #eaeef5;
+      --text-secondary: #b0b8cf;
+      --gradient-text: linear-gradient(135deg, #b8a0ff, #6f8cff, #a47eff);
+      --gradient-card-border: linear-gradient(145deg, rgba(140, 100, 230, 0.3), rgba(70, 100, 220, 0.1));
+      --gradient-cta: linear-gradient(145deg, #3b2a6b, #1b2b5e);
+      --glow-cta: 0 0 20px rgba(120, 80, 220, 0.5);
+      --shadow-wave: rgba(40, 20, 80, 0.4);
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --radius-card: 1.5rem;
+      --transition-fast: 0.25s ease;
+    }
+
+    /* 淺色主題 (保留切換能力, 但預設深色) */
+    [data-theme="light"] {
+      --bg-deep: #f0eff7;
+      --bg-card: rgba(255, 255, 255, 0.6);
+      --glass-edge: rgba(80, 60, 180, 0.15);
+      --glass-edge-hover: rgba(100, 70, 220, 0.4);
+      --text-primary: #12101f;
+      --text-secondary: #3f3b5c;
+      --gradient-text: linear-gradient(135deg, #4a3a8a, #2f5be0);
+      --gradient-card-border: linear-gradient(145deg, rgba(100, 70, 200, 0.2), rgba(60, 80, 200, 0.05));
+      --gradient-cta: linear-gradient(145deg, #6240b0, #2a4ba0);
+      --glow-cta: 0 0 20px rgba(80, 50, 200, 0.3);
+      --shadow-wave: rgba(70, 50, 150, 0.2);
+    }
+
+    /* ----- 全域重置 & 基礎 ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* 背景動態流體 (暗色流動漸層 + 陰影波) */
+    .bg-fluid {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 30%, #140b2e, #050508 70%);
+      animation: fluidShift 18s infinite alternate ease-in-out;
+    }
+
+    .bg-fluid::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 80% 70%, #0f1a3a, transparent 60%);
+      opacity: 0.5;
+      animation: fluidShift2 22s infinite alternate;
+    }
+
+    @keyframes fluidShift {
+      0% { filter: hue-rotate(0deg) saturate(1.2); }
+      50% { filter: hue-rotate(10deg) saturate(1.6); }
+      100% { filter: hue-rotate(-5deg) saturate(1.0); }
+    }
+    @keyframes fluidShift2 {
+      0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+      100% { transform: scale(1.3) translate(-5%, 5%); opacity: 0.6; }
+    }
+
+    /* 陰影波浪背景 (動畫) */
+    .shadow-waves {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .shadow-waves span {
+      position: absolute;
+      width: 300%;
+      height: 300%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle at 30% 40%, rgba(70, 30, 120, 0.15) 0%, transparent 55%);
+      animation: waveFloat 28s infinite alternate;
+      mix-blend-mode: soft-light;
+    }
+
+    .shadow-waves span:nth-child(2) {
+      background: radial-gradient(circle at 80% 60%, rgba(30, 60, 150, 0.2) 0%, transparent 50%);
+      animation-duration: 32s;
+      animation-delay: -6s;
+    }
+
+    @keyframes waveFloat {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+      100% { transform: translate(-8%, 6%) scale(1.2); opacity: 0.7; }
+    }
+
+    /* ----- 版式 & 工具 ----- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* 主題切換按鈕 (固定右上) */
+    .theme-toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 999;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-edge);
+      border-radius: 40px;
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-primary);
+      font-size: 1.4rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      transition: var(--transition-fast), border-color 0.2s;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--glass-edge-hover);
+      transform: scale(1.05);
+    }
+
+    .theme-toggle .icon-sun,
+    .theme-toggle .icon-moon {
+      transition: opacity 0.25s;
+    }
+
+    [data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+    [data-theme="light"] .theme-toggle .icon-sun { display: none; }
+    [data-theme="light"] .theme-toggle .icon-moon { display: inline; }
+
+    /* 通用 reveal (Intersection Observer) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.1, 1), transform 0.7s cubic-bezier(0.2, 0.9, 0.1, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ----- 玻璃卡片 mixin ----- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid transparent;
+      border-image: var(--gradient-card-border) 1;
+      border-radius: var(--radius-card);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+      transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.4s;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: var(--glass-edge-hover);
+      box-shadow: 0 25px 45px -12px rgba(70, 40, 160, 0.4);
+    }
+
+    /* ----- 按鈕 & CTA 風格 ----- */
+    .btn-cta {
+      display: inline-block;
+      background: var(--gradient-cta);
+      border: none;
+      padding: 0.9rem 2.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: white;
+      letter-spacing: 0.02em;
+      box-shadow: var(--glow-cta);
+      transition: all 0.25s ease;
+      text-decoration: none;
+      border: 1px solid rgba(160, 130, 255, 0.15);
+    }
+
+    .btn-cta:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 40px rgba(130, 80, 255, 0.6);
+      background: linear-gradient(145deg, #4f36a0, #25408a);
+    }
+
+    /* ----- 各區塊樣式 ----- */
+    /* HERO */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 0 4rem;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 900px;
+    }
+
+    .hero h1 {
+      font-size: clamp(3.8rem, 16vw, 7rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+      text-shadow: 0 0 40px rgba(100, 60, 200, 0.3);
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 1.2rem auto 2.5rem;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* 特性網格 */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 4rem 0;
+    }
+
+    @media (min-width: 640px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .feature-card {
+      padding: 2rem 1.8rem;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 2.8rem;
+      margin-bottom: 1.2rem;
+      display: inline-block;
+      filter: drop-shadow(0 0 12px rgba(140, 100, 255, 0.3));
+    }
+
+    .feature-card h3 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-weight: 300;
+      font-size: 0.95rem;
+    }
+
+    /* 統計 / 證言 (合併) */
+    .stats-section {
+      padding: 3rem 0;
+    }
+
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-item {
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .stat-number {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-weight: 300;
+      margin-top: 0.3rem;
+    }
+
+    .testimonial-card {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .testimonial-card p {
+      font-size: 1.3rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .testimonial-author strong {
+      color: var(--text-primary);
+    }
+
+    /* CTA 區塊 */
+    .cta-section {
+      padding: 5rem 0 4rem;
+      text-align: center;
+    }
+
+    .cta-box {
+      background: var(--gradient-cta);
+      border-radius: 4rem;
+      padding: 4rem 2rem;
+      border: 1px solid rgba(160, 130, 255, 0.2);
+      box-shadow: 0 0 60px rgba(90, 50, 200, 0.25);
+      transition: box-shadow 0.4s;
+    }
+
+    .cta-box:hover {
+      box-shadow: 0 0 90px rgba(120, 70, 255, 0.4);
+    }
+
+    .cta-box h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(135deg, #ffffff, #d6ccff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .cta-box p {
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 500px;
+      margin: 0 auto 2rem;
+      font-weight: 300;
+    }
+
+    /* 頁尾 */
+    .footer {
+      padding: 2.5rem 0 1.5rem;
+      border-top: 1px solid rgba(120, 100, 200, 0.1);
+      text-align: center;
+      color: var(--text-secondary);
+      font-weight: 300;
+      font-size: 0.9rem;
+    }
+
+    .footer small {
+      opacity: 0.7;
+    }
+
+    /* 響應式微調 */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 4.5rem; }
+      .hero p { font-size: 1.1rem; }
+      .stat-number { font-size: 2.8rem; }
+      .cta-box h2 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 背景流體 + 陰影波浪 -->
+  <div class="bg-fluid"></div>
+  <div class="shadow-waves">
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- 主題切換按鈕 (固定) -->
+  <div class="theme-toggle" id="themeToggle" aria-label="切換主題">
+    <span class="icon-sun">☀️</span>
+    <span class="icon-moon">🌙</span>
+  </div>
+
+  <!-- 主內容容器 -->
+  <main>
+    <!-- HERO 區塊 -->
+    <section class="hero">
+      <div class="hero-content reveal">
+        <h1>暗流</h1>
+        <p>深影流動 · 無界感知。以暗色幾何與動態波浪，重塑數位邊界。</p>
+        <div class="hero-cta-group">
+          <a href="#features" class="btn-cta">探索流動</a>
+          <a href="#cta" class="btn-cta" style="background: transparent; border: 1px solid rgba(180,150,255,0.3); box-shadow: none;">了解更多</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 特色網格 (流/波 icon) -->
+    <section id="features" class="container">
+      <div class="features-grid">
+        <div class="feature-card glass-card reveal">
+          <div class="feature-icon">🌊</div>
+          <h3>深流波動</h3>
+          <p>動態漸層模擬暗流韻律，背景色彩緩慢蛻變，沉浸無窮。</p>
+        </div>
+        <div class="feature-card glass-card reveal">
+          <div class="feature-icon">🌀</div>
+          <h3>幾何暗影</h3>
+          <p>現代幾何字體搭配玻璃卡片，邊緣微光流轉，層次深邃。</p>
+        </div>
+        <div class="feature-card glass-card reveal">
+          <div class="feature-icon">🌌</div>
+          <h3>波浪邊界</h3>
+          <p>陰影波浪於背景浮動，呼應暗流主題，低調而富有生命力。</p>
+        </div>
+        <div class="feature-card glass-card reveal">
+          <div class="feature-icon">✨</div>
+          <h3>流光數據</h3>
+          <p>統計數字採用漸層發光，呼應整體暗色調中的霓虹脈動。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 統計 + 證言 -->
+    <section class="stats-section container reveal">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" data-target="128">0</div>
+          <div class="stat-label">暗流節點</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="3400">0</div>
+          <div class="stat-label">沉浸時數</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="96">0%</div>
+          <div class="stat-label">滿意流動</div>
+        </div>
+      </div>
+
+      <!-- 證言卡片 -->
+      <div class="testimonial-card glass-card reveal">
+        <p>「暗影流動的設計語言令人著迷，每一次滾動都像在深海中探索光芒。」</p>
+        <div class="testimonial-author">
+          <span>✦</span>
+          <strong>林 深</strong>
+          <span> · 流動設計師</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA 區塊 -->
+    <section id="cta" class="cta-section container reveal">
+      <div class="cta-box">
+        <h2>加入暗流</h2>
+        <p>解鎖高階流動範本，讓你的產品擁有深影靈魂。</p>
+        <a href="#" class="btn-cta" style="background: white; color: #0a0a18; box-shadow: 0 0 30px rgba(200,180,255,0.3);">立即啟用</a>
+      </div>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+      <div class="container">
+        <small>© 暗流 · 深影流動 landing 模板 | 幾何暗色 · 波浪邊界</small>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ---------- 主題切換 ----------
+      const html = document.documentElement;
+      const toggleBtn = document.getElementById('themeToggle');
+      const currentTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', currentTheme);
+
+      toggleBtn.addEventListener('click', function(e) {
+        const theme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      });
+
+      // ---------- Intersection Observer (reveal 動畫) ----------
+      const revealElements = document.querySelectorAll('.reveal');
+      if (revealElements.length > 0) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // 可選：只觸發一次
+              // observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
+
+        revealElements.forEach(el => observer.observe(el));
+      }
+
+      // ---------- 統計數字漸增動畫 (配合 Intersection) ----------
+      function animateNumbers() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        if (!statNumbers.length) return;
+
+        // 使用單獨的 observer 觸發數字增加
+        const numberObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const el = entry.target;
+              // 防止重複觸發
+              if (el.dataset.animated) return;
+              el.dataset.animated = 'true';
+
+              const targetText = el.dataset.target || el.textContent;
+              // 處理百分比或純數字
+              const isPercent = targetText.includes('%');
+              const targetNum = parseFloat(targetText.replace(/[^0-9.]/g, ''));
+              if (isNaN(targetNum)) return;
+
+              let current = 0;
+              const duration = 1500; // ms
+              const step = Math.max(1, Math.floor(targetNum / 60));
+              const isFloat = targetNum % 1 !== 0;
+
+              const update = () => {
+                current += step;
+                if (current >= targetNum) {
+                  el.textContent = isPercent ? Math.round(targetNum) + '%' : Math.round(targetNum).toString();
+                  return;
+                }
+                el.textContent = isPercent ? Math.round(current) + '%' : Math.round(current).toString();
+                requestAnimationFrame(() => setTimeout(update, 20));
+              };
+              update();
+            }
+          });
+        }, { threshold: 0.5 });
+
+        statNumbers.forEach(num => numberObserver.observe(num));
+      }
+
+      animateNumbers();
+
+      // ---------- 平滑滾動 (內部錨點) ----------
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href === '#') return;
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // 強制 reveal 初始可見 (如果已在視口)
+      setTimeout(() => {
+        document.querySelectorAll('.reveal').forEach(el => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 80) {
+            el.classList.add('visible');
+          }
+        });
+      }, 200);
+    })();
+  </script>
+</body>
+</html>

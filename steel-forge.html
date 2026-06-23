@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>暗钢铸造 · 工业着陆</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800;900&family=Noto+Sans+SC:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ----- RESET & THEME ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --bg-deep: #0e0e0e;
+      --bg-card: #1a1a1a;
+      --steel-light: #b0b5b9;
+      --steel-mid: #7a8085;
+      --steel-dark: #3d4247;
+      --text-primary: #e8eaed;
+      --text-secondary: #a8aeb3;
+      --fire-orange: #f97316;
+      --fire-glow: #ff8c42;
+      --rivet-size: 6px;
+      --border-metallic: 1px solid #4a4f54;
+      --shadow-card: 0 12px 28px rgba(0,0,0,0.8), 0 0 0 1px #3a3f44 inset;
+    }
+
+    /* light theme (optional, kept minimal) */
+    [data-theme="light"] {
+      --bg-deep: #d9dcdd;
+      --bg-card: #eef0f1;
+      --steel-light: #2f353a;
+      --steel-mid: #4f555a;
+      --steel-dark: #1f2429;
+      --text-primary: #1a1e22;
+      --text-secondary: #3a3f44;
+      --border-metallic: 1px solid #8a8f94;
+      --shadow-card: 0 12px 28px rgba(0,0,0,0.2), 0 0 0 1px #9a9fa4 inset;
+    }
+
+    body {
+      font-family: 'Heebo', 'Noto Sans SC', sans-serif;
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.5;
+      font-weight: 400;
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.2s;
+    }
+
+    /* ----- THEME TOGGLE (sun/moon) ----- */
+    .theme-toggle {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.5rem;
+      z-index: 99;
+      background: var(--bg-card);
+      border: var(--border-metallic);
+      border-radius: 40px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+      transition: all 0.25s;
+      color: var(--steel-light);
+      font-size: 1.6rem;
+    }
+    .theme-toggle:hover {
+      transform: scale(1.08);
+      background: #2a2e33;
+      border-color: var(--fire-orange);
+    }
+    .theme-toggle .icon {
+      line-height: 1;
+      transition: transform 0.3s;
+    }
+    [data-theme="light"] .theme-toggle .icon {
+      transform: rotate(20deg);
+    }
+
+    /* ----- PARTICLE CANVAS (sparks) ----- */
+    #spark-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ----- LAYOUT & UTILITY ----- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    section {
+      padding: 5rem 0;
+      position: relative;
+    }
+
+    /* ----- METALLIC TEXTURE & EFFECTS (global) ----- */
+    .metallic-gradient {
+      background: linear-gradient(145deg, #7a8085 0%, #b0b5b9 40%, #5a6065 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .metallic-border-card {
+      background: var(--bg-card);
+      border: 1px solid #4a4f54;
+      border-radius: 24px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      transition: transform 0.25s ease, box-shadow 0.3s;
+      /* rivets via pseudo */
+    }
+    .metallic-border-card::before,
+    .metallic-border-card::after {
+      content: '';
+      position: absolute;
+      width: var(--rivet-size);
+      height: var(--rivet-size);
+      background: radial-gradient(circle at 30% 30%, #c0c5c9, #3d4247);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px #1a1e22 inset;
+    }
+    .metallic-border-card::before { top: 10px; left: 10px; }
+    .metallic-border-card::after { bottom: 10px; right: 10px; }
+
+    .metallic-border-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 32px rgba(0,0,0,0.9), 0 0 0 1px #f97316 inset;
+      border-color: #f97316;
+    }
+
+    /* rivets on all four corners? we add more via extra class */
+    .rivet-corners::before,
+    .rivet-corners::after {
+      /* already used, we add two more pseudo via extra element? we'll use data attr */
+    }
+    /* we will add extra rivet spans via JS? better: use extra pseudo elements with :before and :after on inner. we add extra rivets in HTML (small spans) */
+    .rivet {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle at 30% 30%, #c0c5c9, #3d4247);
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: 0 0 0 1px #1a1e22 inset;
+    }
+
+    /* ----- BUTTONS (fire-orange) ----- */
+    .btn-cta {
+      display: inline-block;
+      background: linear-gradient(135deg, #f97316, #d65d0e);
+      border: none;
+      border-radius: 60px;
+      padding: 1rem 2.8rem;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 0.04em;
+      color: #0e0e0e;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid #ff9f4b;
+      text-decoration: none;
+    }
+    .btn-cta:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 36px rgba(249, 115, 22, 0.7);
+      background: linear-gradient(135deg, #ff8c42, #f97316);
+    }
+
+    /* ----- HERO ----- */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 2rem;
+      background: radial-gradient(circle at 20% 30%, #2a2e33 0%, #0e0e0e 90%);
+      border-bottom: 2px solid #3d4247;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: clamp(4rem, 16vw, 8rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.3 0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.2"/></svg>');
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px #f9731660, 0 8px 24px black;
+    }
+    .hero .sub {
+      font-size: 1.4rem;
+      color: var(--steel-light);
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      border-top: 2px solid #4a4f54;
+      padding-top: 1rem;
+      display: inline-block;
+    }
+
+    /* ----- FEATURES GRID (3-4 items) ----- */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .feature-card {
+      padding: 2.2rem 1.8rem;
+      text-align: center;
+    }
+    .feature-icon {
+      font-size: 3.8rem;
+      filter: drop-shadow(0 0 8px #f97316);
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ----- STATS / TESTIMONIALS (two in one) ----- */
+    .stats-testimonials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: center;
+    }
+    .stat-item {
+      flex: 1 1 180px;
+      background: var(--bg-card);
+      border: var(--border-metallic);
+      border-radius: 40px;
+      padding: 2rem 1.2rem;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      position: relative;
+    }
+    .stat-number {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(145deg, #f97316, #ffac6f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .stat-label {
+      color: var(--steel-light);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .testimonial-card {
+      flex: 2 1 320px;
+      background: var(--bg-card);
+      border: var(--border-metallic);
+      border-radius: 40px;
+      padding: 2rem 2.2rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+    .testimonial-card p {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* ----- CTA section ----- */
+    .cta-section {
+      background: linear-gradient(0deg, #0e0e0e 0%, #1a1a1a 100%);
+      border-top: 2px solid #3d4247;
+      border-bottom: 2px solid #3d4247;
+      text-align: center;
+    }
+    .cta-section h2 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ----- FOOTER ----- */
+    .industrial-footer {
+      border-top: 6px double #4a4f54;
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--steel-mid);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* ----- REVEAL ANIMATIONS (intersection observer) ----- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px) scale(0.96);
+      transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* responsive */
+    @media (max-width: 640px) {
+      .hero h1 { letter-spacing: 2px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stat-item { flex: 1 1 100%; }
+    }
+    @media (min-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* additional rivet spans positions */
+    .rivet-tl { top: 10px; left: 10px; }
+    .rivet-tr { top: 10px; right: 10px; }
+    .rivet-bl { bottom: 10px; left: 10px; }
+    .rivet-br { bottom: 10px; right: 10px; }
+    .metallic-border-card { position: relative; }
+  </style>
+</head>
+<body>
+  <!-- Theme toggle -->
+  <div class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <span class="icon" id="themeIcon">🌙</span>
+  </div>
+
+  <!-- Spark particles canvas -->
+  <canvas id="spark-canvas"></canvas>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="reveal">铸铁</h1>
+      <div class="sub reveal">暗钢铸造 · 重型工业装备</div>
+      <br>
+      <a href="#features" class="btn-cta reveal" style="margin-top:1.5rem;">探索锻造</a>
+    </div>
+  </section>
+
+  <!-- ========== FEATURES (3-4 items) ========== -->
+  <section id="features" style="padding-top: 4rem;">
+    <div class="container">
+      <h2 class="metallic-gradient reveal" style="font-size: 3rem; font-weight: 900; text-align:center;">核心铸艺</h2>
+      <div class="features-grid">
+        <div class="feature-card metallic-border-card reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="feature-icon">⚙️</div>
+          <h3>齿轮传动</h3>
+          <p style="color:var(--text-secondary);">精密铸造 · 重型齿轮组</p>
+        </div>
+        <div class="feature-card metallic-border-card reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="feature-icon">🔨</div>
+          <h3>锻压铁砧</h3>
+          <p style="color:var(--text-secondary);">高强抗冲击 · 一体成型</p>
+        </div>
+        <div class="feature-card metallic-border-card reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="feature-icon">🔥</div>
+          <h3>烈焰淬火</h3>
+          <p style="color:var(--text-secondary);">火橙回火 · 硬度升级</p>
+        </div>
+        <div class="feature-card metallic-border-card reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="feature-icon">⛓️</div>
+          <h3>重型链条</h3>
+          <p style="color:var(--text-secondary);">工业级负载 · 安全冗余</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATS & TESTIMONIALS ========== -->
+  <section>
+    <div class="container">
+      <h2 class="metallic-gradient reveal" style="font-size: 2.8rem; font-weight: 900; text-align:center; margin-bottom:2rem;">数字铸铁</h2>
+      <div class="stats-testimonials">
+        <div class="stat-item reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="stat-number">1,280</div>
+          <div class="stat-label">锻造批次</div>
+        </div>
+        <div class="stat-item reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="stat-number">98.6%</div>
+          <div class="stat-label">强度合格率</div>
+        </div>
+        <div class="stat-item reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <div class="stat-number">47</div>
+          <div class="stat-label">全球工坊</div>
+        </div>
+        <div class="testimonial-card reveal">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span><span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <p>“暗钢铸铁的质感无可比拟，从 rivets 到 spark 粒子，每一处都像真正的重工业。” </p>
+          <div style="margin-top:1rem; font-weight:800; color:var(--steel-light);">—— 首席铸造师·陈钢</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA (fire-orange gradient) ========== -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="reveal" style="font-weight: 900;">准备铸造？</h2>
+      <p class="reveal" style="font-size:1.3rem; color:var(--steel-light); margin-bottom:2rem;">立即联络工坊，获取暗钢样品与报价</p>
+      <a href="#" class="btn-cta reveal">🔥 点燃熔炉</a>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="industrial-footer">
+    <div class="container">
+      <p style="font-size:1.1rem;">© 暗钢铸造 · 工业遗产 2025</p>
+      <p style="color:var(--steel-mid); margin-top:0.3rem;">铸铁 · 锻钢 · 永不妥协</p>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      // ----- THEME TOGGLE (sun/moon) -----
+      const html = document.documentElement;
+      const toggleBtn = document.getElementById('themeToggle');
+      const iconSpan = document.getElementById('themeIcon');
+      const updateIcon = () => {
+        const theme = html.getAttribute('data-theme');
+        iconSpan.textContent = theme === 'light' ? '☀️' : '🌙';
+      };
+      toggleBtn.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        updateIcon();
+      });
+      updateIcon();
+
+      // ----- SPARK PARTICLES (bright dots rising) -----
+      const canvas = document.getElementById('spark-canvas');
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const particles = [];
+      const PARTICLE_COUNT = 80;
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          size: Math.random() * 3.2 + 1.2,
+          speedY: -(Math.random() * 0.6 + 0.25),
+          speedX: (Math.random() - 0.5) * 0.3,
+          life: Math.random() * 0.8 + 0.2,
+          alpha: Math.random() * 0.7 + 0.3,
+        });
+      }
+
+      function drawSparks() {
+        ctx.clearRect(0, 0, w, h);
+        const isDark = html.getAttribute('data-theme') !== 'light';
+        for (let p of particles) {
+          // update
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.alpha -= 0.002;
+          if (p.alpha <= 0.02 || p.y < -20 || p.x < -20 || p.x > w + 20) {
+            p.x = Math.random() * w;
+            p.y = h + 10 + Math.random() * 20;
+            p.alpha = Math.random() * 0.6 + 0.4;
+            p.size = Math.random() * 3.2 + 1.2;
+            p.speedY = -(Math.random() * 0.7 + 0.2);
+          }
+          // draw bright dot
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          const gradient = ctx.createRadialGradient(p.x-1, p.y-1, 0, p.x, p.y, p.size*2);
+          const baseColor = isDark ? '255, 180, 100' : '220, 120, 40';
+          gradient.addColorStop(0, `rgba(${baseColor}, ${p.alpha})`);
+          gradient.addColorStop(0.7, `rgba(${baseColor}, ${p.alpha*0.5})`);
+          gradient.addColorStop(1, `rgba(${baseColor}, 0)`);
+          ctx.fillStyle = gradient;
+          ctx.shadowColor = isDark ? '#f97316' : '#d65d0e';
+          ctx.shadowBlur = 16;
+          ctx.fill();
+        }
+        requestAnimationFrame(drawSparks);
+      }
+      drawSparks();
+
+      // ----- INTERSECTION OBSERVER (reveal) -----
+      const revealElements = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.2, rootMargin: '0px 0px -30px 0px' });
+      revealElements.forEach(el => observer.observe(el));
+
+      // additionally set active for hero quickly
+      setTimeout(() => {
+        document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('active'));
+      }, 100);
+
+      // extra rivet spans: we already added in HTML for each card/stat. fine.
+    })();
+  </script>
+
+  <!-- ensure rivet corners for all metallic cards, we placed spans inside each card -->
+  <!-- additional rivets for stat items already inside -->
+  <!-- extra style for rivet spans -->
+  <style>
+    .rivet {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle at 30% 30%, #c0c5c9, #3d4247);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px #1a1e22 inset;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .metallic-border-card, .stat-item, .testimonial-card {
+      position: relative;
+    }
+    /* ensure no overflow hidden */
+  </style>
+</body>
+</html>

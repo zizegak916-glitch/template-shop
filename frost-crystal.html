@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>霜晶 - 冰晶主题</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #f0f4f8;
+      --bg-secondary: #e8eef4;
+      --accent: #a8d8ea;
+      --accent-dark: #7bc4db;
+      --accent-deeper: #5bb0cc;
+      --text-primary: #1a2a3a;
+      --text-secondary: #4a6070;
+      --glass-bg: rgba(168, 216, 234, 0.15);
+      --glass-border: rgba(168, 216, 234, 0.3);
+      --crystal-glow: rgba(168, 216, 234, 0.4);
+      --frost-white: #ffffff;
+      --snowflake-color: rgba(168, 216, 234, 0.6);
+      --shimmer-1: rgba(168, 216, 234, 0.8);
+      --shimmer-2: rgba(200, 230, 245, 0.6);
+      --shimmer-3: rgba(255, 255, 255, 0.9);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0a1628;
+      --bg-secondary: #0d1f35;
+      --accent: #5bb0cc;
+      --accent-dark: #7bc4db;
+      --accent-deeper: #a8d8ea;
+      --text-primary: #e0f0ff;
+      --text-secondary: #a0c4d8;
+      --glass-bg: rgba(91, 176, 204, 0.1);
+      --glass-border: rgba(91, 176, 204, 0.25);
+      --crystal-glow: rgba(91, 176, 204, 0.35);
+      --frost-white: #1a2a3a;
+      --snowflake-color: rgba(168, 216, 234, 0.4);
+    }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    .snowflake-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -20px;
+      color: var(--snowflake-color);
+      font-size: 1rem;
+      animation: snowfall linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes snowfall {
+      0% {
+        transform: translateY(-20px) rotate(0deg) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg) translateX(80px);
+        opacity: 0;
+      }
+    }
+
+    .frost-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.04;
+      background-image:
+        repeating-conic-gradient(
+          from 0deg at 50% 50%,
+          transparent 0deg 60deg,
+          var(--accent) 60deg 120deg,
+          transparent 120deg 180deg,
+          var(--accent) 180deg 240deg,
+          transparent 240deg 300deg,
+          var(--accent) 300deg 360deg
+        );
+      background-size: 120px 104px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+      color: var(--frost-white);
+      transform: rotate(15deg);
+    }
+
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, var(--shimmer-1), var(--shimmer-2), var(--shimmer-3), var(--shimmer-2), var(--shimmer-1)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    header {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, var(--crystal-glow) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, var(--crystal-glow) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(168, 216, 234, 0.1) 0%, transparent 70%);
+      z-index: -1;
+    }
+
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(60deg, transparent 40%, rgba(168, 216, 234, 0.05) 50%, transparent 60%),
+        linear-gradient(120deg, transparent 40%, rgba(168, 216, 234, 0.05) 50%, transparent 60%),
+        linear-gradient(180deg, transparent 40%, rgba(168, 216, 234, 0.05) 50%, transparent 60%);
+      background-size: 100% 100%;
+      animation: frostRotate 20s linear infinite;
+    }
+
+    @keyframes frostRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at center, var(--accent) 1px, transparent 1px),
+        radial-gradient(circle at center, var(--accent) 1px, transparent 1px);
+      background-size: 40px 40px, 60px 60px;
+      background-position: 0 0, 20px 20px;
+      opacity: 0.06;
+      animation: crystalFloat 30s linear infinite;
+    }
+
+    @keyframes crystalFloat {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-40px); }
+    }
+
+    .hero-title {
+      font-size: clamp(4rem, 12vw, 8rem);
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      position: relative;
+      animation: titleReveal 1.5s ease-out;
+    }
+
+    .hero-title::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border: 2px solid var(--glass-border);
+      border-radius: 20px;
+      animation: crystalBorder 4s ease-in-out infinite;
+    }
+
+    @keyframes crystalBorder {
+      0%, 100% {
+        border-color: var(--shimmer-1);
+        box-shadow: 0 0 20px var(--crystal-glow), inset 0 0 20px rgba(168, 216, 234, 0.1);
+      }
+      50% {
+        border-color: var(--shimmer-2);
+        box-shadow: 0 0 40px var(--crystal-glow), inset 0 0 30px rgba(168, 216, 234, 0.2);
+      }
+    }
+
+    @keyframes titleReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+        filter: blur(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      animation: subtitleReveal 1.5s ease-out 0.3s both;
+    }
+
+    @keyframes subtitleReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-tagline {
+      font-size: 0.95rem;
+      color: var(--accent-dark);
+      max-width: 600px;
+      animation: subtitleReveal 1.5s ease-out 0.6s both;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    .scroll-indicator span {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .scroll-indicator .arrow {
+      width: 24px;
+      height: 24px;
+      border-right: 2px solid var(--accent);
+      border-bottom: 2px solid var(--accent);
+      transform: rotate(45deg);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(10px); }
+    }
+
+    section {
+      position: relative;
+      padding: 6rem 2rem;
+      z-index: 1;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+
+    .section-title.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 4rem;
+      font-size: 1.05rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease 0.2s;
+    }
+
+    .section-subtitle.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .features {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .feature-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.6s ease;
+    }
+
+    .feature-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 216, 234, 0.1),
+        transparent
+      );
+      transition: left 0.6s ease;
+    }
+
+    .feature-card:hover::before {
+      left: 100%;
+    }
+
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, var(--shimmer-1), var(--shimmer-2), var(--shimmer-3), var(--shimmer-2), var(--shimmer-1)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: shimmer 3s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .feature-card:hover::after {
+      opacity: 1;
+    }
+
+    .hex-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hex-icon::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      opacity: 0.15;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .hex-icon::before {
+      opacity: 0.3;
+      transform: scale(1.1);
+    }
+
+    .hex-icon svg {
+      width: 44px;
+      height: 44px;
+      stroke: var(--accent);
+      stroke-width: 1.5;
+      fill: none;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .hex-icon svg {
+      stroke: var(--accent-dark);
+      transform: scale(1.1);
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .stats-section {
+      background:
+        radial-gradient(circle at 30% 50%, var(--crystal-glow) 0%, transparent 50%),
+        radial-gradient(circle at 70% 50%, var(--crystal-glow) 0%, transparent 50%);
+      padding: 5rem 2rem;
+    }
+
+    .stats-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .stat-item {
+      padding: 2rem;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.6s ease;
+    }
+
+    .stat-item.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .stat-number {
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+
+    .cta-section {
+      text-align: center;
+      padding: 6rem 2rem;
+    }
+
+    .cta-box {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 3.5rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+
+    .cta-box.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      border: 2px solid transparent;
+      background: linear-gradient(
+        135deg,
+        var(--shimmer-1),
+        var(--shimmer-2),
+        var(--shimmer-3),
+        var(--shimmer-2),
+        var(--shimmer-1)
+      ) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: shimmer 2s linear infinite;
+    }
+
+    .cta-box::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(168, 216, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(168, 216, 234, 0.1) 0%, transparent 50%);
+    }
+
+    .cta-box h2 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 500;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-box p {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: var(--frost-white);
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 52px;
+      border: 2px solid transparent;
+      background: linear-gradient(
+        135deg,
+        var(--shimmer-1),
+        var(--shimmer-3),
+        var(--shimmer-1)
+      ) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: shimmer 2s linear infinite;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px var(--crystal-glow);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      section {
+        padding: 4rem 1.5rem;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .feature-card {
+        padding: 2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .cta-box {
+        padding: 2.5rem 1.5rem;
+      }
+
+      .theme-toggle {
+        top: 15px;
+        right: 15px;
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .crystal-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 0 auto 3rem;
+    }
+
+    .about-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-content p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+
+    .about-content p.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="snowflake-container" id="snowflakes"></div>
+  <div class="frost-pattern"></div>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题">❄</button>
+
+  <header>
+    <div class="hero-bg"></div>
+    <h1 class="hero-title">霜晶</h1>
+    <p class="hero-subtitle">冰晶之美，数字之巅</p>
+    <p class="hero-tagline">探索冰雪世界的无限可能，感受冰晶般的纯净与精致</p>
+    <div class="scroll-indicator">
+      <span>向下探索</span>
+      <div class="arrow"></div>
+    </div>
+  </header>
+
+  <section id="features">
+    <h2 class="section-title">核心特性</h2>
+    <p class="section-subtitle">三大核心能力，铸就卓越体验</p>
+    <div class="crystal-divider"></div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="hex-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3>极简设计</h3>
+        <p>以冰晶的纯净为灵感，打造极致简约的用户界面。每一个像素都经过精心雕琢，呈现如水晶般通透的视觉体验。</p>
+      </div>
+      <div class="feature-card">
+        <div class="hex-icon">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </div>
+        <h3>极速响应</h3>
+        <p>如冰雪消融般流畅的交互体验，毫秒级响应速度。采用前沿技术架构，确保每一次操作都如丝般顺滑。</p>
+      </div>
+      <div class="feature-card">
+        <div class="hex-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3>安全可靠</h3>
+        <p>坚如冰山的安全防护体系，多层加密技术守护数据安全。如同南极冰川般稳固可靠，值得信赖。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-section" id="stats">
+    <h2 class="section-title">数据概览</h2>
+    <p class="section-subtitle">用数据说话，用实力证明</p>
+    <div class="crystal-divider"></div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">99.9%</div>
+        <div class="stat-label">系统稳定率</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">50ms</div>
+        <div class="stat-label">平均响应时间</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">10M+</div>
+        <div class="stat-label">活跃用户</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">256位</div>
+        <div class="stat-label">加密强度</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <h2 class="section-title">关于我们</h2>
+    <p class="section-subtitle">以冰晶之名，追求极致</p>
+    <div class="crystal-divider"></div>
+    <div class="about-content">
+      <p>霜晶团队专注于打造极致的数字体验，如同大自然雕琢冰晶一般，我们对每一个细节都精益求精。</p>
+      <p>我们相信，最好的设计应该如同冬日清晨的霜花——纯净、精致、令人惊叹。这就是霜晶的诞生初衷。</p>
+      <p>从极地冰原到数字世界，我们将冰雪的灵感融入每一个产品，为用户带来前所未有的纯净体验。</p>
+    </div>
+  </section>
+
+  <section class="cta-section" id="cta">
+    <div class="cta-box">
+      <h2>开启冰晶之旅</h2>
+      <p>加入霜晶，体验如冰雪般纯净的数字世界</p>
+      <a href="#" class="cta-button">立即体验</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="#">关于我们</a>
+      <a href="#">产品介绍</a>
+      <a href="#">联系方式</a>
+      <a href="#">隐私政策</a>
+    </div>
+    <p>&copy; 2024 霜晶. 保留所有权利.</p>
+  </footer>
+
+  <script>
+    (function() {
+      const snowflakeContainer = document.getElementById('snowflakes');
+      const snowflakeChars = ['❄', '❅', '❆', '✦', '✧', '◆', '◇'];
+      const snowflakeCount = 30;
+
+      function createSnowflake() {
+        const flake = document.createElement('span');
+        flake.className = 'snowflake';
+        flake.textContent = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+        flake.style.left = Math.random() * 100 + '%';
+        flake.style.fontSize = (Math.random() * 12 + 8) + 'px';
+        flake.style.opacity = Math.random() * 0.6 + 0.2;
+        const duration = Math.random() * 8 + 8;
+        flake.style.animationDuration = duration + 's';
+        flake.style.animationDelay = Math.random() * 10 + 's';
+        snowflakeContainer.appendChild(flake);
+
+        flake.addEventListener('animationend', function() {
+          flake.remove();
+          createSnowflake();
+        });
+      }
+
+      for (let i = 0; i < snowflakeCount; i++) {
+        setTimeout(createSnowflake, Math.random() * 5000);
+      }
+
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', function() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        themeToggle.textContent = newTheme === 'light' ? '❄' : '☀';
+      });
+
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      const animateElements = document.querySelectorAll(
+        '.section-title, .section-subtitle, .feature-card, .stat-item, .cta-box, .about-content p'
+      );
+
+      animateElements.forEach(function(el, index) {
+        el.style.transitionDelay = (index % 4) * 0.1 + 's';
+        observer.observe(el);
+      });
+
+      document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>余烬 — Ember Glow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0a08;
+      --bg-card: #1a1210;
+      --bg-card-hover: #241a15;
+      --text: #f5e6d8;
+      --text-muted: #a8897a;
+      --ember-red: #c0392b;
+      --ember-orange: #e67e22;
+      --ember-amber: #f39c12;
+      --ember-glow: #ff6b35;
+      --gradient-fire: linear-gradient(135deg, #c0392b, #e67e22, #f39c12);
+      --gradient-cta: linear-gradient(135deg, #c0392b, #e67e22);
+      --shadow-ember: 0 0 20px rgba(255, 107, 53, 0.3);
+      --radius: 16px;
+      --font: 'Noto Sans SC', sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg: #fdf5f0;
+      --bg-card: #fff8f3;
+      --bg-card-hover: #ffede3;
+      --text: #1a1210;
+      --text-muted: #7a6658;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      overflow-x: hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: var(--bg-card);
+      border: 1px solid rgba(230, 126, 34, 0.3);
+      color: var(--ember-orange);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 0 12px rgba(230, 126, 34, 0.2);
+    }
+
+    .theme-toggle:hover {
+      box-shadow: 0 0 24px rgba(230, 126, 34, 0.5);
+      transform: scale(1.1);
+    }
+
+    /* Ember Particles */
+    .ember-particles {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .ember {
+      position: absolute;
+      bottom: -20px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--ember-amber);
+      box-shadow: 0 0 6px var(--ember-orange), 0 0 12px var(--ember-red);
+      animation: rise linear infinite;
+      opacity: 0;
+    }
+
+    .ember:nth-child(1) { left: 5%; animation-duration: 6s; animation-delay: 0s; width: 3px; height: 3px; }
+    .ember:nth-child(2) { left: 15%; animation-duration: 8s; animation-delay: 1s; width: 5px; height: 5px; }
+    .ember:nth-child(3) { left: 25%; animation-duration: 7s; animation-delay: 2s; }
+    .ember:nth-child(4) { left: 35%; animation-duration: 9s; animation-delay: 0.5s; width: 2px; height: 2px; }
+    .ember:nth-child(5) { left: 45%; animation-duration: 6.5s; animation-delay: 3s; width: 6px; height: 6px; }
+    .ember:nth-child(6) { left: 55%; animation-duration: 7.5s; animation-delay: 1.5s; }
+    .ember:nth-child(7) { left: 65%; animation-duration: 8.5s; animation-delay: 2.5s; width: 3px; height: 3px; }
+    .ember:nth-child(8) { left: 75%; animation-duration: 6s; animation-delay: 4s; }
+    .ember:nth-child(9) { left: 85%; animation-duration: 9.5s; animation-delay: 0.8s; width: 4px; height: 4px; }
+    .ember:nth-child(10) { left: 92%; animation-duration: 7s; animation-delay: 3.5s; }
+    .ember:nth-child(11) { left: 10%; animation-duration: 10s; animation-delay: 1.2s; width: 2px; height: 2px; background: var(--ember-red); }
+    .ember:nth-child(12) { left: 30%; animation-duration: 5.5s; animation-delay: 2.8s; background: var(--ember-orange); }
+    .ember:nth-child(13) { left: 50%; animation-duration: 8s; animation-delay: 0.3s; width: 5px; height: 5px; background: var(--ember-red); }
+    .ember:nth-child(14) { left: 70%; animation-duration: 7s; animation-delay: 4.5s; }
+    .ember:nth-child(15) { left: 88%; animation-duration: 6.5s; animation-delay: 1.8s; width: 3px; height: 3px; }
+    .ember:nth-child(16) { left: 20%; animation-duration: 9s; animation-delay: 3.2s; width: 2px; height: 2px; }
+    .ember:nth-child(17) { left: 42%; animation-duration: 6.8s; animation-delay: 5s; background: var(--ember-red); }
+    .ember:nth-child(18) { left: 60%; animation-duration: 7.2s; animation-delay: 0.7s; width: 4px; height: 4px; }
+    .ember:nth-child(19) { left: 78%; animation-duration: 8.2s; animation-delay: 2.3s; }
+    .ember:nth-child(20) { left: 95%; animation-duration: 6.3s; animation-delay: 4.2s; width: 3px; height: 3px; background: var(--ember-orange); }
+
+    @keyframes rise {
+      0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(40px) scale(0.3);
+        opacity: 0;
+      }
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 10, 8, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(230, 126, 34, 0.15);
+    }
+
+    [data-theme="light"] nav {
+      background: rgba(253, 245, 240, 0.85);
+      border-bottom-color: rgba(230, 126, 34, 0.2);
+    }
+
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      background: var(--gradient-fire);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--ember-orange);
+    }
+
+    .nav-cta {
+      background: var(--gradient-cta);
+      color: #fff !important;
+      padding: 10px 24px;
+      border-radius: 50px;
+      -webkit-text-fill-color: #fff;
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+
+    .nav-cta:hover {
+      box-shadow: 0 0 20px rgba(230, 126, 34, 0.5);
+      transform: scale(1.05);
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(192, 57, 43, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(243, 156, 18, 0.08), transparent 70%);
+      pointer-events: none;
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 50px;
+      border: 1px solid rgba(230, 126, 34, 0.4);
+      color: var(--ember-orange);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      background: rgba(230, 126, 34, 0.08);
+      animation: badge-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes badge-glow {
+      0%, 100% { box-shadow: 0 0 10px rgba(230, 126, 34, 0.1); }
+      50% { box-shadow: 0 0 20px rgba(230, 126, 34, 0.3); }
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .fire-text {
+      background: var(--gradient-fire);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fire-shimmer 3s ease-in-out infinite;
+      background-size: 200% 200%;
+    }
+
+    @keyframes fire-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.8;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 16px 40px;
+      border: none;
+      border-radius: 50px;
+      background: var(--gradient-cta);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 40px rgba(230, 126, 34, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      padding: 16px 40px;
+      border: 2px solid rgba(230, 126, 34, 0.4);
+      border-radius: 50px;
+      background: transparent;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ember-orange);
+      box-shadow: 0 0 20px rgba(230, 126, 34, 0.2);
+      background: rgba(230, 126, 34, 0.05);
+    }
+
+    /* Floating hero embers */
+    .hero-embers {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-ember {
+      position: absolute;
+      border-radius: 50%;
+      animation: hero-rise linear infinite;
+    }
+
+    .hero-ember:nth-child(1) { bottom: 10%; left: 15%; width: 6px; height: 6px; background: var(--ember-amber); animation-duration: 5s; animation-delay: 0s; box-shadow: 0 0 10px var(--ember-orange); }
+    .hero-ember:nth-child(2) { bottom: 5%; left: 25%; width: 4px; height: 4px; background: var(--ember-red); animation-duration: 7s; animation-delay: 1s; box-shadow: 0 0 8px var(--ember-red); }
+    .hero-ember:nth-child(3) { bottom: 15%; left: 40%; width: 8px; height: 8px; background: var(--ember-orange); animation-duration: 6s; animation-delay: 0.5s; box-shadow: 0 0 12px var(--ember-orange); }
+    .hero-ember:nth-child(4) { bottom: 8%; left: 55%; width: 3px; height: 3px; background: var(--ember-amber); animation-duration: 8s; animation-delay: 2s; box-shadow: 0 0 6px var(--ember-amber); }
+    .hero-ember:nth-child(5) { bottom: 12%; left: 70%; width: 5px; height: 5px; background: var(--ember-red); animation-duration: 5.5s; animation-delay: 1.5s; box-shadow: 0 0 10px var(--ember-red); }
+    .hero-ember:nth-child(6) { bottom: 3%; left: 82%; width: 7px; height: 7px; background: var(--ember-orange); animation-duration: 6.5s; animation-delay: 3s; box-shadow: 0 0 14px var(--ember-orange); }
+    .hero-ember:nth-child(7) { bottom: 18%; left: 10%; width: 4px; height: 4px; background: var(--ember-amber); animation-duration: 9s; animation-delay: 0.3s; }
+    .hero-ember:nth-child(8) { bottom: 7%; left: 90%; width: 5px; height: 5px; background: var(--ember-red); animation-duration: 7.5s; animation-delay: 2.5s; box-shadow: 0 0 8px var(--ember-red); }
+
+    @keyframes hero-rise {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translateY(-80vh) scale(0.2); opacity: 0; }
+    }
+
+    /* Section */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 100px 40px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 50px;
+      background: rgba(230, 126, 34, 0.1);
+      color: var(--ember-orange);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      border: 1px solid rgba(230, 126, 34, 0.2);
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 .fire-text {
+      background: var(--gradient-fire);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      border: 1px solid rgba(230, 126, 34, 0.1);
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-fire);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(230, 126, 34, 0.3);
+      box-shadow: 0 0 30px rgba(230, 126, 34, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: ember-border 2s ease-in-out infinite;
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    @keyframes ember-border {
+      0%, 100% { box-shadow: 0 0 30px rgba(230, 126, 34, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(230, 126, 34, 0.25), 0 8px 32px rgba(0, 0, 0, 0.3); }
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(230, 126, 34, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      border: 1px solid rgba(230, 126, 34, 0.2);
+      animation: icon-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes icon-glow {
+      0%, 100% { box-shadow: 0 0 8px rgba(230, 126, 34, 0.1); }
+      50% { box-shadow: 0 0 16px rgba(230, 126, 34, 0.3); }
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    /* Stats */
+    .stats-section {
+      background: var(--bg-card);
+      border-top: 1px solid rgba(230, 126, 34, 0.1);
+      border-bottom: 1px solid rgba(230, 126, 34, 0.1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .stat-item {
+      padding: 20px;
+    }
+
+    .stat-number {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 900;
+      background: var(--gradient-fire);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 8px;
+      font-weight: 700;
+    }
+
+    /* Process / Steps */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .process-step {
+      text-align: center;
+      padding: 40px 24px;
+      position: relative;
+    }
+
+    .step-number {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--gradient-cta);
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 24px rgba(192, 57, 43, 0.4);
+      animation: step-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes step-pulse {
+      0%, 100% { box-shadow: 0 0 24px rgba(192, 57, 43, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(230, 126, 34, 0.5); }
+    }
+
+    .process-step h3 {
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .process-step p {
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    /* Testimonials */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(230, 126, 34, 0.1);
+      border-radius: var(--radius);
+      padding: 32px;
+      position: relative;
+      transition: all 0.4s;
+    }
+
+    .testimonial-card:hover {
+      border-color: rgba(230, 126, 34, 0.3);
+      box-shadow: 0 0 24px rgba(230, 126, 34, 0.08);
+    }
+
+    .testimonial-quote {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .testimonial-quote::before {
+      content: '"';
+      font-size: 3rem;
+      line-height: 0;
+      vertical-align: -0.5rem;
+      margin-right: 4px;
+      background: var(--gradient-fire);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-style: normal;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--gradient-fire);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .testimonial-name {
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    .testimonial-role {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(230, 126, 34, 0.1);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      text-align: center;
+      transition: all 0.4s;
+      position: relative;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--ember-orange);
+      box-shadow: 0 0 40px rgba(230, 126, 34, 0.15);
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 30px rgba(230, 126, 34, 0.15);
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 20px;
+      border-radius: 50px;
+      background: var(--gradient-cta);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pricing-card h3 {
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .pricing-card .price {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin: 16px 0;
+    }
+
+    .pricing-card .price span {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin: 24px 0 32px;
+      text-align: left;
+    }
+
+    .pricing-features li {
+      padding: 8px 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pricing-features li::before {
+      content: '🔥';
+      font-size: 0.8rem;
+    }
+
+    .pricing-card .btn-primary,
+    .pricing-card .btn-secondary {
+      width: 100%;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(192, 57, 43, 0.1), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .cta-content h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .cta-content p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    .cta-glow-btn {
+      display: inline-block;
+      padding: 18px 48px;
+      border-radius: 50px;
+      background: var(--gradient-cta);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 900;
+      font-family: var(--font);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 4px 30px rgba(192, 57, 43, 0.4);
+      animation: cta-breathe 3s ease-in-out infinite;
+    }
+
+    .cta-glow-btn:hover {
+      box-shadow: 0 4px 60px rgba(230, 126, 34, 0.6);
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    @keyframes cta-breathe {
+      0%, 100% { box-shadow: 0 4px 30px rgba(192, 57, 43, 0.3); }
+      50% { box-shadow: 0 4px 50px rgba(230, 126, 34, 0.5); }
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(230, 126, 34, 0.1);
+      padding: 60px 40px 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+    }
+
+    .footer-brand .nav-logo {
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .footer-brand p {
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+      max-width: 300px;
+    }
+
+    .footer-col h4 {
+      font-weight: 900;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 10px;
+    }
+
+    .footer-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .footer-col a:hover {
+      color: var(--ember-orange);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(230, 126, 34, 0.08);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Scroll ember burst */
+    .scroll-burst {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .scroll-burst.active {
+      opacity: 1;
+    }
+
+    .burst-particle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--ember-amber);
+      box-shadow: 0 0 8px var(--ember-orange);
+      animation: burst-fly 1s ease-out forwards;
+    }
+
+    @keyframes burst-fly {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    }
+
+    /* Mobile hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+
+      .hamburger { display: flex; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        flex-direction: column;
+        padding: 20px;
+        gap: 16px;
+        border-bottom: 1px solid rgba(230, 126, 34, 0.15);
+      }
+
+      .nav-links.open { display: flex; }
+
+      section { padding: 60px 20px; }
+
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .process-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .footer-brand { grid-column: 1 / -1; }
+
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1.05rem; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-buttons { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+    }
+
+    /* Divider */
+    .ember-divider {
+      width: 80px;
+      height: 3px;
+      background: var(--gradient-fire);
+      margin: 0 auto 40px;
+      border-radius: 2px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(230, 126, 34, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(230, 126, 34, 0.5); }
+  </style>
+</head>
+<body>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">🔥</button>
+
+  <!-- Ember Particles -->
+  <div class="ember-particles">
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+    <div class="ember"></div>
+  </div>
+
+  <!-- Scroll Burst -->
+  <div class="scroll-burst" id="scrollBurst"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-logo">余烬</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">核心功能</a></li>
+      <li><a href="#process">工作流程</a></li>
+      <li><a href="#stats">数据成果</a></li>
+      <li><a href="#testimonials">用户评价</a></li>
+      <li><a href="#pricing">方案定价</a></li>
+      <li><a href="#cta" class="nav-cta">立即体验</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-embers">
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+      <div class="hero-ember"></div>
+    </div>
+    <div class="hero-content reveal">
+      <div class="hero-badge">🔥 从余烬中重生</div>
+      <h1><span class="fire-text">余烬</span>之中<br>蕴藏无限力量</h1>
+      <p>当一切归于沉寂，真正的力量正在萌发。余烬，为你点燃下一个创意的火焰，让灵感在灰烬中重生。</p>
+      <div class="hero-buttons">
+        <a href="#cta" class="btn-primary">点燃灵感</a>
+        <a href="#features" class="btn-secondary">探索功能</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="section-header reveal">
+      <div class="section-label">核心功能</div>
+      <h2>从灰烬中<span class="fire-text">锻造力量</span></h2>
+      <p>强大的工具集，帮助你将创意的余烬转化为熊熊燃烧的成果。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔥</div>
+        <h3>智能点火引擎</h3>
+        <p>AI驱动的内容生成系统，将零散的想法瞬间点燃为完整的创意方案。支持多模态输入，毫秒级响应。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🌋</div>
+        <h3>热力分析面板</h3>
+        <p>实时数据可视化，追踪每一缕创意的热度。精准洞察内容表现，让你的每一步决策都有数据支撑。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">⚡</div>
+        <h3>闪电工作流</h3>
+        <p>自动化任务编排，从策划到执行一气呵成。减少重复劳动，释放你的时间去创造真正有价值的内容。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🛡️</div>
+        <h3>灰烬守护者</h3>
+        <p>企业级安全保障，让你的创意资产固若金汤。端到端加密、权限控制、审计日志，一个都不少。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🌐</div>
+        <h3>全球余烬网络</h3>
+        <p>遍布全球的内容分发节点，确保你的作品以最快速度触达每一个受众。CDN加速，全球同步。</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📊</div>
+        <h3>熔炉数据湖</h3>
+        <p>海量数据存储与智能检索，让你的历史创意永远不会丢失。语义搜索、智能分类、一键回溯。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section id="stats" class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-number">98.7%</div>
+        <div class="stat-label">用户满意度</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-number">2.4亿</div>
+        <div class="stat-label">内容已生成</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-number">150+</div>
+        <div class="stat-label">覆盖国家</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-number">0.3s</div>
+        <div class="stat-label">平均响应</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section id="process">
+    <div class="section-header reveal">
+      <div class="section-label">工作流程</div>
+      <h2>三步<span class="fire-text">点燃</span>你的项目</h2>
+      <p>从火花到燎原，只需三个简单步骤。</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-step reveal">
+        <div class="step-number">1</div>
+        <h3>播撒火种</h3>
+        <p>上传你的初始想法、素材或数据。支持文字、图片、音频、视频等多种格式。</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-number">2</div>
+        <h3>烈焰锻造</h3>
+        <p>AI引擎深度分析你的输入，自动优化、扩展、润色，生成高质量的创意方案。</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-number">3</div>
+        <h3>余烬燎原</h3>
+        <p>一键发布到全平台，实时追踪效果数据。让创意像余烬般持续燃烧、蔓延。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <div class="section-header reveal">
+      <div class="section-label">用户评价</div>
+      <h2>他们从余烬中<span class="fire-text">崛起</span></h2>
+      <p>来自全球创作者的真实反馈。</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">余烬彻底改变了我们的内容生产流程。以前需要一周的工作，现在三天就能完成，而且质量更高。</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">李</div>
+          <div>
+            <div class="testimonial-name">李明远</div>
+            <div class="testimonial-role">创意总监 · 字节跳动</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">作为一个独立创作者，余烬让我拥有了一个完整团队的能力。从策划到发布，一个人就能搞定。</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">王</div>
+          <div>
+            <div class="testimonial-name">王思琪</div>
+            <div class="testimonial-role">独立博主 · 50万粉丝</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">数据分析功能太强大了。每一次发布后的热力图都能帮我精准定位优化方向，ROI提升显著。</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">张</div>
+          <div>
+            <div class="testimonial-name">张浩然</div>
+            <div class="testimonial-role">市场VP · 小米科技</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing">
+    <div class="section-header reveal">
+      <div class="section-label">方案定价</div>
+      <h2>选择你的<span class="fire-text">火焰强度</span></h2>
+      <p>灵活的定价方案，适合不同规模的创作者。</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <h3>星火</h3>
+        <div class="price">¥0<span> /月</span></div>
+        <ul class="pricing-features">
+          <li>每月 500 次生成</li>
+          <li>基础分析面板</li>
+          <li>3 个项目空间</li>
+          <li>社区支持</li>
+        </ul>
+        <a href="#" class="btn-secondary">免费开始</a>
+      </div>
+      <div class="pricing-card featured reveal">
+        <div class="pricing-badge">🔥 最受欢迎</div>
+        <h3>烈焰</h3>
+        <div class="price">¥99<span> /月</span></div>
+        <ul class="pricing-features">
+          <li>无限次生成</li>
+          <li>高级热力分析</li>
+          <li>50 个项目空间</li>
+          <li>优先技术支持</li>
+          <li>API 访问权限</li>
+        </ul>
+        <a href="#" class="btn-primary">开始燃烧</a>
+      </div>
+      <div class="pricing-card reveal">
+        <h3>燎原</h3>
+        <div class="price">¥499<span> /月</span></div>
+        <ul class="pricing-features">
+          <li>企业级无限生成</li>
+          <li>全平台数据分析</li>
+          <li>无限项目空间</li>
+          <li>专属客户经理</li>
+          <li>定制化部署</li>
+        </ul>
+        <a href="#" class="btn-secondary">联系我们</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" class="cta-section">
+    <div class="cta-content reveal">
+      <h2>准备好<span class="fire-text">点燃</span>了吗？</h2>
+      <p>加入超过十万创作者的行列，让余烬的力量助你在创意世界中脱颖而出。现在注册，即可享受 14 天免费试用。</p>
+      <a href="#" class="cta-glow-btn">🔥 免费试用 14 天</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">余烬</div>
+        <p>从灰烬中锻造创意，让灵感永不熄灭。余烬是面向新一代创作者的智能内容平台。</p>
+      </div>
+      <div class="footer-col">
+        <h4>产品</h4>
+        <ul>
+          <li><a href="#">智能引擎</a></li>
+          <li><a href="#">热力分析</a></li>
+          <li><a href="#">工作流</a></li>
+          <li><a href="#">API 文档</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>资源</h4>
+        <ul>
+          <li><a href="#">帮助中心</a></li>
+          <li><a href="#">创作者社区</a></li>
+          <li><a href="#">博客</a></li>
+          <li><a href="#">更新日志</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>关于</h4>
+        <ul>
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">加入团队</a></li>
+          <li><a href="#">隐私政策</a></li>
+          <li><a href="#">服务条款</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 余烬 Ember Glow. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Mobile nav toggle
+    function toggleNav() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Scroll ember burst
+    let lastScrollY = 0;
+    const burstContainer = document.getElementById('scrollBurst');
+
+    window.addEventListener('scroll', () => {
+      const delta = Math.abs(window.scrollY - lastScrollY);
+      if (delta > 80) {
+        createBurst();
+        lastScrollY = window.scrollY;
+      }
+    });
+
+    function createBurst() {
+      burstContainer.classList.add('active');
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'burst-particle';
+        const x = Math.random() * window.innerWidth;
+        const tx = (Math.random() - 0.5) * 200;
+        const ty = -(Math.random() * 150 + 50);
+        const size = Math.random() * 6 + 2;
+        particle.style.left = x + 'px';
+        particle.style.bottom = '0px';
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.setProperty('--ty', ty + 'px');
+        burstContainer.appendChild(particle);
+        setTimeout(() => particle.remove(), 1000);
+      }
+      setTimeout(() => burstContainer.classList.remove('active'), 300);
+    }
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

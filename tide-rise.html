@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>潮汐 · 海韵登陆页</title>
+    <!-- 干净现代字体：Inter + 回退 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        /* ----- CSS自定义属性 (主题变量) ----- */
+        :root {
+            --ocean-blue: #0077b6;
+            --sea-foam: #90e0ef;
+            --sand-beige: #f5e6d3;
+            --white: #ffffff;
+            --ocean-dark: #023e8a;
+            --wave-light: #caf0f8;
+            --text-primary: #0b1a2a;
+            --text-secondary: #2c3e4f;
+            --card-bg: rgba(255,255,255,0.8);
+            --glass-edge: rgba(255,255,255,0.3);
+            --shadow-sm: 0 8px 20px rgba(0,119,182,0.08);
+            --shadow-hover: 0 20px 30px -8px rgba(0,119,182,0.25);
+            --gradient-hero: linear-gradient(145deg, #0077b6 0%, #caf0f8 45%, #ffffff 80%);
+            --gradient-cta: linear-gradient(135deg, #0077b6, #023e8a);
+            --gradient-card: linear-gradient(0deg, rgba(144,224,239,0.1) 0%, rgba(255,255,255,0.6) 100%);
+            --border-radius-card: 28px;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        [data-theme="dark"] {
+            --text-primary: #e3f0f5;
+            --text-secondary: #b4d6e6;
+            --card-bg: rgba(10, 25, 40, 0.7);
+            --glass-edge: rgba(144,224,239,0.2);
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.4);
+            --shadow-hover: 0 20px 30px -8px rgba(0,119,182,0.5);
+            --gradient-hero: linear-gradient(145deg, #021f33 0%, #0a3b4e 45%, #1a4d5e 80%);
+            --gradient-card: linear-gradient(0deg, rgba(0,60,90,0.2) 0%, rgba(10,30,45,0.8) 100%);
+            --sand-beige: #3d2e24;
+            --white: #0d1b26;
+        }
+
+        /* ----- 全局重置 & 基础 ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--white);
+            color: var(--text-primary);
+            line-height: 1.5;
+            transition: background 0.2s, color 0.2s;
+            overflow-x: hidden;
+        }
+
+        /* 主题切换按钮 (固定右上) */
+        .theme-toggle {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.5rem;
+            z-index: 999;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-edge);
+            border-radius: 60px;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            font-size: 1.4rem;
+            color: var(--ocean-blue);
+        }
+        .theme-toggle:hover {
+            transform: scale(1.05) rotate(8deg);
+            box-shadow: var(--shadow-hover);
+        }
+        .theme-toggle .icon {
+            line-height: 1;
+            transition: transform 0.25s ease;
+        }
+
+        /* 容器 & 通用 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.8rem;
+        }
+
+        section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            margin-bottom: 1rem;
+        }
+
+        /* ----- 波浪 SVG 装饰 (用于各section底部) ----- */
+        .wave-divider {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+            line-height: 0;
+            pointer-events: none;
+        }
+        .wave-divider svg {
+            display: block;
+            width: calc(100% + 20px);
+            height: 80px;
+            margin-left: -10px;
+        }
+
+        /* 波浪颜色跟随主题 (使用currentColor + fill) */
+        .wave-divider .wave-fill {
+            fill: var(--white);
+            transition: fill 0.3s;
+        }
+
+        /* 卡片顶部波浪形状 (border-radius模拟) */
+        .card-wave-top {
+            border-top-left-radius: 40% 18px;
+            border-top-right-radius: 40% 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ----- 英雄区 (Hero) ----- */
+        .hero {
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+            background: var(--gradient-hero);
+            transition: background 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero .container {
+            position: relative;
+            z-index: 5;
+            padding-top: 2rem;
+            padding-bottom: 5rem;
+        }
+        .hero-content {
+            max-width: 720px;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 10vw, 5rem);
+            font-weight: 800;
+            background: linear-gradient(to right, #023e8a, #0077b6, #48cae4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1.2rem;
+            text-shadow: 0 4px 20px rgba(0,119,182,0.1);
+        }
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 580px;
+            font-weight: 400;
+            backdrop-filter: blur(2px);
+        }
+        .hero-cta {
+            display: inline-flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2.5rem;
+            border-radius: 60px;
+            font-weight: 600;
+            background: var(--ocean-blue);
+            color: white;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            border: 1px solid transparent;
+            box-shadow: 0 6px 14px rgba(0,119,182,0.2);
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--ocean-blue);
+            color: var(--ocean-blue);
+            box-shadow: none;
+        }
+        .btn:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 14px 28px -6px rgba(0,119,182,0.35);
+        }
+        .btn-outline:hover {
+            background: var(--ocean-blue);
+            color: white;
+        }
+
+        /* 英雄区背景波浪动画 (SVG 动态波浪) */
+        .hero-wave-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            z-index: 2;
+        }
+        .hero-wave-bg svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .hero-wave-bg .wave-path {
+            animation: waveMove 6s ease-in-out infinite alternate;
+        }
+        @keyframes waveMove {
+            0% { transform: translateX(-2%) scaleY(1); }
+            100% { transform: translateX(2%) scaleY(0.7); }
+        }
+
+        /* ----- 特性网格 (Features) ----- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: var(--border-radius-card);
+            padding: 2.2rem 1.5rem 2rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            border: 1px solid var(--glass-edge);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--ocean-blue), var(--sea-foam), var(--sand-beige));
+            opacity: 0.6;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--sea-foam);
+        }
+        .feature-icon {
+            font-size: 2.6rem;
+            margin-bottom: 1.2rem;
+            display: inline-block;
+            background: linear-gradient(145deg, #0077b6, #90e0ef);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 6px rgba(0,119,182,0.2));
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ----- 统计数据 / 评价 (Stats & Testimonials) ----- */
+        .stats-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 2.5rem 1.5rem;
+            background: var(--gradient-card);
+            border-radius: 60px 60px 30px 30px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-edge);
+            box-shadow: var(--shadow-sm);
+            margin: 2rem 0;
+        }
+        .stat-item {
+            text-align: center;
+            flex: 1 0 140px;
+        }
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--ocean-blue);
+            line-height: 1;
+        }
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 0.3rem;
+        }
+        .testimonial-card {
+            background: var(--card-bg);
+            border-radius: 40px 20px 40px 20px;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: var(--shadow-sm);
+            border-left: 6px solid var(--sea-foam);
+            margin: 2rem 0 1rem;
+            transition: var(--transition-smooth);
+        }
+        .testimonial-card:hover {
+            transform: scale(1.01);
+            box-shadow: var(--shadow-hover);
+        }
+        .testimonial-card p {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+        .testimonial-author {
+            margin-top: 1.5rem;
+            font-weight: 600;
+            color: var(--ocean-blue);
+        }
+
+        /* ----- CTA (渐变海洋) ----- */
+        .cta-section {
+            background: var(--gradient-cta);
+            border-radius: 100px 20px 100px 20px;
+            padding: 4.5rem 2.5rem;
+            text-align: center;
+            color: white;
+            margin: 4rem 0;
+            box-shadow: 0 20px 40px -8px rgba(0,119,182,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-section h2 {
+            font-size: clamp(2rem, 6vw, 3rem);
+        }
+        .cta-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 1.2rem 0 2rem;
+        }
+        .cta-section .btn {
+            background: white;
+            color: var(--ocean-blue);
+            border: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .cta-section .btn:hover {
+            background: var(--sea-foam);
+            color: #023e8a;
+        }
+
+        /* ----- 页脚 (wave border) ----- */
+        footer {
+            border-top: 6px solid;
+            border-image: linear-gradient(90deg, var(--ocean-blue), var(--sea-foam), var(--sand-beige)) 1;
+            padding: 2.5rem 0 1.5rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 1.8rem;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: var(--ocean-blue);
+        }
+
+        /* ----- 滚动触发动画 (Intersection Observer) ----- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1), transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.1rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .stats-wrap { border-radius: 40px; padding: 2rem 1rem; }
+            .cta-section { border-radius: 60px 20px; padding: 3rem 1.5rem; }
+        }
+        @media (min-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* 波浪装饰底部各section (通用) */
+        .section-wave-bottom {
+            position: relative;
+        }
+        .section-wave-bottom .wave-divider {
+            bottom: -1px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 主题切换按钮 -->
+    <div class="theme-toggle" id="themeToggle" aria-label="切换明暗主题">
+        <span class="icon" id="themeIcon">🌙</span>
+    </div>
+
+    <!-- 英雄区 Hero -->
+    <section class="hero" id="hero">
+        <div class="container hero-content">
+            <h1>潮汐 · 轻涌</h1>
+            <p>海风拂面，浪花低语。以海洋为灵感，打造沉浸式数字体验。每一次滚动，都像潮汐涨落。</p>
+            <div class="hero-cta">
+                <a href="#features" class="btn">探索浪潮</a>
+                <a href="#cta" class="btn btn-outline">聆听海韵</a>
+            </div>
+        </div>
+        <!-- 英雄区动态波浪背景 (SVG) -->
+        <div class="hero-wave-bg">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path class="wave-path" fill="var(--white)" d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,70 1440,80 L1440,120 L0,120 Z" opacity="0.5"/>
+                <path class="wave-path" fill="var(--sea-foam)" d="M0,90 C240,40 600,110 960,70 C1140,50 1320,90 1440,80 L1440,120 L0,120 Z" opacity="0.25" style="animation-delay: -2s;"/>
+            </svg>
+        </div>
+        <!-- 底部波浪分割线 (与下个section衔接) -->
+        <div class="wave-divider" style="bottom: -1px;">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path class="wave-fill" fill="var(--white)" d="M0,40 C240,100 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 特性区 Features -->
+    <section class="section-wave-bottom" id="features" style="background: var(--white);">
+        <div class="container">
+            <h2 class="reveal">浪潮之息</h2>
+            <p class="reveal" style="color: var(--text-secondary); max-width: 600px;">四重海韵元素，每一处细节都呼应海洋的律动。</p>
+            <div class="features-grid">
+                <div class="feature-card reveal card-wave-top">
+                    <div class="feature-icon">🌊</div>
+                    <h3>波光卡片</h3>
+                    <p>顶部波浪曲线，如同潮汐轻抚沙滩，柔和而充满动感。</p>
+                </div>
+                <div class="feature-card reveal card-wave-top">
+                    <div class="feature-icon">🐚</div>
+                    <h3>贝珠纹理</h3>
+                    <p>细腻光影与渐变，模拟贝壳内壁的珍珠光泽，低调优雅。</p>
+                </div>
+                <div class="feature-card reveal card-wave-top">
+                    <div class="feature-icon">🌴</div>
+                    <h3>海风微动</h3>
+                    <p>悬停与滚动触发波浪涟漪，如同海风拂过水面。</p>
+                </div>
+                <div class="feature-card reveal card-wave-top">
+                    <div class="feature-icon">☀️</div>
+                    <h3>沙暖色调</h3>
+                    <p>沙色点缀，平衡海洋冷调，带来温暖度假感。</p>
+                </div>
+            </div>
+        </div>
+        <!-- 底部波浪 -->
+        <div class="wave-divider">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path class="wave-fill" fill="var(--white)" d="M0,50 C300,10 600,90 900,40 C1200,-10 1350,60 1440,40 L1440,80 L0,80 Z" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 统计 & 评价 (stats / testimonials) -->
+    <section style="background: var(--white); padding-bottom: 2rem;">
+        <div class="container">
+            <div class="stats-wrap reveal">
+                <div class="stat-item">
+                    <div class="stat-number">12k+</div>
+                    <div class="stat-label">冲浪者</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">860</div>
+                    <div class="stat-label">海港城市</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.9</div>
+                    <div class="stat-label">浪潮评分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">潮汐时刻</div>
+                </div>
+            </div>
+
+            <div class="testimonial-card reveal">
+                <p>“每一次滚动都像潮汐涨落，界面呼吸感十足。海浪的视觉语言让品牌故事如海风般自然。” </p>
+                <div class="testimonial-author">— 陈汐 · 海洋保护基金会</div>
+            </div>
+        </div>
+        <!-- 波浪分隔 -->
+        <div class="wave-divider" style="position: relative; bottom: -2px;">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path class="wave-fill" fill="var(--white)" d="M0,30 C200,80 500,0 800,50 C1100,100 1300,20 1440,40 L1440,80 L0,80 Z" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- CTA 区块 -->
+    <section id="cta" style="background: var(--white); padding: 1rem 0 5rem;">
+        <div class="container reveal">
+            <div class="cta-section">
+                <h2>驶入无尽深蓝</h2>
+                <p>加入浪潮，获取海洋灵感组件与独家潮汐主题。</p>
+                <a href="#" class="btn">即刻启航 🌊</a>
+                <div style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.7;">30天免费 · 随时退潮</div>
+            </div>
+        </div>
+        <!-- CTA 底部波浪 -->
+        <div class="wave-divider" style="position: relative; bottom: -1px;">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path class="wave-fill" fill="var(--white)" d="M0,60 C360,10 720,90 1080,50 C1260,30 1380,70 1440,60 L1440,80 L0,80 Z" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- 页脚 Footer (波浪边框) -->
+    <footer>
+        <div class="container footer-inner">
+            <div style="font-weight: 600; color: var(--ocean-blue);">🌊 潮汐登陆页 · 海韵</div>
+            <div class="footer-links">
+                <a href="#">潮汐</a>
+                <a href="#">浪花</a>
+                <a href="#">深海</a>
+                <a href="#">隐私</a>
+            </div>
+            <div style="color: var(--text-secondary); font-size: 0.9rem;">© 2025 浪潮之息</div>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // ----- 主题切换 (localStorage) -----
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('themeToggle');
+            const iconSpan = document.getElementById('themeIcon');
+
+            function setTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                iconSpan.textContent = theme === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('theme', theme);
+            }
+
+            // 初始化主题
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+
+            toggleBtn.addEventListener('click', function(e) {
+                const current = html.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                setTheme(next);
+            });
+
+            // ----- Intersection Observer 滚动触发 reveal 动画 -----
+            const revealElements = document.querySelectorAll('.reveal');
+            if (revealElements.length > 0) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            // 可重复触发，不取消观察，但避免重复添加? 保留可见性
+                        }
+                    });
+                }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+                revealElements.forEach(el => observer.observe(el));
+            }
+
+            // 额外波浪涟漪效果：鼠标在特性卡片上增加波纹 (点缀)
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function(e) {
+                    // 小涟漪：改变伪类或阴影，已经用css实现; 附加一个轻量波动
+                    this.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                });
+            });
+
+            // 平滑滚动 (内部锚点)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#') return;
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // 增加滚动涟漪: 在滚动时给波浪svg增加一点动态 (不影响性能)
+            let lastScroll = 0;
+            window.addEventListener('scroll', function() {
+                // 简单的视差效果: 移动 hero wave (可选)
+                const heroWave = document.querySelector('.hero-wave-bg');
+                if (heroWave) {
+                    const scrolled = window.scrollY;
+                    const translateY = Math.min(scrolled * 0.05, 20);
+                    heroWave.style.transform = `translateY(${translateY}px)`;
+                }
+            }, { passive: true });
+
+            // 手动触发一次可见性 (如果已经在视口)
+            setTimeout(() => {
+                revealElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 100) {
+                        el.classList.add('visible');
+                    }
+                });
+            }, 200);
+        })();
+    </script>
+    <!-- 附加内联样式：确保波浪填充色跟随白色背景 (已用var) -->
+</body>
+</html>

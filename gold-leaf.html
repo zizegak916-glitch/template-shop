@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金箔 · Gold Leaf — 奢华数字体验</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold: #c9a96e;
+  --gold-light: #e8d5a3;
+  --gold-dark: #a68b4b;
+  --gold-glow: rgba(201, 169, 110, 0.3);
+  --gold-shimmer: rgba(201, 169, 110, 0.08);
+  --bg: #0a0a0a;
+  --bg-card: #111111;
+  --bg-card-hover: #1a1a1a;
+  --text: #f0ece4;
+  --text-muted: #8a8680;
+  --border: rgba(201, 169, 110, 0.15);
+  --font-serif: 'Cormorant Garamond', 'Georgia', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+[data-theme="light"] {
+  --bg: #f8f6f1;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f3ee;
+  --text: #1a1a1a;
+  --text-muted: #6a6560;
+  --border: rgba(166, 139, 75, 0.25);
+  --gold-shimmer: rgba(201, 169, 110, 0.05);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* ── Gold Gradient Text ── */
+.gold-text {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-dark) 70%, var(--gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Canvas Background ── */
+#particleCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Floating Gold Dust ── */
+.gold-dust {
+  position: fixed;
+  width: 4px; height: 4px;
+  background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+}
+
+@keyframes dustFloat {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── Theme Toggle ── */
+.theme-toggle {
+  position: fixed;
+  top: 24px; right: 24px;
+  z-index: 1000;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.theme-toggle:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+/* ── Navigation ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(20px);
+  background: rgba(10, 10, 10, 0.7);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] nav { background: rgba(248, 246, 241, 0.85); }
+
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover { color: var(--gold); }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  z-index: 2;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+  background: var(--gold-shimmer);
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(48px, 10vw, 140px);
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 12px;
+  letter-spacing: -2px;
+}
+
+.hero h1 .cn {
+  display: block;
+  font-size: 0.45em;
+  letter-spacing: 12px;
+  font-weight: 400;
+  margin-top: 8px;
+}
+
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-muted);
+  max-width: 560px;
+  margin: 32px auto 48px;
+  font-weight: 300;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-primary {
+  position: relative;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+  color: #0a0a0a;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px var(--gold-glow);
+}
+
+.btn-secondary {
+  position: relative;
+  padding: 16px 40px;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--gold-shimmer);
+  box-shadow: 0 0 30px var(--gold-glow);
+  transform: translateY(-2px);
+}
+
+/* ── Section ── */
+section {
+  position: relative;
+  z-index: 2;
+  padding: 120px 48px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.section-header h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  font-size: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Gold Divider ── */
+.gold-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto 24px;
+}
+
+.gold-divider-wide {
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto;
+}
+
+/* ── Features ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  position: relative;
+  padding: 48px 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.5s ease;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(201, 169, 110, 0.4);
+  box-shadow: 0 8px 60px rgba(201, 169, 110, 0.08);
+  transform: translateY(-4px);
+}
+
+.feature-card:hover::before { opacity: 1; }
+
+.feature-icon {
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(201,169,110,0.1), rgba(201,169,110,0.02));
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 24px;
+  transition: all 0.4s ease;
+}
+
+.feature-card:hover .feature-icon {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.feature-card h3 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* ── Stats ── */
+.stats-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 48px;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.stat-item h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-item .stat-label {
+  color: var(--text-muted);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Showcase ── */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.showcase-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  aspect-ratio: 4/3;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+}
+
+.showcase-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 40px var(--gold-glow);
+  transform: scale(1.02);
+}
+
+.showcase-inner {
+  text-align: center;
+  padding: 40px;
+}
+
+.showcase-inner .showcase-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.showcase-inner h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.showcase-inner p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ── Testimonials ── */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  padding: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(201, 169, 110, 0.4);
+  box-shadow: 0 4px 40px rgba(201, 169, 110, 0.06);
+}
+
+.testimonial-card::before {
+  content: '"';
+  font-family: var(--font-serif);
+  font-size: 72px;
+  color: var(--gold);
+  opacity: 0.2;
+  position: absolute;
+  top: 16px; left: 28px;
+  line-height: 1;
+}
+
+.testimonial-card p {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: #0a0a0a;
+  font-weight: 600;
+}
+
+.testimonial-info strong {
+  display: block;
+  font-size: 14px;
+}
+
+.testimonial-info span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── CTA ── */
+.cta-section {
+  text-align: center;
+}
+
+.cta-box {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 80px 48px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cta-box::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  border-radius: 14px;
+  background: conic-gradient(from var(--cta-angle, 0deg), transparent 20%, var(--gold) 50%, transparent 80%);
+  z-index: -1;
+  animation: ctaRotate 6s linear infinite;
+}
+
+@keyframes ctaRotate {
+  to { --cta-angle: 360deg; }
+}
+
+@property --cta-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.cta-box::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.cta-box h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+
+.cta-box p {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin-bottom: 40px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Footer ── */
+footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--border);
+  padding: 60px 48px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto 48px;
+}
+
+.footer-brand h3 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.footer-brand p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 280px;
+}
+
+.footer-col h4 {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+
+.footer-col ul { list-style: none; }
+
+.footer-col ul li { margin-bottom: 10px; }
+
+.footer-col ul a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-col ul a:hover { color: var(--gold); }
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-bottom p {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  section { padding: 80px 24px; }
+  .hero { padding: 100px 24px 60px; }
+  .features-grid,
+  .showcase-grid,
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .cta-box { padding: 48px 24px; }
+  .hero-actions { flex-direction: column; align-items: center; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--gold-dark);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ── Selection ── */
+::selection {
+  background: var(--gold);
+  color: #0a0a0a;
+}
+</style>
+</head>
+<body>
+
+<!-- Particle Canvas -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- Floating Gold Dust -->
+<div id="goldDustContainer"></div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+  <span id="themeIcon">☀</span>
+</button>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-logo gold-text">金箔</div>
+  <ul class="nav-links">
+    <li><a href="#features">特性</a></li>
+    <li><a href="#showcase">展示</a></li>
+    <li><a href="#testimonials">评价</a></li>
+    <li><a href="#contact">联系</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">奢华数字体验</div>
+  <h1 class="gold-text">
+    Gold Leaf
+    <span class="cn">金 箔</span>
+  </h1>
+  <p class="hero-sub">以匠心致敬经典，用科技诠释奢华。每一个细节，皆为艺术品。</p>
+  <div class="hero-actions">
+    <button class="btn-primary">开启旅程</button>
+    <button class="btn-secondary">了解更多</button>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+  <div class="section-header reveal">
+    <div class="gold-divider"></div>
+    <h2 class="gold-text">卓越特性</h2>
+    <p>精心雕琢的每一处细节，只为呈现极致体验</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">✦</div>
+      <h3>匠心工艺</h3>
+      <p>传承千年的金箔锻造工艺，每一片都经过七十二道工序精心打造，确保纯度与品质达到极致标准。</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">◇</div>
+      <h3>定制服务</h3>
+      <p>从设计到成品，提供全方位的个性化定制方案。我们的匠人团队将您的构想化为现实。</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">⬡</div>
+      <h3>品质认证</h3>
+      <p>每件作品均附有权威机构的品质认证证书，确保金箔纯度、工艺标准及收藏价值。</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">◈</div>
+      <h3>全球配送</h3>
+      <p>专业恒温恒湿包装，全球安全配送。我们确保每一件珍品都能安全抵达您手中。</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">✧</div>
+      <h3>艺术合作</h3>
+      <p>与世界顶尖艺术家联名合作，推出限量版金箔艺术品，兼具审美价值与投资潜力。</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">❖</div>
+      <h3>文化传承</h3>
+      <p>融合东方美学与现代设计，让古老的金箔技艺在当代焕发新生，传递文化的温度与力量。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item reveal">
+      <h3 class="gold-text">2,800+</h3>
+      <div class="stat-label">经典作品</div>
+    </div>
+    <div class="stat-item reveal">
+      <h3 class="gold-text">99.9%</h3>
+      <div class="stat-label">金箔纯度</div>
+    </div>
+    <div class="stat-item reveal">
+      <h3 class="gold-text">186</h3>
+      <div class="stat-label">全球合作伙伴</div>
+    </div>
+    <div class="stat-item reveal">
+      <h3 class="gold-text">72</h3>
+      <div class="stat-label">道工序</div>
+    </div>
+  </div>
+</section>
+
+<!-- Showcase -->
+<section id="showcase">
+  <div class="section-header reveal">
+    <div class="gold-divider"></div>
+    <h2 class="gold-text">臻品展示</h2>
+    <p>每一件作品都是时间与匠心的结晶</p>
+  </div>
+  <div class="showcase-grid">
+    <div class="showcase-card reveal">
+      <div class="showcase-inner">
+        <div class="showcase-icon gold-text">⬥</div>
+        <h3>金箔屏风</h3>
+        <p>传统工艺 · 现代美学</p>
+      </div>
+    </div>
+    <div class="showcase-card reveal">
+      <div class="showcase-inner">
+        <div class="showcase-icon gold-text">⬡</div>
+        <h3>金箔画作</h3>
+        <p>艺术收藏 · 传世珍品</p>
+      </div>
+    </div>
+    <div class="showcase-card reveal">
+      <div class="showcase-inner">
+        <div class="showcase-icon gold-text">◈</div>
+        <h3>金箔茶具</h3>
+        <p>品茗雅器 · 尊贵体验</p>
+      </div>
+    </div>
+    <div class="showcase-card reveal">
+      <div class="showcase-inner">
+        <div class="showcase-icon gold-text">✦</div>
+        <h3>金箔香炉</h3>
+        <p>焚香静心 · 禅意生活</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section id="testimonials">
+  <div class="section-header reveal">
+    <div class="gold-divider"></div>
+    <h2 class="gold-text">尊贵客户评价</h2>
+    <p>聆听来自全球收藏家的真实声音</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <p>金箔的品质令人叹为观止。每一片都薄如蝉翼却光泽持久，完美诠释了什么是真正的匠心之作。</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">陈</div>
+        <div class="testimonial-info">
+          <strong>陈雨涵</strong>
+          <span>知名收藏家</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <p>与金箔团队的合作非常愉快。他们对细节的执着追求和对品质的严格把控，让我们的联名系列大获成功。</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">林</div>
+        <div class="testimonial-info">
+          <strong>林思远</strong>
+          <span>独立设计师</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <p>定制的金箔屏风成为了我工作室的标志性作品。每一位来访者都会被它的精湛工艺所震撼。</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">王</div>
+        <div class="testimonial-info">
+          <strong>王明德</strong>
+          <span>建筑设计师</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-box reveal">
+    <h2 class="gold-text">开启您的奢华之旅</h2>
+    <p>预约专属顾问，为您打造独一无二的金箔艺术品</p>
+    <button class="btn-primary">立即预约</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3 class="gold-text">金箔</h3>
+      <p>传承千年工艺，铸就当代经典。我们致力于将东方金箔艺术推向世界舞台。</p>
+    </div>
+    <div class="footer-col">
+      <h4>探索</h4>
+      <ul>
+        <li><a href="#">臻品系列</a></li>
+        <li><a href="#">定制服务</a></li>
+        <li><a href="#">艺术合作</a></li>
+        <li><a href="#">品牌故事</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>服务</h4>
+      <ul>
+        <li><a href="#">在线咨询</a></li>
+        <li><a href="#">预约体验</a></li>
+        <li><a href="#">全球配送</a></li>
+        <li><a href="#">售后保障</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>联系</h4>
+      <ul>
+        <li><a href="#">contact@goldleaf.cn</a></li>
+        <li><a href="#">+86 400-888-9999</a></li>
+        <li><a href="#">北京市朝阳区</a></li>
+        <li><a href="#">上海 · 深圳 · 杭州</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="gold-divider-wide"></div>
+  <div class="footer-bottom" style="margin-top: 32px;">
+    <p>© 2026 金箔 Gold Leaf. 以匠心致敬经典。</p>
+  </div>
+</footer>
+
+<script>
+/* ── Particle Canvas ── */
+(function() {
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+  let animFrame;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  function createParticle() {
+    return {
+      x: Math.random() * w,
+      y: Math.random() * h,
+      size: Math.random() * 2.5 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.4 + 0.1,
+      life: Math.random() * 400 + 100,
+      maxLife: 0,
+      hue: Math.random() * 30 + 35
+    };
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    var count = Math.min(Math.floor((w * h) / 12000), 150);
+    for (var i = 0; i < count; i++) {
+      var p = createParticle();
+      p.maxLife = p.life;
+      particles.push(p);
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.speedX;
+      p.y += p.speedY;
+      p.life--;
+
+      var lifeRatio = p.life / p.maxLife;
+      var alpha = p.opacity * (lifeRatio < 0.2 ? lifeRatio / 0.2 : 1);
+
+      if (p.life <= 0 || p.x < -10 || p.x > w + 10 || p.y < -10 || p.y > h + 10) {
+        particles[i] = createParticle();
+        particles[i].maxLife = particles[i].life;
+        continue;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'hsla(' + p.hue + ', 50%, 65%, ' + alpha + ')';
+      ctx.fill();
+    }
+    animFrame = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', function() {
+    resize();
+  });
+
+  init();
+  draw();
+})();
+
+/* ── Floating Gold Dust ── */
+(function() {
+  var container = document.getElementById('goldDustContainer');
+  function createDust() {
+    var dust = document.createElement('div');
+    dust.className = 'gold-dust';
+    var size = Math.random() * 4 + 2;
+    dust.style.width = size + 'px';
+    dust.style.height = size + 'px';
+    dust.style.left = Math.random() * 100 + 'vw';
+    dust.style.animationDuration = (Math.random() * 15 + 10) + 's';
+    dust.style.animationDelay = (Math.random() * 10) + 's';
+    dust.style.animation = 'dustFloat ' + dust.style.animationDuration + ' linear ' + dust.style.animationDelay + ' infinite';
+    container.appendChild(dust);
+  }
+  for (var i = 0; i < 30; i++) {
+    createDust();
+  }
+})();
+
+/* ── Theme Toggle ── */
+(function() {
+  var toggle = document.getElementById('themeToggle');
+  var icon = document.getElementById('themeIcon');
+  toggle.addEventListener('click', function() {
+    var html = document.documentElement;
+    var current = html.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    icon.textContent = next === 'dark' ? '☀' : '☾';
+  });
+})();
+
+/* ── Scroll Reveal ── */
+(function() {
+  var reveals = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(function(el) { observer.observe(el); });
+})();
+
+/* ── Nav scroll effect ── */
+(function() {
+  var nav = document.querySelector('nav');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 60) {
+      nav.style.padding = '12px 48px';
+      nav.style.background = 'rgba(10,10,10,0.92)';
+    } else {
+      nav.style.padding = '20px 48px';
+      nav.style.background = 'rgba(10,10,10,0.7)';
+    }
+  });
+})();
+
+/* ── Smooth scroll for nav links ── */
+document.querySelectorAll('.nav-links a').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

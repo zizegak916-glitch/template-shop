@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云端 - Cloud Nine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: linear-gradient(180deg, #e0f2fe 0%, #ffffff 100%);
+            --bg-secondary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-blue: #0ea5e9;
+            --accent-blue-light: #7dd3fc;
+            --accent-blue-dark: #0284c7;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+            --cloud-color: rgba(255, 255, 255, 0.8);
+            --cloud-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
+            --border-light: rgba(14, 165, 233, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-blue-light: #7dd3fc;
+            --accent-blue-dark: #0ea5e9;
+            --card-bg: rgba(30, 41, 59, 0.9);
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            --cloud-color: rgba(30, 41, 59, 0.8);
+            --cloud-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --border-light: rgba(56, 189, 248, 0.1);
+            --nav-bg: rgba(15, 23, 42, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: var(--cloud-shadow);
+        }
+
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-primary);
+            transition: fill 0.3s ease;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-cloud {
+            width: 32px;
+            height: 20px;
+            background: var(--accent-blue);
+            border-radius: 50px 50px 0 0;
+            position: relative;
+        }
+
+        .logo-cloud::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -6px;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .logo-cloud::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -4px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 5% 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 300;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Cloud Shapes */
+        .cloud {
+            position: absolute;
+            background: var(--cloud-color);
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: var(--cloud-shadow);
+            backdrop-filter: blur(8px);
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: inherit;
+            border-radius: 50%;
+        }
+
+        .cloud-1 {
+            width: 200px;
+            height: 60px;
+            border-radius: 100px;
+            top: 15%;
+            left: 10%;
+            animation: floatCloud 20s ease-in-out infinite;
+        }
+
+        .cloud-1::before {
+            width: 80px;
+            height: 80px;
+            top: -40px;
+            left: 30px;
+        }
+
+        .cloud-1::after {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            right: 30px;
+        }
+
+        .cloud-2 {
+            width: 160px;
+            height: 50px;
+            border-radius: 80px;
+            top: 25%;
+            right: 15%;
+            animation: floatCloud 25s ease-in-out infinite reverse;
+        }
+
+        .cloud-2::before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 25px;
+        }
+
+        .cloud-2::after {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            right: 20px;
+        }
+
+        .cloud-3 {
+            width: 120px;
+            height: 40px;
+            border-radius: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation: floatCloud 18s ease-in-out infinite;
+            animation-delay: -5s;
+        }
+
+        .cloud-3::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 20px;
+        }
+
+        .cloud-3::after {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            right: 15px;
+        }
+
+        .cloud-4 {
+            width: 180px;
+            height: 55px;
+            border-radius: 90px;
+            bottom: 30%;
+            right: 10%;
+            animation: floatCloud 22s ease-in-out infinite;
+            animation-delay: -8s;
+        }
+
+        .cloud-4::before {
+            width: 70px;
+            height: 70px;
+            top: -35px;
+            left: 30px;
+        }
+
+        .cloud-4::after {
+            width: 55px;
+            height: 55px;
+            top: -28px;
+            right: 25px;
+        }
+
+        .cloud-5 {
+            width: 100px;
+            height: 35px;
+            border-radius: 50px;
+            top: 40%;
+            left: 5%;
+            animation: floatCloud 15s ease-in-out infinite;
+            animation-delay: -3s;
+            opacity: 0.6;
+        }
+
+        .cloud-5::before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 15px;
+        }
+
+        .cloud-5::after {
+            width: 35px;
+            height: 35px;
+            top: -18px;
+            right: 10px;
+        }
+
+        @keyframes floatCloud {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            50% {
+                transform: translateY(-10px) translateX(-5px);
+            }
+            75% {
+                transform: translateY(-25px) translateX(15px);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 32px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--cloud-shadow);
+        }
+
+        .feature-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--accent-blue-light) 0%, var(--accent-blue) 100%);
+            border-radius: 50% 50% 50% 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.2);
+        }
+
+        .feature-icon::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            top: -8px;
+            right: -5px;
+        }
+
+        .feature-icon::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            top: -2px;
+            right: 5px;
+        }
+
+        .feature-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 5%;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-item {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stat-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-number {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 5%;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 32px;
+            padding: 60px 40px;
+            box-shadow: var(--cloud-shadow);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-content::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: var(--accent-blue-light);
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .cta-content::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            opacity: 0.05;
+        }
+
+        .cta h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta .btn-primary {
+            padding: 18px 48px;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #0ea5e9 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-light);
+            padding: 60px 5% 30px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40'%3E%3Cpath fill='%230ea5e9' fill-opacity='0.1' d='M0,20 Q150,0 300,20 T600,20 T900,20 T1200,20 V40 H0 Z'/%3E%3C/svg%3E") repeat-x;
+            background-size: 600px 40px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--accent-blue);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-clouds {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .footer-cloud {
+            position: absolute;
+            bottom: 0;
+            background: var(--accent-blue-light);
+            border-radius: 50% 50% 0 0;
+            opacity: 0.1;
+        }
+
+        .footer-cloud-1 {
+            width: 120px;
+            height: 40px;
+            left: 10%;
+        }
+
+        .footer-cloud-2 {
+            width: 80px;
+            height: 30px;
+            left: 30%;
+        }
+
+        .footer-cloud-3 {
+            width: 100px;
+            height: 35px;
+            left: 60%;
+        }
+
+        .footer-cloud-4 {
+            width: 90px;
+            height: 32px;
+            left: 85%;
+        }
+
+        /* Parallax Container */
+        .parallax-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .parallax-cloud {
+            position: absolute;
+            background: var(--cloud-color);
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.3;
+        }
+
+        .parallax-cloud::before {
+            content: '';
+            position: absolute;
+            background: inherit;
+            border-radius: 50%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            .cta-content {
+                padding: 40px 24px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                width: 42px;
+                height: 42px;
+            }
+
+            .theme-toggle svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .cloud {
+                transform: scale(0.7);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+                padding: 0 20px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Scroll Animations */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Menu Button */
+        .menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-btn span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .menu-btn {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Parallax Cloud Layer -->
+    <div class="parallax-container" id="parallaxContainer">
+        <div class="parallax-cloud" style="width: 150px; height: 45px; top: 10%; left: 5%;"></div>
+        <div class="parallax-cloud" style="width: 100px; height: 30px; top: 20%; right: 10%;"></div>
+        <div class="parallax-cloud" style="width: 120px; height: 36px; top: 40%; left: 15%;"></div>
+        <div class="parallax-cloud" style="width: 80px; height: 24px; top: 60%; right: 20%;"></div>
+        <div class="parallax-cloud" style="width: 110px; height: 33px; top: 80%; left: 8%;"></div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <svg viewBox="0 0 24 24" id="themeIcon">
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+        </svg>
+    </button>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <span class="logo-cloud"></span>
+            云端
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">功能</a></li>
+            <li><a href="#stats">数据</a></li>
+            <li><a href="#cta">开始</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+        <div class="menu-btn" id="menuBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- Floating Clouds -->
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+        <div class="cloud cloud-5"></div>
+
+        <div class="hero-content">
+            <h1>云端之上，无限可能</h1>
+            <p>探索数字世界的无限可能，让您的创意在云端自由翱翔。简单、优雅、强大的云端解决方案。</p>
+            <div class="hero-buttons">
+                <a href="#cta" class="btn btn-primary">
+                    <span>开始体验</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                    </svg>
+                </a>
+                <a href="#features" class="btn btn-secondary">了解更多</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header scroll-animate">
+            <h2>为什么选择云端</h2>
+            <p>我们提供全方位的云端服务，让您的业务如虎添翼</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card scroll-animate">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                    </svg>
+                </div>
+                <h3>极速部署</h3>
+                <p>一键部署，秒级启动。告别繁琐配置，让您的应用瞬间上云。</p>
+            </div>
+
+            <div class="feature-card scroll-animate">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                    </svg>
+                </div>
+                <h3>安全可靠</h3>
+                <p>银行级加密，多重备份。您的数据安全，我们用心守护。</p>
+            </div>
+
+            <div class="feature-card scroll-animate">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                </div>
+                <h3>灵活扩展</h3>
+                <p>按需扩展，弹性伸缩。无论业务如何增长，我们都能从容应对。</p>
+            </div>
+
+            <div class="feature-card scroll-animate">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                </div>
+                <h3>实时监控</h3>
+                <p>24/7全天候监控，实时告警。让您随时掌握系统运行状态。</p>
+            </div>
+
+            <div class="feature-card scroll-animate">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+                <h3>团队协作</h3>
+                <p>多人协作，实时同步。让团队配合更高效，沟通更顺畅。</p>
+            </div>
+
+            <div class="feature-card scroll-animate">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <h3>简单易用</h3>
+                <p>直观界面，零学习成本。技术小白也能轻松上手，快速部署。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats" id="stats">
+        <div class="stats-grid">
+            <div class="stat-item scroll-animate">
+                <div class="stat-number" data-target="99.9">99.9%</div>
+                <div class="stat-label">系统可用性</div>
+            </div>
+            <div class="stat-item scroll-animate">
+                <div class="stat-number" data-target="50">50万+</div>
+                <div class="stat-label">活跃用户</div>
+            </div>
+            <div class="stat-item scroll-animate">
+                <div class="stat-number" data-target="100">100+</div>
+                <div class="stat-label">全球节点</div>
+            </div>
+            <div class="stat-item scroll-animate">
+                <div class="stat-number" data-target="24">24/7</div>
+                <div class="stat-label">技术支持</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="cta-content scroll-animate">
+            <h2>准备好起飞了吗？</h2>
+            <p>加入云端大家庭，开启您的数字之旅。立即注册，享受免费试用。</p>
+            <a href="#" class="btn btn-primary">
+                <span>立即开始</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-clouds">
+            <div class="footer-cloud footer-cloud-1"></div>
+            <div class="footer-cloud footer-cloud-2"></div>
+            <div class="footer-cloud footer-cloud-3"></div>
+            <div class="footer-cloud footer-cloud-4"></div>
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>产品</h4>
+                <ul>
+                    <li><a href="#">云服务器</a></li>
+                    <li><a href="#">对象存储</a></li>
+                    <li><a href="#">数据库</a></li>
+                    <li><a href="#">CDN加速</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>解决方案</h4>
+                <ul>
+                    <li><a href="#">电商解决方案</a></li>
+                    <li><a href="#">游戏加速</a></li>
+                    <li><a href="#">企业办公</a></li>
+                    <li><a href="#">教育平台</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>开发者</h4>
+                <ul>
+                    <li><a href="#">文档中心</a></li>
+                    <li><a href="#">API参考</a></li>
+                    <li><a href="#">SDK下载</a></li>
+                    <li><a href="#">开发者社区</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>关于我们</h4>
+                <ul>
+                    <li><a href="#">公司介绍</a></li>
+                    <li><a href="#">加入我们</a></li>
+                    <li><a href="#">联系方式</a></li>
+                    <li><a href="#">合作伙伴</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 云端科技. 保留所有权利. | 隐私政策 | 服务条款</p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        const sunPath = "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z";
+        const moonPath = "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z";
+
+        let isDark = localStorage.getItem('theme') === 'dark';
+        
+        if (isDark) {
+            html.setAttribute('data-theme', 'dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // Parallax Effect
+        const parallaxContainer = document.getElementById('parallaxContainer');
+        const parallaxClouds = parallaxContainer.querySelectorAll('.parallax-cloud');
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            parallaxClouds.forEach((cloud, index) => {
+                const speed = 0.1 + (index * 0.05);
+                cloud.style.transform = `translateY(${scrollY * speed}px)`;
+            });
+        });
+
+        // Scroll Animations
+        const scrollElements = document.querySelectorAll('.scroll-animate');
+
+        const elementInView = (el, dividend = 1) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (
+                elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend
+            );
+        };
+
+        const displayScrollElement = (element) => {
+            element.classList.add('visible');
+        };
+
+        const handleScrollAnimation = () => {
+            scrollElements.forEach((el) => {
+                if (elementInView(el, 1.1)) {
+                    displayScrollElement(el);
+                }
+            });
+        };
+
+        window.addEventListener('scroll', handleScrollAnimation);
+        window.addEventListener('load', handleScrollAnimation);
+
+        // Smooth Scroll for Navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            navLinks.style.flexDirection = 'column';
+            navLinks.style.position = 'absolute';
+            navLinks.style.top = '70px';
+            navLinks.style.right = '20px';
+            navLinks.style.background = 'var(--card-bg)';
+            navLinks.style.padding = '20px';
+            navLinks.style.borderRadius = '12px';
+            navLinks.style.boxShadow = 'var(--card-shadow)';
+        });
+
+        // Dynamic Cloud Generation
+        function createDynamicClouds() {
+            const hero = document.querySelector('.hero');
+            const cloudCount = 3;
+
+            for (let i = 0; i < cloudCount; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = `cloud cloud-dynamic-${i + 1}`;
+                cloud.style.cssText = `
+                    width: ${80 + Math.random() * 100}px;
+                    height: ${30 + Math.random() * 30}px;
+                    top: ${10 + Math.random() * 80}%;
+                    left: ${Math.random() * 100}%;
+                    animation: floatCloud ${15 + Math.random() * 10}s ease-in-out infinite;
+                    animation-delay: -${Math.random() * 10}s;
+                    opacity: 0.4 + Math.random() * 0.4;
+                `;
+                hero.appendChild(cloud);
+            }
+        }
+
+        createDynamicClouds();
+    </script>
+</body>
+</html>

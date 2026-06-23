@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="霓虹街区 - 暗色赛博朋克霓虹落地页模板">
+  <title>霓虹街区 | Neon District</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --panel: rgba(13, 16, 24, 0.76);
+      --panel-strong: rgba(7, 9, 14, 0.92);
+      --text: #f5fbff;
+      --muted: #9fb2c8;
+      --cyan: #00f5ff;
+      --magenta: #ff2bd6;
+      --yellow: #fff33b;
+      --green: #39ff88;
+      --red: #ff3b4f;
+      --line: rgba(0, 245, 255, 0.42);
+      --line-hot: rgba(255, 43, 214, 0.62);
+      --shadow-cyan: 0 0 8px rgba(0, 245, 255, 0.88), 0 0 24px rgba(0, 245, 255, 0.44);
+      --shadow-magenta: 0 0 8px rgba(255, 43, 214, 0.9), 0 0 28px rgba(255, 43, 214, 0.48);
+      --shadow-yellow: 0 0 8px rgba(255, 243, 59, 0.9), 0 0 24px rgba(255, 243, 59, 0.44);
+      --radius: 8px;
+      --max: 1180px;
+      --grid-gap: 20px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f5fbff;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-strong: rgba(238, 247, 255, 0.96);
+      --text: #05080e;
+      --muted: #405269;
+      --cyan: #008d99;
+      --magenta: #cf008e;
+      --yellow: #b39800;
+      --green: #008a48;
+      --red: #bf1230;
+      --line: rgba(0, 141, 153, 0.44);
+      --line-hot: rgba(207, 0, 142, 0.52);
+      --shadow-cyan: 0 0 6px rgba(0, 141, 153, 0.35), 0 0 18px rgba(0, 141, 153, 0.22);
+      --shadow-magenta: 0 0 6px rgba(207, 0, 142, 0.34), 0 0 18px rgba(207, 0, 142, 0.2);
+      --shadow-yellow: 0 0 6px rgba(179, 152, 0, 0.34), 0 0 18px rgba(179, 152, 0, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(0, 245, 255, 0.16), transparent 26vw),
+        radial-gradient(circle at 82% 18%, rgba(255, 43, 214, 0.14), transparent 28vw),
+        radial-gradient(circle at 50% 90%, rgba(255, 243, 59, 0.08), transparent 34vw),
+        linear-gradient(180deg, var(--bg) 0%, #050507 48%, var(--bg) 100%);
+      font-family: "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      pointer-events: none;
+      content: "";
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.045) 0,
+          rgba(255, 255, 255, 0.045) 1px,
+          transparent 1px,
+          transparent 5px
+        );
+      mix-blend-mode: screen;
+      opacity: 0.28;
+      animation: scanlinePulse 5s linear infinite;
+    }
+
+    body::after {
+      position: fixed;
+      inset: 0;
+      z-index: 29;
+      pointer-events: none;
+      content: "";
+      background:
+        linear-gradient(90deg, rgba(255, 43, 214, 0.05), transparent 20%, rgba(0, 245, 255, 0.05) 80%, transparent),
+        repeating-linear-gradient(90deg, rgba(0, 245, 255, 0.08) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(255, 43, 214, 0.06) 0 1px, transparent 1px 72px);
+      opacity: 0.36;
+      mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.17;
+      background-image:
+        linear-gradient(115deg, transparent 0 48%, rgba(0, 245, 255, 0.2) 49%, transparent 51%),
+        linear-gradient(65deg, transparent 0 48%, rgba(255, 43, 214, 0.16) 49%, transparent 51%);
+      background-size: 180px 180px, 220px 220px;
+      animation: drift 18s linear infinite;
+    }
+
+    .shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(10, 10, 10, 0.78);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 1px 0 rgba(255, 43, 214, 0.28), 0 0 24px rgba(0, 245, 255, 0.12);
+    }
+
+    [data-theme="light"] .nav {
+      background: rgba(245, 251, 255, 0.8);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 74px;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-grid;
+      grid-template-columns: 34px auto;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      color: var(--bg);
+      background: var(--cyan);
+      border: 1px solid var(--cyan);
+      box-shadow: var(--shadow-cyan), inset 0 0 10px rgba(255, 255, 255, 0.55);
+      clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+
+    .brand-text span:first-child {
+      color: var(--cyan);
+      text-shadow: var(--shadow-cyan);
+    }
+
+    .brand-text span:last-child {
+      color: var(--magenta);
+      font-size: 0.75rem;
+      text-shadow: var(--shadow-magenta);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .nav-links a::after {
+      position: absolute;
+      right: 12px;
+      bottom: 6px;
+      left: 12px;
+      height: 1px;
+      content: "";
+      background: var(--cyan);
+      box-shadow: var(--shadow-cyan);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 180ms ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      text-shadow: var(--shadow-cyan);
+    }
+
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      color: var(--cyan);
+      cursor: pointer;
+      background: rgba(0, 245, 255, 0.08);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-cyan);
+      transition: color 180ms ease, border-color 180ms ease, transform 180ms ease;
+    }
+
+    .theme-toggle:hover {
+      color: var(--yellow);
+      border-color: var(--yellow);
+      box-shadow: var(--shadow-yellow);
+      transform: translateY(-2px);
+    }
+
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      align-items: center;
+      gap: 28px;
+      min-height: calc(100vh - 74px);
+      padding: 68px 0 54px;
+    }
+
+    .hero::before {
+      position: absolute;
+      inset: 40px -8vw auto auto;
+      width: 42vw;
+      height: 42vw;
+      min-width: 320px;
+      min-height: 320px;
+      content: "";
+      border: 1px solid rgba(0, 245, 255, 0.26);
+      box-shadow:
+        inset 0 0 60px rgba(0, 245, 255, 0.14),
+        0 0 80px rgba(255, 43, 214, 0.12);
+      transform: rotate(12deg);
+      clip-path: polygon(18% 0, 100% 0, 82% 100%, 0 100%);
+      opacity: 0.72;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 34px;
+      padding: 0 12px;
+      color: var(--yellow);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 243, 59, 0.58);
+      box-shadow: var(--shadow-yellow);
+      background: rgba(255, 243, 59, 0.06);
+    }
+
+    .eyebrow::before {
+      width: 9px;
+      height: 9px;
+      content: "";
+      background: var(--yellow);
+      box-shadow: var(--shadow-yellow);
+      animation: blink 1.8s steps(2, end) infinite;
+    }
+
+    .hero-title {
+      position: relative;
+      margin: 28px 0 18px;
+      color: var(--text);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: clamp(4.2rem, 11vw, 9.5rem);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: 0;
+      text-shadow:
+        0 0 4px var(--cyan),
+        0 0 18px rgba(0, 245, 255, 0.9),
+        0 0 32px rgba(255, 43, 214, 0.72),
+        0 0 60px rgba(255, 243, 59, 0.36);
+      animation: titleCycle 5.5s linear infinite, neonFlicker 3.4s steps(1, end) infinite;
+    }
+
+    .hero-title::before,
+    .hero-title::after {
+      position: absolute;
+      inset: 0;
+      content: attr(data-text);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .hero-title::before {
+      color: var(--cyan);
+      transform: translate(2px, -1px);
+    }
+
+    .hero-title::after {
+      color: var(--magenta);
+      transform: translate(-2px, 1px);
+    }
+
+    .hero-title:hover::before {
+      animation: glitchOne 650ms steps(2, end) infinite;
+      opacity: 0.8;
+    }
+
+    .hero-title:hover::after {
+      animation: glitchTwo 540ms steps(2, end) infinite;
+      opacity: 0.78;
+    }
+
+    .hero-lede {
+      max-width: 690px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.85;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .neon-button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 24px;
+      overflow: hidden;
+      color: var(--bg);
+      font-weight: 900;
+      letter-spacing: 0;
+      isolation: isolate;
+      background: var(--cyan);
+      border: 1px solid var(--cyan);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-cyan), 0 0 48px rgba(0, 245, 255, 0.24);
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .neon-button::before {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--yellow), var(--cyan));
+      background-size: 220% 100%;
+      animation: buttonFlow 3s linear infinite;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    .neon-button:hover {
+      color: #050507;
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-magenta), 0 0 52px rgba(255, 43, 214, 0.32);
+    }
+
+    .neon-button:hover::before {
+      opacity: 1;
+    }
+
+    .ghost-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 54px;
+      padding: 0 18px;
+      color: var(--magenta);
+      font-weight: 800;
+      border: 1px solid var(--line-hot);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-magenta);
+      background: rgba(255, 43, 214, 0.07);
+    }
+
+    .ghost-link:hover {
+      color: var(--yellow);
+      border-color: var(--yellow);
+      box-shadow: var(--shadow-yellow);
+    }
+
+    .hero-panel {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 520px;
+      padding: 20px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(0, 245, 255, 0.1), transparent 38%),
+        linear-gradient(315deg, rgba(255, 43, 214, 0.14), transparent 42%),
+        var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow:
+        inset 0 0 28px rgba(0, 245, 255, 0.1),
+        0 0 38px rgba(0, 245, 255, 0.18),
+        0 0 56px rgba(255, 43, 214, 0.12);
+    }
+
+    .hero-panel::before {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background:
+        repeating-linear-gradient(90deg, rgba(0, 245, 255, 0.14) 0 1px, transparent 1px 44px),
+        repeating-linear-gradient(0deg, rgba(255, 43, 214, 0.12) 0 1px, transparent 1px 44px);
+      opacity: 0.28;
+    }
+
+    .panel-top {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: 0.78rem;
+    }
+
+    .district-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 10px;
+      margin: 34px 0 24px;
+      min-height: 330px;
+    }
+
+    .block {
+      position: relative;
+      min-height: 36px;
+      background: rgba(0, 245, 255, 0.06);
+      border: 1px solid rgba(0, 245, 255, 0.36);
+      box-shadow: inset 0 0 14px rgba(0, 245, 255, 0.1);
+    }
+
+    .block.hot {
+      background: rgba(255, 43, 214, 0.11);
+      border-color: rgba(255, 43, 214, 0.62);
+      box-shadow: var(--shadow-magenta), inset 0 0 18px rgba(255, 43, 214, 0.16);
+      animation: signFlicker 2.8s steps(1, end) infinite;
+    }
+
+    .block.yellow {
+      background: rgba(255, 243, 59, 0.09);
+      border-color: rgba(255, 243, 59, 0.58);
+      box-shadow: var(--shadow-yellow), inset 0 0 18px rgba(255, 243, 59, 0.14);
+      animation: signFlicker 3.6s steps(1, end) infinite;
+    }
+
+    .block.tall {
+      grid-row: span 2;
+    }
+
+    .block.wide {
+      grid-column: span 2;
+    }
+
+    .block.big {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .block::after {
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      color: var(--muted);
+      content: attr(data-code);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: 0.65rem;
+    }
+
+    .panel-bottom {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mini-stat {
+      padding: 12px;
+      background: rgba(10, 10, 10, 0.58);
+      border: 1px solid rgba(0, 245, 255, 0.28);
+      border-radius: var(--radius);
+    }
+
+    [data-theme="light"] .mini-stat {
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .mini-stat b {
+      display: block;
+      color: var(--cyan);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: 1.1rem;
+      text-shadow: var(--shadow-cyan);
+    }
+
+    .mini-stat span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 420px);
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 1px 0 rgba(255, 43, 214, 0.24);
+      padding-bottom: 18px;
+    }
+
+    .kicker {
+      color: var(--magenta);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      text-shadow: var(--shadow-magenta);
+    }
+
+    .section-title {
+      margin: 8px 0 0;
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: clamp(2rem, 5vw, 4.1rem);
+      line-height: 1;
+      letter-spacing: 0;
+      text-shadow: var(--shadow-cyan);
+    }
+
+    .section-note {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .feature-card {
+      position: relative;
+      min-height: 300px;
+      padding: 24px;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(0, 245, 255, 0.12), transparent 40%),
+        var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 0 24px rgba(0, 245, 255, 0.14);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .feature-card:nth-child(2) {
+      background:
+        linear-gradient(145deg, rgba(255, 43, 214, 0.15), transparent 42%),
+        var(--panel);
+      border-color: var(--line-hot);
+      box-shadow: 0 0 24px rgba(255, 43, 214, 0.14);
+    }
+
+    .feature-card:nth-child(3) {
+      background:
+        linear-gradient(145deg, rgba(255, 243, 59, 0.12), transparent 42%),
+        var(--panel);
+      border-color: rgba(255, 243, 59, 0.46);
+      box-shadow: 0 0 24px rgba(255, 243, 59, 0.12);
+    }
+
+    .feature-card::before {
+      position: absolute;
+      inset: 10px;
+      pointer-events: none;
+      content: "";
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--yellow);
+      box-shadow: var(--shadow-yellow), 0 20px 42px rgba(0, 0, 0, 0.32);
+    }
+
+    .feature-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      color: var(--bg);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-weight: 900;
+      background: var(--cyan);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .feature-card:nth-child(2) .feature-index {
+      background: var(--magenta);
+      box-shadow: var(--shadow-magenta);
+    }
+
+    .feature-card:nth-child(3) .feature-index {
+      background: var(--yellow);
+      box-shadow: var(--shadow-yellow);
+    }
+
+    .feature-card h3 {
+      position: relative;
+      margin: 28px 0 14px;
+      font-size: 1.55rem;
+      line-height: 1.2;
+      text-shadow: var(--shadow-cyan);
+    }
+
+    .feature-card h3::before,
+    .feature-card h3::after,
+    .glitch::before,
+    .glitch::after {
+      position: absolute;
+      inset: 0;
+      content: attr(data-text);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .feature-card h3::before,
+    .glitch::before {
+      color: var(--cyan);
+      transform: translate(2px, 0);
+    }
+
+    .feature-card h3::after,
+    .glitch::after {
+      color: var(--magenta);
+      transform: translate(-2px, 0);
+    }
+
+    .feature-card:hover h3::before,
+    .glitch:hover::before {
+      opacity: 0.85;
+      animation: glitchOne 460ms steps(2, end) infinite;
+    }
+
+    .feature-card:hover h3::after,
+    .glitch:hover::after {
+      opacity: 0.85;
+      animation: glitchTwo 520ms steps(2, end) infinite;
+    }
+
+    .feature-card p {
+      position: relative;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .feature-card ul {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      margin: 22px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-card li {
+      display: flex;
+      gap: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .feature-card li::before {
+      flex: 0 0 auto;
+      width: 8px;
+      height: 8px;
+      margin-top: 8px;
+      content: "";
+      background: var(--cyan);
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--grid-gap);
+    }
+
+    .stat-card {
+      position: relative;
+      min-height: 168px;
+      padding: 22px;
+      overflow: hidden;
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: inset 0 0 24px rgba(0, 245, 255, 0.08);
+    }
+
+    .stat-card::before {
+      position: absolute;
+      top: -1px;
+      left: 18px;
+      width: 54px;
+      height: 3px;
+      content: "";
+      background: var(--magenta);
+      box-shadow: var(--shadow-magenta);
+    }
+
+    .stat-card strong {
+      display: block;
+      color: var(--yellow);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1;
+      text-shadow: var(--shadow-yellow);
+    }
+
+    .stat-card span {
+      display: block;
+      margin-top: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .marquee {
+      overflow: hidden;
+      border-block: 1px solid var(--line-hot);
+      box-shadow: var(--shadow-magenta);
+      background: rgba(255, 43, 214, 0.07);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 22s linear infinite;
+    }
+
+    .marquee span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 64px;
+      padding: 0 26px;
+      color: var(--magenta);
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-weight: 800;
+      text-shadow: var(--shadow-magenta);
+      white-space: nowrap;
+    }
+
+    .cta {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      margin: 72px 0;
+      padding: 34px;
+      overflow: hidden;
+      background:
+        linear-gradient(115deg, rgba(0, 245, 255, 0.16), transparent 38%),
+        linear-gradient(285deg, rgba(255, 43, 214, 0.16), transparent 42%),
+        var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-cyan), inset 0 0 32px rgba(255, 43, 214, 0.08);
+    }
+
+    .cta::before {
+      position: absolute;
+      inset: 12px;
+      content: "";
+      border: 1px dashed rgba(255, 243, 59, 0.34);
+      pointer-events: none;
+    }
+
+    .cta-copy {
+      position: relative;
+    }
+
+    .cta h2 {
+      margin: 0 0 12px;
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: clamp(2rem, 4.8vw, 4rem);
+      line-height: 1;
+      text-shadow: var(--shadow-magenta);
+    }
+
+    .cta p {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .cta-action {
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .footer {
+      padding: 30px 0 38px;
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -1px 0 rgba(255, 43, 214, 0.34), 0 -18px 42px rgba(0, 245, 255, 0.08);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .footer strong {
+      color: var(--cyan);
+      text-shadow: var(--shadow-cyan);
+    }
+
+    @keyframes titleCycle {
+      0% {
+        text-shadow:
+          0 0 4px var(--cyan),
+          0 0 18px rgba(0, 245, 255, 0.9),
+          0 0 32px rgba(255, 43, 214, 0.72),
+          0 0 60px rgba(255, 243, 59, 0.36);
+      }
+      33% {
+        text-shadow:
+          0 0 4px var(--magenta),
+          0 0 18px rgba(255, 43, 214, 0.9),
+          0 0 32px rgba(255, 243, 59, 0.52),
+          0 0 60px rgba(0, 245, 255, 0.32);
+      }
+      66% {
+        text-shadow:
+          0 0 4px var(--yellow),
+          0 0 18px rgba(255, 243, 59, 0.84),
+          0 0 32px rgba(0, 245, 255, 0.64),
+          0 0 60px rgba(255, 43, 214, 0.34);
+      }
+      100% {
+        text-shadow:
+          0 0 4px var(--cyan),
+          0 0 18px rgba(0, 245, 255, 0.9),
+          0 0 32px rgba(255, 43, 214, 0.72),
+          0 0 60px rgba(255, 243, 59, 0.36);
+      }
+    }
+
+    @keyframes neonFlicker {
+      0%, 18%, 20%, 23%, 100% {
+        opacity: 1;
+      }
+      19%, 22% {
+        opacity: 0.74;
+      }
+      21% {
+        opacity: 0.45;
+      }
+    }
+
+    @keyframes signFlicker {
+      0%, 10%, 12%, 18%, 20%, 100% {
+        opacity: 1;
+      }
+      11%, 19% {
+        opacity: 0.45;
+      }
+      13% {
+        opacity: 0.72;
+      }
+    }
+
+    @keyframes blink {
+      0%, 60% {
+        opacity: 1;
+      }
+      61%, 100% {
+        opacity: 0.25;
+      }
+    }
+
+    @keyframes scanlinePulse {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(20px);
+      }
+    }
+
+    @keyframes drift {
+      0% {
+        background-position: 0 0, 0 0;
+      }
+      100% {
+        background-position: 180px 180px, -220px 220px;
+      }
+    }
+
+    @keyframes buttonFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 220% 50%;
+      }
+    }
+
+    @keyframes glitchOne {
+      0% {
+        clip-path: inset(4% 0 78% 0);
+        transform: translate(3px, -2px);
+      }
+      25% {
+        clip-path: inset(40% 0 35% 0);
+        transform: translate(-3px, 2px);
+      }
+      50% {
+        clip-path: inset(72% 0 8% 0);
+        transform: translate(4px, 1px);
+      }
+      75% {
+        clip-path: inset(18% 0 58% 0);
+        transform: translate(-2px, -1px);
+      }
+      100% {
+        clip-path: inset(4% 0 78% 0);
+        transform: translate(3px, -2px);
+      }
+    }
+
+    @keyframes glitchTwo {
+      0% {
+        clip-path: inset(74% 0 8% 0);
+        transform: translate(-3px, 2px);
+      }
+      25% {
+        clip-path: inset(12% 0 68% 0);
+        transform: translate(2px, -2px);
+      }
+      50% {
+        clip-path: inset(48% 0 30% 0);
+        transform: translate(-4px, 1px);
+      }
+      75% {
+        clip-path: inset(26% 0 54% 0);
+        transform: translate(3px, -1px);
+      }
+      100% {
+        clip-path: inset(74% 0 8% 0);
+        transform: translate(-3px, 2px);
+      }
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .hero-panel {
+        min-height: 460px;
+      }
+
+      .features-grid,
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-head,
+      .cta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav-inner {
+        min-height: 68px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 44px;
+      }
+
+      .hero-title {
+        font-size: clamp(3.4rem, 19vw, 5.6rem);
+      }
+
+      .hero-panel {
+        min-height: 420px;
+        padding: 14px;
+      }
+
+      .district-map {
+        gap: 7px;
+        min-height: 280px;
+      }
+
+      .panel-bottom,
+      .features-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card {
+        min-height: 260px;
+      }
+
+      .section {
+        padding: 52px 0;
+      }
+
+      .cta {
+        margin: 52px 0;
+        padding: 24px;
+      }
+
+      .cta-action,
+      .neon-button,
+      .ghost-link {
+        width: 100%;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="page">
+    <header class="nav">
+      <div class="shell nav-inner">
+        <a class="brand glitch" href="#top" data-text="NEON DISTRICT" aria-label="霓虹街区首页">
+          <span class="brand-mark">区</span>
+          <span class="brand-text">
+            <span>NEON</span>
+            <span>DISTRICT</span>
+          </span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a href="#features">街区系统</a>
+          <a href="#stats">实时数据</a>
+          <a href="#join">进入夜城</a>
+        </nav>
+        <button class="theme-toggle" type="button" aria-label="切换主题" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v2"></path>
+            <path d="M12 19v2"></path>
+            <path d="M4.22 4.22l1.42 1.42"></path>
+            <path d="M18.36 18.36l1.42 1.42"></path>
+            <path d="M1 12h2"></path>
+            <path d="M21 12h2"></path>
+            <path d="M4.22 19.78l1.42-1.42"></path>
+            <path d="M18.36 5.64l1.42-1.42"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="shell hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="eyebrow">夜间协议 09 / 开放接入</span>
+          <h1 class="hero-title" id="hero-title" data-text="霓虹街区">霓虹街区</h1>
+          <p class="hero-lede">
+            在高架轨道、全息广告与雨夜电缆之间，部署你的下一代数字入口。
+            这里是暗色赛博朋克品牌、AI 产品、创作者社区与虚拟活动的霓虹落地页。
+          </p>
+          <div class="hero-actions">
+            <a class="neon-button" href="#join">启动街区通行证</a>
+            <a class="ghost-link" href="#features">扫描功能模块</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="霓虹街区地图">
+          <div class="panel-top">
+            <span>SECTOR / CN-88</span>
+            <span>LIVE SIGNAL</span>
+          </div>
+          <div class="district-map" aria-hidden="true">
+            <span class="block tall" data-code="A1"></span>
+            <span class="block hot wide" data-code="BAR"></span>
+            <span class="block" data-code="N4"></span>
+            <span class="block yellow tall" data-code="灯"></span>
+            <span class="block" data-code="B7"></span>
+            <span class="block big hot" data-code="夜市"></span>
+            <span class="block" data-code="C2"></span>
+            <span class="block wide" data-code="LANE"></span>
+            <span class="block yellow" data-code="24H"></span>
+            <span class="block" data-code="D9"></span>
+            <span class="block tall" data-code="E3"></span>
+            <span class="block hot" data-code="CLUB"></span>
+            <span class="block wide yellow" data-code="DATA"></span>
+            <span class="block" data-code="F8"></span>
+            <span class="block big" data-code="CORE"></span>
+            <span class="block hot" data-code="AI"></span>
+            <span class="block" data-code="G5"></span>
+            <span class="block yellow" data-code="门"></span>
+          </div>
+          <div class="panel-bottom">
+            <div class="mini-stat">
+              <b>98%</b>
+              <span>霓虹覆盖</span>
+            </div>
+            <div class="mini-stat">
+              <b>24H</b>
+              <span>夜间在线</span>
+            </div>
+            <div class="mini-stat">
+              <b>0.7s</b>
+              <span>入口响应</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span>霓虹信号</span>
+          <span>赛博夜市</span>
+          <span>全息入口</span>
+          <span>地下频道</span>
+          <span>数据灯牌</span>
+          <span>午夜上线</span>
+          <span>霓虹信号</span>
+          <span>赛博夜市</span>
+          <span>全息入口</span>
+          <span>地下频道</span>
+          <span>数据灯牌</span>
+          <span>午夜上线</span>
+        </div>
+      </div>
+
+      <section class="shell section" id="features" aria-labelledby="features-title">
+        <div class="section-head">
+          <div>
+            <span class="kicker">FEATURES / 三个核心模块</span>
+            <h2 class="section-title" id="features-title">夜城启动套件</h2>
+          </div>
+          <p class="section-note">
+            高对比霓虹边框、网格化内容区、悬停故障字效与闪烁灯牌，适合快速搭建有强烈视觉记忆点的中文落地页。
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <span class="feature-index">01</span>
+            <h3 data-text="全息首屏">全息首屏</h3>
+            <p>
+              巨型中文标题叠加青色、品红、黄色光晕，并通过 CSS text-shadow 循环切换，制造真实灯管呼吸感。
+            </p>
+            <ul>
+              <li>标题悬停触发 glitch 分层</li>
+              <li>扫描线覆盖全页面</li>
+              <li>移动端保持强识别度</li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-index">02</span>
+            <h3 data-text="街区网格">街区网格</h3>
+            <p>
+              使用 CSS Grid 构建虚拟街区地图、内容卡片和统计面板，让信息像夜市招牌一样清晰分区。
+            </p>
+            <ul>
+              <li>霓虹边框与内发光</li>
+              <li>模块化卡片结构</li>
+              <li>无需任何外部脚本</li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-index">03</span>
+            <h3 data-text="动态灯牌">动态灯牌</h3>
+            <p>
+              闪烁标识、滚动频道、发光按钮与暗色主题默认加载，营造持续在线的未来都市氛围。
+            </p>
+            <ul>
+              <li>data-theme 默认 dark</li>
+              <li>内置明暗主题切换</li>
+              <li>低动效偏好自动降级</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="shell section" id="stats" aria-labelledby="stats-title">
+        <div class="section-head">
+          <div>
+            <span class="kicker">STATS / 实时街区读数</span>
+            <h2 class="section-title" id="stats-title">信号强度在线</h2>
+          </div>
+          <p class="section-note">
+            为产品卖点、活动战绩、社区规模或服务可用性准备的高亮数据区，保持紧凑、醒目、适合快速扫描。
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <strong>12K</strong>
+            <span>夜间活跃访客穿过入口，停留在高亮路径上。</span>
+          </article>
+          <article class="stat-card">
+            <strong>36</strong>
+            <span>条地下频道可接入品牌、活动、工具与社区。</span>
+          </article>
+          <article class="stat-card">
+            <strong>4.8x</strong>
+            <span>强视觉首屏提升点击动机，让 CTA 更像灯牌。</span>
+          </article>
+          <article class="stat-card">
+            <strong>99%</strong>
+            <span>页面资产内嵌，部署到任意静态环境都足够直接。</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="shell" id="join" aria-labelledby="cta-title">
+        <div class="cta">
+          <div class="cta-copy">
+            <h2 class="glitch" id="cta-title" data-text="进入午夜主街">进入午夜主街</h2>
+            <p>
+              将这份单文件模板接入你的产品、活动或创作者项目，替换文案即可获得完整暗色霓虹落地页。
+            </p>
+          </div>
+          <a class="neon-button cta-action" href="#top">点亮霓虹</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer-inner">
+        <span><strong>霓虹街区</strong> / Neon District Landing Template</span>
+        <span>CYAN · MAGENTA · YELLOW · DARK GRID</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.querySelector(".theme-toggle");
+      var saved = localStorage.getItem("neon-district-theme");
+      if (saved === "light" || saved === "dark") {
+        root.setAttribute("data-theme", saved);
+      }
+      function updateToggle() {
+        var isDark = root.getAttribute("data-theme") !== "light";
+        toggle.setAttribute("aria-pressed", String(!isDark));
+        toggle.setAttribute("aria-label", isDark ? "切换到明亮主题" : "切换到暗色主题");
+      }
+      toggle.addEventListener("click", function () {
+        var next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("neon-district-theme", next);
+        updateToggle();
+      });
+      updateToggle();
+    }());
+  </script>
+</body>
+</html>

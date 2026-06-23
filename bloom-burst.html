@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>春绽 · 花舞</title>
+    <!-- Google Fonts: 现代清爽字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        /* ----- CSS 自定义属性 (主题) ----- */
+        :root {
+            --bloom-pink: #ffb7c5;
+            --spring-green: #90ee90;
+            --soft-white: #fff9f5;
+            --lavender: #d8d0f0;
+            --petal-shadow: rgba(255, 183, 197, 0.3);
+            --card-radius: 2rem 1rem 2rem 1rem;
+            --transition-smooth: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --bg-gradient: linear-gradient(145deg, #fffcf9 0%, #ffeef0 45%, #eaf7e6 100%);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text-primary: #2d3a2d;
+            --text-secondary: #4a5a4a;
+            --border-floral: #ffb7c5;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(145deg, #1f261f 0%, #2d2a2a 45%, #253025 100%);
+            --card-bg: rgba(40, 45, 40, 0.8);
+            --text-primary: #f0efe7;
+            --text-secondary: #c0cbb5;
+            --border-floral: #b38b9a;
+            --petal-shadow: rgba(180, 130, 150, 0.4);
+            --bloom-pink: #d99aa8;
+            --spring-green: #6fb06f;
+            --soft-white: #2f2f2a;
+            --lavender: #8f86a8;
+        }
+
+        /* ----- 基础重置 & 排版 ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            transition: background 0.6s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* 主题切换按钮 (太阳/月亮) */
+        .theme-toggle {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.2rem;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--bloom-pink);
+            border-radius: 60px;
+            width: 2.8rem;
+            height: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(255, 183, 197, 0.2);
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            font-size: 1.4rem;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.08) rotate(10deg);
+            background: rgba(255, 255, 255, 0.7);
+            border-color: var(--spring-green);
+        }
+        .theme-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* ----- 浮动花瓣 (CSS 动画) ----- */
+        .petal-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 30% 30%, var(--bloom-pink), rgba(255, 183, 197, 0.2));
+            border-radius: 80% 0 80% 0;
+            opacity: 0.5;
+            filter: blur(0.4px);
+            box-shadow: 0 0 12px var(--petal-shadow);
+            animation: fall linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg) scale(0.8); opacity: 0.2; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(110vh) rotate(720deg) scale(1.1); opacity: 0; }
+        }
+
+        /* 不同花瓣大小与速度 */
+        .petal:nth-child(1) { left: 5%; width: 30px; height: 30px; animation-duration: 13s; animation-delay: 0s; }
+        .petal:nth-child(2) { left: 15%; width: 18px; height: 18px; animation-duration: 18s; animation-delay: 2s; background: var(--lavender); }
+        .petal:nth-child(3) { left: 30%; width: 26px; height: 26px; animation-duration: 15s; animation-delay: 4s; }
+        .petal:nth-child(4) { left: 50%; width: 20px; height: 20px; animation-duration: 20s; animation-delay: 1s; background: var(--spring-green); opacity: 0.3; }
+        .petal:nth-child(5) { left: 70%; width: 28px; height: 28px; animation-duration: 14s; animation-delay: 3s; }
+        .petal:nth-child(6) { left: 85%; width: 16px; height: 16px; animation-duration: 22s; animation-delay: 5s; background: #f8c8dc; }
+        .petal:nth-child(7) { left: 40%; width: 34px; height: 34px; animation-duration: 17s; animation-delay: 6s; opacity: 0.4; }
+        .petal:nth-child(8) { left: 92%; width: 22px; height: 22px; animation-duration: 19s; animation-delay: 2s; background: var(--lavender); }
+
+        /* ----- 内容容器 (z-index 高于花瓣) ----- */
+        .main-content {
+            position: relative;
+            z-index: 5;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 1rem;
+        }
+
+        /* ----- 滚动显现动画 (bloom) ----- */
+        .bloom-hidden {
+            opacity: 0;
+            transform: scale(0.4) translateY(30px);
+            transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .bloom-visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* ----- 通用卡片 & 按钮 ----- */
+        .card-floral {
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-floral);
+            box-shadow: 0 12px 28px -10px rgba(255, 183, 197, 0.15);
+            padding: 1.8rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-floral::before {
+            content: "🌸";
+            position: absolute;
+            top: -6px;
+            right: 0px;
+            font-size: 1.8rem;
+            opacity: 0.2;
+            transform: rotate(15deg);
+            transition: 0.3s;
+        }
+
+        .card-floral:hover::before {
+            opacity: 0.6;
+            transform: rotate(25deg) scale(1.1);
+        }
+
+        .card-floral:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 36px -12px rgba(144, 238, 144, 0.25);
+            border-color: var(--spring-green);
+        }
+
+        .btn-gradient {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--bloom-pink), var(--spring-green));
+            color: #1f2a1f;
+            font-weight: 600;
+            padding: 0.9rem 2.8rem;
+            border-radius: 60px;
+            border: none;
+            box-shadow: 0 8px 24px rgba(255, 183, 197, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .btn-gradient:hover {
+            transform: scale(1.04);
+            box-shadow: 0 14px 32px rgba(144, 238, 144, 0.4);
+            background: linear-gradient(135deg, var(--spring-green), var(--bloom-pink));
+        }
+
+        /* ----- 布局区块 ----- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 3rem 0 5rem;
+            gap: 1rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3.2rem, 15vw, 6rem);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            background: linear-gradient(120deg, var(--bloom-pink), var(--spring-green), var(--lavender));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 8px 24px rgba(255, 183, 197, 0.2);
+            line-height: 1.1;
+        }
+
+        .hero .sub {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        .hero .floating-petals-inline {
+            display: inline-flex;
+            gap: 0.6rem;
+            font-size: 2rem;
+            animation: floatPetals 3s ease-in-out infinite;
+        }
+
+        @keyframes floatPetals {
+            0%,100%{ transform: translateY(0); }
+            50%{ transform: translateY(-10px); }
+        }
+
+        /* features grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.8rem;
+            margin: 4rem 0;
+        }
+
+        .feature-icon {
+            font-size: 2.6rem;
+            display: block;
+            margin-bottom: 0.8rem;
+            filter: drop-shadow(0 4px 8px var(--petal-shadow));
+        }
+
+        .features-grid h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .features-grid p {
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        /* stats / testimonials 合并区域 */
+        .stats-testimonials {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            margin: 4rem 0;
+            justify-content: center;
+        }
+
+        .stat-item {
+            flex: 1 1 180px;
+            text-align: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+            border-radius: 2.5rem 0.8rem 2.5rem 0.8rem;
+            padding: 1.8rem 0.8rem;
+            border: 1px solid var(--lavender);
+            transition: 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: var(--bloom-pink);
+            transform: scale(1.02);
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--bloom-pink);
+        }
+
+        .testimonial-card {
+            flex: 2 1 300px;
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+            border-radius: 2rem 0.8rem 2rem 0.8rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid var(--spring-green);
+            position: relative;
+        }
+
+        .testimonial-card::after {
+            content: "💮";
+            position: absolute;
+            bottom: 10px;
+            right: 16px;
+            opacity: 0.2;
+            font-size: 2.2rem;
+        }
+
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(255,183,197,0.12), rgba(144,238,144,0.12));
+            border-radius: 3rem 1rem 3rem 1rem;
+            padding: 3rem 2rem;
+            margin: 4rem 0;
+            text-align: center;
+            border: 1px solid var(--border-floral);
+        }
+
+        .cta-section h2 {
+            font-size: 2.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* footer */
+        .footer {
+            margin-top: 5rem;
+            padding: 2rem 0 1rem;
+            text-align: center;
+            border-top: 1px solid var(--lavender);
+            color: var(--text-secondary);
+            font-weight: 300;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+        }
+
+        .footer span {
+            opacity: 0.7;
+        }
+
+        /* ----- 响应式 ----- */
+        @media (min-width: 640px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .hero h1 {
+                font-size: 5rem;
+            }
+            .main-content {
+                padding: 2.5rem 2.5rem 1rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2rem;
+            }
+            .hero {
+                padding: 5rem 0 6rem;
+            }
+            .hero h1 {
+                font-size: 6.5rem;
+            }
+            .cta-section {
+                padding: 4rem 6rem;
+            }
+        }
+
+        /* 辅助 */
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 2rem; }
+        .gap-2 { gap: 1rem; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <!-- 浮动花瓣背景 (固定) -->
+    <div class="petal-field" aria-hidden="true">
+        <div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>
+        <div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    </div>
+
+    <!-- 主题切换 -->
+    <div class="theme-toggle" id="themeToggle" role="button" aria-label="切换主题" tabindex="0">
+        <span id="themeIcon">☀️</span>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+
+        <!-- HERO 区块 -->
+        <section class="hero bloom-hidden" id="heroSection">
+            <div class="floating-petals-inline">
+                <span>🌸</span><span>🌼</span><span>🌷</span>
+            </div>
+            <h1>绽放</h1>
+            <p class="sub">春光潋滟 · 万物复苏 · 花舞轻扬</p>
+            <div style="display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem;">
+                <a href="#features" class="btn-gradient">探索春意</a>
+                <a href="#cta" class="btn-gradient" style="background: linear-gradient(135deg, var(--lavender), var(--bloom-pink));">即刻绽放</a>
+            </div>
+        </section>
+
+        <!-- FEATURES 网格 (4项) 花图标 -->
+        <section id="features" class="features-grid bloom-hidden">
+            <div class="card-floral">
+                <span class="feature-icon">🌸</span>
+                <h3>初樱</h3>
+                <p>粉瓣轻旋，晨露凝香，第一缕春意。</p>
+            </div>
+            <div class="card-floral">
+                <span class="feature-icon">🌿</span>
+                <h3>新芽</h3>
+                <p>嫩绿破土，生机盎然，漫野清新。</p>
+            </div>
+            <div class="card-floral">
+                <span class="feature-icon">🌼</span>
+                <h3>迎春</h3>
+                <p>金蕊向阳，柔软的风拂过田埂。</p>
+            </div>
+            <div class="card-floral">
+                <span class="feature-icon">💜</span>
+                <h3>薰衣</h3>
+                <p>淡紫薄雾，静谧花园，浪漫低语。</p>
+            </div>
+        </section>
+
+        <!-- STATS + 评价 (混合) -->
+        <div class="stats-testimonials bloom-hidden">
+            <div class="stat-item">
+                <div class="stat-number">128+</div>
+                <div>花园设计</div>
+                <div style="font-size: 1.2rem; margin-top: 4px;">🌸</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">3.2k</div>
+                <div>绽放时刻</div>
+                <div style="font-size: 1.2rem; margin-top: 4px;">🌱</div>
+            </div>
+            <div class="testimonial-card">
+                <p style="font-style: italic; font-weight: 300;">“春绽模板让我们的品牌如沐春风，花瓣动画细腻，色彩柔和，转化率提升了26%。”</p>
+                <div style="margin-top: 1rem; display: flex; gap: 0.6rem; align-items: center;">
+                    <span>🌸</span><span>林语棠 · 花艺工作室</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <section id="cta" class="cta-section bloom-hidden">
+            <h2>一起迎接盛放</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-secondary);">粉绿渐变 · 春日礼赞</p>
+            <a href="#" class="btn-gradient" style="font-size: 1.3rem; padding: 1rem 3.6rem;">开启花漾</a>
+            <div style="margin-top: 1.8rem; font-size: 1.8rem; letter-spacing: 6px;">🌸 🌼 🌷 🌿</div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <span>© 2025 春绽 · 花舞模板</span>
+            <span>🌱 自然灵感</span>
+            <span>🌸 樱花粉 #ffb7c5</span>
+            <span>🌿 春绿 #90ee90</span>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            // ----- 主题切换 -----
+            const toggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+
+            function setTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+                localStorage.setItem('theme-preference', theme);
+            }
+
+            // 初始主题: 根据存储或系统偏好
+            const stored = localStorage.getItem('theme-preference');
+            if (stored) {
+                setTheme(stored);
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setTheme(prefersDark ? 'dark' : 'light');
+            }
+
+            toggle.addEventListener('click', function(e) {
+                const current = html.getAttribute('data-theme');
+                setTheme(current === 'dark' ? 'light' : 'dark');
+            });
+
+            // ----- Intersection Observer 绽放动画 (bloom) -----
+            const bloomElements = document.querySelectorAll('.bloom-hidden');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('bloom-visible');
+                        // 可以只触发一次
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.2,
+                rootMargin: '0px 0px -30px 0px'
+            });
+
+            bloomElements.forEach(el => observer.observe(el));
+
+            // 手动预先检查已经在视口内的元素 (防止有些元素初始可见但未触发)
+            setTimeout(() => {
+                bloomElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                    if (rect.top < windowHeight - 100) {
+                        el.classList.add('bloom-visible');
+                        observer.unobserve(el);
+                    }
+                });
+            }, 200);
+
+            // 平滑滚动 (内部链接)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const targetEl = document.querySelector(targetId);
+                    if (targetEl) {
+                        e.preventDefault();
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // 额外：花瓣动态调整 (不必须)
+            console.log('🌸 春绽 · 花舞已加载');
+        })();
+    </script>
+
+    <!-- 后备样式：确保bloom-visible如果js未加载也可见 (但通常js会运行) -->
+    <noscript>
+        <style>
+            .bloom-hidden { opacity: 1 !important; transform: none !important; }
+        </style>
+    </noscript>
+</body>
+</html>
