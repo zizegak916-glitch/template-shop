@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstraFlow - Modern AI Workspace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg-top: #ffffff;
+      --bg-mid: #f3f4f6;
+      --bg-deep: #050505;
+      --ink: #050505;
+      --paper: #ffffff;
+      --muted: #707070;
+      --line: rgba(0, 0, 0, 0.1);
+      --glass: rgba(255, 255, 255, 0.58);
+      --glass-dark: rgba(0, 0, 0, 0.38);
+      --accent: rgba(132, 142, 255, 0.82);
+      --accent-soft: rgba(132, 142, 255, 0.18);
+      --scroll-shift: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: #fff;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+      background:
+        radial-gradient(circle at calc(18% + var(--scroll-shift) * 8%) 10%, rgba(255, 255, 255, 0.95), transparent 27rem),
+        radial-gradient(circle at calc(82% - var(--scroll-shift) * 10%) 24%, rgba(132, 142, 255, 0.25), transparent 22rem),
+        radial-gradient(circle at 50% calc(120% - var(--scroll-shift) * 18%), rgba(255, 255, 255, 0.88), transparent 25rem),
+        linear-gradient(128deg, #ffffff 0%, #f7f7f8 20%, #d9d9dc 42%, #111113 72%, #000000 100%);
+      filter: saturate(0.92);
+      transform: translateZ(0);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      opacity: 0.58;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 50% 20%, black, transparent 68%);
+    }
+
+    ::selection {
+      background: #000;
+      color: #fff;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    #particle-field {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.72;
+    }
+
+    .liquid-glow {
+      position: fixed;
+      inset: auto -16vw -34vw -16vw;
+      height: 62vw;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.72;
+      background:
+        radial-gradient(closest-side at 20% 50%, rgba(255, 255, 255, 0.92), transparent),
+        radial-gradient(closest-side at 48% 32%, rgba(132, 142, 255, 0.22), transparent),
+        radial-gradient(closest-side at 76% 46%, rgba(0, 0, 0, 0.74), transparent);
+      filter: blur(38px);
+      animation: liquidDrift 12s ease-in-out infinite alternate;
+    }
+
+    .glass {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        0 24px 90px rgba(0, 0, 0, 0.11);
+      backdrop-filter: blur(28px) saturate(1.2);
+      -webkit-backdrop-filter: blur(28px) saturate(1.2);
+    }
+
+    .glass-dark {
+      background: linear-gradient(145deg, rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.24));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 28px 90px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(30px) saturate(1.25);
+      -webkit-backdrop-filter: blur(30px) saturate(1.25);
+    }
+
+    .gradient-text {
+      color: transparent;
+      background:
+        linear-gradient(96deg, #000 0%, #5f5f66 24%, #ffffff 48%, #8b94ff 62%, #111 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: textFlow 7s ease-in-out infinite;
+    }
+
+    .soft-border {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .soft-border::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: inherit;
+      background: linear-gradient(140deg, rgba(255,255,255,.72), rgba(132,142,255,.24), rgba(0,0,0,.28));
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      pointer-events: none;
+    }
+
+    .flow-line {
+      position: absolute;
+      inset: auto 8% 0 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.78), rgba(132,142,255,.8), transparent);
+      transform: translateX(-28%);
+      animation: scanLine 5.5s cubic-bezier(.22, 1, .36, 1) infinite;
+    }
+
+    .orbital {
+      position: absolute;
+      width: 42rem;
+      height: 42rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      transform: rotateX(65deg) rotateZ(-25deg);
+      animation: orbit 18s linear infinite;
+    }
+
+    .wave {
+      position: absolute;
+      inset: auto -8% -1px -8%;
+      height: 11rem;
+      background:
+        radial-gradient(70% 120% at 50% 100%, rgba(255,255,255,0.9), transparent 55%),
+        linear-gradient(180deg, transparent, rgba(255,255,255,0.7));
+      clip-path: polygon(0 46%, 8% 38%, 16% 48%, 25% 35%, 35% 44%, 44% 32%, 54% 43%, 64% 31%, 75% 42%, 86% 34%, 100% 45%, 100% 100%, 0 100%);
+      animation: waveShift 8s ease-in-out infinite alternate;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0);
+      transition:
+        opacity 780ms cubic-bezier(.22, 1, .36, 1),
+        transform 780ms cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .delay-1 { transition-delay: 90ms; }
+    .delay-2 { transition-delay: 180ms; }
+    .delay-3 { transition-delay: 270ms; }
+
+    .magnetic-card {
+      transform-style: preserve-3d;
+      transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+      will-change: transform;
+    }
+
+    .magnetic-card:hover {
+      border-color: rgba(132, 142, 255, 0.35);
+      background: linear-gradient(145deg, rgba(255,255,255,.7), rgba(255,255,255,.26));
+    }
+
+    .metric-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, black, transparent);
+    }
+
+    .scroll-shadow {
+      box-shadow: 0 14px 48px rgba(0,0,0,.1);
+    }
+
+    @keyframes liquidDrift {
+      0% { transform: translate3d(-2%, 0, 0) scale(1); }
+      100% { transform: translate3d(2%, -4%, 0) scale(1.08); }
+    }
+
+    @keyframes textFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes scanLine {
+      0% { transform: translateX(-36%); opacity: 0; }
+      12% { opacity: 1; }
+      72% { opacity: 1; }
+      100% { transform: translateX(36%); opacity: 0; }
+    }
+
+    @keyframes orbit {
+      to { transform: rotateX(65deg) rotateZ(335deg); }
+    }
+
+    @keyframes waveShift {
+      from { transform: translateX(-2%) scaleY(1); }
+      to { transform: translateX(2%) scaleY(1.08); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+      #particle-field {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particle-field" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="liquid-glow" aria-hidden="true"></div>
+
+  <header id="siteNav" class="fixed left-0 right-0 top-0 z-50 transition-all duration-300">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+      <a href="#top" class="group flex items-center gap-3" aria-label="AstraFlow home">
+        <span class="relative grid h-9 w-9 place-items-center rounded-full bg-black text-white shadow-[0_16px_45px_rgba(0,0,0,.18)]">
+          <span class="absolute inset-[3px] rounded-full border border-white/20"></span>
+          <span class="h-2 w-2 rounded-full bg-white shadow-[0_0_18px_rgba(132,142,255,.9)]"></span>
+        </span>
+        <span class="text-sm font-semibold tracking-[0.24em] text-black">ASTRAFLOW</span>
+      </a>
+      <div class="hidden items-center gap-8 rounded-full border border-white/35 bg-white/35 px-6 py-3 text-sm text-black/64 backdrop-blur-2xl md:flex">
+        <a class="transition hover:text-black" href="#studio">Studio</a>
+        <a class="transition hover:text-black" href="#flow">Flow</a>
+        <a class="transition hover:text-black" href="#systems">Systems</a>
+        <a class="transition hover:text-black" href="#pricing">Access</a>
+      </div>
+      <a href="#pricing" class="rounded-full bg-black px-5 py-3 text-sm font-medium text-white shadow-[0_18px_45px_rgba(0,0,0,.18)] transition hover:-translate-y-0.5 hover:bg-zinc-900">
+        Request access
+      </a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="relative flex min-h-screen items-center overflow-hidden px-5 pb-24 pt-32 sm:px-8 lg:pt-36">
+      <div class="orbital left-1/2 top-24 hidden -translate-x-1/2 lg:block" aria-hidden="true"></div>
+      <div class="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.02fr_.98fr]">
+        <div class="relative z-10">
+          <div class="reveal inline-flex items-center gap-3 rounded-full border border-black/10 bg-white/35 px-4 py-2 text-xs font-medium uppercase tracking-[0.28em] text-black/62 backdrop-blur-xl">
+            <span class="h-1.5 w-1.5 rounded-full bg-[#848eff] shadow-[0_0_18px_rgba(132,142,255,.9)]"></span>
+            Generative workspace
+          </div>
+          <h1 class="reveal delay-1 mt-8 max-w-5xl text-balance text-5xl font-semibold leading-[0.94] tracking-[-0.04em] text-black sm:text-7xl lg:text-8xl">
+            Intelligence that moves with your <span class="gradient-text">natural flow.</span>
+          </h1>
+          <p class="reveal delay-2 mt-7 max-w-2xl text-lg leading-8 text-black/62 sm:text-xl">
+            AstraFlow turns research, strategy, creation, and review into one calm surface. Fluid context, precise models, and a luminous interface built for deep work.
+          </p>
+          <div class="reveal delay-3 mt-10 flex flex-col gap-3 sm:flex-row">
+            <a href="#studio" class="group inline-flex items-center justify-center rounded-full bg-black px-7 py-4 text-sm font-semibold text-white shadow-[0_26px_70px_rgba(0,0,0,.22)] transition hover:-translate-y-1">
+              Explore the studio
+              <span class="ml-3 transition group-hover:translate-x-1">→</span>
+            </a>
+            <a href="#flow" class="inline-flex items-center justify-center rounded-full border border-black/10 bg-white/40 px-7 py-4 text-sm font-semibold text-black backdrop-blur-2xl transition hover:-translate-y-1 hover:bg-white/70">
+              Watch the flow
+            </a>
+          </div>
+        </div>
+
+        <div class="reveal delay-2 relative z-10">
+          <div class="soft-border glass relative overflow-hidden rounded-[2rem] p-3 sm:p-4">
+            <div class="relative min-h-[520px] overflow-hidden rounded-[1.55rem] bg-black text-white">
+              <div class="metric-grid absolute inset-0 opacity-70"></div>
+              <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/18 to-transparent"></div>
+              <div class="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/20 blur-3xl"></div>
+              <div class="absolute bottom-16 left-8 h-44 w-44 rounded-full bg-[#848eff]/25 blur-3xl"></div>
+
+              <div class="relative flex items-center justify-between border-b border-white/10 px-5 py-4">
+                <div class="flex items-center gap-2">
+                  <span class="h-2.5 w-2.5 rounded-full bg-white/90"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-white/45"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-white/20"></span>
+                </div>
+                <div class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/58">Live context</div>
+              </div>
+
+              <div class="relative p-5 sm:p-7">
+                <div class="rounded-[1.4rem] border border-white/10 bg-white/[0.07] p-5 backdrop-blur-xl">
+                  <div class="mb-4 flex items-center justify-between">
+                    <p class="text-xs uppercase tracking-[0.24em] text-white/44">Current prompt</p>
+                    <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-black">Gemini-like</span>
+                  </div>
+                  <p class="text-2xl font-medium tracking-[-0.03em] text-white sm:text-3xl">Synthesize this product narrative into launch-ready positioning.</p>
+                </div>
+
+                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                  <div class="rounded-[1.3rem] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl">
+                    <div class="mb-7 h-1.5 rounded-full bg-white/10">
+                      <div class="h-full w-[72%] rounded-full bg-gradient-to-r from-white to-[#b8beff]"></div>
+                    </div>
+                    <p class="text-sm text-white/54">Model confidence</p>
+                    <p class="mt-1 text-4xl font-semibold tracking-[-0.05em]">96%</p>
+                  </div>
+                  <div class="rounded-[1.3rem] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl">
+                    <div class="flex h-16 items-end gap-1.5">
+                      <span class="h-6 flex-1 rounded-t bg-white/24"></span>
+                      <span class="h-11 flex-1 rounded-t bg-white/48"></span>
+                      <span class="h-8 flex-1 rounded-t bg-white/32"></span>
+                      <span class="h-14 flex-1 rounded-t bg-[#aeb5ff]"></span>
+                      <span class="h-10 flex-1 rounded-t bg-white/40"></span>
+                    </div>
+                    <p class="mt-5 text-sm text-white/54">Signal lift</p>
+                    <p class="mt-1 text-4xl font-semibold tracking-[-0.05em]">4.8x</p>
+                  </div>
+                </div>
+
+                <div class="mt-5 rounded-[1.5rem] border border-white/10 bg-white/[0.08] p-5 backdrop-blur-xl">
+                  <div class="flex flex-wrap gap-2">
+                    <span class="rounded-full bg-white/12 px-3 py-1.5 text-xs text-white/74">Market map</span>
+                    <span class="rounded-full bg-white/12 px-3 py-1.5 text-xs text-white/74">Narrative</span>
+                    <span class="rounded-full bg-white/12 px-3 py-1.5 text-xs text-white/74">Voice</span>
+                    <span class="rounded-full bg-[#848eff]/35 px-3 py-1.5 text-xs text-white">Ready</span>
+                  </div>
+                  <div class="mt-6 space-y-3">
+                    <div class="h-2 rounded-full bg-white/12"><div class="h-full w-[88%] rounded-full bg-white/70"></div></div>
+                    <div class="h-2 rounded-full bg-white/12"><div class="h-full w-[64%] rounded-full bg-white/42"></div></div>
+                    <div class="h-2 rounded-full bg-white/12"><div class="h-full w-[78%] rounded-full bg-[#aeb5ff]/80"></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flow-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wave" aria-hidden="true"></div>
+    </section>
+
+    <section id="studio" class="relative px-5 py-24 sm:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="reveal max-w-3xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.28em] text-black/44">Studio surface</p>
+          <h2 class="mt-5 text-4xl font-semibold tracking-[-0.04em] text-black sm:text-6xl">A calm command center for high-velocity teams.</h2>
+        </div>
+        <div class="mt-12 grid gap-5 lg:grid-cols-3">
+          <article class="magnetic-card reveal glass rounded-[1.75rem] p-7">
+            <div class="mb-14 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+              <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            </div>
+            <h3 class="text-2xl font-semibold tracking-[-0.03em]">Fluid memory</h3>
+            <p class="mt-4 leading-7 text-black/58">Context follows every brief, branch, and revision without making the workspace feel heavy.</p>
+          </article>
+          <article class="magnetic-card reveal delay-1 glass rounded-[1.75rem] p-7">
+            <div class="mb-14 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/65 text-black shadow-inner">
+              <span class="block h-5 w-5 rounded-full border border-black/70"></span>
+            </div>
+            <h3 class="text-2xl font-semibold tracking-[-0.03em]">Ambient reasoning</h3>
+            <p class="mt-4 leading-7 text-black/58">Quietly compares sources, flags gaps, and offers next moves as the page changes.</p>
+          </article>
+          <article class="magnetic-card reveal delay-2 glass rounded-[1.75rem] p-7">
+            <div class="mb-14 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#848eff]/20 text-black">
+              <span class="h-4 w-4 rounded-sm bg-black"></span>
+            </div>
+            <h3 class="text-2xl font-semibold tracking-[-0.03em]">Polished output</h3>
+            <p class="mt-4 leading-7 text-black/58">Every draft arrives structured, on-brand, and ready for executive review.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow" class="relative overflow-hidden px-5 py-28 text-white sm:px-8">
+      <div class="absolute inset-0 -z-10 bg-black"></div>
+      <div class="absolute inset-0 -z-10 opacity-70" style="background: radial-gradient(circle at 12% 18%, rgba(255,255,255,.18), transparent 23rem), radial-gradient(circle at 80% 42%, rgba(132,142,255,.2), transparent 21rem), linear-gradient(180deg, #090909, #000);"></div>
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
+        <div class="reveal">
+          <p class="text-sm font-semibold uppercase tracking-[0.28em] text-white/42">Flow engine</p>
+          <h2 class="mt-5 text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">Scroll, think, refine. The interface keeps pace.</h2>
+          <p class="mt-6 max-w-xl text-lg leading-8 text-white/58">The page responds to momentum with luminous gradients, lightweight reveals, and GPU-friendly transforms.</p>
+        </div>
+
+        <div class="reveal delay-1 glass-dark soft-border relative min-h-[520px] overflow-hidden rounded-[2rem] p-6 sm:p-8">
+          <div class="absolute inset-0 opacity-70" style="background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 46px 46px; mask-image: radial-gradient(circle at 50% 42%, black, transparent 72%);"></div>
+          <div class="relative grid gap-4">
+            <div class="ml-auto w-4/5 rounded-[1.3rem] border border-white/10 bg-white/[.08] p-5 backdrop-blur-xl">
+              <p class="text-xs uppercase tracking-[0.22em] text-white/40">Input</p>
+              <p class="mt-3 text-xl font-medium tracking-[-0.02em]">What changed in the market this week?</p>
+            </div>
+            <div class="w-5/6 rounded-[1.3rem] border border-white/10 bg-white/[.12] p-5 backdrop-blur-xl">
+              <p class="text-xs uppercase tracking-[0.22em] text-[#b8beff]">AstraFlow</p>
+              <p class="mt-3 leading-7 text-white/72">Three demand signals shifted: enterprise evaluation cycles shortened, creative teams favored multimodal proof, and procurement asked for stronger audit trails.</p>
+            </div>
+            <div class="ml-10 rounded-[1.3rem] border border-white/10 bg-white/[.07] p-5 backdrop-blur-xl">
+              <div class="grid gap-3 sm:grid-cols-3">
+                <div class="rounded-2xl bg-white/10 p-4">
+                  <p class="text-3xl font-semibold tracking-[-0.05em]">32%</p>
+                  <p class="mt-2 text-sm text-white/48">Faster review</p>
+                </div>
+                <div class="rounded-2xl bg-white/10 p-4">
+                  <p class="text-3xl font-semibold tracking-[-0.05em]">18k</p>
+                  <p class="mt-2 text-sm text-white/48">Signals parsed</p>
+                </div>
+                <div class="rounded-2xl bg-[#848eff]/25 p-4">
+                  <p class="text-3xl font-semibold tracking-[-0.05em]">9.4</p>
+                  <p class="mt-2 text-sm text-white/60">Clarity score</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="systems" class="px-5 py-24 sm:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid gap-8 lg:grid-cols-[.82fr_1.18fr] lg:items-end">
+          <div class="reveal">
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-black/44">System layer</p>
+            <h2 class="mt-5 text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">Minimal outside. Deep inside.</h2>
+          </div>
+          <p class="reveal delay-1 max-w-2xl text-lg leading-8 text-black/58 lg:ml-auto">AstraFlow pairs a quiet black-and-white visual system with a subtle blue-violet signal for state, focus, and acceleration.</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          <div class="reveal glass rounded-[2rem] p-7 sm:p-9">
+            <div class="mb-10 flex items-center justify-between">
+              <h3 class="text-2xl font-semibold tracking-[-0.03em]">Signal architecture</h3>
+              <span class="rounded-full bg-black px-3 py-1 text-xs text-white">Live</span>
+            </div>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 rounded-2xl border border-black/5 bg-white/42 p-4">
+                <span class="h-10 w-10 rounded-full bg-black"></span>
+                <div class="min-w-0 flex-1">
+                  <p class="font-medium">Research graph</p>
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10"><div class="h-full w-[82%] rounded-full bg-black"></div></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 rounded-2xl border border-black/5 bg-white/42 p-4">
+                <span class="h-10 w-10 rounded-full bg-zinc-300"></span>
+                <div class="min-w-0 flex-1">
+                  <p class="font-medium">Brand controls</p>
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10"><div class="h-full w-[68%] rounded-full bg-zinc-500"></div></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 rounded-2xl border border-[#848eff]/20 bg-[#848eff]/10 p-4">
+                <span class="h-10 w-10 rounded-full bg-[#848eff]"></span>
+                <div class="min-w-0 flex-1">
+                  <p class="font-medium">Executive summary</p>
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10"><div class="h-full w-[92%] rounded-full bg-[#848eff]"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal delay-1 grid gap-5">
+            <div class="glass rounded-[2rem] p-7">
+              <p class="text-sm font-semibold uppercase tracking-[0.22em] text-black/40">Latency</p>
+              <div class="mt-4 flex items-end gap-3">
+                <span class="text-6xl font-semibold tracking-[-0.06em]">18</span>
+                <span class="pb-2 text-lg text-black/48">ms interface response</span>
+              </div>
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div class="glass rounded-[2rem] p-7">
+                <p class="text-sm text-black/44">Workspaces</p>
+                <p class="mt-4 text-5xl font-semibold tracking-[-0.06em]">∞</p>
+              </div>
+              <div class="glass rounded-[2rem] p-7">
+                <p class="text-sm text-black/44">Noise</p>
+                <p class="mt-4 text-5xl font-semibold tracking-[-0.06em]">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="px-5 pb-8 pt-20 sm:px-8">
+      <div class="reveal soft-border glass-dark relative mx-auto max-w-7xl overflow-hidden rounded-[2.25rem] px-6 py-14 text-white sm:px-12 sm:py-16">
+        <div class="absolute inset-0 opacity-70" style="background: radial-gradient(circle at 78% 20%, rgba(132,142,255,.22), transparent 22rem), radial-gradient(circle at 25% 90%, rgba(255,255,255,.16), transparent 20rem);"></div>
+        <div class="relative grid gap-10 lg:grid-cols-[1fr_.72fr] lg:items-center">
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.28em] text-white/42">Private beta</p>
+            <h2 class="mt-5 max-w-3xl text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">A premium workspace for teams who live in the future tense.</h2>
+          </div>
+          <div class="rounded-[1.6rem] border border-white/10 bg-white/[.08] p-6 backdrop-blur-xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-5">
+              <span class="text-white/58">Founding access</span>
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-black">Invite only</span>
+            </div>
+            <p class="mt-6 text-5xl font-semibold tracking-[-0.06em]">$0</p>
+            <p class="mt-3 text-white/50">For selected design, product, and strategy teams during beta.</p>
+            <a href="mailto:hello@example.com" class="mt-8 inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-4 text-sm font-semibold text-black transition hover:-translate-y-1 hover:bg-[#f2f2f2]">
+              Join the waitlist
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-5 py-8 sm:px-8">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 border-t border-black/10 pt-6 text-sm text-black/48 sm:flex-row sm:items-center sm:justify-between">
+      <p>AstraFlow. Pure signal, no noise.</p>
+      <div class="flex gap-5">
+        <a class="transition hover:text-black" href="#top">Top</a>
+        <a class="transition hover:text-black" href="#studio">Studio</a>
+        <a class="transition hover:text-black" href="#pricing">Access</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const nav = document.getElementById('siteNav');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let ticking = false;
+
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const max = Math.max(1, document.body.scrollHeight - window.innerHeight);
+          const progress = Math.min(1, Math.max(0, window.scrollY / max));
+          root.style.setProperty('--scroll-shift', progress.toFixed(4));
+          nav.classList.toggle('scroll-shadow', window.scrollY > 24);
+          nav.classList.toggle('bg-white/55', window.scrollY > 24);
+          nav.classList.toggle('backdrop-blur-2xl', window.scrollY > 24);
+          ticking = false;
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      const revealItems = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+      revealItems.forEach((item) => revealObserver.observe(item));
+
+      document.querySelectorAll('.magnetic-card').forEach((card) => {
+        card.addEventListener('pointermove', (event) => {
+          if (reduceMotion) return;
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+          card.style.transform = `perspective(900px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 5).toFixed(2)}deg) translateY(-3px)`;
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.transform = '';
+        });
+      });
+
+      if (reduceMotion) return;
+
+      const canvas = document.getElementById('particle-field');
+      const ctx = canvas.getContext('2d', { alpha: true });
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      let pointerX = 0;
+      let pointerY = 0;
+      let frame = 0;
+
+      function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.min(86, Math.max(38, Math.floor(width * height / 22000)));
+        particles = Array.from({ length: count }, (_, index) => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: 0.55 + Math.random() * 1.65,
+          a: 0.16 + Math.random() * 0.34,
+          s: 0.15 + Math.random() * 0.45,
+          phase: Math.random() * Math.PI * 2 + index
+        }));
+      }
+
+      function animate() {
+        frame += 0.006;
+        ctx.clearRect(0, 0, width, height);
+        const scroll = Number(getComputedStyle(root).getPropertyValue('--scroll-shift')) || 0;
+
+        for (const p of particles) {
+          p.x += Math.cos(frame + p.phase) * p.s + (pointerX - 0.5) * 0.06;
+          p.y += Math.sin(frame * 1.4 + p.phase) * p.s * 0.55 - 0.08 + (pointerY - 0.5) * 0.04;
+
+          if (p.x < -20) p.x = width + 20;
+          if (p.x > width + 20) p.x = -20;
+          if (p.y < -20) p.y = height + 20;
+          if (p.y > height + 20) p.y = -20;
+
+          const lightZone = p.y < height * (0.58 - scroll * 0.22);
+          ctx.beginPath();
+          ctx.fillStyle = lightZone
+            ? `rgba(0, 0, 0, ${p.a * 0.55})`
+            : `rgba(255, 255, 255, ${p.a})`;
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        for (let i = 0; i < particles.length; i += 1) {
+          for (let j = i + 1; j < particles.length; j += 1) {
+            const a = particles[i];
+            const b = particles[j];
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 116) {
+              const alpha = (1 - dist / 116) * 0.09;
+              ctx.strokeStyle = a.y < height * 0.55
+                ? `rgba(0,0,0,${alpha})`
+                : `rgba(255,255,255,${alpha})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener('resize', resize, { passive: true });
+      window.addEventListener('pointermove', (event) => {
+        pointerX = event.clientX / Math.max(1, width);
+        pointerY = event.clientY / Math.max(1, height);
+      }, { passive: true });
+
+      resize();
+      animate();
+    })();
+  </script>
+</body>
+</html>
