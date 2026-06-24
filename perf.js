@@ -658,8 +658,6 @@
 // [disabled]           dom.searchInput.value = '';
 // [disabled]           resetSearch();
 // [disabled]           dom.searchInput.blur();
-        }
-      });
     }
 
     // Scroll handler disabled - no pagination, just iframe lazy loading
