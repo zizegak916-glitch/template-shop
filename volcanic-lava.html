@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火山熔岩 - 地心之力</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           CSS CUSTOM PROPERTIES
+           ========================================== */
+        :root {
+            --obsidian: #0f0503;
+            --lava-orange: #ff4500;
+            --deep-red: #8b0000;
+            --molten-gold: #ffa500;
+            --ember-glow: #ff6b35;
+            --dark-magma: #1a0a05;
+            --ash-gray: #3a3a3a;
+            --smoke: #1c1210;
+            --text-primary: #ffeedd;
+            --text-secondary: #cc9977;
+            --card-bg: rgba(26, 10, 5, 0.85);
+            --card-border: rgba(255, 69, 0, 0.3);
+            --glow-intensity: 0 0 30px rgba(255, 69, 0, 0.4);
+            --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-theme="light"] {
+            --obsidian: #2a1810;
+            --text-primary: #1a0a05;
+            --text-secondary: #8b4513;
+            --card-bg: rgba(255, 238, 221, 0.9);
+            --card-border: rgba(139, 0, 0, 0.3);
+            --smoke: #f5e6d3;
+        }
+
+        /* ==========================================
+           RESET & BASE STYLES
+           ========================================== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--obsidian);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ==========================================
+           CRACKED EARTH TEXTURE
+           ========================================== */
+        .cracked-earth {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+            background:
+                linear-gradient(135deg, transparent 40%, rgba(255, 69, 0, 0.03) 40.5%, transparent 41%),
+                linear-gradient(225deg, transparent 40%, rgba(255, 69, 0, 0.03) 40.5%, transparent 41%),
+                linear-gradient(315deg, transparent 60%, rgba(139, 0, 0, 0.02) 60.5%, transparent 61%),
+                linear-gradient(45deg, transparent 55%, rgba(255, 165, 0, 0.02) 55.5%, transparent 56%),
+                linear-gradient(170deg, transparent 30%, rgba(255, 69, 0, 0.04) 30.2%, transparent 30.4%),
+                linear-gradient(200deg, transparent 45%, rgba(139, 0, 0, 0.03) 45.2%, transparent 45.4%),
+                linear-gradient(80deg, transparent 70%, rgba(255, 165, 0, 0.02) 70.2%, transparent 70.4%);
+            background-size: 200px 200px, 180px 180px, 220px 220px, 160px 160px, 300px 300px, 250px 250px, 280px 280px;
+        }
+
+        .cracked-earth::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    87deg,
+                    transparent,
+                    transparent 120px,
+                    rgba(255, 69, 0, 0.06) 120px,
+                    rgba(255, 69, 0, 0.06) 121px
+                ),
+                repeating-linear-gradient(
+                    177deg,
+                    transparent,
+                    transparent 95px,
+                    rgba(139, 0, 0, 0.05) 95px,
+                    rgba(139, 0, 0, 0.05) 96px
+                ),
+                repeating-linear-gradient(
+                    -3deg,
+                    transparent,
+                    transparent 150px,
+                    rgba(255, 165, 0, 0.04) 150px,
+                    rgba(255, 165, 0, 0.04) 151px
+                );
+        }
+
+        /* ==========================================
+           EMBER PARTICLES
+           ========================================== */
+        .ember-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .ember {
+            position: absolute;
+            bottom: -20px;
+            border-radius: 50%;
+            animation: ember-rise linear infinite;
+            opacity: 0;
+        }
+
+        .ember::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            filter: blur(2px);
+        }
+
+        @keyframes ember-rise {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(0) scale(1);
+            }
+            10% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-110vh) translateX(var(--drift)) scale(0.2);
+            }
+        }
+
+        @keyframes ember-glow-pulse {
+            0%, 100% { box-shadow: 0 0 4px 2px rgba(255, 69, 0, 0.6); }
+            50% { box-shadow: 0 0 8px 4px rgba(255, 165, 0, 0.8); }
+        }
+
+        /* ==========================================
+           LAVA FLOW BACKGROUND
+           ========================================== */
+        .lava-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(139, 0, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(255, 69, 0, 0.3) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 100%, rgba(255, 165, 0, 0.2) 0%, transparent 60%),
+                var(--obsidian);
+            animation: lava-morph 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes lava-morph {
+            0% {
+                background:
+                    radial-gradient(ellipse at 20% 80%, rgba(139, 0, 0, 0.4) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 90%, rgba(255, 69, 0, 0.3) 0%, transparent 40%),
+                    radial-gradient(ellipse at 50% 100%, rgba(255, 165, 0, 0.2) 0%, transparent 60%),
+                    var(--obsidian);
+            }
+            33% {
+                background:
+                    radial-gradient(ellipse at 30% 70%, rgba(255, 69, 0, 0.35) 0%, transparent 55%),
+                    radial-gradient(ellipse at 70% 85%, rgba(139, 0, 0, 0.35) 0%, transparent 45%),
+                    radial-gradient(ellipse at 40% 95%, rgba(255, 165, 0, 0.25) 0%, transparent 55%),
+                    var(--obsidian);
+            }
+            66% {
+                background:
+                    radial-gradient(ellipse at 15% 85%, rgba(255, 165, 0, 0.3) 0%, transparent 50%),
+                    radial-gradient(ellipse at 85% 80%, rgba(255, 69, 0, 0.4) 0%, transparent 40%),
+                    radial-gradient(ellipse at 60% 100%, rgba(139, 0, 0, 0.25) 0%, transparent 60%),
+                    var(--obsidian);
+            }
+            100% {
+                background:
+                    radial-gradient(ellipse at 25% 75%, rgba(255, 69, 0, 0.45) 0%, transparent 45%),
+                    radial-gradient(ellipse at 75% 95%, rgba(255, 165, 0, 0.3) 0%, transparent 50%),
+                    radial-gradient(ellipse at 50% 85%, rgba(139, 0, 0, 0.35) 0%, transparent 55%),
+                    var(--obsidian);
+            }
+        }
+
+        /* ==========================================
+           NAVIGATION
+           ========================================== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(15, 5, 3, 0.95) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition-smooth);
+        }
+
+        .navbar.scrolled {
+            background: rgba(15, 5, 3, 0.98);
+            box-shadow: 0 4px 30px rgba(255, 69, 0, 0.15);
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--molten-gold), var(--lava-orange), var(--deep-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: none;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color var(--transition-smooth);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--lava-orange), var(--molten-gold));
+            transition: width var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            color: var(--molten-gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 69, 0, 0.4);
+            background: rgba(15, 5, 3, 0.8);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--molten-gold);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+            transform: rotate(20deg) scale(1.1);
+        }
+
+        .theme-toggle .icon {
+            font-size: 1.3rem;
+            transition: var(--transition-smooth);
+        }
+
+        [data-theme="dark"] .theme-toggle .icon::before {
+            content: '☀️';
+        }
+
+        [data-theme="light"] .theme-toggle .icon::before {
+            content: '🌙';
+        }
+
+        /* ==========================================
+           HERO SECTION
+           ========================================== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6rem 1.5rem 4rem;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(0deg, var(--obsidian) 0%, transparent 100%);
+            z-index: 1;
+        }
+
+        /* Lava flow at bottom of hero */
+        .lava-flow {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .lava-stream {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100%;
+            animation: lava-flow-anim 8s linear infinite;
+        }
+
+        .lava-stream::before,
+        .lava-stream::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .lava-stream::before {
+            background:
+                radial-gradient(ellipse 80px 60px at 10% 100%, var(--lava-orange) 0%, transparent 100%),
+                radial-gradient(ellipse 120px 80px at 25% 100%, var(--deep-red) 0%, transparent 100%),
+                radial-gradient(ellipse 60px 50px at 40% 100%, var(--molten-gold) 0%, transparent 100%),
+                radial-gradient(ellipse 100px 70px at 55% 100%, var(--lava-orange) 0%, transparent 100%),
+                radial-gradient(ellipse 90px 60px at 70% 100%, var(--deep-red) 0%, transparent 100%),
+                radial-gradient(ellipse 110px 80px at 85% 100%, var(--molten-gold) 0%, transparent 100%),
+                radial-gradient(ellipse 70px 55px at 95% 100%, var(--lava-orange) 0%, transparent 100%);
+            filter: blur(8px);
+            opacity: 0.8;
+        }
+
+        .lava-stream::after {
+            background:
+                radial-gradient(ellipse 50px 40px at 15% 100%, var(--molten-gold) 0%, transparent 100%),
+                radial-gradient(ellipse 80px 50px at 35% 100%, var(--lava-orange) 0%, transparent 100%),
+                radial-gradient(ellipse 60px 45px at 50% 100%, var(--deep-red) 0%, transparent 100%),
+                radial-gradient(ellipse 70px 55px at 65% 100%, var(--molten-gold) 0%, transparent 100%),
+                radial-gradient(ellipse 90px 60px at 80% 100%, var(--lava-orange) 0%, transparent 100%);
+            filter: blur(4px);
+            opacity: 0.6;
+            animation: lava-stream-2 6s linear infinite alternate;
+        }
+
+        @keyframes lava-flow-anim {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes lava-stream-2 {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+
+        /* Heat Haze Effect */
+        .heat-haze {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            animation: heat-shimmer 3s ease-in-out infinite alternate;
+            opacity: 0.1;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 69, 0, 0.03) 2px,
+                    rgba(255, 69, 0, 0.03) 4px
+                );
+        }
+
+        @keyframes heat-shimmer {
+            0% {
+                transform: scaleY(1) translateY(0);
+                opacity: 0.05;
+            }
+            50% {
+                transform: scaleY(1.002) translateY(-2px);
+                opacity: 0.12;
+            }
+            100% {
+                transform: scaleY(0.998) translateY(1px);
+                opacity: 0.08;
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            border: 1px solid rgba(255, 69, 0, 0.4);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--molten-gold);
+            margin-bottom: 1.5rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: badge-glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes badge-glow {
+            0% { box-shadow: 0 0 10px rgba(255, 69, 0, 0.2); }
+            100% { box-shadow: 0 0 25px rgba(255, 69, 0, 0.4); }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(
+                180deg,
+                var(--molten-gold) 0%,
+                var(--lava-orange) 40%,
+                var(--deep-red) 70%,
+                #4a0000 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fire-text-glow 4s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.5));
+            position: relative;
+        }
+
+        .hero-title::after {
+            content: '火山熔岩';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 165, 0, 0.3) 0%,
+                rgba(255, 69, 0, 0.1) 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(15px);
+            z-index: -1;
+        }
+
+        @keyframes fire-text-glow {
+            0% {
+                filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.4));
+                text-shadow: none;
+            }
+            50% {
+                filter: drop-shadow(0 0 50px rgba(255, 165, 0, 0.6));
+            }
+            100% {
+                filter: drop-shadow(0 0 35px rgba(139, 0, 0, 0.5));
+            }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* ==========================================
+           BUTTONS
+           ========================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2.2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--lava-orange), var(--deep-red));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 69, 0, 0.4);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 165, 0, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(255, 69, 0, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--molten-gold);
+            border: 2px solid rgba(255, 165, 0, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: var(--molten-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 69, 0, 0.2);
+        }
+
+        /* ==========================================
+           SECTION COMMON STYLES
+           ========================================== */
+        .section {
+            position: relative;
+            z-index: 2;
+            padding: 5rem 1.5rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            color: var(--lava-orange);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ==========================================
+           REVEAL ANIMATIONS
+           ========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ==========================================
+           FEATURES GRID
+           ========================================== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .feature-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all var(--transition-smooth);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center bottom, rgba(255, 69, 0, 0.08) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity var(--transition-smooth);
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--lava-orange), var(--deep-red), var(--molten-gold));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity var(--transition-smooth);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(255, 69, 0, 0.2), 0 0 40px rgba(255, 69, 0, 0.1);
+            border-color: rgba(255, 165, 0, 0.6);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover::after {
+            opacity: 0.15;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.2) 0%, transparent 70%);
+            border: 2px solid rgba(255, 69, 0, 0.3);
+            transition: all var(--transition-smooth);
+            animation: ember-glow-pulse 4s ease-in-out infinite;
+        }
+
+        .feature-card:hover .feature-icon {
+            border-color: var(--molten-gold);
+            box-shadow: 0 0 30px rgba(255, 165, 0, 0.5);
+            transform: scale(1.1);
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ==========================================
+           LAVA DIVIDER
+           ========================================== */
+        .lava-divider {
+            position: relative;
+            height: 60px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .lava-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--lava-orange), var(--molten-gold), var(--lava-orange), transparent);
+            opacity: 0.5;
+        }
+
+        .lava-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--lava-orange);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--lava-orange), 0 0 40px rgba(255, 69, 0, 0.3);
+            animation: divider-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes divider-pulse {
+            0%, 100% { box-shadow: 0 0 15px var(--lava-orange), 0 0 30px rgba(255, 69, 0, 0.3); }
+            50% { box-shadow: 0 0 25px var(--molten-gold), 0 0 50px rgba(255, 165, 0, 0.4); }
+        }
+
+        /* ==========================================
+           STATS SECTION
+           ========================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--deep-red), var(--lava-orange), var(--molten-gold), var(--lava-orange), var(--deep-red));
+            background-size: 200% 100%;
+            animation: lava-bar 3s linear infinite;
+        }
+
+        @keyframes lava-bar {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(255, 69, 0, 0.2);
+            border-color: rgba(255, 69, 0, 0.5);
+        }
+
+        .stat-number {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--molten-gold), var(--lava-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .stat-sublabel {
+            font-size: 0.75rem;
+            color: rgba(255, 69, 0, 0.6);
+            margin-top: 0.3rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================
+           TESTIMONIALS
+           ========================================== */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .testimonial-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 5rem;
+            font-weight: 900;
+            color: rgba(255, 69, 0, 0.1);
+            line-height: 1;
+            font-family: Georgia, serif;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(255, 69, 0, 0.15);
+            border-color: rgba(255, 69, 0, 0.5);
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lava-orange), var(--deep-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .testimonial-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .testimonial-stars {
+            color: var(--molten-gold);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        /* ==========================================
+           CTA SECTION
+           ========================================== */
+        .cta-section {
+            position: relative;
+            z-index: 2;
+            padding: 6rem 1.5rem;
+        }
+
+        .cta-box {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--deep-red), var(--lava-orange), var(--molten-gold), var(--lava-orange), var(--deep-red));
+            background-size: 300% 300%;
+            animation: cta-border 6s ease-in-out infinite;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .cta-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(255, 69, 0, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        @keyframes cta-border {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cta-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--molten-gold), var(--lava-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1.1rem 3rem;
+            background: linear-gradient(135deg, var(--lava-orange), var(--deep-red), var(--lava-orange));
+            background-size: 200% 200%;
+            animation: cta-btn-flow 4s ease-in-out infinite;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all var(--transition-smooth);
+            text-decoration: none;
+            font-family: inherit;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 40px rgba(255, 69, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes cta-btn-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .cta-btn:hover::before {
+            left: 100%;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 50px rgba(255, 69, 0, 0.6);
+        }
+
+        .cta-btn .btn-icon {
+            font-size: 1.3rem;
+            transition: transform var(--transition-smooth);
+        }
+
+        .cta-btn:hover .btn-icon {
+            transform: translateX(4px);
+        }
+
+        /* ==========================================
+           FOOTER
+           ========================================== */
+        .footer {
+            position: relative;
+            z-index: 2;
+            padding: 3rem 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 69, 0, 0.15);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 640px) {
+            .footer-content {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--molten-gold), var(--lava-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .footer-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .footer-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color var(--transition-smooth);
+        }
+
+        .footer-links a:hover {
+            color: var(--molten-gold);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 69, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all var(--transition-smooth);
+        }
+
+        .footer-social a:hover {
+            border-color: var(--molten-gold);
+            color: var(--molten-gold);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* ==========================================
+           SCROLL-TO-TOP BUTTON
+           ========================================== */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lava-orange), var(--deep-red));
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all var(--transition-smooth);
+            box-shadow: 0 4px 20px rgba(255, 69, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 35px rgba(255, 69, 0, 0.6);
+        }
+
+        /* ==========================================
+           LOADING ANIMATION
+           ========================================== */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--obsidian);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 69, 0, 0.1);
+            border-top-color: var(--lava-orange);
+            animation: loader-spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes loader-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            letter-spacing: 4px;
+            animation: loader-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loader-pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ==========================================
+           RESPONSIVE UTILITIES
+           ========================================== */
+        @media (max-width: 639px) {
+            .hero {
+                padding: 5rem 1rem 3rem;
+            }
+
+            .section {
+                padding: 3.5rem 1rem;
+            }
+
+            .cta-box {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+
+        /* ==========================================
+           LIGHT THEME OVERRIDES
+           ========================================== */
+        [data-theme="light"] .lava-bg {
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(255, 69, 0, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 100%, rgba(255, 165, 0, 0.08) 0%, transparent 60%),
+                #f5e6d3;
+        }
+
+        [data-theme="light"] .hero-title {
+            background: linear-gradient(180deg, #8b4513 0%, var(--deep-red) 40%, #4a0000 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(255, 238, 221, 0.9);
+            border-color: rgba(139, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] .navbar {
+            background: linear-gradient(180deg, rgba(245, 230, 211, 0.95) 0%, transparent 100%);
+        }
+
+        [data-theme="light"] .navbar.scrolled {
+            background: rgba(245, 230, 211, 0.98);
+        }
+
+        [data-theme="light"] .feature-card:hover {
+            box-shadow: 0 20px 60px rgba(139, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">火山熔岩</div>
+    </div>
+
+    <!-- Background Layers -->
+    <div class="lava-bg"></div>
+    <div class="cracked-earth"></div>
+    <div class="ember-container" id="emberContainer"></div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="icon"></span>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo">🌋 火山熔岩</a>
+        <ul class="nav-links">
+            <li><a href="#features">核心力量</a></li>
+            <li><a href="#stats">燃烧数据</a></li>
+            <li><a href="#testimonials">熔岩之声</a></li>
+            <li><a href="#cta">加入熔岩</a></li>
+        </ul>
+    </nav>
+
+    <!-- ==========================================
+         HERO SECTION
+         ========================================== -->
+    <section class="hero" id="hero">
+        <div class="heat-haze"></div>
+        <div class="lava-flow">
+            <div class="lava-stream"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge reveal">🌋 来自地心的力量</div>
+            <h1 class="hero-title reveal">火山熔岩</h1>
+            <p class="hero-subtitle reveal">
+                探索地球深处最原始的力量，感受亿万年地壳运动所孕育的炙热能量。
+                从远古的熔岩河流到现代的地热科技，火山之力从未停息。
+            </p>
+            <div class="hero-buttons reveal">
+                <a href="#features" class="btn btn-primary">
+                    探索力量 <span>🔥</span>
+                </a>
+                <a href="#cta" class="btn btn-secondary">
+                    了解更多 <span>→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="lava-divider"></div>
+
+    <!-- ==========================================
+         FEATURES SECTION
+         ========================================== -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">核心力量</span>
+                <h2 class="section-title">地心深处的四大元素</h2>
+                <p class="section-desc">
+                    每一种力量都源自地球的核心，蕴含着改变世界的无穷能量
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal" style="transition-delay: 0.1s;">
+                    <div class="feature-icon">🔥</div>
+                    <h3 class="feature-title">岩浆之力</h3>
+                    <p class="feature-desc">
+                        高达1200°C的岩浆从地壳裂缝中喷涌而出，形成壮观的熔岩河流，重塑大地的面貌。
+                    </p>
+                </div>
+                <div class="feature-card reveal" style="transition-delay: 0.2s;">
+                    <div class="feature-icon">💎</div>
+                    <h3 class="feature-title">矿物结晶</h3>
+                    <p class="feature-desc">
+                        熔岩冷却过程中形成珍贵的矿物晶体，从黑曜石到红宝石，大自然的鬼斧神工。
+                    </p>
+                </div>
+                <div class="feature-card reveal" style="transition-delay: 0.3s;">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">地热能源</h3>
+                    <p class="feature-desc">
+                        将火山的热能转化为清洁能源，为数百万家庭提供可持续的电力和供暖系统。
+                    </p>
+                </div>
+                <div class="feature-card reveal" style="transition-delay: 0.4s;">
+                    <div class="feature-icon">🌋</div>
+                    <h3 class="feature-title">火山生态</h3>
+                    <p class="feature-desc">
+                        火山灰造就了世界上最肥沃的土壤，孕育出独特的生态系统和丰富的生物多样性。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="lava-divider"></div>
+
+    <!-- ==========================================
+         STATS SECTION
+         ========================================== -->
+    <section class="section" id="stats">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">燃烧数据</span>
+                <h2 class="section-title">震撼人心的火山数据</h2>
+                <p class="section-desc">
+                    用数据诠释火山力量的宏伟与壮丽
+                </p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card reveal" style="transition-delay: 0.1s;">
+                    <div class="stat-number" data-target="1500">0</div>
+                    <div class="stat-label">全球活火山数量</div>
+                    <div class="stat-sublabel">座 · 持续活跃</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay: 0.2s;">
+                    <div class="stat-number" data-target="1250">0</div>
+                    <div class="stat-label">最高岩浆温度</div>
+                    <div class="stat-sublabel">°C · 摄氏度</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay: 0.3s;">
+                    <div class="stat-number" data-target="4600">0</div>
+                    <div class="stat-label">地球年龄</div>
+                    <div class="stat-sublabel">百万年 · 历史</div>
+                </div>
+                <div class="stat-card reveal" style="transition-delay: 0.4s;">
+                    <div class="stat-number" data-target="500">0</div>
+                    <div class="stat-label">每年火山喷发</div>
+                    <div class="stat-sublabel">次 · 平均统计</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="lava-divider"></div>
+
+    <!-- ==========================================
+         TESTIMONIALS SECTION
+         ========================================== -->
+    <section class="section" id="testimonials">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">熔岩之声</span>
+                <h2 class="section-title">来自探索者的心声</h2>
+                <p class="section-desc">
+                    听听那些亲身感受过火山力量的人怎么说
+                </p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal" style="transition-delay: 0.1s;">
+                    <p class="testimonial-text">
+                        站在火山口边缘，感受脚下大地的脉动，那种原始的力量让我真正理解了什么叫渺小。这是一生必须体验的旅程。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">陈</div>
+                        <div>
+                            <div class="testimonial-name">陈明远</div>
+                            <div class="testimonial-role">地质学教授 · 北京大学</div>
+                            <div class="testimonial-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal" style="transition-delay: 0.2s;">
+                    <p class="testimonial-text">
+                        火山研究团队提供的数据和技术支持，帮助我们建立了最先进的地热能源系统。专业程度令人叹服。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">林</div>
+                        <div>
+                            <div class="testimonial-name">林雪薇</div>
+                            <div class="testimonial-role">能源工程师 · 清华大学</div>
+                            <div class="testimonial-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal" style="transition-delay: 0.3s;">
+                    <p class="testimonial-text">
+                        每一次火山喷发都是地球在呼吸。作为摄影师，我用镜头记录这些瞬间，火山之美超越一切想象。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">张</div>
+                        <div>
+                            <div class="testimonial-name">张焱磊</div>
+                            <div class="testimonial-role">国家地理摄影师</div>
+                            <div class="testimonial-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="lava-divider"></div>
+
+    <!-- ==========================================
+         CTA SECTION
+         ========================================== -->
+    <section class="cta-section" id="cta">
+        <div class="cta-box reveal-scale">
+            <h2 class="cta-title">准备好感受地心之力了吗？</h2>
+            <p class="cta-desc">
+                加入我们的火山探索之旅，一起见证地球最壮观的自然奇观，
+                感受亿万年地壳运动所孕育的原始力量。
+            </p>
+            <a href="#" class="cta-btn">
+                <span>立即启程</span>
+                <span class="btn-icon">🌋</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">🌋 火山熔岩</div>
+                <p class="footer-desc">
+                    探索地球深处的力量，从火山地质研究到地热能源开发，
+                    我们致力于揭示大自然最壮丽的奥秘。
+                </p>
+            </div>
+            <div>
+                <h4 class="footer-title">探索</h4>
+                <ul class="footer-links">
+                    <li><a href="#">火山百科</a></li>
+                    <li><a href="#">地质研究</a></li>
+                    <li><a href="#">地热能源</a></li>
+                    <li><a href="#">探索路线</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">关于</h4>
+                <ul class="footer-links">
+                    <li><a href="#">团队介绍</a></li>
+                    <li><a href="#">学术论文</a></li>
+                    <li><a href="#">合作伙伴</a></li>
+                    <li><a href="#">联系我们</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright">© 2024 火山熔岩 · 地心之力 · 版权所有</p>
+            <div class="footer-social">
+                <a href="#" aria-label="微信">💬</a>
+                <a href="#" aria-label="微博">📱</a>
+                <a href="#" aria-label="抖音">🎵</a>
+                <a href="#" aria-label="邮箱">✉️</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop" aria-label="回到顶部">↑</button>
+
+    <!-- ==========================================
+         JAVASCRIPT
+         ========================================== -->
+    <script>
+        (function() {
+            'use strict';
+
+            /* ==========================================
+               LOADER
+               ========================================== */
+            window.addEventListener('load', function() {
+                const loader = document.getElementById('loader');
+                setTimeout(function() {
+                    loader.classList.add('hidden');
+                }, 800);
+            });
+
+            /* ==========================================
+               THEME TOGGLE
+               ========================================== */
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('volcano-theme', newTheme);
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('volcano-theme');
+            if (savedTheme) {
+                html.setAttribute('data-theme', savedTheme);
+            }
+
+            /* ==========================================
+               NAVBAR SCROLL EFFECT
+               ========================================== */
+            const navbar = document.getElementById('navbar');
+            let lastScrollY = 0;
+
+            window.addEventListener('scroll', function() {
+                const scrollY = window.scrollY;
+
+                if (scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+
+                lastScrollY = scrollY;
+            }, { passive: true });
+
+            /* ==========================================
+               SMOOTH SCROLL FOR ANCHOR LINKS
+               ========================================== */
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        const offset = 80;
+                        const targetPosition = target.getBoundingClientRect().top + window.scrollY - offset;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            /* ==========================================
+               INTERSECTION OBSERVER FOR REVEAL
+               ========================================== */
+            const revealElements = document.querySelectorAll(
+                '.reveal, .reveal-left, .reveal-right, .reveal-scale'
+            );
+
+            const revealObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Optionally unobserve after reveal
+                        // revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(function(el) {
+                revealObserver.observe(el);
+            });
+
+            /* ==========================================
+               COUNTER ANIMATION FOR STATS
+               ========================================== */
+            const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+            const counterObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        if (el.dataset.counted) return;
+                        el.dataset.counted = 'true';
+                        const target = parseInt(el.getAttribute('data-target'), 10);
+                        animateCounter(el, 0, target, 2000);
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+
+            statNumbers.forEach(function(el) {
+                counterObserver.observe(el);
+            });
+
+            function animateCounter(el, start, end, duration) {
+                var startTime = null;
+
+                function step(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    var progress = Math.min((timestamp - startTime) / duration, 1);
+                    // Ease out quad
+                    var eased = 1 - (1 - progress) * (1 - progress);
+                    var current = Math.floor(start + (end - start) * eased);
+                    el.textContent = current.toLocaleString();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        el.textContent = end.toLocaleString();
+                    }
+                }
+
+                requestAnimationFrame(step);
+            }
+
+            /* ==========================================
+               EMBER PARTICLES GENERATOR
+               ========================================== */
+            const emberContainer = document.getElementById('emberContainer');
+            const emberColors = [
+                'rgba(255, 69, 0, 0.9)',
+                'rgba(255, 165, 0, 0.8)',
+                'rgba(139, 0, 0, 0.9)',
+                'rgba(255, 107, 53, 0.8)',
+                'rgba(255, 200, 0, 0.7)',
+                'rgba(255, 69, 0, 0.6)',
+                'rgba(255, 140, 0, 0.85)'
+            ];
+
+            function createEmber() {
+                var ember = document.createElement('div');
+                ember.classList.add('ember');
+
+                var size = Math.random() * 5 + 2;
+                var left = Math.random() * 100;
+                var duration = Math.random() * 8 + 6;
+                var delay = Math.random() * 2;
+                var drift = (Math.random() - 0.5) * 200;
+                var color = emberColors[Math.floor(Math.random() * emberColors.length)];
+
+                ember.style.width = size + 'px';
+                ember.style.height = size + 'px';
+                ember.style.left = left + '%';
+                ember.style.backgroundColor = color;
+                ember.style.boxShadow = '0 0 ' + (size * 2) + 'px ' + size + 'px ' + color;
+                ember.style.animationDuration = duration + 's';
+                ember.style.animationDelay = delay + 's';
+                ember.style.setProperty('--drift', drift + 'px');
+
+                emberContainer.appendChild(ember);
+
+                // Remove ember after animation completes
+                setTimeout(function() {
+                    if (ember.parentNode) {
+                        ember.parentNode.removeChild(ember);
+                    }
+                }, (duration + delay) * 1000);
+            }
+
+            // Initial batch of embers
+            for (var i = 0; i < 25; i++) {
+                createEmber();
+            }
+
+            // Continuously generate embers
+            setInterval(function

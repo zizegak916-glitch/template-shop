@@ -1,0 +1,222 @@
+[
+  {
+    "name_cn": "赛博禅",
+    "name_en": "cyber-zen",
+    "desc_en": "Cyberpunk meets Zen · Neon and minimalist aesthetics",
+    "tags_en": [
+      "cyberpunk",
+      "zen",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "赛博朋克",
+    "name_en": "cyberpunk",
+    "desc_en": "Classic cyberpunk · Neon lights · Rainy night · Holographic projection",
+    "tags_en": [
+      "cyberpunk",
+      "futuristic",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "流体渐变",
+    "name_en": "fluid-gradient",
+    "desc_en": "Dynamic color flow · Smooth transitions · Organic shapes",
+    "tags_en": [
+      "gradient",
+      "fluid",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "玻璃态",
+    "name_en": "glassmorphism",
+    "desc_en": "Frosted glass design · Semi-transparent cards · Blurred background · Light refraction",
+    "tags_en": [
+      "glass",
+      "transparency",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "流体渐变",
+    "name_en": "fluid-gradient",
+    "desc_en": "Dynamic color flow · Smooth transitions · Organic shapes",
+    "tags_en": [
+      "gradient",
+      "fluid",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "暗色极简",
+    "name_en": "dark-minimal",
+    "desc_en": "Restrained color palette · Ample white space · Refined typography",
+    "tags_en": [
+      "minimal",
+      "dark",
+      "elegant"
+    ]
+  },
+  {
+    "name_cn": "暗色SaaS",
+    "name_en": "dark-saas",
+    "desc_en": "Data visualization · Feature showcase · Pricing tables",
+    "tags_en": [
+      "saas",
+      "business",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "像素复古",
+    "name_en": "pixel-retro",
+    "desc_en": "8-bit aesthetics · Pixel fonts · Vintage color scheme",
+    "tags_en": [
+      "retro",
+      "pixel",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "蒸汽波",
+    "name_en": "vaporwave",
+    "desc_en": "Gradient grids · Classical sculptures · Glitch effects",
+    "tags_en": [
+      "vaporwave",
+      "retro-futuristic",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "极光幻彩",
+    "name_en": "aurora-spectrum",
+    "desc_en": "Colorful gradients · Flowing light effects · Dreamy atmosphere",
+    "tags_en": [
+      "aurora",
+      "gradient",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "密林",
+    "name_en": "dense-forest",
+    "desc_en": "Dappled light · Moss texture · Forest breath · Rustic shadows",
+    "tags_en": [
+      "nature",
+      "forest",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "暗流",
+    "name_en": "undercurrent",
+    "desc_en": "Fluid gradients · Subtle animations · Deep cards · Mysterious textures",
+    "tags_en": [
+      "fluid",
+      "mysterious",
+      "dark"
+    ]
+  },
+  {
+    "name_cn": "霜晶",
+    "name_en": "frost-crystal",
+    "desc_en": "Ice crystal patterns · Frosted glass · Snowflake particles · Arctic blue tones",
+    "tags_en": [
+      "ice",
+      "crystal",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "植物绿",
+    "name_en": "plant-green",
+    "desc_en": "Plant greenery · Natural elements · Fresh color palette · Organic forms",
+    "tags_en": [
+      "nature",
+      "green",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "大胆渐变",
+    "name_en": "bold-gradient",
+    "desc_en": "Vivid colors · Energetic gradients · Visual impact",
+    "tags_en": [
+      "gradient",
+      "bold",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "新粗野主义",
+    "name_en": "neo-brutalism",
+    "desc_en": "Thick borders · High contrast · Raw typography · Bold color clashes",
+    "tags_en": [
+      "brutalism",
+      "bold",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "编辑风",
+    "name_en": "editorial-style",
+    "desc_en": "Magazine-like layout · Elegant fonts · Image-text mix",
+    "tags_en": [
+      "editorial",
+      "magazine",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "画廊",
+    "name_en": "gallery",
+    "desc_en": "Portfolio grid · Hover details · Frame effects",
+    "tags_en": [
+      "gallery",
+      "portfolio",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "暖色有机",
+    "name_en": "warm-organic",
+    "desc_en": "Natural warm tones · Organic shapes · Comfortable textures",
+    "tags_en": [
+      "warm",
+      "organic",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "竹林",
+    "name_en": "bamboo-forest",
+    "desc_en": "Bamboo decorations · Floating bamboo leaves · Minimalist white space · Fresh green tones",
+    "tags_en": [
+      "bamboo",
+      "minimal",
+      "light"
+    ]
+  },
+  {
+    "name_cn": "翡翠森林",
+    "name_en": "jade-forest",
+    "desc_en": "Jade Green Light · Crystal Vein · Dappled Light and Shadow · Mystical Forest",
+    "tags_en": [
+      "dark",
+      "nature",
+      "fantasy"
+    ]
+  },
+  {
+    "name_cn": "星轨银河",
+    "name_en": "star-trail-galaxy",
+    "desc_en": "Rotating Star Trails · Shooting Stars · Milky Way Light Band · Long Exposure",
+    "tags_en": [
+      "dark",
+      "space",
+      "astrophotography"
+    ]
+  }
+]

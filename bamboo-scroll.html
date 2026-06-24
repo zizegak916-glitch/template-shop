@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>竹简古卷 — 传承千年智慧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           CSS Custom Properties & Theming
+           ========================================== */
+        :root {
+            --parchment: #f5e6c8;
+            --parchment-dark: #e8d4a8;
+            --parchment-light: #faf3e6;
+            --bamboo: #2d5016;
+            --bamboo-light: #3d6b1e;
+            --bamboo-dark: #1e3a0e;
+            --ink: #1a1a1a;
+            --ink-light: #3a3a3a;
+            --gold-seal: #c9a96e;
+            --gold-light: #dbbf85;
+            --gold-dark: #a8893e;
+            --bg-primary: var(--parchment);
+            --bg-secondary: var(--parchment-light);
+            --bg-card: #f0ddc0;
+            --text-primary: var(--ink);
+            --text-secondary: var(--ink-light);
+            --text-accent: var(--bamboo);
+            --text-on-accent: #f5e6c8;
+            --border-color: rgba(45, 80, 22, 0.2);
+            --shadow-color: rgba(26, 26, 26, 0.1);
+            --shadow-heavy: rgba(26, 26, 26, 0.2);
+            --scroll-roller: #8B7355;
+            --scroll-roller-dark: #6B5535;
+            --scroll-edge: #a08060;
+            --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-bounce: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1612;
+            --bg-secondary: #2a2218;
+            --bg-card: #302820;
+            --parchment: #1a1612;
+            --parchment-dark: #12100c;
+            --parchment-light: #2a2218;
+            --text-primary: #e8d4a8;
+            --text-secondary: #c4a878;
+            --text-accent: #7ab848;
+            --text-on-accent: #1a1612;
+            --border-color: rgba(201, 169, 110, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --shadow-heavy: rgba(0, 0, 0, 0.5);
+            --scroll-roller: #5a4a35;
+            --scroll-roller-dark: #3a2a15;
+            --scroll-edge: #6a5540;
+        }
+
+        /* ==========================================
+           Reset & Base Styles
+           ========================================== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            overflow-x: hidden;
+            transition: background-color var(--transition-smooth), color var(--transition-smooth);
+        }
+
+        /* ==========================================
+           Scroll Texture Background Pattern
+           ========================================== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 28px,
+                    rgba(139, 115, 85, 0.03) 28px,
+                    rgba(139, 115, 85, 0.03) 30px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(139, 115, 85, 0.015) 3px,
+                    rgba(139, 115, 85, 0.015) 4px
+                );
+        }
+
+        /* ==========================================
+           Parchment Grain Overlay
+           ========================================== */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* ==========================================
+           Utility Classes
+           ========================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--text-accent);
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.9;
+        }
+
+        /* ==========================================
+           Theme Toggle Button
+           ========================================== */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-seal);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-smooth);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 25px var(--shadow-heavy);
+            border-color: var(--gold-light);
+        }
+
+        .theme-toggle .icon {
+            font-size: 1.4rem;
+            transition: transform 0.5s ease;
+        }
+
+        [data-theme="light"] .theme-toggle .icon::after {
+            content: '☀️';
+        }
+
+        [data-theme="dark"] .theme-toggle .icon::after {
+            content: '🌙';
+        }
+
+        /* ==========================================
+           Navigation
+           ========================================== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: 16px 0;
+            transition: all var(--transition-smooth);
+            backdrop-filter: blur(0px);
+        }
+
+        .nav.scrolled {
+            background: rgba(245, 230, 200, 0.92);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px var(--shadow-color);
+            padding: 10px 0;
+        }
+
+        [data-theme="dark"] .nav.scrolled {
+            background: rgba(26, 22, 18, 0.92);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .nav-logo {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            color: var(--text-accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-logo .seal-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gold-seal);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--ink);
+            transform: rotate(-5deg);
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color var(--transition-smooth);
+            padding-bottom: 4px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-seal);
+            transition: width var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-accent);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+            background: none;
+            border: none;
+        }
+
+        .hamburger span {
+            width: 26px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ==========================================
+           Hero Section with Scroll Unroll
+           ========================================== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 120px 24px 80px;
+        }
+
+        .hero-bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.06;
+            background-image:
+                radial-gradient(circle at 20% 50%, var(--bamboo) 1px, transparent 1px),
+                radial-gradient(circle at 80% 20%, var(--bamboo) 1px, transparent 1px),
+                radial-gradient(circle at 50% 80%, var(--bamboo) 1px, transparent 1px);
+            background-size: 60px 60px, 80px 80px, 40px 40px;
+        }
+
+        /* Floating brush strokes */
+        .brush-stroke {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatBrush 20s ease-in-out infinite;
+        }
+
+        .brush-stroke:nth-child(1) {
+            top: 15%;
+            left: 5%;
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--bamboo), transparent);
+            border-radius: 2px;
+            animation-delay: 0s;
+            opacity: 0.1;
+        }
+
+        .brush-stroke:nth-child(2) {
+            top: 30%;
+            right: 8%;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-seal), transparent);
+            border-radius: 2px;
+            animation-delay: 5s;
+            transform: rotate(-15deg);
+            opacity: 0.12;
+        }
+
+        .brush-stroke:nth-child(3) {
+            bottom: 25%;
+            left: 10%;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--bamboo-light), transparent);
+            border-radius: 2px;
+            animation-delay: 10s;
+            transform: rotate(8deg);
+            opacity: 0.08;
+        }
+
+        @keyframes floatBrush {
+            0%, 100% {
+                transform: translateX(0) rotate(0deg);
+                opacity: 0.05;
+            }
+            25% {
+                opacity: 0.15;
+            }
+            50% {
+                transform: translateX(30px) rotate(3deg);
+                opacity: 0.1;
+            }
+            75% {
+                opacity: 0.15;
+            }
+        }
+
+        .hero-scroll-container {
+            position: relative;
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Scroll Rollers */
+        .scroll-roller-top,
+        .scroll-roller-bottom {
+            width: 110%;
+            height: 32px;
+            background: linear-gradient(180deg, var(--scroll-roller), var(--scroll-roller-dark), var(--scroll-roller));
+            border-radius: 16px;
+            position: relative;
+            z-index: 5;
+            box-shadow:
+                0 4px 8px var(--shadow-color),
+                inset 0 2px 4px rgba(255,255,255,0.2),
+                inset 0 -2px 4px rgba(0,0,0,0.2);
+        }
+
+        .scroll-roller-top::before,
+        .scroll-roller-bottom::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            border-radius: 1px;
+        }
+
+        .scroll-roller-top::after,
+        .scroll-roller-bottom::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.15), transparent);
+            border-radius: 1px;
+        }
+
+        /* Roller end caps */
+        .scroll-roller-top .cap-left,
+        .scroll-roller-top .cap-right,
+        .scroll-roller-bottom .cap-left,
+        .scroll-roller-bottom .cap-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, var(--scroll-roller), var(--scroll-roller-dark));
+            border-radius: 50%;
+            box-shadow: 0 2px 6px var(--shadow-heavy);
+        }
+
+        .scroll-roller-top .cap-left,
+        .scroll-roller-bottom .cap-left {
+            left: -20px;
+        }
+
+        .scroll-roller-top .cap-right,
+        .scroll-roller-bottom .cap-right {
+            right: -20px;
+        }
+
+        .scroll-roller-top .cap-left::after,
+        .scroll-roller-top .cap-right::after,
+        .scroll-roller-bottom .cap-left::after,
+        .scroll-roller-bottom .cap-right::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+            border-radius: 50%;
+        }
+
+        /* Scroll Body */
+        .scroll-body {
+            width: 100%;
+            background: linear-gradient(
+                135deg,
+                var(--parchment) 0%,
+                var(--parchment-dark) 25%,
+                var(--parchment) 50%,
+                var(--parchment-light) 75%,
+                var(--parchment) 100%
+            );
+            border-left: 3px solid var(--scroll-edge);
+            border-right: 3px solid var(--scroll-edge);
+            padding: 60px 50px;
+            position: relative;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: inset 0 0 30px rgba(139, 115, 85, 0.1);
+        }
+
+        .scroll-body.unrolled {
+            max-height: 800px;
+        }
+
+        /* Vertical lines like bamboo slats */
+        .scroll-body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 48px,
+                    rgba(45, 80, 22, 0.03) 48px,
+                    rgba(45, 80, 22, 0.03) 50px
+                );
+        }
+
+        .scroll-body::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(45, 80, 22, 0.08);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.15em;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease 0.5s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .scroll-body.unrolled .hero-title {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-verse {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 1s;
+            letter-spacing: 0.3em;
+        }
+
+        .scroll-body.unrolled .hero-verse {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-divider {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-seal), transparent);
+            margin: 1.5rem auto;
+            opacity: 0;
+            transition: opacity 0.8s ease 1.3s;
+        }
+
+        .scroll-body.unrolled .hero-divider {
+            opacity: 1;
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 1.5s;
+            line-height: 2;
+        }
+
+        .scroll-body.unrolled .hero-desc {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-seal {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: scale(0) rotate(-30deg);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 2s;
+        }
+
+        .scroll-body.unrolled .hero-seal {
+            opacity: 1;
+            transform: scale(1) rotate(-8deg);
+        }
+
+        .hero-seal svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 1.8s;
+        }
+
+        .scroll-body.unrolled .hero-buttons {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================
+           Buttons
+           ========================================== */
+        .btn-brush {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 14px 36px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-brush-primary {
+            background: linear-gradient(135deg, var(--bamboo), var(--bamboo-light));
+            color: var(--text-on-accent);
+            border-radius: 2px;
+            box-shadow:
+                0 4px 15px rgba(45, 80, 22, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .btn-brush-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.15),
+                transparent
+            );
+            transition: left 0.6s ease;
+        }
+
+        .btn-brush-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-brush-primary:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 8px 25px rgba(45, 80, 22, 0.4),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+
+        .btn-brush-secondary {
+            background: transparent;
+            color: var(--text-accent);
+            border: 2px solid var(--bamboo);
+            border-radius: 2px;
+        }
+
+        .btn-brush-secondary:hover {
+            background: var(--bamboo);
+            color: var(--text-on-accent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45, 80, 22, 0.2);
+        }
+
+        /* Brush stroke underline effect */
+        .btn-brush::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: currentColor;
+            opacity: 0;
+            border-radius: 2px;
+            transition: opacity 0.3s ease;
+            transform: scaleX(0);
+        }
+
+        .btn-brush:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        /* ==========================================
+           Features Section - Scroll Cards
+           ========================================== */
+        .features {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 640px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .scroll-card {
+            background: linear-gradient(
+                180deg,
+                var(--scroll-roller) 0%,
+                var(--scroll-roller) 8%,
+                var(--bg-card) 8%,
+                var(--bg-card) 92%,
+                var(--scroll-roller) 92%,
+                var(--scroll-roller) 100%
+            );
+            border-radius: 8px;
+            padding: 40px 24px 40px;
+            position: relative;
+            cursor: default;
+            transition: all var(--transition-smooth);
+            opacity: 0;
+            transform: translateY(40px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        .scroll-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-card::before {
+            content: '';
+            position: absolute;
+            top: 8%;
+            left: 8px;
+            right: 8px;
+            bottom: 8%;
+            border-left: 2px solid rgba(139, 115, 85, 0.3);
+            border-right: 2px solid rgba(139, 115, 85, 0.3);
+            pointer-events: none;
+        }
+
+        .scroll-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 18px,
+                    rgba(45, 80, 22, 0.02) 18px,
+                    rgba(45, 80, 22, 0.02) 20px
+                );
+            pointer-events: none;
+        }
+
+        .scroll-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px var(--shadow-heavy);
+        }
+
+        .scroll-card:nth-child(2) { transition-delay: 0.15s; }
+        .scroll-card:nth-child(3) { transition-delay: 0.3s; }
+        .scroll-card:nth-child(4) { transition-delay: 0.45s; }
+
+        .scroll-card-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.2rem;
+            background: linear-gradient(135deg, var(--bamboo), var(--bamboo-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: var(--text-on-accent);
+            position: relative;
+            z-index: 2;
+            transition: transform var(--transition-bounce);
+        }
+
+        .scroll-card:hover .scroll-card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .scroll-card-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            color: var(--text-accent);
+            text-align: center;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .scroll-card-desc {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ==========================================
+           Brush Stroke Decorative Divider
+           ========================================== */
+        .brush-divider {
+            width: 200px;
+            height: 6px;
+            margin: 0 auto 4rem;
+            position: relative;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                var(--bamboo) 15%,
+                var(--bamboo) 40%,
+                var(--gold-seal) 50%,
+                var(--bamboo) 60%,
+                var(--bamboo) 85%,
+                transparent 100%
+            );
+            border-radius: 3px;
+            opacity: 0.6;
+        }
+
+        .brush-divider::before {
+            content: '◆';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--gold-seal);
+            font-size: 0.8rem;
+            background: var(--bg-primary);
+            padding: 0 8px;
+        }
+
+        /* ==========================================
+           Stats Section - Seal Stamps
+           ========================================== */
+        .stats {
+            padding: 100px 0;
+            background: linear-gradient(
+                180deg,
+                var(--bg-primary) 0%,
+                var(--bg-secondary) 50%,
+                var(--bg-primary) 100%
+            );
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .seal-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.5) rotate(-10deg);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .seal-stat.revealed {
+            opacity: 1;
+            transform: scale(1) rotate(-3deg);
+        }
+
+        .seal-stat:nth-child(2) { transition-delay: 0.15s; }
+        .seal-stat:nth-child(3) { transition-delay: 0.3s; }
+        .seal-stat:nth-child(4) { transition-delay: 0.45s; }
+
+        .seal-stamp {
+            width: 110px;
+            height: 110px;
+            border: 3px solid var(--gold-seal);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 1rem;
+            background: transparent;
+            transition: all var(--transition-smooth);
+            box-shadow:
+                0 0 0 1px var(--gold-seal),
+                inset 0 0 20px rgba(201, 169, 110, 0.05);
+        }
+
+        .seal-stamp::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 1px solid rgba(201, 169, 110, 0.3);
+            border-radius: 12px;
+        }
+
+        .seal-stamp::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border: 1px solid rgba(201, 169, 110, 0.15);
+            border-radius: 4px;
+        }
+
+        .seal-stat:hover .seal-stamp {
+            transform: rotate(5deg);
+            box-shadow:
+                0 0 0 1px var(--gold-light),
+                inset 0 0 30px rgba(201, 169, 110, 0.1),
+                0 8px 30px rgba(201, 169, 110, 0.15);
+            border-color: var(--gold-light);
+        }
+
+        .seal-number {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.2rem;
+            color: var(--gold-seal);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .seal-label {
+            font-size: 0.7rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .stat-title {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* ==========================================
+           Testimonials Section
+           ========================================== */
+        .testimonials {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 640px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 4px;
+            position: relative;
+            transition: all var(--transition-smooth);
+            opacity: 0;
+            transform: translateY(30px);
+            border: 1px solid var(--border-color);
+        }
+
+        .testimonial-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .testimonial-card:nth-child(2) { transition-delay: 0.15s; }
+        .testimonial-card:nth-child(3) { transition-delay: 0.3s; }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            border-color: rgba(201, 169, 110, 0.3);
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 5rem;
+            color: var(--gold-seal);
+            opacity: 0.3;
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            line-height: 1;
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 2;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bamboo), var(--bamboo-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-on-accent);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.3rem;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .testimonial-stars {
+            color: var(--gold-seal);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ==========================================
+           CTA Section
+           ========================================== */
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(
+                135deg,
+                var(--bamboo-dark) 0%,
+                var(--bamboo) 50%,
+                var(--bamboo-light) 100%
+            );
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .cta {
+            background: linear-gradient(
+                135deg,
+                #0e1a08 0%,
+                #1a2e10 50%,
+                #243d15 100%
+            );
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(255,255,255,0.02) 50px,
+                    rgba(255,255,255,0.02) 52px
+                );
+            pointer-events: none;
+        }
+
+        .cta-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            color: var(--parchment);
+            margin-bottom: 1rem;
+        }
+
+        .cta-desc {
+            color: rgba(245, 230, 200, 0.8);
+            font-size: 1.1rem;
+            max-width: 550px;
+            margin: 0 auto 2.5rem;
+            line-height: 2;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta-primary {
+            background: var(--gold-seal);
+            color: var(--ink);
+            padding: 16px 42px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-cta-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn-cta-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(201, 169, 110, 0.4);
+        }
+
+        .btn-cta-secondary {
+            background: transparent;
+            color: var(--parchment);
+            padding: 16px 42px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.05rem;
+            border: 2px solid rgba(245, 230, 200, 0.4);
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all var(--transition-smooth);
+            letter-spacing: 0.1em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-cta-secondary:hover {
+            border-color: var(--parchment);
+            background: rgba(245, 230, 200, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* Floating seal decoration */
+        .cta .floating-seal {
+            position: absolute;
+            opacity: 0.06;
+            pointer-events: none;
+        }
+
+        .cta .floating-seal:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            font-size: 8rem;
+            transform: rotate(-15deg);
+        }
+
+        .cta .floating-seal:nth-child(2) {
+            bottom: 10%;
+            right: 8%;
+            font-size: 6rem;
+            transform: rotate(10deg);
+        }
+
+        /* ==========================================
+           Footer
+           ========================================== */
+        .footer {
+            background: var(--bg-secondary);
+            padding: 60px 0 30px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 640px) {
+            .footer-grid {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+            }
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-logo {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            color: var(--text-accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-logo .seal-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gold-seal);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: var(--ink);
+            transform: rotate(-5deg);
+        }
+
+        .footer-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.9;
+        }
+
+        .footer-col-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .footer-col-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gold-seal);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .footer-links a::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--gold-seal);
+            transition: transform 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-accent);
+            padding-left: 18px;
+        }
+
+        .footer-links a:hover::before {
+            transform: translateX(3px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            text-align: center;
+        }
+
+        @media (min-width: 640px) {
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            border-color: var(--gold-seal);
+            color: var(--gold-seal);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(201, 169, 110, 0.2);
+        }
+
+        /* ==========================================
+           Scroll to Top Button
+           ========================================== */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            background: var(--bamboo);
+            color: var(--text-on-accent);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 998;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45, 80, 22, 0.4);
+        }
+
+        /* ==========================================
+           Reveal Animation Base
+           ========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================
+           Mobile Responsive Adjustments
+           ========================================== */
+        @media (max-width: 639px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--bg-primary);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2.5rem;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+                z-index: 997;
+            }
+
+            .nav-links.open {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            .nav-links a {
+                font-size: 1.3rem;
+            }
+
+            .hamburger {
+                display: flex;
+                z-index: 998;
+            }
+
+            .hero {
+                padding-top: 100px;
+            }
+
+            .scroll-body {
+                padding: 40px 24px;
+            }
+
+            .scroll-roller-top .cap-left,
+            .scroll-roller-top .cap-right,
+            .scroll-roller-bottom .cap-left,
+            .scroll-roller-bottom .cap-right {
+                width: 28px;
+                height: 28px;
+            }
+
+            .scroll-roller-top .cap-left,
+            .scroll-roller-bottom .cap-left {
+                left: -14px;
+            }
+
+            .scroll-roller-top .cap-right,
+            .scroll-roller-bottom .cap-right {
+                right: -14px;
+            }
+
+            .seal-stamp {
+                width: 90px;
+                height: 90px;
+            }
+
+            .seal-number {
+                font-size: 1.8rem;
+            }
+
+            .cta .floating-seal {
+                display: none;
+            }
+        }
+
+        /* ==========================================
+           Loading Animation
+           ========================================== */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--parchment);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-char {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 3rem;
+            color: var(--bamboo);
+            animation: pulseChar 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseChar {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .loader-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            letter-spacing: 0.3em;
+        }
+
+        /* ==========================================
+           Special Effects
+           ========================================== */
+        @keyframes inkDrop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .ink-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--ink);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: inkDrop 1s ease-out forwards;
+        }
+
+        /* Decorative corner ornaments */
+        .corner-ornament {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-color: var(--gold-seal);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .corner-ornament.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 2px solid;
+            border-left: 2px solid;
+        }
+
+        .corner-ornament.top-right {
+            top: 20px;
+            right: 20px;
+            border-top: 2px solid;
+            border-right: 2px solid;
+        }
+
+        .corner-ornament.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-bottom: 2px solid;
+            border-left: 2px solid;
+        }
+
+        .corner-ornament.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 2px solid;
+            border-right: 2px solid;
+        }
+
+        /* ==========================================
+           Hover Decorative Lines
+           ========================================== */
+        .decorative-line {
+            position: relative;
+        }
+
+        .decorative-line::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--bamboo), var(--gold-seal));
+            transition: width 0.4s ease;
+        }
+
+        .decorative-line:hover::after {
+            width: 100%;
+        }
+
+        /* Feature section vertical line */
+        .features-section-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(180deg, var(--gold-seal), transparent);
+            transform: translateX(-50%);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="loader-char">竹</div>
+            <div class="loader-text">载入古卷中...</div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="icon"></span>
+    </button>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop" aria-label="回到顶部">↑</button>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">
+                <span class="seal-icon">竹</span>
+                竹简古卷
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features" class="decorative-line">典籍</a></li>
+                <li><a href="#stats" class="decorative-line">成就</a></li>
+                <li><a href="#testimonials" class="decorative-line">品鉴</a></li>
+                <li><a href="#cta" class="decorative-line">启程</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==========================================
+         Hero Section
+         ========================================== -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-pattern"></div>
+        <div class="brush-stroke"></div>
+        <div class="brush-stroke"></div>
+        <div class="brush-stroke"></div>
+
+        <div class="hero-scroll-container">
+            <!-- Top Roller -->
+            <div class="scroll-roller-top">
+                <div class="cap-left"></div>
+                <div class="cap-right"></div>
+            </div>
+
+            <!-- Scroll Body -->
+            <div class="scroll-body" id="scrollBody">
+                <div class="hero-content">
+                    <h1 class="hero-title">竹简古卷</h1>
+                    <p class="hero-verse">承千年文脉 · 载万古智慧</p>
+                    <div class="hero-divider"></div>
+                    <p class="hero-desc">
+                        穿越千年时光，探寻华夏文明的根源。<br>
+                        一卷竹简，承载着先贤的智慧与哲思，<br>
+                        让古老的光芒照亮现代的前行之路。
+                    </p>
+                    <div class="hero-seal">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="5" y="5" width="90" height="90" rx="4" fill="none" stroke="#c9a96e" stroke-width="3"/>
+                            <rect x="10" y="10" width="80" height="80" rx="2" fill="none" stroke="#c9a96e" stroke-width="1" opacity="0.5"/>
+                            <text x="50" y="42" text-anchor="middle" font-family="Ma Shan Zheng, cursive" font-size="24" fill="#c9a96e">传承</text>
+                            <text x="50" y="72" text-anchor="middle" font-family="Ma Shan Zheng, cursive" font-size="24" fill="#c9a96e">千年</text>
+                        </svg>
+                    </div>
+                    <div class="hero-buttons">
+                        <a href="#features" class="btn-brush btn-brush-primary">探索古卷</a>
+                        <a href="#cta" class="btn-brush btn-brush-secondary">了解更多</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Roller -->
+            <div class="scroll-roller-bottom">
+                <div class="cap-left"></div>
+                <div class="cap-right"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         Features Section
+         ========================================== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="features-section-line"></div>
+            <h2 class="section-title reveal">四库典藏</h2>
+            <p class="section-subtitle reveal">
+                汇集经史子集四大部类，精选千年经典篇章，<br>
+                为您呈现中华文化之精粹
+            </p>
+            <div class="brush-divider reveal"></div>
+
+            <div class="features-grid">
+                <!-- Card 1 -->
+                <div class="scroll-card">
+                    <div class="scroll-card-icon">📜</div>
+                    <h3 class="scroll-card-title">经部典籍</h3>
+                    <p class="scroll-card-desc">
+                        收录《诗经》《尚书》《礼记》《周易》《春秋》等儒家经典，承载圣贤之道，教化万民之理。
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="scroll-card">
+                    <div class="scroll-card-icon">📖</div>
+                    <h3 class="scroll-card-title">史部纵览</h3>
+                    <p class="scroll-card-desc">
+                        涵盖《史记》《资治通鉴》等鸿篇巨制，以史为鉴，知兴替、明得失，洞见千年兴衰。
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="scroll-card">
+                    <div class="scroll-card-icon">🎋</div>
+                    <h3 class="scroll-card-title">子部百家</h3>
+                    <p class="scroll-card-desc">
+                        诸子百家思想精粹，老庄之道、孔孟之仁、墨翟之兼爱，百花齐放，智慧交融。
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="scroll-card">
+                    <div class="scroll-card-icon">🖌️</div>
+                    <h3 class="scroll-card-title">集部文萃</h3>
+                    <p class="scroll-card-desc">
+                        唐诗宋词元曲，文章锦绣华章。李白之豪放、杜甫之沉郁、苏轼之豁达，文采千古流芳。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         Stats Section
+         ========================================== -->
+    <section class="stats" id="stats">
+        <div class="container">
+            <h2 class="section-title reveal">传承之迹</h2>
+            <p class="section-subtitle reveal">
+                数字见证我们对传统文化的守护与传承
+            </p>
+            <div class="brush-divider reveal"></div>
+
+            <div class="stats-grid">
+                <!-- Stat 1 -->
+                <div class="seal-stat">
+                    <div class="seal-stamp">
+                        <span class="seal-number">壹万</span>
+                        <span class="seal-label">卷</span>
+                    </div>
+                    <div class="stat-title">典籍收录</div>
+                    <div class="stat-desc">万余卷古籍珍本</div>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="seal-stat">
+                    <div class="seal-stamp">
+                        <span class="seal-number">叁佰</span>
+                        <span class="seal-label">位</span>
+                    </div>
+                    <div class="stat-title">学者合作</div>
+                    <div class="stat-desc">权威国学专家团队</div>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="seal-stat">
+                    <div class="seal-stamp">
+                        <span class="seal-number">伍拾</span>
+                        <span class="seal-label">万</span>
+                    </div>
+                    <div class="stat-title">用户信赖</div>
+                    <div class="stat-desc">热爱传统文化的读者</div>
+                </div>
+
+                <!-- Stat 4 -->
+                <div class="seal-stat">
+                    <div class="seal-stamp">
+                        <span class="seal-number">贰拾</span>
+                        <span class="seal-label">载</span>
+                    </div>
+                    <div class="stat-title">深耕历程</div>
+                    <div class="stat-desc">二十年文化传承路</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         Testimonials Section
+         ========================================== -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title reveal">贤者品鉴</h2>
+            <p class="section-subtitle reveal">
+                倾听国学大家与读者的真诚评价
+            </p>
+            <div class="brush-divider reveal"></div>
+
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <p class="testimonial-text">
+                        "竹简古卷以现代科技重现古典之美，让年轻一代能够轻松接触并理解中华文化的深邃内涵。此乃功德无量之举。"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">李</div>
+                        <div>
+                            <div class="testimonial-name">李明远教授</div>
+                            <div class="testimonial-role">北京大学国学院</div>
+                            <div class="testimonial-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <p class="testimonial-text">
+                        "经年累月整理古籍，竹简古卷团队的严谨与热忱令人敬佩。每一卷典籍的数字化都凝聚着对文化的敬畏之心。"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">王</div>
+                        <div>
+                            <div class="testimonial-name">王静怡研究员</div>
+                            <div class="testimonial-role">国家图书馆古籍部</div>
+                            <div class="testimonial-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <p class="testimonial-text">
+                        "作为一名国学爱好者，竹简古卷让我随时随地可以品读经典。界面典雅，注释精当，实为学习之良伴。"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">陈</div>
+                        <div>
+                            <div class="testimonial-name">陈文彬</div>
+                            <div class="testimonial-role">国学爱好者 · 读者</div>
+                            <div class="testimonial-stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         CTA Section
+         ========================================== -->
+    <section class="cta" id="cta">
+        <div class="floating-seal">竹</div>
+        <div class="floating-seal">卷</div>
+        <div class="corner-ornament top-left"></div>
+        <div class="corner-ornament top-right"></div>
+        <div class="corner-ornament bottom-left"></div>
+        <div class="corner-ornament bottom-right"></div>
+
+        <div class="container">
+            <div class="cta-content reveal">
+                <h2 class="cta-title">开卷有益 · 启智润心</h2>
+                <p class="cta-desc">
+                    加入竹简古卷，与五十万国学爱好者一起，<br>
+                    品读千年经典，传承华夏文脉。
+                </p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn-cta-primary">即刻开启古卷之旅</a>
+                    <a href="#" class="btn-cta-secondary">预约典籍赏析</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         Footer
+         ========================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="seal-icon">竹</span>
+                        竹简古卷
+                    </div>
+                    <p class="footer-desc">
+                        以数字化手段传承中华古籍，让千年智慧焕发新生。致力于为每一位热爱传统文化的读者提供最优质的古籍阅读体验。
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="footer-col-title">典籍分类</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">经部经典</a></li>
+                        <li><a href="#">史部典籍</a></li>
+                        <li><a href="#">子部百家</a></li>
+                        <li><a href="#">集部文萃</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-col-title">关于</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">学者团队</a></li>
+                        <li><a href="#">合作伙伴</a></li>
+                        <li><a href="#">文化使命</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-col-title">联系</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">用户反馈</a></li>
+                        <li><a href="#">商务合作</a></li>
+                        <li><a href="#">加入团队</a></li>
+                        <li><a href="#">帮助中心</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">
+                    © 2024 竹简古卷 — 传承千年智慧 · 保留所有权利
+                </p>
+                <div class="footer-socials">
+                    <a href="#" class="social-link" aria-label="微博">微</a>
+                    <a href="#" class="social-link" aria-label="微信">信</a>
+                    <a href="#" class="social-link" aria-label="知乎">知</a>
+                    <a href="#" class="social-link" aria-label="豆瓣">豆</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         JavaScript
+         ========================================== -->
+    <script>
+        (function () {
+            'use strict';
+
+            /* ==========================================
+               Page Loader
+               ========================================== */
+            const pageLoader = document.getElementById('pageLoader');
+
+            window.addEventListener('load', function () {
+                setTimeout(function () {
+                    pageLoader.classList.add('hidden');
+                    // Trigger scroll unroll after loader hides
+                    setTimeout(function () {
+                        unrollScroll();
+                    }, 300);
+                }, 800);
+            });
+
+            /* ==========================================
+               Theme Toggle
+               ========================================== */
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+
+            themeToggle.addEventListener('click', function () {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? '
