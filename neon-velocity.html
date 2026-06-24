@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霓虹极速 | Neon Velocity Racing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========== CSS VARIABLES ========== */
+        :root {
+            --neon-red: #ff0040;
+            --neon-blue: #00d4ff;
+            --neon-purple: #8b00ff;
+            --speed-white: #ffffff;
+            --dark-bg: #0a0a0f;
+            --dark-surface: #12121a;
+            --dark-card: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --glow-red: 0 0 20px rgba(255, 0, 64, 0.5), 0 0 40px rgba(255, 0, 64, 0.3);
+            --glow-blue: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.3);
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="light"] {
+            --dark-bg: #f0f0f5;
+            --dark-surface: #ffffff;
+            --dark-card: #e8e8f0;
+            --text-primary: #1a1a2e;
+            --text-secondary: #555566;
+        }
+
+        /* ========== RESET & BASE ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-red), var(--neon-blue));
+            border-radius: 4px;
+        }
+
+        /* ========== SPEED LINES BACKGROUND ========== */
+        .speed-lines-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .speed-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+            opacity: 0.3;
+            animation: speedLineMove linear infinite;
+        }
+
+        .speed-line:nth-child(1) {
+            top: 15%;
+            width: 300px;
+            animation-duration: 2s;
+            animation-delay: 0s;
+        }
+
+        .speed-line:nth-child(2) {
+            top: 35%;
+            width: 200px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            animation-duration: 1.5s;
+            animation-delay: 0.5s;
+        }
+
+        .speed-line:nth-child(3) {
+            top: 55%;
+            width: 400px;
+            animation-duration: 2.5s;
+            animation-delay: 1s;
+        }
+
+        .speed-line:nth-child(4) {
+            top: 75%;
+            width: 250px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            animation-duration: 1.8s;
+            animation-delay: 0.3s;
+        }
+
+        .speed-line:nth-child(5) {
+            top: 90%;
+            width: 350px;
+            animation-duration: 2.2s;
+            animation-delay: 0.7s;
+        }
+
+        .speed-line:nth-child(6) {
+            top: 25%;
+            width: 180px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+            animation-duration: 1.7s;
+            animation-delay: 1.2s;
+        }
+
+        .speed-line:nth-child(7) {
+            top: 45%;
+            width: 280px;
+            background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+            animation-duration: 2.8s;
+            animation-delay: 0.2s;
+        }
+
+        .speed-line:nth-child(8) {
+            top: 65%;
+            width: 220px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            animation-duration: 1.9s;
+            animation-delay: 0.9s;
+        }
+
+        @keyframes speedLineMove {
+            0% {
+                left: -400px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                left: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* ========== DIAGONAL SPEED STREAKS ========== */
+        .speed-streak {
+            position: fixed;
+            width: 3px;
+            background: linear-gradient(180deg, transparent, var(--neon-red), transparent);
+            opacity: 0.15;
+            animation: streakFall linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .speed-streak:nth-child(1) {
+            left: 10%;
+            height: 200px;
+            animation-duration: 3s;
+        }
+
+        .speed-streak:nth-child(2) {
+            left: 30%;
+            height: 150px;
+            background: linear-gradient(180deg, transparent, var(--neon-blue), transparent);
+            animation-duration: 2.5s;
+            animation-delay: 1s;
+        }
+
+        .speed-streak:nth-child(3) {
+            left: 50%;
+            height: 250px;
+            animation-duration: 4s;
+            animation-delay: 0.5s;
+        }
+
+        .speed-streak:nth-child(4) {
+            left: 70%;
+            height: 180px;
+            background: linear-gradient(180deg, transparent, var(--neon-blue), transparent);
+            animation-duration: 3.5s;
+            animation-delay: 2s;
+        }
+
+        .speed-streak:nth-child(5) {
+            left: 90%;
+            height: 220px;
+            animation-duration: 2.8s;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes streakFall {
+            0% {
+                top: -300px;
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.2;
+            }
+            80% {
+                opacity: 0.2;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 0, 64, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition-speed);
+        }
+
+        [data-theme="light"] .navbar {
+            background: rgba(240, 240, 245, 0.9);
+            border-bottom-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color var(--transition-speed), text-shadow var(--transition-speed);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
+            transition: width var(--transition-speed);
+        }
+
+        .nav-links a:hover {
+            color: var(--speed-white);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all var(--transition-speed);
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .theme-toggle:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: var(--glow-blue);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 28px;
+            height: 2px;
+            background: var(--neon-red);
+            transition: all 0.3s;
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(255, 0, 64, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(139, 0, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            animation: heroFadeIn 1.5s ease-out;
+        }
+
+        @keyframes heroFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--neon-blue);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--neon-blue);
+            margin-bottom: 1.5rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(0, 212, 255, 0.6), 0 0 50px rgba(0, 212, 255, 0.2);
+            }
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--speed-white) 0%, var(--neon-red) 40%, var(--neon-blue) 70%, var(--speed-white) 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 64, 0.3)) drop-shadow(0 0 60px rgba(0, 212, 255, 0.2));
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--neon-red), #ff4080);
+            color: var(--speed-white);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Noto Sans SC', sans-serif;
+            transition: all var(--transition-speed);
+            box-shadow: 0 0 20px rgba(255, 0, 64, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 0, 64, 0.6), 0 10px 30px rgba(255, 0, 64, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2.5rem;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Noto Sans SC', sans-serif;
+            transition: all var(--transition-speed);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            transform: translateY(-3px);
+            box-shadow: var(--glow-blue);
+        }
+
+        /* Neon glow ring behind hero */
+        .hero-glow-ring {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 0, 64, 0.15);
+            animation: rotateRing 20s linear infinite;
+            z-index: -1;
+        }
+
+        .hero-glow-ring::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        @keyframes rotateRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-glow-ring-2 {
+            position: absolute;
+            width: 650px;
+            height: 650px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 212, 255, 0.08);
+            animation: rotateRing 30s linear infinite reverse;
+            z-index: -1;
+        }
+
+        /* ========== SECTION STYLES ========== */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--speed-white), var(--neon-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        /* ========== RACING CARDS ========== */
+        .racing-cards-section {
+            background: linear-gradient(180deg, transparent, rgba(255, 0, 64, 0.02), transparent);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .racing-card {
+            background: var(--dark-card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .racing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .racing-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .racing-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 0, 64, 0.05), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .racing-card:hover::after {
+            opacity: 1;
+        }
+
+        .racing-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 0, 64, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 0, 64, 0.1);
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon-red {
+            background: linear-gradient(135deg, rgba(255, 0, 64, 0.2), rgba(255, 0, 64, 0.05));
+            border: 1px solid rgba(255, 0, 64, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 64, 0.15);
+        }
+
+        .card-icon-blue {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+        }
+
+        .card-icon-purple {
+            background: linear-gradient(135deg, rgba(139, 0, 255, 0.2), rgba(139, 0, 255, 0.05));
+            border: 1px solid rgba(139, 0, 255, 0.3);
+            box-shadow: 0 0 20px rgba(139, 0, 255, 0.15);
+        }
+
+        .racing-card h3 {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .racing-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-stat {
+            text-align: center;
+        }
+
+        .card-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--neon-red);
+        }
+
+        .card-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* ========== SPEED STATS ========== */
+        .stats-section {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.02), transparent, rgba(255, 0, 64, 0.02));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: var(--dark-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 0, 64, 0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.6s;
+        }
+
+        .stat-card:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.2);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-suffix {
+            font-size: 0.5em;
+            opacity: 0.8;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-bar {
+            width: 60%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+            margin: 1rem auto 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
+            border-radius: 2px;
+            width: 0;
+            transition: width 2s ease-out;
+        }
+
+        .stat-bar-fill.animated {
+            width: var(--fill-width);
+        }
+
+        /* ========== FEATURES SECTION ========== */
+        .features-section {
+            position: relative;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1.2rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 0, 64, 0.03);
+            border-color: rgba(255, 0, 64, 0.15);
+        }
+
+        .feature-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, rgba(255, 0, 64, 0.15), rgba(0, 212, 255, 0.15));
+        }
+
+        .feature-content h4 {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ========== LEADERBOARD ========== */
+        .leaderboard-section {
+            background: linear-gradient(180deg, transparent, rgba(255, 0, 64, 0.02));
+        }
+
+        .leaderboard {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--dark-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 150px 150px 120px;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 0, 64, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 150px 150px 120px;
+            padding: 1.2rem 1.5rem;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s;
+        }
+
+        .leaderboard-row:hover {
+            background: rgba(255, 0, 64, 0.05);
+        }
+
+        .leaderboard-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .racer-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .racer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-red), var(--neon-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.9rem;
+        }
+
+        .racer-name {
+            font-weight: 700;
+        }
+
+        .racer-team {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-cell {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .speed-highlight {
+            color: var(--neon-red);
+            font-weight: 700;
+        }
+
+        /* ========== CTA SECTION ========== */
+        .cta-section {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at center, rgba(255, 0, 64, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 50%, rgba(0, 212, 255, 0.08) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .cta-box {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 4rem 3rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 0, 64, 0.2);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 0, 64, 0.1), transparent, rgba(0, 212, 255, 0.1), transparent);
+            animation: rotateCTA 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateCTA {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cta-title {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: var(--speed-white);
+        }
+
+        .cta-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-cta {
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, var(--neon-red), #ff6090, var(--neon-blue));
+            background-size: 200% 200%;
+            animation: ctaGradient 3s ease-in-out infinite;
+            color: var(--speed-white);
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            letter-spacing: 2px;
+            transition: all var(--transition-speed);
+            box-shadow: 0 0 30px rgba(255, 0, 64, 0.4), 0 0 60px rgba(0, 212, 255, 0.2);
+            display: inline-block;
+        }
+
+        @keyframes ctaGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .btn-cta:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 0 40px rgba(255, 0, 64, 0.6), 0 0 80px rgba(0, 212, 255, 0.3), 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            position: relative;
+            z-index: 1;
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(10, 10, 15, 0.5);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-brand h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s, padding-left 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-red);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .social-link:hover {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+            box-shadow: 0 0 15px rgba(255, 0, 64, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========== PARTICLES ========== */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(80vh) translateX(20px) scale(1);
+            }
+            80% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(-20px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ========== MOBILE NAV OVERLAY ========== */
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.98);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .mobile-nav-overlay.active {
+            display: flex;
+        }
+
+        .mobile-nav-overlay a {
+            color: var(--speed-white);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            transition: color 0.3s;
+        }
+
+        .mobile-nav-overlay a:hover {
+            color: var(--neon-red);
+        }
+
+        .mobile-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: var(--neon-red);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero-title {
+                font-size: clamp(2.5rem, 10vw, 4rem);
+            }
+
+            .leaderboard-header,
+            .leaderboard-row {
+                grid-template-columns: 40px 1fr 80px;
+            }
+
+            .leaderboard-header > *:nth-child(4),
+            .leaderboard-header > *:nth-child(5),
+            .leaderboard-row > *:nth-child(4),
+            .leaderboard-row > *:nth-child(5) {
+                display: none;
+            }
+
+            .cta-box {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-glow-ring,
+            .hero-glow-ring-2 {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .leaderboard-header,
+            .leaderboard-row {
+                grid-template-columns: 30px 1fr 60px;
+                font-size: 0.8rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        /* ========== NEON BORDER ANIMATION ========== */
+        .neon-border {
+            position: relative;
+        }
+
+        .neon-border::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-red), var(--neon-blue), var(--neon-red), var(--neon-blue));
+            background-size: 400%;
+            border-radius: inherit;
+            z-index: -1;
+            animation: neonBorderMove 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .neon-border:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes neonBorderMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 400% 50%; }
+        }
+
+        /* ========== SPEED INDICATOR ========== */
+        .speed-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--dark-card);
+            border: 2px solid var(--neon-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--neon-red);
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(255, 0, 64, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .speed-indicator:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 0, 64, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Speed Lines Background -->
+    <div class="speed-lines-container">
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+    </div>
+
+    <!-- Speed Streaks -->
+    <div class="speed-streak" style="left:8%"></div>
+    <div class="speed-streak" style="left:25%"></div>
+    <div class="speed-streak" style="left:45%"></div>
+    <div class="speed-streak" style="left:65%"></div>
+    <div class="speed-streak" style="left:85%"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="nav-logo">NVR</a>
+        <ul class="nav-links">
+            <li><a href="#racing">赛车</a></li>
+            <li><a href="#stats">数据</a></li>
+            <li><a href="#features">特性</a></li>
+            <li><a href="#leaderboard">排行榜</a></li>
+            <li><a href="#join">加入</a></li>
+            <li><button class="theme-toggle" id="themeToggle">🌙 暗色</button></li>
+        </ul>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Mobile Nav Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNav">
+        <button class="mobile-close" id="mobileClose">✕</button>
+        <a href="#racing" onclick="closeMobileNav()">赛车</a>
+        <a href="#stats" onclick="closeMobileNav()">数据</a>
+        <a href="#features" onclick="closeMobileNav()">特性</a>
+        <a href="#leaderboard" onclick="closeMobileNav()">排行榜</a>
+        <a href="#join" onclick="closeMobileNav()">加入</a>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙 切换主题</button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-glow-ring"></div>
+        <div class="hero-glow-ring-2"></div>
+        <div class="hero-content">
+            <div class="hero-badge">⚡ 2024 赛季全新启航</div>
+            <h1 class="hero-title">霓虹极速</h1>
+            <p class="hero-subtitle">突破极限速度，感受光与影的碰撞。在霓虹灯下的赛道上，释放你内心的野兽，成为传奇赛车手。</p>
+            <div class="hero-buttons">
+                <a href="#join" class="btn-primary">🏁 立即参赛</a>
+                <a href="#racing" class="btn-secondary">🎮 了解更多</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Racing Cards Section -->
+    <section class="section racing-cards-section" id="racing">
+        <div class="section-header fade-in-up">
+            <span class="section-label">极速赛车</span>
+            <h2 class="section-title">选择你的战车</h2>
+            <p class="section-desc">每一辆车都经过精心调校，在极限速度与精准操控之间找到完美平衡</p>
+        </div>
+        <div class="cards-grid">
+            <div class="racing-card neon-border fade-in-up">
+                <div class="card-icon card-icon-red">🏎️</div>
+                <h3>红色闪电 RS-7</h3>
+                <p>搭载双涡轮增压V8引擎，拥有惊人的加速性能。专为直线冲刺而生，0-100km/h仅需2.3秒。</p>
+                <div class="card-stats">
+                    <div class="card-stat">
+                        <div class="card-stat-value">380</div>
+                        <div class="card-stat-label">km/h 极速</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="card-stat-value">2.3s</div>
+                        <div class="card-stat-label">百公里加速</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="card-stat-value">1200</div>
+                        <div class="card-stat-label">马力 HP</div>
+                    </div>
+                </div>
+            </div>
+            <div class="racing-card neon-border fade-in-up">
+                <div class="card-icon card-icon-blue">⚡</div>
+                <h3>蓝色幽灵 EV-X</h3>
+                <p>全电动超跑新纪元，四电机独立驱动带来无与伦比的弯道表现。安静中蕴含毁灭性力量。</p>
+                <div class="card-stats">
+                    <div class="card-stat">
+                        <div class="card-stat-value">350</div>
+                        <div class="card-stat-label">km/h 极速</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="card-stat-value">1.8s</div>
+                        <div class="card-stat-label">百公里加速</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="card-stat-value">1500</div>
+                        <div class="card-stat-label">马力 HP</div>
+                    </div>
+                </div>
+            </div>
+            <div class="racing-card neon-border fade-in-up">
+                <div class="card-icon card-icon-purple">🔥</div>
+                <h3>暗夜骑士 GT-9</h3>
+                <p>混合动力旗舰赛车，融合燃油与电能的极致技术。空气动力学设计让它如幽灵般穿梭赛道。</p>
+                <div class="card-stats">
+                    <div class="card-stat">
+                        <div class="card-stat-value">365</div>
+                        <div class="card-stat-label">km/h 极速</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="card-stat-value">2.0s</div>
+                        <div class="card-stat-label">百公里加速</div>
+                    </div>
+                    <div class="card-stat">
+                        <div class="card-stat-value">1350</div>
+                        <div class="card-stat-label">马力 HP</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Speed Stats Section -->
+    <section class="section stats-section" id="stats">
+        <div class="section-header fade-in-up">
+            <span class="section-label">速度数据</span>
+            <h2 class="section-title">赛道传奇</h2>
+            <p class="section-desc">用数字记录每一个令人窒息的瞬间，用数据见证速度的极限</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card fade-in-up">
+                <div class="stat-number" data-target="386">0<span class="stat-suffix">km/h</span></div>
+                <div class="stat-label">最高时速记录</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="--fill-width: 95%"></div>
+                </div>
+            </div>
+            <div class="stat-card fade-in-up">
+                <div class="stat-number" data-target="12847">0</div>
+                <div class="stat-label">全球参赛选手</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="--fill-width: 78%"></div>
+                </div>
+            </div>
+            <div class="stat-card fade-in-up">
+                <div class="stat-number" data-target="356">0</div>
+                <div class="stat-label">赛道数量</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="--fill-width: 65%"></div>
+                </div>
+            </div>
+            <div class="stat-card fade-in-up">
+                <div class="stat-number" data-target="99">0<span class="stat-suffix">%</span></div>
+                <div class="stat-label">选手满意度</div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="--fill-width: 99%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features-section" id="features">
+        <div class="section-header fade-in-up">
+            <span class="section-label">核心特性</span>
+            <h2 class="section-title">极致体验</h2>
+            <p class="section-desc">沉浸式赛车体验，让你感受前所未有的速度与激情</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🌐</div>
+                <div class="feature-content">
+                    <h4>全球实时对战</h4>
+                    <p>与来自世界各地的赛车手同场竞技，毫秒级网络延迟确保公平竞争。</p>
+                </div>
+            </div>
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🎛️</div>
+                <div class="feature-content">
+                    <h4>深度车辆定制</h4>
+                    <p>超过200种改装零件，从引擎调校到空气动力学，打造独一无二的战车。</p>
+                </div>
+            </div>
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🏟️</div>
+                <div class="feature-content">
+                    <h4>霓虹赛道系统</h4>
+                    <p>动态赛道环境，每条赛道都拥有独特的霓虹灯效和天气变化系统。</p>
+                </div>
+            </div>
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-content">
+                    <h4>赛季竞技系统</h4>
+                    <p>每赛季更新赛事和排名，从青铜到传奇，证明你的赛车实力。</p>
+                </div>
+            </div>
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🎮</div>
+                <div class="feature-content">
+                    <h4>多平台支持</h4>
+                    <p>PC、主机、移动端全面支持，随时随地享受极速赛车的快感。</p>
+                </div>
+            </div>
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-content">
+                    <h4>AI 训练系统</h4>
+                    <p>智能AI对手模拟真实驾驶行为，助你不断提升赛车技术。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="section leaderboard-section" id="leaderboard">
+        <div class="section-header fade-in-up">
+            <span class="section-label">速度之巅</span>
+            <h2 class="section-title">赛季排行榜</h2>
+            <p class="section-desc">本周最速赛车手排名，追逐极致的速度荣耀</p>
+        </div>
+        <div class="leaderboard fade-in-up">
+            <div class="leaderboard-header">
+                <span>排名</span>
+                <span>赛车手</span>
+                <span>最快圈速</span>
+                <span>总积分</span>
+                <span>胜率</span>
+            </div>
+            <div class="leaderboard-row">
+                <span class="rank rank-1">🥇</span>
+                <div class="racer-info">
+                    <div class="racer-avatar">陈</div>
+                    <div>
+                        <div class="racer-name">陈飞驰</div>
+                        <div class="racer-team">红色闪电车队</div>
+                    </div>
+                </div>
+                <span class="leaderboard-cell speed-highlight">1:23.456</span>
+                <span class="leaderboard-cell">2,847</span>
+                <span class="leaderboard-cell">89.3%</span>
+            </div>
+            <div class="leaderboard-row">
+                <span class="rank rank-2">🥈</span>
+                <div class="racer-info">
+                    <div class="racer-avatar">李</div>
+                    <div>
+                        <div class="racer-name">李雷速</div>
+                        <div class="racer-team">蓝色幽灵车队</div>
+                    </div>
+                </div>
+                <span class="leaderboard-cell speed-highlight">1:24.102</span>
+                <span class="leaderboard-cell">2,631</span>
+                <span class="leaderboard-cell">85.7%</span>
+            </div>
+            <div class="leaderboard-row">
+                <span class="rank rank-3">🥉</span>
+                <div class="racer-info">
+                    <div class="racer-avatar">王</div>
+                    <div>
+                        <div class="racer-name">王极速</div>
+                        <div class="racer-team">暗夜骑士车队</div>
+                    </div>
+                </div>
+                <span class="leaderboard-cell speed-highlight">1:24.891</span>
+                <span class="leaderboard-cell">2,518</span>
+                <span class="leaderboard-cell">82.1%</span>
+            </div>
+            <div class="leaderboard-row">
+                <span class="rank">4</span>
+                <div class="racer-info">
+                    <div class="racer-avatar">赵</div>
+                    <div>
+                        <div class="racer-name">赵光速</div>
+                        <div class="racer-team">霓虹风暴车队</div>
+                    </div>
+                </div>
+                <span class="leaderboard-cell">1:25.337</span>
+                <span class="leaderboard-cell">2,344</span>
+                <span class="leaderboard-cell">78.9%</span>
+            </div>
+            <div class="leaderboard-row">
+                <span class="rank">5</span>
+                <div class="racer-info">
+                    <div class="racer-avatar">张</div>
+                    <div>
+                        <div class="racer-name">张超跑</div>
+                        <div class="racer-team">速度之王车队</div>
+                    </div>
+                </div>
+                <span class="leaderboard-cell">1:25.892</span>
+                <span class="leaderboard-cell">2,199</span>
+                <span class="leaderboard-cell">75.4%</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="join">
+        <div class="cta-box fade-in-up">
+            <h2 class="cta-title">准备好挑战极限了吗？</h2>
+            <p class="cta-desc">加入霓虹极速，与全球赛车手一决高下。免费注册，即刻开启你的极速传奇之旅。</p>
+            <a href="#" class="btn-cta">⚡ 立即加入</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>NEON VELOCITY</h3>
+                <p>霓虹极速 —— 重新定义赛车游戏体验。在霓虹灯光的照耀下，突破速度的极限，书写属于你的传奇。</p>
+            </div>
+            <div class="footer-links">
+                <h4>游戏内容</h4>
+                <ul>
+                    <li><a href="#">赛车图鉴</a></li>
+                    <li><a href="#">赛道地图</a></li>
+                    <li><a href="#">赛季赛事</a></li>
+                    <li><a href="#">改装指南</a></li>
+                    <li><a href="#">更新日志</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>社区支持</h4>
+                <ul>
+                    <li><a href="#">官方论坛</a></li>
+                    <li><a href="#">新手教程</a></li>
+                    <li><a href="#">常见问题</a></li>
+                    <li><a href="#">客服中心</a></li>
+                    <li><a href="#">反馈建议</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>关于我们</h4>
+                <ul>
+                    <li><a href="#">公司介绍</a></li>
+                    <li><a href="#">加入团队</a></li>
+                    <li><a href="#">合作伙伴</a></li>
+                    <li><a href="#">媒体中心</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 霓虹极速 Neon Velocity Racing. 保留所有权利。</p>
+            <div class="footer-social">
+                <a href="#" class="social-link" title="微博">微</a>
+                <a href="#" class="social-link" title="B站">B</a>
+                <a href="#" class="social-link" title="抖音">抖</a>
+                <a href="#" class="social-link" title="微信">信</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Speed Indicator -->
+    <div class="speed-indicator" id="speedIndicator" title="回到顶部">
+        <span id="scrollPercent">0%</span>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        /* ========== THEME TOGGLE ========== */
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            
+            const toggleBtn = document.getElementById('themeToggle');
+            if (newTheme === 'light') {
+                toggleBtn.textContent = '☀️ 亮色';
+            } else {
+                toggleBtn.textContent = '🌙 暗色';
+            }
+            
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                const toggleBtn = document.getElementById('themeToggle');
+                if (savedTheme === 'light') {
+                    toggleBtn.textContent = '☀️ 亮色';
+                }
+            }
+        })();
+
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        /* ========== MOBILE NAV ========== */
+        const hamburger = document.getElementById('hamburger');
+        const mobileNav = document.getElementById('mobileNav');
+        const mobileClose = document.getElementById('mobileClose');
+
+        hamburger.addEventListener('click', function() {
+            mobileNav.classList.add('active');
+        });
+
+        mobileClose.addEventListener('click', function() {
+            mobileNav.classList.remove('active');
+        });
+
+        function closeMobileNav() {
+            mobileNav.classList.remove('active');
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Trigger stat bar animations
+                    const bars = entry.target.querySelectorAll('.stat-bar-fill');
+                    bars.forEach(function(bar) {
+                        bar.classList.add('animated');
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(function(el) {
+            observer.observe(el);
+        });
+
+        /* ========== COUNTER ANIMATION ========== */
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-target]');
+            
+            counters.forEach(function(counter) {
+                if (counter.dataset.animated) return;
+                
+                const rect = counter.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    counter.dataset.animated = 'true';
+                    const target = parseInt(counter.getAttribute('data-target'));
+                    const suffix = counter.querySelector('.stat-suffix');
+                    const suffixText = suffix ? suffix.textContent : '';
+                    const duration = 2000;
+                    const startTime = performance.now();
+                    
+                    function updateCounter(currentTime) {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        // Ease out cubic
+                        const easeOut = 1 - Math.pow(1 - progress, 3);
+                        const current = Math.floor(easeOut * target);
+                        
+                        if (suffix) {
+                            counter.innerHTML = current.toLocaleString() + '<span class="stat-suffix">' + suffixText + '</span>';
+                        } else {
+                            counter.textContent = current.toLocaleString();
+                        }
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(updateCounter);
+                        }
+                    }
+                    
+                    requestAnimationFrame(updateCounter);
+                }
+            });
+        }
+
+        window.addEventListener('scroll', animateCounters);
+        animateCounters();
+
+        /* ========== SCROLL SPEED INDICATOR ========== */
+        const speedIndicator = document.getElementById('speedIndicator');
+        const scrollPercentSpan = document.getElementById('scrollPercent');
+        let lastScrollTop = 0;
+        let scrollSpeed = 0;
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+            
+            scrollPercentSpan.textContent = scrollPercent + '%';
+            
+            // Change color based on scroll speed
+            scrollSpeed = Math.abs(scrollTop - lastScrollTop);
+            
+            if (scrollSpeed > 50) {
+                speedIndicator.style.borderColor = '#ff0040';
+                speedIndicator.style.color = '#ff004

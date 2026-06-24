@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宇宙深渊 - 探索无尽星空</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS CUSTOM PROPERTIES & THEME
+           ============================================ */
+        :root {
+            --void-black: #000000;
+            --galaxy-purple: #4a0080;
+            --galaxy-purple-light: #7b2fbe;
+            --star-white: #ffffff;
+            --nebula-pink: #ff69b4;
+            --nebula-pink-dark: #cc3388;
+            --cosmic-blue: #1a0033;
+            --deep-purple: #12001f;
+            --star-glow: rgba(255, 255, 255, 0.8);
+            --nebula-glow: rgba(255, 105, 180, 0.3);
+            --purple-glow: rgba(74, 0, 128, 0.5);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-dim: rgba(255, 255, 255, 0.4);
+            --card-bg: rgba(18, 0, 31, 0.6);
+            --card-border: rgba(74, 0, 128, 0.3);
+        }
+
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--void-black);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* ============================================
+           STAR FIELD BACKGROUND
+           ============================================ */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .stars-layer {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+        }
+
+        .stars-layer-1 {
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 25% 45%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 40% 15%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 55% 65%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1.2px 1.2px at 70% 30%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 85% 55%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 15% 75%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 35% 85%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 60% 90%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1.3px 1.3px at 80% 80%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 90% 10%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(2px 2px at 48% 48%, var(--nebula-pink) 30%, transparent 100%),
+                radial-gradient(1px 1px at 5% 50%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1px 1px at 95% 40%, var(--star-white) 50%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 75% 70%, var(--star-white) 50%, transparent 100%);
+            animation: drift-slow 120s linear infinite;
+        }
+
+        .stars-layer-2 {
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.9) 50%, transparent 100%),
+                radial-gradient(2px 2px at 50% 50%, rgba(255,255,255,0.8) 50%, transparent 100%),
+                radial-gradient(2.5px 2.5px at 80% 20%, rgba(255,105,180,0.7) 40%, transparent 100%),
+                radial-gradient(2px 2px at 30% 70%, rgba(74,0,128,0.8) 40%, transparent 100%),
+                radial-gradient(3px 3px at 60% 40%, rgba(255,255,255,0.6) 50%, transparent 100%),
+                radial-gradient(2px 2px at 10% 80%, rgba(255,105,180,0.5) 40%, transparent 100%),
+                radial-gradient(2.5px 2.5px at 90% 60%, rgba(255,255,255,0.7) 50%, transparent 100%),
+                radial-gradient(2px 2px at 45% 85%, rgba(74,0,128,0.6) 40%, transparent 100%);
+            animation: drift-medium 80s linear infinite;
+        }
+
+        .stars-layer-3 {
+            background-image:
+                radial-gradient(3px 3px at 35% 35%, rgba(255,105,180,0.8) 30%, transparent 100%),
+                radial-gradient(4px 4px at 65% 55%, rgba(123,47,190,0.6) 30%, transparent 100%),
+                radial-gradient(3px 3px at 20% 60%, rgba(255,255,255,0.9) 40%, transparent 100%),
+                radial-gradient(5px 5px at 80% 75%, rgba(255,105,180,0.4) 20%, transparent 100%);
+            animation: drift-fast 60s linear infinite, twinkle-bright 4s ease-in-out infinite;
+        }
+
+        @keyframes drift-slow {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-10%, -5%); }
+        }
+
+        @keyframes drift-medium {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-15%, -8%); }
+        }
+
+        @keyframes drift-fast {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-8%, -12%); }
+        }
+
+        @keyframes twinkle-bright {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* ============================================
+           SHOOTING STARS
+           ============================================ */
+        .shooting-star {
+            position: fixed;
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--star-white), transparent);
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .shooting-star:nth-child(1) {
+            top: 15%;
+            left: -100px;
+            animation: shoot 3s ease-in 2s infinite;
+        }
+
+        .shooting-star:nth-child(2) {
+            top: 35%;
+            left: -100px;
+            animation: shoot 4s ease-in 5s infinite;
+        }
+
+        .shooting-star:nth-child(3) {
+            top: 55%;
+            left: -100px;
+            animation: shoot 3.5s ease-in 8s infinite;
+            width: 150px;
+        }
+
+        .shooting-star:nth-child(4) {
+            top: 25%;
+            left: -100px;
+            animation: shoot 2.8s ease-in 12s infinite;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translate(0, 0) rotate(-35deg);
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            15% {
+                opacity: 1;
+            }
+            30% {
+                transform: translate(calc(100vw + 200px), 200px) rotate(-35deg);
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            transition: background 0.4s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(74, 0, 128, 0.2);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--nebula-pink), var(--galaxy-purple), var(--void-black));
+            animation: logo-pulse 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8), transparent);
+            transform: translate(-50%, -50%);
+            opacity: 0.5;
+        }
+
+        @keyframes logo-pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(74, 0, 128, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.5); }
+        }
+
+        .nav-logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--star-white), var(--nebula-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--nebula-pink), var(--galaxy-purple));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--star-white);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid rgba(74, 0, 128, 0.5);
+            background: rgba(18, 0, 31, 0.5);
+            color: var(--nebula-pink);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--nebula-pink);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            transform: rotate(180deg);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .mobile-menu-btn span {
+            width: 25px;
+            height: 2px;
+            background: var(--star-white);
+            transition: all 0.3s ease;
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        /* Galaxy Spiral */
+        .galaxy-spiral {
+            position: absolute;
+            width: 900px;
+            height: 900px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .spiral-arm {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform-origin: center center;
+        }
+
+        .spiral-arm::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background:
+                conic-gradient(
+                    from 0deg,
+                    transparent 0deg,
+                    rgba(74, 0, 128, 0.15) 30deg,
+                    rgba(255, 105, 180, 0.08) 60deg,
+                    transparent 120deg,
+                    rgba(74, 0, 128, 0.1) 180deg,
+                    rgba(255, 105, 180, 0.05) 210deg,
+                    transparent 270deg,
+                    rgba(74, 0, 128, 0.12) 330deg,
+                    transparent 360deg
+                );
+            animation: rotate-spiral 30s linear infinite;
+            mask-image: radial-gradient(ellipse, transparent 20%, black 30%, black 70%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse, transparent 20%, black 30%, black 70%, transparent 80%);
+        }
+
+        .spiral-arm:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(120deg);
+        }
+
+        .spiral-arm:nth-child(2)::before {
+            animation: rotate-spiral 30s linear infinite reverse;
+        }
+
+        .spiral-arm:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(240deg);
+        }
+
+        .spiral-arm:nth-child(3)::before {
+            animation-delay: -10s;
+        }
+
+        @keyframes rotate-spiral {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Galaxy Core */
+        .galaxy-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 105, 180, 0.1) 20%,
+                rgba(74, 0, 128, 0.08) 40%,
+                transparent 70%
+            );
+            animation: core-pulse 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes core-pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 1;
+            }
+        }
+
+        /* Nebula Clouds */
+        .nebula-cloud {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .nebula-cloud-1 {
+            width: 500px;
+            height: 300px;
+            background: radial-gradient(ellipse, var(--galaxy-purple), transparent);
+            top: 20%;
+            left: 10%;
+            animation: nebula-float 20s ease-in-out infinite;
+        }
+
+        .nebula-cloud-2 {
+            width: 400px;
+            height: 250px;
+            background: radial-gradient(ellipse, var(--nebula-pink), transparent);
+            bottom: 15%;
+            right: 5%;
+            animation: nebula-float 25s ease-in-out infinite reverse;
+            opacity: 0.2;
+        }
+
+        .nebula-cloud-3 {
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(ellipse, rgba(74, 0, 128, 0.8), transparent);
+            top: 60%;
+            left: 50%;
+            animation: nebula-float 18s ease-in-out infinite;
+            animation-delay: -5s;
+        }
+
+        @keyframes nebula-float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -20px) scale(1.05); }
+            50% { transform: translate(-20px, 30px) scale(0.95); }
+            75% { transform: translate(20px, 10px) scale(1.02); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(74, 0, 128, 0.4);
+            background: rgba(18, 0, 31, 0.6);
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+            color: var(--nebula-pink);
+            margin-bottom: 2rem;
+            animation: fade-in-up 1s ease forwards;
+            opacity: 0;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--nebula-pink);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fade-in-up 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(
+                135deg,
+                var(--star-white) 0%,
+                var(--nebula-pink) 30%,
+                var(--galaxy-purple-light) 60%,
+                var(--star-white) 100%
+            );
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 6s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+            animation: fade-in-up 1s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fade-in-up 1s ease 0.6s forwards;
+            opacity: 0;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--galaxy-purple), var(--nebula-pink));
+            color: var(--star-white);
+            border: none;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--star-white);
+            border: 1px solid rgba(74, 0, 128, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--nebula-pink);
+            background: rgba(255, 105, 180, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(74, 0, 128, 0.3);
+        }
+
+        .hero-scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            animation: fade-in-up 1s ease 1s forwards, bounce-down 2s ease-in-out 2s infinite;
+            opacity: 0;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--nebula-pink), transparent);
+        }
+
+        .scroll-text {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        @keyframes bounce-down {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           SECTION COMMON STYLES
+           ============================================ */
+        .section {
+            position: relative;
+            z-index: 5;
+            padding: 8rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--nebula-pink);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .section-label::before,
+        .section-label::after {
+            content: '—';
+            margin: 0 0.75rem;
+            opacity: 0.5;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1.2rem;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ============================================
+           GALAXY CARDS SECTION
+           ============================================ */
+        .features-section {
+            background: linear-gradient(
+                180deg,
+                var(--void-black) 0%,
+                var(--deep-purple) 30%,
+                var(--cosmic-blue) 70%,
+                var(--void-black) 100%
+            );
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .galaxy-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .galaxy-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .galaxy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(255, 105, 180, 0.06),
+                transparent 40%
+            );
+            pointer-events: none;
+        }
+
+        .galaxy-card::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 26px;
+            background: linear-gradient(
+                135deg,
+                transparent,
+                rgba(74, 0, 128, 0.3),
+                rgba(255, 105, 180, 0.2),
+                transparent
+            );
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .galaxy-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 105, 180, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(74, 0, 128, 0.2);
+        }
+
+        .galaxy-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.8rem;
+            position: relative;
+            font-size: 2rem;
+        }
+
+        .card-icon-wrapper.purple-bg {
+            background: linear-gradient(135deg, rgba(74, 0, 128, 0.3), rgba(74, 0, 128, 0.1));
+            border: 1px solid rgba(74, 0, 128, 0.3);
+        }
+
+        .card-icon-wrapper.pink-bg {
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.2), rgba(255, 105, 180, 0.05));
+            border: 1px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .card-icon-wrapper.mixed-bg {
+            background: linear-gradient(135deg, rgba(74, 0, 128, 0.2), rgba(255, 105, 180, 0.1));
+            border: 1px solid rgba(123, 47, 190, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            color: var(--nebula-pink);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .card-link:hover {
+            gap: 0.8rem;
+        }
+
+        .card-link-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .galaxy-card:hover .card-link-arrow {
+            transform: translateX(5px);
+        }
+
+        /* ============================================
+           COSMIC STATS SECTION
+           ============================================ */
+        .stats-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(74, 0, 128, 0.08),
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            border-radius: 24px;
+            background: rgba(18, 0, 31, 0.4);
+            border: 1px solid rgba(74, 0, 128, 0.2);
+            position: relative;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .stat-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(255, 105, 180, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-orbit {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 1px solid rgba(74, 0, 128, 0.3);
+            animation: orbit-spin 10s linear infinite;
+        }
+
+        .stat-orbit::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--nebula-pink);
+            box-shadow: 0 0 10px var(--nebula-pink);
+        }
+
+        @keyframes orbit-spin {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        .stat-number {
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--star-white), var(--nebula-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-suffix {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-sublabel {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           JOURNEY SECTION
+           ============================================ */
+        .journey-section {
+            background: linear-gradient(
+                180deg,
+                var(--void-black),
+                var(--deep-purple),
+                var(--void-black)
+            );
+        }
+
+        .journey-timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .journey-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(
+                180deg,
+                transparent,
+                var(--galaxy-purple),
+                var(--nebula-pink),
+                var(--galaxy-purple),
+                transparent
+            );
+            transform: translateX(-50%);
+        }
+
+        .journey-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.6s ease;
+        }
+
+        .journey-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .journey-item:nth-child(even) {
+            flex-direction: row-reverse;
+            transform: translateX(30px);
+        }
+
+        .journey-item:nth-child(even).visible {
+            transform: translateX(0);
+        }
+
+        .journey-content {
+            width: 45%;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .journey-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--nebula-pink);
+            border: 3px solid var(--void-black);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+            z-index: 2;
+        }
+
+        .journey-year {
+            font-size: 0.85rem;
+            color: var(--nebula-pink);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .journey-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .journey-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .journey-spacer {
+            width: 45%;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            position: relative;
+            padding: 10rem 2rem;
+            overflow: hidden;
+        }
+
+        .cta-bg-nebula {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(74, 0, 128, 0.2), transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(255, 105, 180, 0.15), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(74, 0, 128, 0.1), transparent 60%);
+            animation: nebula-pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes nebula-pulse {
+            0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .cta-container {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 5rem 3rem;
+            border-radius: 32px;
+            background: linear-gradient(
+                135deg,
+                rgba(18, 0, 31, 0.8),
+                rgba(74, 0, 128, 0.2),
+                rgba(18, 0, 31, 0.8)
+            );
+            border: 1px solid rgba(74, 0, 128, 0.3);
+            backdrop-filter: blur(20px);
+        }
+
+        .cta-container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 34px;
+            background: linear-gradient(
+                135deg,
+                transparent,
+                rgba(74, 0, 128, 0.4),
+                rgba(255, 105, 180, 0.3),
+                rgba(74, 0, 128, 0.4),
+                transparent
+            );
+            z-index: -1;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            padding: 2px;
+        }
+
+        .cta-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--galaxy-purple), var(--nebula-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .cta-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+        }
+
+        .cta-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-input-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-input {
+            padding: 1rem 1.5rem;
+            border-radius: 60px;
+            border: 1px solid rgba(74, 0, 128, 0.4);
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--star-white);
+            font-size: 1rem;
+            font-family: inherit;
+            width: 320px;
+            max-width: 100%;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .cta-input:focus {
+            border-color: var(--nebula-pink);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .cta-note {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            position: relative;
+            z-index: 5;
+            padding: 5rem 2rem 2rem;
+            border-top: 1px solid rgba(74, 0, 128, 0.15);
+            background: linear-gradient(180deg, var(--void-black), rgba(0,0,0,0.95));
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .footer-brand-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-top: 1rem;
+            max-width: 300px;
+        }
+
+        .footer-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--star-white);
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--nebula-pink);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(74, 0, 128, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(74, 0, 128, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .footer-social-link:hover {
+            border-color: var(--nebula-pink);
+            color: var(--nebula-pink);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* ============================================
+           SCROLL ANIMATIONS
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ============================================
+           CUSTOM CURSOR GLOW (Desktop)
+           ============================================ */
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(74, 0, 128, 0.08),
+                transparent 70%
+            );
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                border-bottom: 1px solid rgba(74, 0, 128, 0.2);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .mobile-menu-btn.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .mobile-menu-btn.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-menu-btn.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .journey-timeline::before {
+                left: 20px;
+            }
+
+            .journey-item,
+            .journey-item:nth-child(even) {
+                flex-direction: column;
+                padding-left: 50px;
+            }
+
+            .journey-content {
+                width: 100%;
+            }
+
+            .journey-spacer {
+                display: none;
+            }
+
+            .journey-dot {
+                left: 20px;
+            }
+
+            .cta-container {
+                padding: 3rem 1.5rem;
+            }
+
+            .cta-input-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-input {
+                width: 100%;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-brand-desc {
+                max-width: 100%;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .galaxy-spiral {
+                width: 500px;
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor Glow Effect -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Star Field Background -->
+    <div class="starfield">
+        <div class="stars-layer stars-layer-1"></div>
+        <div class="stars-layer stars-layer-2"></div>
+        <div class="stars-layer stars-layer-3"></div>
+    </div>
+
+    <!-- Shooting Stars -->
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-logo">
+            <div class="nav-logo-icon"></div>
+            <span class="nav-logo-text">宇宙深渊</span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="#features">星域探索</a>
+            <a href="#stats">宇宙数据</a>
+            <a href="#journey">时空之旅</a>
+            <a href="#cta">加入我们</a>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">✦</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <!-- Galaxy Spiral -->
+        <div class="galaxy-spiral">
+            <div class="spiral-arm"></div>
+            <div class="spiral-arm"></div>
+            <div class="spiral-arm"></div>
+        </div>
+        <div class="galaxy-core"></div>
+
+        <!-- Nebula Clouds -->
+        <div class="nebula-cloud nebula-cloud-1"></div>
+        <div class="nebula-cloud nebula-cloud-2"></div>
+        <div class="nebula-cloud nebula-cloud-3"></div>
+
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                探索无限宇宙的奥秘
+            </div>
+            <h1 class="hero-title">
+                <span class="gradient-text">宇宙深渊</span>
+            </h1>
+            <p class="hero-subtitle">
+                穿越星际尘埃，探索深空奥秘。在这片无尽的宇宙中，每一颗星辰都承载着亿万年的故事，等待你去发现。
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+                    <span>✦</span> 开始探索
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">
+                    <span>◎</span> 宇宙数据
+                </button>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="hero-scroll-indicator">
+            <div class="scroll-line"></div>
+            <span class="scroll-text">向下探索</span>
+        </div>
+    </section>
+
+    <!-- Galaxy Cards / Features Section -->
+    <section class="section features-section" id="features">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">深空探索</div>
+                <h2 class="section-title">穿越星际的<span class="gradient-text">无限可能</span></h2>
+                <p class="section-desc">我们的宇宙充满了令人惊叹的奇观，每一个星系都隐藏着未解之谜，等待着探索者的到来。</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="galaxy-card reveal reveal-delay-1">
+                    <div class="card-icon-wrapper purple-bg">🌌</div>
+                    <h3 class="card-title">星系探索</h3>
+                    <p class="card-desc">深入银河系核心区域，观测千亿颗恒星组成的壮丽螺旋结构，感受宇宙的宏伟尺度。</p>
+                    <a href="#" class="card-link">
+                        深入了解 <span class="card-link-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="galaxy-card reveal reveal-delay-2">
+                    <div class="card-icon-wrapper pink-bg">🪐</div>
+                    <h3 class="card-title">行星发现</h3>
+                    <p class="card-desc">探索系外行星的奥秘，寻找可能孕育生命的宜居世界，在无尽星海中寻找第二个地球。</p>
+                    <a href="#" class="card-link">
+                        深入了解 <span class="card-link-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="galaxy-card reveal reveal-delay-3">
+                    <div class="card-icon-wrapper mixed-bg">⭐</div>
+                    <h3 class="card-title">恒星演化</h3>
+                    <p class="card-desc">见证恒星从诞生到死亡的壮丽过程，理解超新星爆发与中子星的极端物理现象。</p>
+                    <a href="#" class="card-link">
+                        深入了解 <span class="card-link-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="galaxy-card reveal reveal-delay-1">
+                    <div class="card-icon-wrapper pink-bg">🕳️</div>
+                    <h3 class="card-title">黑洞奥秘</h3>
+                    <p class="card-desc">深入事件视界的边缘，探索时空扭曲的极限，在引力的深渊中寻找物理学的终极答案。</p>
+                    <a href="#" class="card-link">
+                        深入了解 <span class="card-link-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="galaxy-card reveal reveal-delay-2">
+                    <div class="card-icon-wrapper purple-bg">🌠</div>
+                    <h3 class="card-title">暗物质研究</h3>
+                    <p class="card-desc">追寻宇宙中那看不见的神秘力量，理解暗物质与暗能量如何塑造宇宙的大尺度结构。</p>
+                    <a href="#" class="card-link">
+                        深入了解 <span class="card-link-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="galaxy-card reveal reveal-delay-3">
+                    <div class="card-icon-wrapper mixed-bg">🔭</div>
+                    <h3 class="card-title">深空观测</h3>
+                    <p class="card-desc">利用最先进的望远镜技术，捕捉来自宇宙最远处的光线，回溯138亿年的宇宙历史。</p>
+                    <a href="#" class="card-link">
+                        深入了解 <span class="card-link-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cosmic Stats Section -->
+    <section class="section stats-section" id="stats">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">宇宙数据</div>
+                <h2 class="section-title">令人震撼的<span class="gradient-text">宇宙尺度</span></h2>
+                <p class="section-desc">当面对宇宙的宏大数字，人类的认知边界被无限拓展，每一个数据都诉说着宇宙的壮丽史诗。</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card reveal reveal-delay-1">
+                    <div class="stat-orbit"></div>
+                    <div class="stat-number" data-target="2000" data-suffix="亿+">0</div>
+                    <div class="stat-label">可观测星系</div>
+                    <div class="stat-sublabel">哈勃望远镜观测数据</div>
+                </div>
+
+                <div class="stat-card reveal reveal-delay-2">
+                    <div class="stat-orbit"></div>
+                    <div class="stat-number" data-target="138" data-suffix="亿年">0</div>
+                    <div class="stat-label">宇宙年龄</div>
+                    <div class="stat-sublabel">自大爆炸以来</div>
+                </div>
+
+                <div class="stat-card reveal reveal-delay-3">
+                    <div class="stat-orbit"></div>
+                    <div class="stat-number" data-target="930" data-suffix="亿光年">0</div>
+                    <div class="stat-label">可观测直径</div>
+                    <div class="stat-sublabel">可观测宇宙范围</div>
+                </div>
+
+                <div class="stat-card reveal reveal-delay-4">
+                    <div class="stat-orbit"></div>
+                    <div class="stat-number" data-target="1000" data-suffix="亿+">0</div>
+                    <div class="stat-label">银河系恒星数</div>
+                    <div class="stat-sublabel">估计数量级别</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Journey / Timeline Section -->
+    <section class="section journey-section" id="journey">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">时空之旅</div>
+                <h2 class="section-title">宇宙的<span class="gradient-text">史诗篇章</span></h2>
+                <p class="section-desc">从混沌初开到星辰大海，每一步都是宇宙演化中不可磨灭的里程碑。</p>
+            </div>
+
+            <div class="journey-timeline">
+                <div class="journey-item">
+                    <div class="journey-content">
+                        <div class="journey-year">138亿年前</div>
+                        <h3 class="journey-title">宇宙大爆炸</h3>
+                        <p class="journey-desc">奇点爆炸，时空诞生，物质与能量从虚无中涌出，开启了宇宙的壮丽篇章。</p>
+                    </div>
+                    <div class="journey-dot"></div>
+                    <div class="journey-spacer"></div>
+                </div>
+
+                <div class="journey-item">
+                    <div class="journey-content">
+                        <div class="journey-year">136亿年前</div>
+                        <h3 class="journey-title">第一批恒星</h3>
+                        <p class="journey-desc">原始气体云在引力作用下坍缩，点燃了宇宙中第一代恒星，黑暗的宇宙迎来了光明。</p>
+                    </div>
+                    <div class="journey-dot"></div>
+                    <div class="journey-spacer"></div>
+                </div>
+
+                <div class="journey-item">
+                    <div class="journey-content">
+                        <div class="journey-year">100亿年前</div>
+                        <h3 class="journey-title">银河系形成</h3>
+                        <p class="journey-desc">无数恒星与尘埃汇聚成旋涡结构，我们的银河系在宇宙的某个角落悄然诞生。</p>
+                    </div>
+                    <div class="journey-dot"></div>
+                    <div class="journey-spacer"></div>
+                </div>
+
+                <div class="journey-item">
+                    <div class="journey-content">
+                        <div class="journey-year">46亿年前</div>
+                        <h3 class="journey-title">太阳系诞生</h3>
+                        <p class="journey-desc">一片分子云坍缩形成太阳与行星系统，地球——我们唯一的家园，在这里孕育而生。</p>
+                    </div>
+                    <div class="journey-dot"></div>
+                    <div class="journey-spacer"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="cta">
+        <div class="cta-bg-nebula"></div>
+        <div class="cta-container reveal">
+            <div class="cta-icon">🚀</div>
+            <h2 class="cta-title">加入星际探索者行列</h2>
+            <p class="cta-desc">订阅我们的宇宙通讯，第一时间获取深空发现、天文奇观和宇宙探索的最新动态。</p>
+            <div class="cta-input-group">
+                <input type="email" class="cta-input" placeholder="输入您的星际邮箱地址...">
+                <button class="btn btn-primary">启动引擎 ✦</button>
+            </div>
+            <p class="cta-note">🔒 我们尊重您的隐私，绝不分享您的信息</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="nav-logo" style="margin-bottom: 0.5rem;">
+                    <div class="nav-logo-icon"></div>
+                    <span class="nav-logo-text">宇宙深渊</span>
+                </div>
+                <p class="footer-brand-desc">
+                    探索无限宇宙，揭示时空奥秘。我们致力于用最前沿的天文科学，带您领略宇宙最深处的壮丽景象。
+                </p>
+            </div>
+            <div>
+                <h4 class="footer-title">探索领域</h4>
+                <ul class="footer-links">
+                    <li><a href="#">星系观测</a></li>
+                    <li><a href="#">行星探索</a></li>
+                    <li><a href="#">黑洞研究</a></li>
+                    <li><a href="#">暗物质</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">资源中心</h4>
+                <ul class="footer-links">
+                    <li><a href="#">天文百科</a></li>
+                    <li><a href="#">观测指南</a></li>
+                    <li><a href="#">学术论文</a></li>
+                    <li><a href="#">数据下载</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">关于我们</h4>
+                <ul class="footer-links">
+                    <li><a href="#">团队介绍</a></li>
+                    <li><a href="#">合作伙伴</a></li>
+                    <li><a href="#">加入我们</a></li>
+                    <li><a href="#">联系方式</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright">© 2024 宇宙深渊. 探索无尽星空，连接永恒未来.</p>
+            <div class="footer-socials">
+                <a href="#" class="footer-social-link" aria-label="微博">✦</a>
+                <a href="#" class="footer-social-link" aria-label="微信">◈</a>
+                <a href="#" class="footer-social-link" aria-label="知乎">◎</a>
+                <a href="#" class="footer-social-link" aria-label="GitHub">⬡</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        /* ============================================
+           MOBILE MENU TOGGLE
+           ============================================ */
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                mobileMenuBtn.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        /* ============================================
+           NAVBAR SCROLL EFFECT
+           ============================================ */
+        const navbar = document.getElementById('navbar');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        /* ============================================
+           THEME TOGGLE
+           ============================================ */
+        const themeToggle = document.getElementById('themeToggle');
+        let currentTheme = 'dark';
+
+        themeToggle.addEventListener('click', function() {
+            if (currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.style.setProperty('--void-black', '#f0f0f5');
+                document.body.style.setProperty('--deep-purple', '#e8e0f0');
+                document.body.style.setProperty('--cosmic-blue', '#ece4f5');
+                document.body.style.setProperty('--text-primary', '#1a1a2e');
+                document.body.style.setProperty('--text-secondary', 'rgba(26,26,46,0.7)');
+                document.body.style.setProperty('--text-dim', 'rgba(26,26,46,0.4)');
+                document.body.style.setProperty('--card-bg', 'rgba(255,255,255,0.6)');
+                document.body.style.setProperty('--card-border', 'rgba(74,0,128,0

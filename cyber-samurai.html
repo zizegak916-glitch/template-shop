@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博武士 | Cyber Samurai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==================== CSS RESET & VARIABLES ==================== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --void: #0a0515;
+            --katana-red: #ff1744;
+            --neon-blue: #00e5ff;
+            --steel: #c0c0c0;
+            --katana-red-glow: rgba(255, 23, 68, 0.6);
+            --neon-blue-glow: rgba(0, 229, 255, 0.6);
+            --dark-surface: #110a20;
+            --dark-card: #150d28;
+            --dark-border: rgba(255, 23, 68, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #b0a8c9;
+        }
+
+        [data-theme="light"] {
+            --void: #f0eef5;
+            --katana-red: #d50000;
+            --neon-blue: #0097a7;
+            --steel: #4a4a4a;
+            --katana-red-glow: rgba(213, 0, 0, 0.4);
+            --neon-blue-glow: rgba(0, 151, 167, 0.4);
+            --dark-surface: #e8e4f0;
+            --dark-card: #ddd8e8;
+            --dark-border: rgba(213, 0, 0, 0.3);
+            --text-primary: #1a1a2e;
+            --text-secondary: #555580;
+        }
+
+        /* ==================== BASE STYLES ==================== */
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--void);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* ==================== ANIMATED BACKGROUND ==================== */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 23, 68, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 23, 68, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--neon-blue), 0 0 12px var(--neon-blue);
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-10vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ==================== NAVIGATION ==================== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 5, 21, 0.85);
+            border-bottom: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--katana-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--katana-red);
+            box-shadow: 0 0 10px var(--katana-red-glow);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--katana-red);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--katana-red);
+            color: var(--katana-red);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .theme-toggle:hover {
+            background: var(--katana-red);
+            color: white;
+            box-shadow: 0 0 20px var(--katana-red-glow);
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--katana-red);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 4rem;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 20px var(--neon-blue-glow);
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero-title .kanji {
+            display: block;
+            background: linear-gradient(135deg, var(--katana-red), #ff6e40, var(--katana-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px var(--katana-red-glow));
+            animation: neonFlicker 3s ease-in-out infinite;
+        }
+
+        .hero-title .english {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1rem, 3vw, 2.5rem);
+            color: var(--steel);
+            letter-spacing: 15px;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes neonFlicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            96% { opacity: 0.9; }
+            97% { opacity: 1; }
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 2rem auto;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2.5rem;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--katana-red), #ff6e40);
+            color: white;
+            box-shadow: 0 0 30px var(--katana-red-glow), inset 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px var(--katana-red-glow), 0 0 80px var(--katana-red-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue-glow), inset 0 0 15px rgba(0, 229, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neon-blue);
+            color: var(--void);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px var(--neon-blue-glow);
+        }
+
+        /* ==================== NEON KATANA SVG ==================== */
+        .katana-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            opacity: 0.15;
+            z-index: 0;
+            animation: katanaFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes katanaFloat {
+            0%, 100% { transform: translate(-50%, -50%) rotate(-5deg); }
+            50% { transform: translate(-50%, -50%) rotate(5deg); }
+        }
+
+        .katana-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .katana-blade {
+            fill: none;
+            stroke: var(--katana-red);
+            stroke-width: 3;
+            filter: drop-shadow(0 0 10px var(--katana-red)) drop-shadow(0 0 30px var(--katana-red-glow)) drop-shadow(0 0 60px var(--katana-red-glow));
+            animation: bladeGlow 2s ease-in-out infinite alternate;
+        }
+
+        .katana-handle {
+            fill: none;
+            stroke: var(--neon-blue);
+            stroke-width: 4;
+            filter: drop-shadow(0 0 8px var(--neon-blue)) drop-shadow(0 0 20px var(--neon-blue-glow));
+        }
+
+        .katana-guard {
+            fill: var(--neon-blue);
+            filter: drop-shadow(0 0 10px var(--neon-blue)) drop-shadow(0 0 25px var(--neon-blue-glow));
+        }
+
+        @keyframes bladeGlow {
+            0% { filter: drop-shadow(0 0 10px var(--katana-red)) drop-shadow(0 0 30px var(--katana-red-glow)); }
+            100% { filter: drop-shadow(0 0 20px var(--katana-red)) drop-shadow(0 0 50px var(--katana-red-glow)) drop-shadow(0 0 80px var(--katana-red-glow)); }
+        }
+
+        /* ==================== SECTION STYLES ==================== */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--neon-blue);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .section-title .highlight {
+            background: linear-gradient(135deg, var(--katana-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--katana-red), var(--neon-blue));
+            margin: 1.5rem auto 0;
+            box-shadow: 0 0 15px var(--katana-red-glow);
+        }
+
+        /* ==================== SAMURAI CARDS ==================== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .samurai-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .samurai-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--katana-red), var(--neon-blue));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .samurai-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .samurai-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--katana-red);
+            box-shadow: 0 20px 60px rgba(255, 23, 68, 0.15), 0 0 40px rgba(255, 23, 68, 0.05);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, rgba(255, 23, 68, 0.2), rgba(0, 229, 255, 0.2));
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+        }
+
+        .samurai-card:hover .card-icon {
+            box-shadow: 0 0 20px var(--katana-red-glow);
+            border-color: var(--katana-red);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .card-kanji {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            font-size: 8rem;
+            font-weight: 900;
+            opacity: 0.03;
+            color: var(--katana-red);
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        /* ==================== STATS SECTION ==================== */
+        .stats-section {
+            background: linear-gradient(180deg, transparent, rgba(255, 23, 68, 0.03), transparent);
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue-glow);
+            transition: width 0.3s ease;
+        }
+
+        .stat-card:hover::after {
+            width: 80%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 10px 40px rgba(0, 229, 255, 0.1);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--katana-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+        }
+
+        .stat-sublabel {
+            color: var(--steel);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .blade-progress {
+            margin-top: 1.5rem;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .blade-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--katana-red), var(--neon-blue));
+            border-radius: 2px;
+            width: 0;
+            transition: width 2s ease;
+            box-shadow: 0 0 10px var(--katana-red-glow);
+        }
+
+        /* ==================== BUSHIDO CODE ==================== */
+        .bushido-section {
+            background: linear-gradient(180deg, transparent, rgba(0, 229, 255, 0.02), transparent);
+        }
+
+        .bushido-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bushido-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--dark-card);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .bushido-item:hover {
+            border-color: var(--dark-border);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .bushido-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--katana-red);
+            opacity: 0.5;
+            line-height: 1;
+            min-width: 50px;
+        }
+
+        .bushido-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .bushido-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ==================== BLADE STATS SHOWCASE ==================== */
+        .blade-stats-container {
+            max-width: 800px;
+            margin: 3rem auto 0;
+            padding: 3rem;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blade-stats-container::before {
+            content: '刀';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20rem;
+            font-weight: 900;
+            opacity: 0.02;
+            color: var(--katana-red);
+        }
+
+        .blade-stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .blade-stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .blade-stat-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 700;
+        }
+
+        .blade-stat-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 23, 68, 0.2), rgba(0, 229, 255, 0.2));
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+
+        .blade-stat-bar {
+            flex: 1;
+            margin: 0 2rem;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .blade-stat-fill {
+            height: 100%;
+            border-radius: 4px;
+            width: 0;
+            transition: width 2s ease;
+        }
+
+        .blade-stat-fill.red {
+            background: linear-gradient(90deg, var(--katana-red), #ff6e40);
+            box-shadow: 0 0 10px var(--katana-red-glow);
+        }
+
+        .blade-stat-fill.blue {
+            background: linear-gradient(90deg, var(--neon-blue), #00bcd4);
+            box-shadow: 0 0 10px var(--neon-blue-glow);
+        }
+
+        .blade-stat-fill.mixed {
+            background: linear-gradient(90deg, var(--katana-red), var(--neon-blue));
+            box-shadow: 0 0 10px var(--katana-red-glow);
+        }
+
+        .blade-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-width: 45px;
+            text-align: right;
+            color: var(--neon-blue);
+        }
+
+        /* ==================== TESTIMONIALS ==================== */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            padding: 2rem;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .testimonial-quote {
+            font-size: 3rem;
+            color: var(--katana-red);
+            opacity: 0.3;
+            font-family: serif;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--katana-red), var(--neon-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .testimonial-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* ==================== CTA SECTION ==================== */
+        .cta-section {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--katana-red-glow) 0%, transparent 70%);
+            opacity: 0.1;
+            animation: ctaPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes ctaPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.15; }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-description {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .cta-btn {
+            padding: 1.25rem 3.5rem;
+            background: linear-gradient(135deg, var(--katana-red), #ff6e40, var(--katana-red));
+            background-size: 200% auto;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px var(--katana-red-glow), 0 0 60px rgba(255, 23, 68, 0.2);
+            animation: ctaGlow 3s ease-in-out infinite;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-btn:hover {
+            background-position: right center;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 50px var(--katana-red-glow), 0 0 100px rgba(255, 23, 68, 0.3);
+        }
+
+        @keyframes ctaGlow {
+            0%, 100% { box-shadow: 0 0 30px var(--katana-red-glow), 0 0 60px rgba(255, 23, 68, 0.2); }
+            50% { box-shadow: 0 0 40px var(--katana-red-glow), 0 0 80px rgba(255, 23, 68, 0.3), 0 0 120px rgba(255, 23, 68, 0.1); }
+        }
+
+        .cta-input-group {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cta-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Noto Sans SC', sans-serif;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .cta-input:focus {
+            border-color: var(--katana-red);
+            box-shadow: 0 0 20px var(--katana-red-glow);
+        }
+
+        .cta-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: var(--dark-surface);
+            border-top: 1px solid var(--dark-border);
+            padding: 4rem 2rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--katana-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--katana-red);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--dark-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            border-color: var(--katana-red);
+            color: var(--katana-red);
+            box-shadow: 0 0 15px var(--katana-red-glow);
+            transform: translateY(-3px);
+        }
+
+        /* ==================== SCROLL ANIMATIONS ==================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== SCROLLBAR ==================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--void);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--katana-red);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff4569;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(10, 5, 21, 0.95);
+                padding: 2rem;
+                border-bottom: 1px solid var(--dark-border);
+                gap: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero {
+                padding: 4rem 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .blade-stat-row {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .blade-stat-bar {
+                width: 100%;
+                margin: 0;
+            }
+
+            .cta-input-group {
+                flex-direction: column;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* ==================== GLITCH EFFECT ==================== */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch1 2.5s infinite;
+            color: var(--neon-blue);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch2 2.5s infinite;
+            color: var(--katana-red);
+            z-index: -2;
+        }
+
+        @keyframes glitch1 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(20% 0 60% 0); transform: translate(-3px, 3px); }
+            40% { clip-path: inset(60% 0 10% 0); transform: translate(3px, -3px); }
+            60% { clip-path: inset(40% 0 30% 0); transform: translate(-2px, 2px); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(2px, -2px); }
+        }
+
+        @keyframes glitch2 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(70% 0 10% 0); transform: translate(3px, -3px); }
+            40% { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 3px); }
+            60% { clip-path: inset(50% 0 20% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(30% 0 50% 0); transform: translate(-2px, 2px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">CYBER•刃</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#features">機能</a></li>
+            <li><a href="#stats">戦闘力</a></li>
+            <li><a href="#bushido">武士道</a></li>
+            <li><a href="#testimonials">証言</a></li>
+            <li><a href="#join">参加</a></li>
+        </ul>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            ☀ LIGHT
+        </button>
+        <button class="mobile-menu" id="mobileMenu" aria-label="Toggle menu">
+            ☰
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="katana-container">
+            <svg class="katana-svg" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Katana Blade -->
+                <path class="katana-blade" d="M100,100 L600,95 Q650,93 680,100 Q650,107 600,105 L100,100" />
+                <!-- Katana Guard (Tsuba) -->
+                <rect class="katana-guard" x="90" y="85" width="20" height="30" rx="4" />
+                <!-- Katana Handle (Tsuka) -->
+                <line class="katana-handle" x1="30" y1="100" x2="90" y2="100" stroke-width="8" />
+                <!-- Handle wrapping pattern -->
+                <line class="katana-handle" x1="40" y1="95" x2="45" y2="105" stroke-width="1.5" opacity="0.5" />
+                <line class="katana-handle" x1="50" y1="95" x2="55" y2="105" stroke-width="1.5" opacity="0.5" />
+                <line class="katana-handle" x1="60" y1="95" x2="65" y2="105" stroke-width="1.5" opacity="0.5" />
+                <line class="katana-handle" x1="70" y1="95" x2="75" y2="105" stroke-width="1.5" opacity="0.5" />
+                <line class="katana-handle" x1="80" y1="95" x2="85" y2="105" stroke-width="1.5" opacity="0.5" />
+                <!-- Pommel (Kashira) -->
+                <circle class="katana-guard" cx="28" cy="100" r="6" />
+            </svg>
+        </div>
+
+        <div class="hero-content">
+            <span class="hero-subtitle">// DIGITAL BUSHIDO PROTOCOL v2.0</span>
+            <h1 class="hero-title">
+                <span class="kanji glitch" data-text="赛博武士">赛博武士</span>
+                <span class="english">CYBER SAMURAI</span>
+            </h1>
+            <p class="hero-description">
+                在霓虹与钢铁交织的未来，古老的武士道精神觉醒于数字洪流之中。
+                赛博武士——融合千年武道传统与尖端神经科技，
+                守护最后的人类意志之火。
+            </p>
+            <div class="hero-buttons">
+                <a href="#join" class="btn btn-primary">⚔ 启动协议</a>
+                <a href="#features" class="btn btn-secondary">⟁ 了解更多</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-header reveal">
+            <span class="section-tag">// 核心機能</span>
+            <h2 class="section-title">赛博<span class="highlight">武道</span>系统</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="samurai-card reveal">
+                <div class="card-icon">⚔</div>
+                <h3 class="card-title">量子剑术</h3>
+                <p class="card-description">
+                    融合量子计算与传统剑道，每一击都穿越时间线。
+                    神经接口直接连接刀锋，实现光速反应与预知般的战斗本能。
+                </p>
+                <span class="card-kanji">剣</span>
+            </div>
+
+            <div class="samurai-card reveal">
+                <div class="card-icon">🛡</div>
+                <h3 class="card-title">纳米铠甲</h3>
+                <p class="card-description">
+                    自我修复的纳米碳纤维甲胄，可抵御能量武器直击。
+                    内置环境适应系统，从霓虹都市到荒芜废土，无所畏惧。
+                </p>
+                <span class="card-kanji">鎧</span>
+            </div>
+
+            <div class="samurai-card reveal">
+                <div class="card-icon">👁</div>
+                <h3 class="card-title">义眼扫描</h3>
+                <p class="card-description">
+                    多光谱赛博义眼，可透视物质、分析敌人弱点、
+                    接入网络层解析数据流。万物皆在洞察之中。
+                </p>
+                <span class="card-kanji">眼</span>
+            </div>
+
+            <div class="samurai-card reveal">
+                <div class="card-icon">⚡</div>
+                <h3 class="card-title">神经加速</h3>
+                <p class="card-description">
+                    肾上腺素调控与神经突触强化技术，
+                    将反应速度提升至人类极限的十倍。子弹在你眼中如蜗行。
+                </p>
+                <span class="card-kanji">速</span>
+            </div>
+
+            <div class="samurai-card reveal">
+                <div class="card-icon">🔥</div>
+                <h3 class="card-title">火焰武士道</h3>
+                <p class="card-description">
+                    等离子刃技术将刀锋化为烈焰，切割一切物质。
+                    内置能量循环系统，永不熄灭的战斗之魂。
+                </p>
+                <span class="card-kanji">炎</span>
+            </div>
+
+            <div class="samurai-card reveal">
+                <div class="card-icon">🌐</div>
+                <h3 class="card-title">暗网情报</h3>
+                <p class="card-description">
+                    实时接入全球暗网数据节点，追踪目标、预测威胁、
+                    掌控信息战场。知识即是最强的武器。
+                </p>
+                <span class="card-kanji">網</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section stats-section" id="stats">
+        <div class="section-header reveal">
+            <span class="section-tag">// 戦闘力指数</span>
+            <h2 class="section-title">刀刃<span class="highlight">数据</span></h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats-grid reveal">
+                <div class="stat-card">
+                    <div class="stat-number" data-count="9999">0</div>
+                    <div class="stat-label">武士等级</div>
+                    <div class="stat-sublabel">觉醒战士</div>
+                    <div class="blade-progress">
+                        <div class="blade-fill" data-width="99"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number" data-count="2847">0</div>
+                    <div class="stat-label">赛博改造</div>
+                    <div class="stat-sublabel">神经接口</div>
+                    <div class="blade-progress">
+                        <div class="blade-fill" data-width="87"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number" data-count="156">0</div>
+                    <div class="stat-label">完成任务</div>
+                    <div class="stat-sublabel">暗影行动</div>
+                    <div class="blade-progress">
+                        <div class="blade-fill" data-width="95"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number" data-count="42">0</div>
+                    <div class="stat-label">义体部件</div>
+                    <div class="stat-sublabel">全身改造</div>
+                    <div class="blade-progress">
+                        <div class="blade-fill" data-width="78"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blade Stats Detailed -->
+            <div class="blade-stats-container reveal">
+                <h3 style="text-align:center; margin-bottom:2rem; font-family:'Orbitron',sans-serif; font-size:1rem; letter-spacing:3px; color:var(--neon-blue);">
+                    // BLADE METRICS
+                </h3>
+
+                <div class="blade-stat-row">
+                    <div class="blade-stat-label">
+                        <div class="blade-stat-icon">⚔</div>
+                        <span>攻击强度</span>
+                    </div>
+                    <div class="blade-stat-bar">
+                        <div class="blade-stat-fill red" data-width="95"></div>
+                    </div>
+                    <div class="blade-stat-value">95</div>
+                </div>
+
+                <div class="blade-stat-row">
+                    <div class="blade-stat-label">
+                        <div class="blade-stat-icon">🛡</div>
+                        <span>防御矩阵</span>
+                    </div>
+                    <div class="blade-stat-bar">
+                        <div class="blade-stat-fill blue" data-width="82"></div>
+                    </div>
+                    <div class="blade-stat-value">82</div>
+                </div>
+
+                <div class="blade-stat-row">
+                    <div class="blade-stat-label">
+                        <div class="blade-stat-icon">⚡</div>
+                        <span>速度指数</span>
+                    </div>
+                    <div class="blade-stat-bar">
+                        <div class="blade-stat-fill mixed" data-width="98"></div>
+                    </div>
+                    <div class="blade-stat-value">98</div>
+                </div>
+
+                <div class="blade-stat-row">
+                    <div class="blade-stat-label">
+                        <div class="blade-stat-icon">🔥</div>
+                        <span>能量核心</span>
+                    </div>
+                    <div class="blade-stat-bar">
+                        <div class="blade-stat-fill red" data-width="76"></div>
+                    </div>
+                    <div class="blade-stat-value">76</div>
+                </div>
+
+                <div class="blade-stat-row">
+                    <div class="blade-stat-label">
+                        <div class="blade-stat-icon">👁</div>
+                        <span>感知范围</span>
+                    </div>
+                    <div class="blade-stat-bar">
+                        <div class="blade-stat-fill blue" data-width="91"></div>
+                    </div>
+                    <div class="blade-stat-value">91</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bushido Code Section -->
+    <section class="section bushido-section" id="bushido">
+        <div class="section-header reveal">
+            <span class="section-tag">// デジタル武士道</span>
+            <h2 class="section-title">赛博<span class="highlight">武士道</span>七则</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="bushido-grid">
+            <div class="bushido-item reveal">
+                <div class="bushido-number">01</div>
+                <div class="bushido-content">
+                    <h4>义 - 正义之刃</h4>
+                    <p>在数据洪流中坚守正义，以代码为剑，斩断不公之链。</p>
+                </div>
+            </div>
+
+            <div class="bushido-item reveal">
+                <div class="bushido-number">02</div>
+                <div class="bushido-content">
+                    <h4>勇 - 像素之勇</h4>
+                    <p>面对虚拟与现实的夹缝，以无畏之心突破一切防火墙。</p>
+                </div>
+            </div>
+
+            <div class="bushido-item reveal">
+                <div class="bushido-number">03</div>
+                <div class="bushido-content">
+                    <h4>仁 - 电子仁慈</h4>
+                    <p>在钢铁躯壳中保有人性温度，用力量守护弱小。</p>
+                </div>
+            </div>
+
+            <div class="bushido-item reveal">
+                <div class="bushido-number">04</div>
+                <div class="bushido-content">
+                    <h4>礼 - 协议礼节</h4>
+                    <p>遵守赛博武士道法典，即便在混沌的暗网中亦不失礼节。</p>
+                </div>
+            </div>
+
+            <div class="bushido-item reveal">
+                <div class="bushido-number">05</div>
+                <div class="bushido-content">
+                    <h4>诚 - 加密真诚</h4>
+                    <p>以区块链般不可篡改的真诚，守护每一个承诺与盟约。</p>
+                </div>
+            </div>
+
+            <div class="bushido-item reveal">
+                <div class="bushido-number">06</div>
+                <div class="bushido-content">
+                    <h4>名誉 - 数字荣光</h4>
+                    <p>在赛博空间铸就不朽传说，让代码记住武士之名。</p>
+                </div>
+            </div>
+
+            <div class="bushido-item reveal">
+                <div class="bushido-number">07</div>
+                <div class="bushido-content">
+                    <h4>忠 - 终端忠诚</h4>
+                    <p>对同伴与使命永不背叛，直至最后一行代码执行完毕。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section" id="testimonials">
+        <div class="section-header reveal">
+            <span class="section-tag">// 証言録</span>
+            <h2 class="section-title">武士<span class="highlight">之声</span></h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                    加入赛博武士团后，我的神经反应速度提升了300%。
+                    现在我能用义眼在0.01秒内识别威胁，并在敌人反应前完成斩击。
+                </p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">影</div>
+                    <div>
+                        <div class="testimonial-name">暗影•隼</div>
+                        <div class="testimonial-role">S级赛博武士 / 暗影部队指挥官</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card reveal">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                    量子剑术系统彻底改变了我的战斗方式。
+                    每一击都携带时间线数据，让我能在战斗中预见未来三步。
+                </p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">刃</div>
+                    <div>
+                        <div class="testimonial-name">雷刃•零</div>
+                        <div class="testimonial-role">A级赛博武士 / 量子剑术大师</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card reveal">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                    纳米铠甲在我最危急的时刻救了我一命。
+                    一枚等离子弹直击胸口，但纳米修复系统在毫秒内完成了重构。
+                </p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">钢</div>
+                    <div>
+                        <div class="testimonial-name">铁心•凛</div>
+                        <div class="testimonial-role">B级赛博武士 / 前义体医生</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="join">
+        <div class="cta-content reveal">
+            <span class="section-tag">// 加入指令</span>
+            <h2 class="cta-title">觉醒你的<span class="highlight">武士之魂</span></h2>
+            <p class="cta-description">
+                准备好接受改造了吗？输入你的标识符，
+                开启通往赛博武士之路的第一步。
+                谨记：此路无回头。
+            </p>
+            <div class="cta-input-group">
+                <input type="email" class="cta-input" placeholder="输入你的网络标识符..." id="ctaInput">
+                <button class="cta-btn" id="ctaBtn">⚔ 启动觉醒</button>
+            </div>
+            <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:1rem;">
+                注册即表示同意遵守《赛博武士道法典》v3.7
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>CYBER•刃</h3>
+                <p>
+                    在霓虹与暗影交织的赛博未来，
+                    赛博武士团守护着最后的人类之光。
+                    武士道不灭，代码永存。
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h4>快速导航</h4>
+                <ul>
+                    <li><a href="#features">核心機能</a></li>
+                    <li><a href="#stats">戦闘力指数</a></li>
+                    <li><a href="#bushido">武士道</a></li>
+                    <li><a href="#testimonials">証言録</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>资源</h4>
+                <ul>
+                    <li><a href="#">神经接口文档</a></li>
+                    <li><a href="#">义体改造指南</a></li>
+                    <li><a href="#">量子剑术入门</a></li>
+                    <li><a href="#">暗网安全协议</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>联系</h4>
+                <ul>
+                    <li><a href="#">暗网节点</a></li>
+                    <li><a href="#">加密频道</a></li>
+                    <li><a href="#">全息投影</a></li>
+                    <li><a href="#">脑波通讯</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                © 2087 赛博武士团 CYBER SAMURAI CORPS. 保留所有权利。
+                <span style="color:var(--katana-red);">// 版本 v2.0.87</span>
+            </p>
+            <div class="footer-social">
+                <a href="#" class="social-link" aria-label="Neural Link">🧠</a>
+                <a href="#" class="social-link" aria-label="Dark Web">🕸</a>
+                <a href="#" class="social-link" aria-label="HoloNet">🌐</a>
+                <a href="#" class="social-link" aria-label="Encrypted">🔐</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ==================== THEME TOGGLE ==================== */
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('cyberTheme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('cyberTheme', newTheme);
+            updateThemeButton(newTheme);
+        });
+
+        function updateThemeButton(theme) {
+            themeToggle.textContent = theme === 'dark' ? '☀ LIGHT' : '🌙 DARK';
+        }
+
+        /* ==================== MOBILE MENU ==================== */
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenu.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenu.textContent = '☰';
+            });
+        });
+
+        /* ==================== PARTICLE SYSTEM ==================== */
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            particle.style.animationDelay = (Math.random() * 10) + 's';
+            particle.style.width = (Math.random() * 3 + 1) + 'px';
+            particle.style.height = particle.style.width;
+
+            // Random color between red and blue
+            if (Math.random() > 0.5) {
+                particle.style.background = '#ff1744';
+                particle.style.boxShadow = '0 0 6px #ff1744, 0 0 12px rgba(255,23,68,0.5)';
+            }
+
+            particlesContainer.appendChild(particle);
+        }
+
+        /* ==================== SCROLL REVEAL ==================== */
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                    }, index * 100);
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        /* ==================== NUMBER COUNTER ==================== */
+        const statNumbers = document.querySelectorAll('.stat-number[data-count]');
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.getAttribute('data-count'));
+                    animateCounter(el, target);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        statNumbers.forEach(el => counterObserver.observe(el));
+
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 80;
+            const duration = 2000;
+            const stepTime = duration / 80;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, stepTime);
+        }
+
+        /* ==================== PROGRESS BAR ANIMATION ==================== */
+        const progressBars = document.querySelectorAll('.blade-fill, .blade-stat-fill');
+
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bar = entry.target;
+                    const width = bar.getAttribute('data-width');
+                    setTimeout(() => {
+                        bar.style.width = width + '%';
+                    }, 300);
+                    progressObserver.unobserve(bar);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        progressBars.forEach(bar => progressObserver.observe(bar));
+
+        /* ==================== NAVBAR SCROLL EFFECT ==================== */
+        const nav = document.querySelector('.nav');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 100) {
+                nav.style.background = 'rgba(10, 5, 21, 0.95)';
+                nav.style.boxShadow = '0 5px 30px rgba(0, 0, 0, 0.5)';
+            } else {
+                nav.style.background = 'rgba(10, 5, 21, 0.85)';
+                nav.style.boxShadow = 'none';
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        /* ==================== SMOOTH SCROLL FOR ANCHOR LINKS ==================== */
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        /* ==================== CTA BUTTON INTERACTION ==================== */
+        const ctaBtn = document.getElementById('ctaBtn');
+        const ctaInput = document.getElementById('ctaInput');
+
+        ctaBtn.addEventListener('click', () => {
+            const value = ctaInput.value.trim();
+            if (value) {
+                ctaBtn.textContent = '✓ 觉醒协议已启动';
+                ctaBtn.style.background = 'linear-gradient(135deg, #00e5ff, #00bcd4)';
+                ctaBtn.style.boxShadow = '0 0 30px rgba(0, 229, 255, 0.4)';
+
+                setTimeout(() => {
+                    ctaBtn.textContent = '⚔ 启动觉醒';
+                    ctaBtn.style.background = '';
+                    ctaBtn.style.boxShadow = '';
+                    ctaInput.value = '';
+                }, 3000);
+            } else {
+                ctaInput.style.borderColor = '#ff1744';
+                ctaInput.style.boxShadow = '0 0 20px rgba(255, 23, 68, 0.3)';
+                ctaInput.setAttribute('placeholder', '请输入有效标识符...');
+
+                setTimeout(() => {
+                    ctaInput.style.borderColor = '';
+                    ctaInput.style.boxShadow = '';
+                    ctaInput.setAttribute('placeholder', '输入你的网络标识符...');
+                }, 2000);
+            }
+        });
+
+        ctaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                ctaBtn.click();
+            }
+        });
+
+        /* ==================== CARD TILT EFFECT ==================== */
+        const cards = document.querySelectorAll('.samurai-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+            });
+        });
+
+        /* ==================== CURSOR TRAIL EFFECT ==================== */
+        const cursorTrail = [];
+        const trailLength = 5;
+
+        for (let i = 0; i < trailLength; i++) {
+            const trail = document.createElement('div');
+            trail.style.cssText = `
+                position: fixed;
+                width: ${8 - i}px;
+                height: ${8 - i}px;
+                background: ${i % 2 === 0 ?

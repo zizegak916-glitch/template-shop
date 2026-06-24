@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>秋枫 - 感受秋天的温暖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS Variables & Theme ===== */
+        :root {
+            --bg-primary: #fdf6e3;
+            --bg-secondary: #faf0d4;
+            --bg-card: #fff8ee;
+            --text-primary: #3d2b1f;
+            --text-secondary: #6b4f3a;
+            --text-muted: #9a8470;
+            --maple-red: #d4380d;
+            --maple-orange: #ff8c00;
+            --maple-gold: #daa520;
+            --maple-brown: #8b4513;
+            --maple-light: #e8a87c;
+            --shadow-warm: rgba(212, 56, 13, 0.12);
+            --shadow-soft: rgba(139, 69, 19, 0.08);
+            --border-warm: rgba(218, 165, 32, 0.3);
+            --gradient-maple: linear-gradient(135deg, #d4380d, #ff8c00, #daa520);
+            --gradient-warm: linear-gradient(135deg, #fdf6e3, #fae5c8, #f5d5a0);
+            --gradient-hero: linear-gradient(160deg, #3d2b1f 0%, #5c3a21 30%, #8b4513 60%, #a0522d 100%);
+        }
+
+        /* ===== Reset & Base ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Noto Serif SC', Georgia, serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ===== Utility Classes ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1rem;
+            background: var(--gradient-maple);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 3.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== Theme Toggle ===== */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--border-warm);
+            background: var(--bg-card);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-warm);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 25px var(--shadow-warm);
+        }
+
+        /* ===== Navigation ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: 16px 0;
+            transition: all 0.4s ease;
+            background: transparent;
+        }
+
+        .navbar.scrolled {
+            background: rgba(253, 246, 227, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 30px var(--shadow-soft);
+            padding: 10px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: var(--gradient-maple);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            position: relative;
+            padding: 4px 0;
+            font-size: 0.95rem;
+        }
+
+        .navbar.scrolled .nav-links a {
+            color: var(--text-secondary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-maple);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--maple-orange);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 26px;
+            height: 2.5px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled .mobile-menu-btn span {
+            background: var(--text-primary);
+        }
+
+        /* ===== Falling Maple Leaves ===== */
+        .leaves-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .maple-leaf {
+            position: absolute;
+            top: -80px;
+            opacity: 0;
+            animation: leafFall linear infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .maple-leaf svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes leafFall {
+            0% {
+                opacity: 0;
+                transform: translateY(-10vh) rotate(0deg) translateX(0px);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(110vh) rotate(720deg) translateX(100px);
+            }
+        }
+
+        @keyframes leafSway {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(30px); }
+            75% { transform: translateX(-30px); }
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-hero);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(212, 56, 13, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 140, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(218, 165, 32, 0.2) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, var(--bg-primary), transparent);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding: 40px 24px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50px;
+            color: var(--maple-light);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            letter-spacing: 2px;
+        }
+
+        .hero-title {
+            font-size: clamp(4rem, 12vw, 8rem);
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            letter-spacing: 12px;
+            position: relative;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, #ffcc80, #fff8e1, #ffe0b2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-english {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(1rem, 3vw, 1.6rem);
+            color: rgba(232, 168, 124, 0.7);
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .hero-description {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans SC', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-maple);
+            color: white;
+            box-shadow: 0 8px 30px rgba(212, 56, 13, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(212, 56, 13, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.7);
+            transform: translateY(-3px);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .hero-scroll .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* ===== Features Section ===== */
+        .features {
+            padding: 120px 0;
+            background: var(--bg-primary);
+            position: relative;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px 32px;
+            border: 1px solid var(--border-warm);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-maple);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px var(--shadow-warm);
+            border-color: rgba(218, 165, 32, 0.5);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, rgba(212, 56, 13, 0.1), rgba(218, 165, 32, 0.1));
+        }
+
+        .feature-card:nth-child(1) .feature-icon { background: linear-gradient(135deg, rgba(212, 56, 13, 0.15), rgba(212, 56, 13, 0.05)); }
+        .feature-card:nth-child(2) .feature-icon { background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 140, 0, 0.05)); }
+        .feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg, rgba(218, 165, 32, 0.15), rgba(218, 165, 32, 0.05)); }
+        .feature-card:nth-child(4) .feature-icon { background: linear-gradient(135deg, rgba(139, 69, 19, 0.15), rgba(139, 69, 19, 0.05)); }
+        .feature-card:nth-child(5) .feature-icon { background: linear-gradient(135deg, rgba(232, 168, 124, 0.2), rgba(232, 168, 124, 0.05)); }
+        .feature-card:nth-child(6) .feature-icon { background: linear-gradient(135deg, rgba(160, 82, 45, 0.15), rgba(160, 82, 45, 0.05)); }
+
+        .feature-title {
+            font-size: 1.35rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* ===== Showcase / About Section ===== */
+        .showcase {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+            position: relative;
+        }
+
+        .showcase-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .showcase-image {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            background: var(--gradient-hero);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .showcase-image-content {
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+
+        .showcase-image-content .big-leaf {
+            font-size: 6rem;
+            display: block;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .showcase-image-content p {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            letter-spacing: 3px;
+        }
+
+        .showcase-text h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .showcase-text p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+        }
+
+        .showcase-features {
+            list-style: none;
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .showcase-features li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .showcase-features li .check {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(212, 56, 13, 0.1), rgba(218, 165, 32, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            color: var(--maple-red);
+        }
+
+        /* ===== Stats Section ===== */
+        .stats {
+            padding: 100px 0;
+            background: var(--gradient-hero);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 30% 50%, rgba(212, 56, 13, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(218, 165, 32, 0.15) 0%, transparent 50%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffcc80, #fff8e1, #ffe0b2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== Testimonials Section ===== */
+        .testimonials {
+            padding: 120px 0;
+            background: var(--bg-primary);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 36px;
+            border: 1px solid var(--border-warm);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px var(--shadow-warm);
+        }
+
+        .testimonial-stars {
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            color: var(--maple-gold);
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.9;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .testimonial-card:nth-child(1) .testimonial-avatar { background: var(--maple-red); }
+        .testimonial-card:nth-child(2) .testimonial-avatar { background: var(--maple-orange); }
+        .testimonial-card:nth-child(3) .testimonial-avatar { background: var(--maple-gold); }
+
+        .testimonial-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .testimonial-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== CTA Section ===== */
+        .cta {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+        }
+
+        .cta-box {
+            background: var(--gradient-maple);
+            border-radius: 32px;
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: shimmer 8s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-box::after {
+            content: '🍁';
+            position: absolute;
+            top: 30px;
+            right: 60px;
+            font-size: 4rem;
+            opacity: 0.2;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: white;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        .cta-description {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.15rem;
+            max-width: 550px;
+            margin: 0 auto 36px;
+            line-height: 1.8;
+        }
+
+        .btn-cta {
+            background: white;
+            color: var(--maple-red);
+            padding: 16px 44px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-note {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* ===== Newsletter Section ===== */
+        .newsletter {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .newsletter-inner {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            border: 1px solid var(--border-warm);
+        }
+
+        .newsletter h3 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .newsletter p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 14px 24px;
+            border: 2px solid var(--border-warm);
+            border-radius: 50px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Noto Sans SC', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-input:focus {
+            border-color: var(--maple-orange);
+            box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1);
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: #2a1810;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 80px 0 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand .nav-logo {
+            font-size: 1.8rem;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .footer-col h4 {
+            color: white;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-col a {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-col a:hover {
+            color: var(--maple-orange);
+            padding-left: 4px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-bottom p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-socials a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .footer-socials a:hover {
+            background: var(--gradient-maple);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* ===== Scroll Animations ===== */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .animate-on-scroll.delay-1 { transition-delay: 0.1s; }
+        .animate-on-scroll.delay-2 { transition-delay: 0.2s; }
+        .animate-on-scroll.delay-3 { transition-delay: 0.3s; }
+        .animate-on-scroll.delay-4 { transition-delay: 0.4s; }
+        .animate-on-scroll.delay-5 { transition-delay: 0.5s; }
+        .animate-on-scroll.delay-6 { transition-delay: 0.6s; }
+
+        /* ===== Responsive Design ===== */
+        @media (max-width: 1024px) {
+            .showcase-wrapper {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(61, 43, 31, 0.97);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 30px;
+                z-index: 998;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                font-size: 1.3rem;
+                color: white !important;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                z-index: 999;
+            }
+
+            .hero-title {
+                letter-spacing: 6px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-box {
+                padding: 50px 30px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Falling Maple Leaves Container -->
+    <div class="leaves-container" id="leavesContainer"></div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#" class="nav-logo">🍁 秋枫</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#features">特色</a></li>
+                <li><a href="#showcase">关于</a></li>
+                <li><a href="#stats">数据</a></li>
+                <li><a href="#testimonials">评价</a></li>
+                <li><a href="#cta">开始</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">🍂 感受秋天的温暖与诗意</div>
+            <h1 class="hero-title"><span>秋枫</span></h1>
+            <p class="hero-english">Autumn Maple</p>
+            <p class="hero-description">
+                在这片温暖的枫叶世界中，感受秋天独有的宁静与美好。
+                每一片飘落的叶子，都承载着大自然最温柔的祝福。
+            </p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn btn-primary">探索秋意 →</a>
+                <a href="#showcase" class="btn btn-outline">了解更多</a>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span>向下滚动</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">秋日特色</h2>
+            <p class="section-subtitle animate-on-scroll">品味秋天六种独特的美好体验，让每一个瞬间都充满诗意</p>
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll delay-1">
+                    <div class="feature-icon">🍁</div>
+                    <h3 class="feature-title">枫叶如诗</h3>
+                    <p class="feature-description">漫山遍野的红叶，如同大自然挥洒的水墨画，层林尽染，美不胜收。每一片枫叶都诉说着秋天的故事。</p>
+                </div>
+                <div class="feature-card animate-on-scroll delay-2">
+                    <div class="feature-icon">🌾</div>
+                    <h3 class="feature-title">丰收喜悦</h3>
+                    <p class="feature-description">金色的稻田在秋风中起伏，果实累累挂满枝头。秋天是收获的季节，也是感恩的时刻。</p>
+                </div>
+                <div class="feature-card animate-on-scroll delay-3">
+                    <div class="feature-icon">☕</div>
+                    <h3 class="feature-title">暖意融融</h3>
+                    <p class="feature-description">一杯热茶，一本好书，在秋日午后的阳光里，感受时间缓慢流淌的温柔与美好。</p>
+                </div>
+                <div class="feature-card animate-on-scroll delay-4">
+                    <div class="feature-icon">🌄</div>
+                    <h3 class="feature-title">秋色斑斓</h3>
+                    <p class="feature-description">橙黄橘绿，层林尽染。秋天用最绚烂的色彩，描绘出一年中最动人的风景画卷。</p>
+                </div>
+                <div class="feature-card animate-on-scroll delay-5">
+                    <div class="feature-icon">🌙</div>
+                    <h3 class="feature-title">月夜清幽</h3>
+                    <p class="feature-description">秋天的夜空格外清澈，一轮明月高悬，银辉洒落大地，营造出最诗意的夜晚时光。</p>
+                </div>
+                <div class="feature-card animate-on-scroll delay-6">
+                    <div class="feature-icon">🌬️</div>
+                    <h3 class="feature-title">秋风送爽</h3>
+                    <p class="feature-description">凉爽的秋风拂过脸庞，带走夏日的炎热，带来清爽与宁静，让人心旷神怡。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase Section -->
+    <section class="showcase" id="showcase">
+        <div class="container">
+            <div class="showcase-wrapper">
+                <div class="showcase-image animate-on-scroll">
+                    <div class="showcase-image-content">
+                        <span class="big-leaf">🍂</span>
+                        <p>枫 叶 之 秋</p>
+                    </div>
+                </div>
+                <div class="showcase-text animate-on-scroll delay-2">
+                    <h2>关于秋枫的故事</h2>
+                    <p>
+                        秋枫源于对大自然的深深热爱，我们相信每一个季节都有其独特的魅力，
+                        而秋天，是最能触动人心的季节。
+                    </p>
+                    <p>
+                        从第一片叶子变红开始，秋天便以最绚烂的姿态，展现在世人面前。
+                        我们致力于捕捉这些美好瞬间，与您分享秋天的温暖与诗意。
+                    </p>
+                    <ul class="showcase-features">
+                        <li>
+                            <span class="check">✓</span>
+                            精选秋季自然风光摄影
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            传统二十四节气文化传承
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            秋季养生与健康生活方式
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            季节限定手工艺术体验
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll delay-1">
+                    <span class="stat-number" data-target="12000">0</span>
+                    <span class="stat-label">秋日摄影作品</span>
+                </div>
+                <div class="stat-item animate-on-scroll delay-2">
+                    <span class="stat-number" data-target="365">0</span>
+                    <span class="stat-label">持续创作天数</span>
+                </div>
+                <div class="stat-item animate-on-scroll delay-3">
+                    <span class="stat-number" data-target="8900">0</span>
+                    <span class="stat-label">温暖用户社区</span>
+                </div>
+                <div class="stat-item animate-on-scroll delay-4">
+                    <span class="stat-number" data-target="98">0</span>
+                    <span class="stat-label">用户满意度 (%)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">用户心声</h2>
+            <p class="section-subtitle animate-on-scroll">听听他们对秋天的感悟与赞美</p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card animate-on-scroll delay-1">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "秋枫让我重新发现了秋天的美。每一张照片、每一段文字，都让我感受到大自然最温柔的拥抱。
+                        在忙碌的生活中，这是最让我放松的一方天地。"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">林</div>
+                        <div>
+                            <div class="testimonial-name">林晓风</div>
+                            <div class="testimonial-role">摄影师 · 北京</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card animate-on-scroll delay-2">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "作为一个热爱传统文化的人，秋枫对节气文化的诠释让我非常感动。
+                        它不仅仅是关于秋天，更是关于我们与自然和谐共处的智慧。"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">张</div>
+                        <div>
+                            <div class="testimonial-name">张云舒</div>
+                            <div class="testimonial-role">教师 · 杭州</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card animate-on-scroll delay-3">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">
+                        "每次打开秋枫，都像是走进了一个温暖的秋日花园。这里的每一份内容都充满诚意，
+                        让我对生活充满了新的期待与感恩。"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">王</div>
+                        <div>
+                            <div class="testimonial-name">王暖阳</div>
+                            <div class="testimonial-role">设计师 · 成都</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <div class="cta-box animate-on-scroll">
+                <div class="cta-content">
+                    <h2 class="cta-title">开始您的秋日之旅</h2>
+                    <p class="cta-description">
+                        加入我们，在这个最美的季节里，一起感受大自然的馈赠，
+                        发现生活中每一个温暖的瞬间。
+                    </p>
+                    <a href="#" class="btn btn-cta">🍁 立即加入</a>
+                    <p class="cta-note">免费体验 · 无需信用卡 · 随时取消</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-inner animate-on-scroll">
+                <h3>🍂 订阅秋日信笺</h3>
+                <p>每周获取精选秋日美文、摄影技巧和季节限定内容</p>
+                <form class="newsletter-form" onsubmit="handleSubscribe(event)">
+                    <input type="email" class="newsletter-input" placeholder="输入您的邮箱地址..." required>
+                    <button type="submit" class="btn btn-primary">订阅</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="nav-logo">🍁 秋枫</a>
+                    <p>
+                        秋枫致力于捕捉秋天最美好的瞬间，
+                        用温暖的内容连接每一位热爱自然与生活的人。
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>探索</h4>
+                    <ul>
+                        <li><a href="#">秋日摄影</a></li>
+                        <li><a href="#">节气文化</a></li>
+                        <li><a href="#">养生指南</a></li>
+                        <li><a href="#">手工艺坊</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>社区</h4>
+                    <ul>
+                        <li><a href="#">用户作品</a></li>
+                        <li><a href="#">秋日话题</a></li>
+                        <li><a href="#">活动日历</a></li>
+                        <li><a href="#">创作者中心</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>支持</h4>
+                    <ul>
+                        <li><a href="#">帮助中心</a></li>
+                        <li><a href="#">联系我们</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">使用条款</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 秋枫 Autumn Maple. 保留所有权利。</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="微信">微</a>
+                    <a href="#" aria-label="微博">博</a>
+                    <a href="#" aria-label="小红书">书</a>
+                    <a href="#" aria-label="抖音">抖</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== Maple Leaf SVG Generator =====
+        function createMapleLeafSVG(color, size) {
+            const leafSVG = `
+                <svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 5 C55 15, 70 10, 75 20 C80 30, 90 28, 92 38 C94 48, 85 52, 80 55 
+                             C85 58, 90 68, 82 72 C74 76, 68 68, 65 62 C62 68, 55 78, 50 80 
+                             C45 78, 38 68, 35 62 C32 68, 26 76, 18 72 C10 68, 15 58, 20 55 
+                             C15 52, 6 48, 8 38 C10 28, 20 30, 25 20 C30 10, 45 15, 50 5 Z" 
+                          fill="${color}" opacity="0.85"/>
+                    <line x1="50" y1="80" x2="50" y2="95" stroke="${color}" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                    <line x1="50" y1="60" x2="38" y2="50" stroke="${color}" stroke-width="1.2" opacity="0.3"/>
+                    <line x1="50" y1="55" x2="62" y2="45" stroke="${color}" stroke-width="1.2" opacity="0.3"/>
+                    <line x1="50" y1="45" x2="42" y2="35" stroke="${color}" stroke-width="1" opacity="0.3"/>
+                    <line x1="50" y1="45" x2="58" y2="35" stroke="${color}" stroke-width="1" opacity="0.3"/>
+                </svg>
+            `;
+            return leafSVG;
+        }
+
+        // ===== Create Falling Leaves =====
+        function createFallingLeaves() {
+            const container = document.getElementById('leavesContainer');
+            const colors = ['#d4380d', '#ff8c00', '#daa520', '#e8a87c', '#cd853f', '#b8502e', '#c4722f'];
+            const leafCount = window.innerWidth < 768 ? 10 : 18;
+
+            for (let i = 0; i < leafCount; i++) {
+                setTimeout(() => {
+                    createSingleLeaf(container, colors);
+                }, i * 800);
+            }
+
+            // Continuously add leaves
+            setInterval(() => {
+                if (container.children.length < leafCount + 5) {
+                    createSingleLeaf(container, colors);
+                }
+            }, 2500);
+        }
+
+        function createSingleLeaf(container, colors) {
+            const leaf = document.createElement('div');
+            leaf.className = 'maple-leaf';
+            
+            const size = Math.random() * 30 + 20;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const left = Math.random() * 100;
+            const duration = Math.random() * 10 + 12;
+            const delay = Math.random() * 5;
+            const swayAmount = Math.random() * 150 - 75;
+            
+            leaf.innerHTML = createMapleLeafSVG(color, size);
+            leaf.style.left = left + '%';
+            leaf.style.width = size + 'px';
+            leaf.style.height = size + 'px';
+            leaf.style.animationDuration = duration + 's';
+            leaf.style.animationDelay = delay + 's';
+            
+            // Custom sway via CSS custom property
+            leaf.style.setProperty('--sway', swayAmount + 'px');
+            
+            container.appendChild(leaf);
+            
+            // Remove leaf after animation
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, (duration + delay) * 1000);
+        }
+
+        // ===== Navbar Scroll Effect =====
+        function handleNavbarScroll() {
+            const navbar = document.getElementById('navbar');
+            const scrolled = window.scrollY > 80;
+            
+            if (scrolled) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+
+        // ===== Mobile Menu Toggle =====
+        function initMobileMenu() {
+            const btn = document.getElementById('mobileMenuBtn');
+            const links = document.getElementById('navLinks');
+            
+            btn.addEventListener('click', function() {
+                links.classList.toggle('active');
+                const spans = btn.querySelectorAll('span');
+                
+                if (links.classList.contains('active')) {
+                    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                    spans[1].style.opacity = '0';
+                    spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+                } else {
+                    spans[0].style.transform = 'none';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'none';
+                }
+            });
+            
+            // Close menu on link click
+            links.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    links.classList.remove('active');
+                    const spans = btn.querySelectorAll('span');
+                    spans[0].style.transform = 'none';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'none';
+                });
+            });
+        }
+
+        // ===== Scroll Animations =====
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver(
+                function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('animated');
+                        }
+                    });
+                },
+                {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                }
+            );
+            
+            document.querySelectorAll('.animate-on-scroll').forEach(function(el) {
+                observer.observe(el);
+            });
+        }
+
+        // ===== Counter Animation =====
+        function initCounterAnimation() {
+            const observer = new IntersectionObserver(
+                function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            animateCounter(entry.target);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.5 }
+            );
+            
+            document.querySelectorAll('.stat-number').forEach(function(el) {
+                observer.observe(el);
+            });
+        }
+
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Ease out cubic
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(easeProgress * target);
+                
+                element.textContent = current.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = target.toLocaleString();
+                    // Add + suffix for larger numbers
+                    if (target >= 1000) {
+                        element.textContent = target.toLocaleString() + '+';
+                    }
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // ===== Theme Toggle =====
+        function initThemeToggle() {
+            const toggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            
+            // Check saved theme
+            const savedTheme = localStorage.getItem('autumn-theme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            toggle.addEventListener('click', function() {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('autumn-theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            const toggle = document.getElementById('themeToggle');
+            toggle.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
+        // ===== Newsletter Subscribe =====
+        function handleSubscribe(event) {
+            event.preventDefault();
+            const input = event.target.querySelector('input');
+            const email = input.value;
+            
+            if (email) {
+                input.value = '';
+                
+                // Show success feedback
+                const btn = event.target.querySelector('button');
+                const originalText = btn.textContent;
+                btn.textContent = '✓ 已订阅';
+                btn.style.background = 'linear-gradient(135deg, #52c41a, #73d13d)';
+                
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 3000);
+            }
+        }
+
+        // ===== Smooth Scroll for Anchor Links =====
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    
+                    if (targetId === '#') return;
+                    
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        const navHeight = document.getElementById('navbar').offsetHeight;
+                        const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // ===== Parallax Effect for Hero =====
+        function initParallax() {
+            window.addEventListener('scroll', function() {
+                const scrolled = window.scrollY;
+                const hero = document.querySelector('.hero-content');
+                
+                if (hero && scrolled < window.innerHeight) {
+                    hero.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
+                    hero.style.opacity = 1 - (scrolled / window.innerHeight) * 0.8;
+                }
+            });
+        }
+
+        // ===== Initialize Everything =====
+        document.addEventListener('DOMContentLoaded', function() {
+            createFallingLeaves();
+            initMobileMenu();
+            initScrollAnimations();
+            initCounterAnimation();
+            initThemeToggle();
+            initSmoothScroll();
+            initParallax();
+            
+            window.addEventListener('scroll', handleNavbarScroll, { passive: true });
+            
+            // Initial check
+            handleNavbarScroll();
+        });
+    </script>
+</body>
+</html>

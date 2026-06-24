@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像素都市 | Pixel City</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========== CSS VARIABLES ========== */
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-darker: #12121f;
+            --bg-card: #16213e;
+            --bg-card-hover: #1a2745;
+            --pixel-green: #00ff41;
+            --pixel-pink: #ff6ec7;
+            --pixel-blue: #00d4ff;
+            --pixel-yellow: #ffe66d;
+            --pixel-red: #ff0055;
+            --pixel-purple: #a855f7;
+            --pixel-orange: #ff8c00;
+            --text-primary: #e0e0ff;
+            --text-secondary: #8888aa;
+            --text-accent: #00ff41;
+            --grid-color: rgba(0, 255, 65, 0.06);
+            --grid-line: rgba(0, 255, 65, 0.12);
+            --shadow-pixel: 
+                4px 0 0 0 rgba(0,0,0,0.3),
+                0 4px 0 0 rgba(0,0,0,0.3),
+                4px 4px 0 0 rgba(0,0,0,0.3);
+            --glow-green: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 30px rgba(0, 255, 65, 0.2);
+            --glow-pink: 0 0 10px rgba(255, 110, 199, 0.5), 0 0 30px rgba(255, 110, 199, 0.2);
+            --glow-blue: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 30px rgba(0, 212, 255, 0.2);
+            --pixel-size: 4px;
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #f0f0f5;
+            --bg-darker: #e0e0ea;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f5f5ff;
+            --pixel-green: #00cc33;
+            --pixel-pink: #cc55a0;
+            --pixel-blue: #0099cc;
+            --text-primary: #1a1a2e;
+            --text-secondary: #555577;
+            --text-accent: #00cc33;
+            --grid-color: rgba(0, 204, 51, 0.05);
+            --grid-line: rgba(0, 204, 51, 0.1);
+        }
+
+        /* ========== RESET & BASE ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* ========== PIXEL GRID OVERLAY ========== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 8px 8px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ========== SCANLINE EFFECT ========== */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03) 0px,
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--pixel-green);
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            box-shadow: var(--glow-green);
+        }
+
+        .nav-logo {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            color: var(--pixel-green);
+            text-decoration: none;
+            text-shadow: var(--glow-green);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo .pixel-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--pixel-green);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%);
+            animation: pulse-icon 2s infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.9); }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--pixel-green);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--pixel-green);
+            text-shadow: var(--glow-green);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 2px solid var(--pixel-pink);
+            color: var(--pixel-pink);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.55rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+        }
+
+        .theme-toggle:hover {
+            background: var(--pixel-pink);
+            color: var(--bg-dark);
+            box-shadow: var(--glow-pink);
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 6rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        /* Pixel City Skyline */
+        .pixel-city {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 20px;
+            z-index: 3;
+        }
+
+        .building {
+            position: relative;
+            background: var(--bg-darker);
+            border: 2px solid rgba(0, 255, 65, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 8px;
+            gap: 4px;
+            animation: building-rise 1s ease-out both;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .building:hover {
+            border-color: var(--pixel-green);
+            box-shadow: var(--glow-green);
+        }
+
+        @keyframes building-rise {
+            from { transform: scaleY(0); transform-origin: bottom; }
+            to { transform: scaleY(1); transform-origin: bottom; }
+        }
+
+        .building .window {
+            width: 8px;
+            height: 8px;
+            background: var(--pixel-yellow);
+            image-rendering: pixelated;
+            animation: window-flicker 3s infinite;
+        }
+
+        .building .window.blue { background: var(--pixel-blue); }
+        .building .window.pink { background: var(--pixel-pink); }
+        .building .window.green { background: var(--pixel-green); }
+        .building .window.off { background: rgba(255,255,255,0.05); animation: none; }
+
+        @keyframes window-flicker {
+            0%, 90%, 100% { opacity: 1; }
+            92% { opacity: 0.3; }
+            94% { opacity: 1; }
+            96% { opacity: 0.5; }
+        }
+
+        .building-rows {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3px;
+            width: 100%;
+        }
+
+        /* Stars */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            z-index: 2;
+        }
+
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            animation: twinkle 2s infinite;
+            image-rendering: pixelated;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--pixel-pink);
+            border: 2px solid var(--pixel-pink);
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 2rem;
+            animation: blink-border 2s infinite;
+            text-shadow: var(--glow-pink);
+        }
+
+        @keyframes blink-border {
+            0%, 100% { border-color: var(--pixel-pink); }
+            50% { border-color: transparent; }
+        }
+
+        .hero-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(
+                90deg,
+                var(--pixel-green),
+                var(--pixel-blue),
+                var(--pixel-pink),
+                var(--pixel-green)
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 65, 0.3));
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        .hero-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(0.9rem, 2vw, 1.3rem);
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-pixel {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            padding: 1rem 2rem;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            image-rendering: pixelated;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-pixel::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 4px;
+            width: 100%;
+            height: 4px;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .btn-pixel:active {
+            transform: translateY(4px);
+        }
+
+        .btn-pixel:active::after {
+            display: none;
+        }
+
+        .btn-primary {
+            background: var(--pixel-green);
+            color: var(--bg-dark);
+            box-shadow: 
+                4px 0 0 0 rgba(0,0,0,0.3),
+                0 4px 0 0 #00cc33,
+                4px 4px 0 0 rgba(0,0,0,0.3);
+        }
+
+        .btn-primary:hover {
+            background: #33ff66;
+            box-shadow: var(--glow-green);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--pixel-blue);
+            border: 2px solid var(--pixel-blue);
+            box-shadow: 
+                4px 0 0 0 rgba(0,0,0,0.3),
+                0 4px 0 0 rgba(0, 212, 255, 0.3),
+                4px 4px 0 0 rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: var(--glow-blue);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 320px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            animation: bounce-down 2s infinite;
+        }
+
+        .scroll-indicator span {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .scroll-arrow {
+            width: 12px;
+            height: 12px;
+            border-right: 3px solid var(--pixel-green);
+            border-bottom: 3px solid var(--pixel-green);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce-down {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* ========== SECTION STYLES ========== */
+        .section {
+            padding: 6rem 2rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--pixel-pink);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: block;
+            text-shadow: var(--glow-pink);
+        }
+
+        .section-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ========== FEATURES SECTION ========== */
+        .features {
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 2px solid rgba(0, 255, 65, 0.15);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--pixel-green), var(--pixel-blue));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            border-color: var(--pixel-green);
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: 
+                0 8px 0 0 rgba(0, 0, 0, 0.3),
+                var(--glow-green);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 0;
+            image-rendering: pixelated;
+        }
+
+        .pixel {
+            width: 100%;
+            height: 100%;
+        }
+
+        .feature-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--pixel-green);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .feature-link:hover {
+            text-shadow: var(--glow-green);
+            gap: 1rem;
+        }
+
+        .feature-link .arrow {
+            transition: transform 0.3s;
+        }
+
+        .feature-link:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ========== STATS SECTION ========== */
+        .stats {
+            background: var(--bg-darker);
+            border-top: 2px solid rgba(0, 255, 65, 0.1);
+            border-bottom: 2px solid rgba(0, 255, 65, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            background: var(--bg-card);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--pixel-pink);
+            box-shadow: var(--glow-pink);
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 900;
+            display: block;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--pixel-green), var(--pixel-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pixel-green), var(--pixel-blue));
+            width: 0;
+            transition: width 2s ease;
+        }
+
+        /* ========== GALLERY / SHOWCASE ========== */
+        .showcase {
+            background: var(--bg-dark);
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .showcase-item {
+            position: relative;
+            background: var(--bg-card);
+            border: 2px solid rgba(0, 212, 255, 0.15);
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .showcase-item:hover {
+            border-color: var(--pixel-blue);
+            transform: translateY(-4px);
+            box-shadow: var(--glow-blue);
+        }
+
+        .showcase-visual {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-city {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .mini-building {
+            background: var(--bg-darker);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 4px;
+            gap: 2px;
+        }
+
+        .mini-window {
+            width: 6px;
+            height: 6px;
+        }
+
+        .showcase-info {
+            padding: 1.5rem;
+        }
+
+        .showcase-tag {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--pixel-blue);
+            margin-bottom: 0.75rem;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--pixel-blue);
+        }
+
+        .showcase-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .showcase-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ========== CTA SECTION ========== */
+        .cta {
+            background: var(--bg-darker);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(0, 255, 65, 0.05) 0%, 
+                    transparent 40%,
+                    transparent 60%,
+                    rgba(255, 110, 199, 0.05) 100%
+                );
+        }
+
+        .cta-box {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 4rem 2rem;
+            border: 2px solid rgba(0, 255, 65, 0.2);
+            background: rgba(22, 33, 62, 0.5);
+            position: relative;
+        }
+
+        .cta-box::before,
+        .cta-box::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--pixel-green);
+        }
+
+        .cta-box::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .cta-box::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .cta-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .cta-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+
+        .cta-gradient-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            padding: 1.2rem 3rem;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(90deg, var(--pixel-green), var(--pixel-blue), var(--pixel-pink));
+            background-size: 200% 100%;
+            color: var(--bg-dark);
+            position: relative;
+            transition: all 0.3s;
+            animation: btn-gradient 3s linear infinite;
+            display: inline-block;
+            text-decoration: none;
+            image-rendering: pixelated;
+        }
+
+        .cta-gradient-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 4px;
+            width: 100%;
+            height: 4px;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .cta-gradient-btn:hover {
+            box-shadow: 
+                0 0 20px rgba(0, 255, 65, 0.4),
+                0 0 40px rgba(0, 212, 255, 0.2),
+                0 0 60px rgba(255, 110, 199, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .cta-gradient-btn:active {
+            transform: translateY(2px);
+        }
+
+        .cta-gradient-btn:active::after {
+            display: none;
+        }
+
+        @keyframes btn-gradient {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .cta-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .cta-feature .check {
+            color: var(--pixel-green);
+        }
+
+        /* ========== TESTIMONIALS ========== */
+        .testimonials {
+            background: var(--bg-dark);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 2px solid rgba(168, 85, 247, 0.15);
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .testimonial-card:hover {
+            border-color: var(--pixel-purple);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            font-family: 'Press Start 2P', cursive;
+            font-size: 3rem;
+            color: var(--pixel-purple);
+            opacity: 0.3;
+            position: absolute;
+            top: 10px;
+            left: 20px;
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-darker);
+            border: 2px solid var(--pixel-purple);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            image-rendering: pixelated;
+        }
+
+        .avatar-pixel {
+            width: 100%;
+            height: 100%;
+        }
+
+        .testimonial-name {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--text-primary);
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            background: var(--bg-darker);
+            border-top: 2px solid rgba(0, 255, 65, 0.15);
+            padding: 4rem 2rem 2rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-brand .nav-logo {
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-top: 1rem;
+        }
+
+        .footer-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a::before {
+            content: '>';
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.4rem;
+            color: var(--pixel-green);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--pixel-green);
+            padding-left: 0.5rem;
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            border: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            border-color: var(--pixel-green);
+            color: var(--pixel-green);
+            box-shadow: var(--glow-green);
+        }
+
+        /* ========== FLOATING PIXELS ========== */
+        .floating-pixel {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            image-rendering: pixelated;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+            animation: float-up 15s linear infinite;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ========== CRT FLICKER ========== */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            animation: crt-flicker 0.15s infinite;
+            opacity: 0.01;
+        }
+
+        @keyframes crt-flicker {
+            0% { opacity: 0.01; }
+            50% { opacity: 0.02; }
+            100% { opacity: 0.01; }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.6rem 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(26, 26, 46, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                border-bottom: 2px solid var(--pixel-green);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: 2px solid var(--pixel-green);
+                color: var(--pixel-green);
+                font-size: 1.2rem;
+                padding: 0.3rem 0.6rem;
+                cursor: pointer;
+                font-family: 'Press Start 2P', cursive;
+            }
+
+            .hero {
+                padding: 5rem 1rem 3rem;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .pixel-city {
+                height: 150px;
+            }
+
+            .scroll-indicator {
+                bottom: 160px;
+            }
+
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-features {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu-btn {
+                display: none;
+            }
+        }
+
+        /* ========== LOADING SCREEN ========== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            background: var(--pixel-green);
+            width: 0;
+            animation: loading 1.5s ease forwards;
+        }
+
+        @keyframes loading {
+            0% { width: 0; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .loading-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--pixel-green);
+            animation: loading-blink 0.5s infinite;
+        }
+
+        @keyframes loading-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ========== PIXEL ART PATTERNS ========== */
+        .pixel-divider {
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--pixel-green) 0px,
+                var(--pixel-green) 8px,
+                transparent 8px,
+                transparent 16px
+            );
+            margin: 0;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--pixel-green);
+            border: 1px solid var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--pixel-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">LOADING PIXEL CITY...</div>
+        <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- Scanlines -->
+    <div class="scanlines"></div>
+    
+    <!-- CRT Overlay -->
+    <div class="crt-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo">
+            <div class="pixel-icon"></div>
+            像素都市
+        </a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">☰</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#features">功能</a></li>
+            <li><a href="#stats">数据</a></li>
+            <li><a href="#showcase">展示</a></li>
+            <li><a href="#testimonials">评价</a></li>
+            <li>
+                <button class="theme-toggle" id="themeToggle">◐ 切换主题</button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <!-- Stars -->
+        <div class="stars" id="stars"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">🎮 复古像素风 · 未来科技感</div>
+            <h1 class="hero-title">像素都市</h1>
+            <p class="hero-subtitle">PIXEL METROPOLIS</p>
+            <p class="hero-desc">
+                在数字世界的尽头，一座由像素构成的城市拔地而起。
+                这里融合了赛博朋克美学与8-bit怀旧情怀，
+                每一个像素都承载着无限可能。
+            </p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn-pixel btn-primary">▶ 探索城市</a>
+                <a href="#showcase" class="btn-pixel btn-secondary">◈ 了解更多</a>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>向下滚动</span>
+            <div class="scroll-arrow"></div>
+        </div>
+
+        <!-- Pixel City Skyline -->
+        <div class="pixel-city" id="pixelCity"></div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features" id="features">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">// FEATURES</span>
+                <h2 class="section-title">城市核心模块</h2>
+                <p class="section-subtitle">每个模块都是像素都市的一块基石，共同构建完整的数字生态系统</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card fade-in">
+                    <div class="feature-icon" id="featureIcon1"></div>
+                    <h3 class="feature-title">区块网络</h3>
+                    <p class="feature-desc">
+                        去中心化的区块网络架构，每个像素节点独立运行又相互连接，
+                        构建牢不可破的数字防线。
+                    </p>
+                    <a href="#" class="feature-link">
+                        深入了解 <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card fade-in">
+                    <div class="feature-icon" id="featureIcon2"></div>
+                    <h3 class="feature-title">霓虹协议</h3>
+                    <p class="feature-desc">
+                        采用量子加密的霓虹协议栈，数据在彩色光束中穿梭，
+                        安全性与速度兼得。
+                    </p>
+                    <a href="#" class="feature-link">
+                        深入了解 <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card fade-in">
+                    <div class="feature-icon" id="featureIcon3"></div>
+                    <h3 class="feature-title">像素引擎</h3>
+                    <p class="feature-desc">
+                        自研高性能像素渲染引擎，支持4K级别的像素化处理，
+                        带来极致的复古视觉体验。
+                    </p>
+                    <a href="#" class="feature-link">
+                        深入了解 <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card fade-in">
+                    <div class="feature-icon" id="featureIcon4"></div>
+                    <h3 class="feature-title">数据矿场</h3>
+                    <p class="feature-desc">
+                        分布式数据矿场集群，海量数据在此汇聚、处理、转化，
+                        为城市提供源源不断的动力。
+                    </p>
+                    <a href="#" class="feature-link">
+                        深入了解 <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card fade-in">
+                    <div class="feature-icon" id="featureIcon5"></div>
+                    <h3 class="feature-title">赛博守卫</h3>
+                    <p class="feature-desc">
+                        AI驱动的赛博守卫系统24/7全天候巡逻，
+                        实时检测并拦截任何异常数据入侵。
+                    </p>
+                    <a href="#" class="feature-link">
+                        深入了解 <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card fade-in">
+                    <div class="feature-icon" id="featureIcon6"></div>
+                    <h3 class="feature-title">虚拟广场</h3>
+                    <p class="feature-desc">
+                        开放的虚拟交互广场，用户可以自由创建、交易、社交，
+                        打造属于自己的数字领地。
+                    </p>
+                    <a href="#" class="feature-link">
+                        深入了解 <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pixel Divider -->
+    <div class="pixel-divider"></div>
+
+    <!-- Stats Section -->
+    <section class="section stats" id="stats">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">// STATISTICS</span>
+                <h2 class="section-title">城市运行数据</h2>
+                <p class="section-subtitle">实时监控像素都市的核心运行指标</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card fade-in">
+                    <span class="stat-number" data-target="12847">0</span>
+                    <span class="stat-label">活跃节点</span>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" data-width="87"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card fade-in">
+                    <span class="stat-number" data-target="99.9">0</span>
+                    <span class="stat-label">网络在线率 %</span>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" data-width="99"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card fade-in">
+                    <span class="stat-number" data-target="2560">0</span>
+                    <span class="stat-label">数据矿场</span>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" data-width="72"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card fade-in">
+                    <span class="stat-number" data-target="450000">0</span>
+                    <span class="stat-label">日处理数据 TB</span>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" data-width="94"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pixel Divider -->
+    <div class="pixel-divider"></div>
+
+    <!-- Showcase Section -->
+    <section class="section showcase" id="showcase">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">// SHOWCASE</span>
+                <h2 class="section-title">城市地标巡礼</h2>
+                <p class="section-subtitle">探索像素都市中最具标志性的数字建筑</p>
+            </div>
+
+            <div class="showcase-grid">
+                <div class="showcase-item fade-in">
+                    <div class="showcase-visual">
+                        <div class="mini-city" id="miniCity1"></div>
+                    </div>
+                    <div class="showcase-info">
+                        <span class="showcase-tag">SECTOR-01</span>
+                        <h3 class="showcase-title">中央处理器塔</h3>
+                        <p class="showcase-desc">
+                            像素都市的最高建筑，承载着全城的核心计算任务。
+                            塔尖的绿色信号灯永不熄灭。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="showcase-item fade-in">
+                    <div class="showcase-visual">
+                        <div class="mini-city" id="miniCity2"></div>
+                    </div>
+                    <div class="showcase-info">
+                        <span class="showcase-tag">SECTOR-02</span>
+                        <h3 class="showcase-title">霓虹交易所</h3>
+                        <p class="showcase-desc">
+                            全城最繁忙的数字资产交易中心，
+                            每秒处理数百万笔像素交易。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="showcase-item fade-in">
+                    <div class="showcase-visual">
+                        <div class="mini-city" id="miniCity3"></div>
+                    </div>
+                    <div class="showcase-info">
+                        <span class="showcase-tag">SECTOR-03</span>
+                        <h3 class="showcase-title">数据花园</h3>
+                        <p class="showcase-desc">
+                            城市中唯一的绿色空间，数据像花朵一样在此绽放，
+                            供市民自由浏览。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">// TESTIMONIALS</span>
+                <h2 class="section-title">市民之声</h2>
+                <p class="section-subtitle">听听像素都市居民们的真实反馈</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <p class="testimonial-text">
+                        像素都市改变了我对数字世界的认知。在这里，每一个像素都充满了生命力，
+                        每一次交互都是一次奇妙的冒险。强烈推荐给所有复古科技爱好者！
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" id="avatar1"></div>
+                        <div>
+                            <div class="testimonial-name">代码侠 · No.0042</div>
+                            <div class="testimonial-role">资深区块探索者</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card fade-in">
+                    <p class="testimonial-text">
+                        作为一名像素艺术家，我在这里找到了创作的天堂。
+                        赛博守卫系统让我安心创作，霓虹协议让我的作品传播到更远的地方。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" id="avatar2"></div>
+                        <div>
+                            <div class="testimonial-name">霓虹画师 · No.1337</div>
+                            <div class="testimonial-role">像素艺术创作者</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card fade-in">
+                    <p class="testimonial-text">
+                        数据矿场的效率令人惊叹！我们团队的数据处理速度提升了300%，
+                        能耗却降低了一半。像素都市是真正的未来基础设施。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" id="avatar3"></div>
+                        <div>
+                            <div class="testimonial-name">矿工大师 · No.7777</div>
+                            <div class="testimonial-role">数据中心运维主管</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta" id="cta">
+        <div class="container">
+            <div class="cta-box fade-in">
+                <h2 class="cta-title">加入像素都市<br>开始你的数字旅程</h2>
+                <p class="cta-desc">
+                    无论你是开发者、艺术家、探险家还是梦想家，
+                    像素都市都有属于你的位置。
+                </p>
+                <a href="#" class="cta-gradient-btn">⚡ 立即入驻</a>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <span class="check">✓</span> 免费注册
+                    </div>
+                    <div class="cta-feature">
+                        <span class="check">✓</span> 无限存储
+                    </div>
+                    <div class="cta-feature">
+                        <span class="check">✓</span> 24/7 在线
+                    </div>
+                    <div class="cta-feature">
+                        <span class="check">✓</span> 安全加密
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="nav-logo">
+                    <div class="pixel-icon"></div>
+                    像素都市
+                </a>
+                <p>在数字世界的尽头，一座永不落幕的像素之城。</p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">探索</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">核心功能</a></li>
+                    <li><a href="#stats">运行数据</a></li>
+                    <li><a href="#showcase">城市地标</a></li>
+                    <li><a href="#testimonials">市民评价</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">资源</h4>
+                <ul class="footer-links">
+                    <li><a href="#">开发文档</a></li>
+                    <li><a href="#">API 接口</a></li>
+                    <li><a href="#">像素工具包</a></li>
+                    <li><a href="#">社区论坛</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">关于</h4>
+                <ul class="footer-links">
+                    <li><a href="#">团队介绍</a></li>
+                    <li><a href="#">发展历程</a></li>
+                    <li><a href="#">加入我们</a></li>
+                    <li><a href="#">联系方式</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 像素都市 PIXEL METROPOLIS. 保留所有权利。</p>
+            <div class="footer-socials">
+                <a href="#" class="social-link" title="GitHub">GH</a>
+                <a href="#" class="social-link" title="Discord">DC</a>
+                <a href="#" class="social-link" title="Twitter">TW</a>
+                <a href="#" class="social-link" title="微博">WB</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Pixels Container -->
+    <div id="floatingPixels"></div>
+
+    <script>
+        // ========== LOADING SCREEN ==========
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1800);
+        });
+
+        // ========== THEME TOGGLE ==========
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '◐ 切换主题' : '◑ 切换主题';
+        });
+
+        // ========== MOBILE MENU ==========
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.textContent = '☰';
+            });
+        });
+
+        // ========== NAVBAR SCROLL EFFECT ==========
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ========== GENERATE STARS ==========
+        function generateStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 80;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (1 + Math.random() * 3) + 's';
+
+                if (Math.random() > 0.7) {
+                    star.style.width = '6px';
+                    star.style.height = '6px';
+                }
+
+                starsContainer.appendChild(star);
+            }
+        }
+        generateStars();
+
+        // ========== GENERATE PIXEL CITY SKYLINE ==========
+        function generatePixelCity() {
+            const city = document.getElementById('pixelCity');
+            const buildingCount = Math.floor(window.innerWidth / 45);
+            const colors = [
+                'var(--pixel-green)', 'var(--pixel-blue)', 
+                'var(--pixel-pink)', 'var(--pixel-yellow)'
+            ];
+
+            for (let i = 0; i < buildingCount; i++) {
+                const building = document.createElement('div');
+                building.className = 'building';
+                
+                const width = 30 + Math.random() * 30;
+                const height = 60 + Math.random() * 200;
+                building.style.width = width + 'px';
+                building.style.height = height + 'px';
+                building.style.animationDelay = (i * 0.05) + 's';
+
+                // Windows
+                const rows = Math.floor(height / 20);
+                const cols = Math.floor(width / 16);
+                
+                for (let r = 0; r < rows; r++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'building-rows';
+                    
+                    for (let c = 0; c < cols; c++) {
+                        const win = document.createElement('div');
+                        win.className = 'window';
+                        
+                        if (Math.random() > 0.4) {
+                            const colorClass = ['', 'blue', 'pink', 'green'];
+                            win.classList.add(colorClass[Math.floor(Math.random() * colorClass.length)]);
+                            win.style.animationDelay = Math.random() * 5 + 's';
+                            win.style.animationDuration = (2 + Math.random() * 4) + 's';
+                        } else {
+                            win.classList.add('off');
+                        }
+                        
+                        rowDiv.appendChild(win);
+                    }
+                    
+                    building.appendChild(rowDiv);
+                }
+
+                // Antenna on tall buildings
+                if (height > 180 && Math.random() > 0.5) {
+                    const antenna = document.createElement('div');
+                    antenna.style.width = '2px';
+                    antenna.style.height = '20px';
+                    antenna.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    antenna.style.margin = '0 auto';
+                    building.appendChild(antenna);
+                }
+
+                city.appendChild(building);
+            }
+        }
+        generatePixelCity();
+
+        // ========== PIXEL ART ICONS ==========
+        function createPixelIcon(containerId, pattern, colorMap) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            pattern.forEach(function(row, y) {
+                row.forEach(function(pixel, x) {
+                    const div = document.createElement('div');
+                    div.className = 'pixel';
+                    div.style.background = colorMap[pixel] || 'transparent';
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        // Feature icons - pixel art patterns
+        const iconPatterns = {
+            network: [
+                [0,0,0,1,1,0,0,0],
+                [0,0,1,2,2,1,0,0],
+                [0,1,2,0,0,2,1,0],
+                [1,2,0,3,3,0,2,1],
+                [1,2,0,3,3,0,2,1],
+                [0,1,2,0,0,2,1,0],
+                [0,0,1,2,2,1,0,0],
+                [0,0,0,1,1,0,0,0]
+            ],
+            neon: [
+                [0,0,1,1,1,1,0,0],
+                [0,1,2,2,2,2,1,0],
+                [1,2,0,0,0,0,2,1],
+                [1,2,0,3,3,0,2,1],
+                [1,2,0,3,3,0,2,1],
+                [1,2,0,0,0,0,2,1],
+                [0,1,2,2,2,2,1,0],
+                [0,0,1,1,1,1,0,0]
+            ],
+            engine: [
+                [0,0,0,3,3,0,0,0],
+                [0,0,3,1,1,3,0,0],
+                [0,3,1,2,2,1,3,0],
+                [3,1,2,0,0,2,1,3],
+                [3,1,2,0,0,2,1,3],
+                [0,3,1,2,2,1,3,0],
+                [0,0,3,1,1,3,0,0],
+                [0,0,0,3,3,0,0,0]
+            ],
+            mine: [
+                [0,0,0,0,3,0,0,0],
+                [0,0,0,3,1,3,0,0],
+                [0,0,3,1,2,1,3,0],
+                [0,3,1,2,2,2,1,3],
+                [3,1,2,2,2,2,2,1],
+                [0,3,1,2,2,2,1,3],
+                [0,0,3,1,2,1,3,0],
+                [0,0,0,3,1,3,0,0]
+            ],
+            guard: [
+                [0,0,1,1,1,1,0,0],
+                [0,1,3,3,3,3,1,0],
+                [1,3,0,3,3,0,3,1],
+                [1,3,3,3,3,3,3,1],
+                [0,1,3,2,2,3,1,0],
+                [0,0,1,3,3,1,0,0],
+                [0,0,1,3,3,1,0,0],
+                [0,1,1,1,1,1,1,0]
+            ],
+            plaza: [
+                [0,0,1,0,0,1,0,0],
+                [0,1,2,1,1,2,1,0],
+                [1,2,3,2,2,3,2,1],
+                [0,1,2,3,3,2,1,0],
+                [0,1,2,3,3,2,1,0],
+                [1,2,3,2,2,3,2,1],
+                [0,1,2,1,1,2,1,0],
+                [0,0,1,0,0,1,0,0]
+            ]
+        };
+
+        const colorMap = {
+            0: 'transparent',
+            1: 'var(--pixel-green)',
+            2: 'var(--pixel-blue)',
+            3: 'var(--pixel-pink)'
+        };
+
+        createPixelIcon('featureIcon1', iconPatterns.network, colorMap);
+        createPixelIcon('featureIcon2', iconPatterns.neon, colorMap);
+        createPixelIcon('featureIcon3', iconPatterns.engine, colorMap);
+        createPixelIcon('featureIcon4', iconPatterns.mine, colorMap);
+        createPixelIcon('featureIcon5', iconPatterns.guard, colorMap);
+        createPixelIcon('featureIcon6', iconPatterns.plaza, colorMap);
+
+        // ========== MINI CITIES FOR SHOWCASE ==========
+        function generateMiniCity(containerId, accentColor) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const count = Math.floor(container.clientWidth / 16) || 15;
+            
+            for (let i = 0; i < count; i++) {
+                const building = document.createElement('div');
+                building.className = 'mini-building';
+                const height = 30 + Math.random() * 120;
+                building.style.height = height + 'px';
+                building.style.width = (10 + Math.random() * 10) + 'px';
+
+                const rows = Math.floor(height / 16);
+                for (let r = 0; r < rows; r++) {
+                    if (Math.random() > 0.3) {
+                        const win = document.createElement('div');
+                        win.className = 'mini-window';
+                        win.style.background = Math.random() > 0.5 ? accentColor : 'var(--pixel-yellow)';
+                        building.appendChild(win);
+                    }
+                }
+
+                container.appendChild(building);
+            }
+        }
+
+        setTimeout(function() {
+            generateMiniCity('miniCity1', 'var(--pixel-green)');
+            generateMiniCity('miniCity2', '

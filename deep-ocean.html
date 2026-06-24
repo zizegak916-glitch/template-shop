@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深海 - 探索无尽深渊</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==================== CSS VARIABLES ==================== */
+        :root {
+            --deep: #001122;
+            --deep-rgb: 0, 17, 34;
+            --light-ray: #0099ff;
+            --light-ray-rgb: 0, 153, 255;
+            --surface: #0066aa;
+            --surface-rgb: 0, 102, 170;
+            --bioluminescent: #00ffcc;
+            --bioluminescent-rgb: 0, 255, 204;
+            --mid-deep: #002244;
+            --abyss: #000a14;
+            --text-primary: #e0f0ff;
+            --text-secondary: #88bbdd;
+            --card-bg: rgba(0, 34, 68, 0.6);
+            --card-border: rgba(0, 153, 255, 0.15);
+        }
+
+        [data-theme="light"] {
+            --deep: #e8f4ff;
+            --deep-rgb: 232, 244, 255;
+            --light-ray: #0077dd;
+            --light-ray-rgb: 0, 119, 221;
+            --surface: #0088cc;
+            --surface-rgb: 0, 136, 204;
+            --bioluminescent: #00aa88;
+            --bioluminescent-rgb: 0, 170, 136;
+            --mid-deep: #d0e8ff;
+            --abyss: #c0ddff;
+            --text-primary: #0a2a4a;
+            --text-secondary: #3a6688;
+            --card-bg: rgba(200, 225, 255, 0.7);
+            --card-border: rgba(0, 119, 221, 0.2);
+        }
+
+        /* ==================== RESET & BASE ==================== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.6s ease, color 0.6s ease;
+        }
+
+        /* ==================== SCROLLBAR ==================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--abyss);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-ray);
+        }
+
+        /* ==================== BUBBLES ANIMATION ==================== */
+        .bubbles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(var(--light-ray-rgb), 0.15), rgba(var(--light-ray-rgb), 0.03));
+            border: 1px solid rgba(var(--light-ray-rgb), 0.08);
+            animation: bubbleRise linear infinite;
+        }
+
+        @keyframes bubbleRise {
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-110vh) translateX(50px) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* ==================== LIGHT RAYS ==================== */
+        .light-rays {
+            position: fixed;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .light-ray {
+            position: absolute;
+            top: -10%;
+            width: 3px;
+            height: 120%;
+            background: linear-gradient(
+                180deg,
+                rgba(var(--light-ray-rgb), 0.4) 0%,
+                rgba(var(--light-ray-rgb), 0.15) 30%,
+                rgba(var(--light-ray-rgb), 0.05) 60%,
+                transparent 100%
+            );
+            transform-origin: top center;
+            animation: raySway ease-in-out infinite;
+            filter: blur(2px);
+        }
+
+        .light-ray::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -15px;
+            width: 33px;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                rgba(var(--light-ray-rgb), 0.08) 0%,
+                rgba(var(--light-ray-rgb), 0.02) 50%,
+                transparent 100%
+            );
+            filter: blur(8px);
+        }
+
+        .light-ray:nth-child(1) {
+            left: 20%;
+            animation-duration: 8s;
+            animation-delay: 0s;
+            width: 4px;
+        }
+
+        .light-ray:nth-child(2) {
+            left: 35%;
+            animation-duration: 10s;
+            animation-delay: -2s;
+            width: 2px;
+            opacity: 0.7;
+        }
+
+        .light-ray:nth-child(3) {
+            left: 50%;
+            animation-duration: 7s;
+            animation-delay: -4s;
+            width: 5px;
+        }
+
+        .light-ray:nth-child(4) {
+            left: 65%;
+            animation-duration: 9s;
+            animation-delay: -1s;
+            width: 3px;
+            opacity: 0.8;
+        }
+
+        .light-ray:nth-child(5) {
+            left: 80%;
+            animation-duration: 11s;
+            animation-delay: -3s;
+            width: 2px;
+            opacity: 0.6;
+        }
+
+        .light-ray:nth-child(6) {
+            left: 10%;
+            animation-duration: 12s;
+            animation-delay: -5s;
+            width: 3px;
+            opacity: 0.5;
+        }
+
+        .light-ray:nth-child(7) {
+            left: 45%;
+            animation-duration: 9s;
+            animation-delay: -6s;
+            width: 4px;
+            opacity: 0.9;
+        }
+
+        @keyframes raySway {
+            0%, 100% {
+                transform: rotate(-3deg) scaleY(1);
+                opacity: 0.6;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                transform: rotate(3deg) scaleY(1.05);
+                opacity: 0.8;
+            }
+            75% {
+                opacity: 1;
+            }
+        }
+
+        /* ==================== DEPTH PARTICLES ==================== */
+        .depth-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--bioluminescent);
+            box-shadow: 0 0 6px var(--bioluminescent), 0 0 12px rgba(var(--bioluminescent-rgb), 0.3);
+            animation: particleFloat ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.2;
+            }
+            25% {
+                transform: translateY(-30px) translateX(15px);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-10px) translateX(-20px);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateY(-40px) translateX(10px);
+                opacity: 1;
+            }
+        }
+
+        /* ==================== NAVIGATION ==================== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgba(var(--deep-rgb), 0.95) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(var(--deep-rgb), 0.95);
+            padding: 0.8rem 2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--bioluminescent), var(--surface));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(var(--bioluminescent-rgb), 0.3);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(var(--bioluminescent-rgb), 0.3);
+            }
+            50% {
+                box-shadow: 0 0 35px rgba(var(--bioluminescent-rgb), 0.6);
+            }
+        }
+
+        .nav-logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--bioluminescent);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(var(--bioluminescent-rgb), 0.5);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid rgba(var(--light-ray-rgb), 0.3);
+            background: rgba(var(--deep-rgb), 0.5);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--bioluminescent);
+            box-shadow: 0 0 20px rgba(var(--bioluminescent-rgb), 0.3);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle .icon-sun,
+        .theme-toggle .icon-moon {
+            position: absolute;
+            transition: all 0.4s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle .icon-sun {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        [data-theme="dark"] .theme-toggle .icon-moon {
+            opacity: 0;
+            transform: rotate(90deg) scale(0);
+        }
+
+        [data-theme="light"] .theme-toggle .icon-sun {
+            opacity: 0;
+            transform: rotate(-90deg) scale(0);
+        }
+
+        [data-theme="light"] .theme-toggle .icon-moon {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .mobile-menu-btn span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-primary);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .hero-depth-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 50% -20%, rgba(var(--light-ray-rgb), 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.8) 0%, transparent 60%),
+                linear-gradient(180deg, 
+                    var(--surface) 0%, 
+                    rgba(var(--surface-rgb), 0.6) 5%,
+                    var(--deep) 25%, 
+                    var(--mid-deep) 50%,
+                    var(--abyss) 100%
+                );
+            z-index: 0;
+            transition: background 0.6s ease;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid rgba(var(--bioluminescent-rgb), 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--bioluminescent);
+            margin-bottom: 2rem;
+            background: rgba(var(--bioluminescent-rgb), 0.05);
+            backdrop-filter: blur(10px);
+            animation: fadeInDown 1s ease 0.2s both;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--bioluminescent);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% {
+                box-shadow: 0 0 4px var(--bioluminescent);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 12px var(--bioluminescent);
+                transform: scale(1.3);
+            }
+        }
+
+        .hero-title {
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1rem;
+            background: linear-gradient(180deg, 
+                #ffffff 0%, 
+                var(--light-ray) 40%,
+                var(--bioluminescent) 80%,
+                rgba(var(--bioluminescent-rgb), 0.5) 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleReveal 1.2s ease 0.4s both;
+            filter: drop-shadow(0 0 40px rgba(var(--light-ray-rgb), 0.3));
+            letter-spacing: 0.2em;
+        }
+
+        @keyframes titleReveal {
+            from {
+                opacity: 0;
+                transform: translateY(60px) scale(0.9);
+                filter: blur(10px) drop-shadow(0 0 40px rgba(var(--light-ray-rgb), 0.3));
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0) drop-shadow(0 0 40px rgba(var(--light-ray-rgb), 0.3));
+            }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 4px;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 1s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            letter-spacing: 1px;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--light-ray), var(--bioluminescent));
+            color: var(--deep);
+            box-shadow: 0 4px 25px rgba(var(--light-ray-rgb), 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(var(--light-ray-rgb), 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid rgba(var(--light-ray-rgb), 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--bioluminescent);
+            color: var(--bioluminescent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(var(--bioluminescent-rgb), 0.15);
+        }
+
+        .hero-scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            animation: fadeInUp 1s ease 1.4s both;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--light-ray), transparent);
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% {
+                transform: scaleY(0.5);
+                opacity: 0.3;
+                transform-origin: top;
+            }
+            50% {
+                transform: scaleY(1);
+                opacity: 1;
+                transform-origin: top;
+            }
+        }
+
+        /* ==================== DEPTH GAUGE ==================== */
+        .depth-gauge {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .depth-gauge-line {
+            width: 2px;
+            height: 200px;
+            background: rgba(var(--light-ray-rgb), 0.15);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .depth-gauge-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, var(--light-ray), var(--bioluminescent));
+            border-radius: 2px;
+            transition: height 0.3s ease;
+            box-shadow: 0 0 8px rgba(var(--bioluminescent-rgb), 0.5);
+        }
+
+        .depth-gauge-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            writing-mode: vertical-rl;
+            letter-spacing: 3px;
+            margin-top: 0.5rem;
+        }
+
+        /* ==================== SECTIONS COMMON ==================== */
+        .section {
+            position: relative;
+            padding: 8rem 2rem;
+            z-index: 2;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            color: var(--bioluminescent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .section-label-line {
+            width: 30px;
+            height: 1px;
+            background: var(--bioluminescent);
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--light-ray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ==================== DEPTH LAYERS FEATURES ==================== */
+        .depth-section {
+            background: linear-gradient(180deg, var(--deep) 0%, var(--mid-deep) 50%, var(--deep) 100%);
+        }
+
+        .depth-layers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .depth-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .depth-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .depth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 0%),
+                rgba(var(--light-ray-rgb), 0.08) 0%,
+                transparent 60%
+            );
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .depth-card:hover::before {
+            opacity: 1;
+        }
+
+        .depth-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(var(--light-ray-rgb), 0.3);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(var(--light-ray-rgb), 0.05);
+        }
+
+        .depth-card-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .depth-card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .depth-card-layer {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .depth-card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .depth-card-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .depth-card-depth {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card Variants */
+        .depth-card--surface .depth-card-indicator {
+            background: linear-gradient(90deg, var(--light-ray), rgba(var(--light-ray-rgb), 0.3));
+        }
+        .depth-card--surface .depth-card-icon {
+            background: rgba(var(--light-ray-rgb), 0.1);
+            color: var(--light-ray);
+        }
+        .depth-card--surface .depth-card-depth {
+            background: rgba(var(--light-ray-rgb), 0.1);
+            color: var(--light-ray);
+        }
+
+        .depth-card--twilight .depth-card-indicator {
+            background: linear-gradient(90deg, var(--surface), rgba(var(--surface-rgb), 0.3));
+        }
+        .depth-card--twilight .depth-card-icon {
+            background: rgba(var(--surface-rgb), 0.1);
+            color: var(--surface);
+        }
+        .depth-card--twilight .depth-card-depth {
+            background: rgba(var(--surface-rgb), 0.1);
+            color: var(--surface);
+        }
+
+        .depth-card--midnight .depth-card-indicator {
+            background: linear-gradient(90deg, var(--bioluminescent), rgba(var(--bioluminescent-rgb), 0.3));
+        }
+        .depth-card--midnight .depth-card-icon {
+            background: rgba(var(--bioluminescent-rgb), 0.1);
+            color: var(--bioluminescent);
+        }
+        .depth-card--midnight .depth-card-depth {
+            background: rgba(var(--bioluminescent-rgb), 0.1);
+            color: var(--bioluminescent);
+        }
+
+        .depth-card--abyss .depth-card-indicator {
+            background: linear-gradient(90deg, #ff0066, #ff338844);
+        }
+        .depth-card--abyss .depth-card-icon {
+            background: rgba(255, 0, 102, 0.1);
+            color: #ff3366;
+        }
+        .depth-card--abyss .depth-card-depth {
+            background: rgba(255, 0, 102, 0.1);
+            color: #ff3366;
+        }
+
+        /* ==================== STATS SECTION ==================== */
+        .stats-section {
+            background: linear-gradient(180deg, var(--deep) 0%, var(--abyss) 50%, var(--deep) 100%);
+            position: relative;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--bioluminescent-rgb), 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 5rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .stat-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(var(--bioluminescent-rgb), 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card-glow {
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .stat-card:hover .stat-card-glow {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--bioluminescent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-suffix {
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(var(--light-ray-rgb), 0.1);
+            border-radius: 3px;
+            margin-top: 1.2rem;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* ==================== OCEAN ZONES ==================== */
+        .zones-section {
+            background: var(--deep);
+        }
+
+        .zones-visual {
+            position: relative;
+            height: 600px;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 3rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .zone-layer {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 3rem;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+
+        .zone-layer:hover {
+            padding-left: 4rem;
+        }
+
+        .zone-layer:nth-child(1) {
+            top: 0;
+            height: 20%;
+            background: linear-gradient(180deg, rgba(var(--light-ray-rgb), 0.15) 0%, rgba(var(--light-ray-rgb), 0.05) 100%);
+        }
+
+        .zone-layer:nth-child(2) {
+            top: 20%;
+            height: 20%;
+            background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.15) 0%, rgba(var(--surface-rgb), 0.05) 100%);
+        }
+
+        .zone-layer:nth-child(3) {
+            top: 40%;
+            height: 20%;
+            background: linear-gradient(180deg, rgba(0, 30, 60, 0.6) 0%, rgba(0, 15, 35, 0.6) 100%);
+        }
+
+        .zone-layer:nth-child(4) {
+            top: 60%;
+            height: 20%;
+            background: linear-gradient(180deg, rgba(0, 15, 35, 0.8) 0%, rgba(0, 8, 20, 0.8) 100%);
+        }
+
+        .zone-layer:nth-child(5) {
+            top: 80%;
+            height: 20%;
+            background: linear-gradient(180deg, rgba(0, 8, 20, 0.9) 0%, rgba(0, 3, 10, 0.95) 100%);
+        }
+
+        .zone-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .zone-icon {
+            font-size: 2rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .zone-text h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .zone-text p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .zone-depth-label {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+
+        .zone-divider {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(var(--light-ray-rgb), 0.15), transparent);
+        }
+
+        /* ==================== CTA SECTION ==================== */
+        .cta-section {
+            position: relative;
+            padding: 10rem 2rem;
+            overflow: hidden;
+        }
+
+        .cta-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 30% 50%, rgba(var(--light-ray-rgb), 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(var(--bioluminescent-rgb), 0.05) 0%, transparent 50%),
+                linear-gradient(180deg, var(--deep) 0%, var(--mid-deep) 50%, var(--abyss) 100%);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, var(--light-ray), var(--bioluminescent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-text {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .cta-form {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 550px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(var(--light-ray-rgb), 0.2);
+            border-radius: 60px;
+            background: rgba(var(--deep-rgb), 0.6);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .cta-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .cta-input:focus {
+            border-color: var(--bioluminescent);
+            box-shadow: 0 0 20px rgba(var(--bioluminescent-rgb), 0.15);
+        }
+
+        .cta-note {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* Floating elements for CTA */
+        .cta-float {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .cta-float-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(var(--light-ray-rgb), 0.06) 0%, transparent 70%);
+            top: 10%;
+            left: -5%;
+            animation: floatSlow 15s ease-in-out infinite;
+        }
+
+        .cta-float-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(var(--bioluminescent-rgb), 0.04) 0%, transparent 70%);
+            bottom: 10%;
+            right: -3%;
+            animation: floatSlow 12s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            position: relative;
+            padding: 5rem 2rem 2rem;
+            background: var(--abyss);
+            z-index: 2;
+            border-top: 1px solid rgba(var(--light-ray-rgb), 0.08);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .footer-brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--light-ray), var(--bioluminescent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .footer-brand-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .footer-column h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--bioluminescent);
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(var(--light-ray-rgb), 0.08);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(var(--light-ray-rgb), 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social-link:hover {
+            border-color: var(--bioluminescent);
+            color: var(--bioluminescent);
+            box-shadow: 0 0 20px rgba(var(--bioluminescent-rgb), 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* ==================== ANIMATIONS ==================== */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(var(--deep-rgb), 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                backdrop-filter: blur(20px);
+                border-bottom: 1px solid var(--card-border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .section {
+                padding: 5rem 1.5rem;
+            }
+
+            .depth-layers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .zones-visual {
+                height: 500px;
+            }
+
+            .zone-layer {
+                padding: 0 1.5rem;
+            }
+
+            .zone-depth-label {
+                display: none;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .depth-gauge {
+                display: none;
+            }
+
+            .cta-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cta-input {
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                letter-spacing: 0.1em;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Light Rays -->
+    <div class="light-rays">
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+        <div class="light-ray"></div>
+    </div>
+
+    <!-- Bubbles -->
+    <div class="bubbles-container" id="bubblesContainer"></div>
+
+    <!-- Depth Particles -->
+    <div class="depth-particles" id="depthParticles"></div>
+
+    <!-- Depth Gauge -->
+    <div class="depth-gauge">
+        <div class="depth-gauge-line">
+            <div class="depth-gauge-fill" id="depthFill"></div>
+        </div>
+        <span class="depth-gauge-label">深度</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">🌊</div>
+            <span class="nav-logo-text">深海探索</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#depths">深海层</a></li>
+            <li><a href="#stats">数据</a></li>
+            <li><a href="#zones">区域</a></li>
+            <li><a href="#explore">探索</a></li>
+        </ul>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+            <span class="icon-sun">☀️</span>
+            <span class="icon-moon">🌙</span>
+        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-depth-gradient"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span>探索未知的深海世界</span>
+            </div>
+            <h1 class="hero-title">深海</h1>
+            <p class="hero-subtitle">探 索 无 尽 深 渊</p>
+            <p class="hero-description">
+                地球表面71%被海洋覆盖，然而超过80%的海洋仍未被探索。
+                深入神秘的海底世界，发现隐藏在黑暗中的生命奇迹。
+            </p>
+            <div class="hero-buttons">
+                <a href="#depths" class="btn btn-primary">
+                    <span>开始下潜</span>
+                    <span>⬇</span>
+                </a>
+                <a href="#stats" class="btn btn-secondary">
+                    <span>了解更多</span>
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+        <div class="hero-scroll-indicator">
+            <span>向下滚动</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- Depth Layers Section -->
+    <section class="section depth-section" id="depths">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">
+                    <span class="section-label-line"></span>
+                    <span>深海分层</span>
+                    <span class="section-label-line"></span>
+                </div>
+                <h2 class="section-title">深渊的层序</h2>
+                <p class="section-desc">
+                    海洋按照深度被划分为不同的区域层，
+                    每一层都拥有独特的环境特征和生命形态
+                </p>
+            </div>
+            <div class="depth-layers-grid">
+                <div class="depth-card depth-card--surface" data-delay="0">
+                    <div class="depth-card-indicator"></div>
+                    <div class="depth-card-icon">☀️</div>
+                    <div class="depth-card-layer">第一层</div>
+                    <h3 class="depth-card-title">透光层</h3>
+                    <p class="depth-card-text">
+                        阳光能够穿透的表层海域，光合作用在此发生。
+                        丰富的浮游生物和珊瑚构成了海洋生态的基础，
+                        90%的海洋生物生活在这里。
+                    </p>
+                    <span class="depth-card-depth">
+                        <span>📏</span>
+                        <span>0 - 200米</span>
+                    </span>
+                </div>
+                <div class="depth-card depth-card--twilight" data-delay="100">
+                    <div class="depth-card-indicator"></div>
+                    <div class="depth-card-icon">🌅</div>
+                    <div class="depth-card-layer">第二层</div>
+                    <h3 class="depth-card-title">暮光层</h3>
+                    <p class="depth-card-text">
+                        微弱的光线勉强到达这里。许多生物在此进行
+                        垂直迁徙，巨型水母和灯笼鱼在昏暗中游弋，
+                        适应了微光环境。
+                    </p>
+                    <span class="depth-card-depth">
+                        <span>📏</span>
+                        <span>200 - 1,000米</span>
+                    </span>
+                </div>
+                <div class="depth-card depth-card--midnight" data-delay="200">
+                    <div class="depth-card-indicator"></div>
+                    <div class="depth-card-icon">✨</div>
+                    <div class="depth-card-layer">第三层</div>
+                    <h3 class="depth-card-title">午夜层</h3>
+                    <p class="depth-card-text">
+                        永恒的黑暗统治着这里。生物发光成为唯一的光源，
+                        奇异的深海生物进化出发光器官，
+                        创造出梦幻般的光之舞蹈。
+                    </p>
+                    <span class="depth-card-depth">
+                        <span>📏</span>
+                        <span>1,000 - 4,000米</span>
+                    </span>
+                </div>
+                <div class="depth-card depth-card--abyss" data-delay="300">
+                    <div class="depth-card-indicator"></div>
+                    <div class="depth-card-icon">🌋</div>
+                    <div class="depth-card-layer">第四层</div>
+                    <h3 class="depth-card-title">深渊层</h3>
+                    <p class="depth-card-text">
+                        极端的压力和冰冷的温度主宰着这片区域。
+                        热液喷口为独特的化能生物提供能量，
+                        生命以最原始的方式顽强存在。
+                    </p>
+                    <span class="depth-card-depth">
+                        <span>📏</span>
+                        <span>4,000 - 6,000米</span>
+                    </span>
+                </div>
+                <div class="depth-card depth-card--abyss" data-delay="400">
+                    <div class="depth-card-indicator"></div>
+                    <div class="depth-card-icon">🕳️</div>
+                    <div class="depth-card-layer">第五层</div>
+                    <h3 class="depth-card-title">超深渊层</h3>
+                    <p class="depth-card-text">
+                        地球上最极端的环境之一。压力达到1000个大气压以上，
+                        温度接近冰点。然而即便是这里，
+                        仍有微生物顽强生存。
+                    </p>
+                    <span class="depth-card-depth">
+                        <span>📏</span>
+                        <span>6,000 - 11,000米</span>
+                    </span>
+                </div>
+                <div class="depth-card depth-card--midnight" data-delay="500">
+                    <div class="depth-card-indicator"></div>
+                    <div class="depth-card-icon">🔬</div>
+                    <div class="depth-card-layer">探索前沿</div>
+                    <h3 class="depth-card-title">未知领域</h3>
+                    <p class="depth-card-text">
+                        每一次深海探险都可能发现新的物种和地质现象。
+                        人类对深海的认知仍然有限，
+                        等待我们去揭开的谜团无穷无尽。
+                    </p>
+                    <span class="depth-card-depth">
+                        <span>🔬</span>
+                        <span>持续探索中</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section stats-section" id="stats">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">
+                    <span class="section-label-line"></span>
+                    <span>海洋数据</span>
+                    <span class="section-label-line"></span>
+                </div>
+                <h2 class="section-title">深海的数字</h2>
+                <p class="section-desc">
+                    用数据揭示海洋的深邃与广阔，
+                    感受这片蓝色世界的震撼规模
+                </p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card" data-delay="0">
+                    <div class="stat-card-glow" style="background: radial-gradient(circle, rgba(0,153,255,0.1), transparent);"></div>
+                    <span class="stat-icon">🌊</span>
+                    <div class="stat-number">
+                        <span class="counter" data-target="3688">0</span>
+                        <span class="stat-suffix">万</span>
+                    </div>
+                    <div class="stat-label">海洋平均深度（米）</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--light-ray), var(--bioluminescent));" data-width="65"></div>
+                    </div>
+                </div>
+                <div class="stat-card" data-delay="100">
+                    <div class="stat-card-glow" style="background: radial-gradient(circle, rgba(0,255,204,0.1), transparent);"></div>
+                    <span class="stat-icon">💧</span>
+                    <div class="stat-number">
+                        <span class="counter" data-target="13.35">0</span>
+                        <span class="stat-suffix">亿</span>
+                    </div>
+                    <div class="stat-label">海洋总水量（立方千米）</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--bioluminescent), var(--light-ray));" data-width="90"></div>
+                    </div>
+                </div>
+                <div class="stat-card" data-delay="200">
+                    <div class="stat-card-glow" style="background: radial-gradient(circle, rgba(0,102,170,0.1), transparent);"></div>
+                    <span class="stat-icon">🐟</span>
+                    <div class="stat-number">
+                        <span class="counter" data-target="228">0</span>
+                        <span class="stat-suffix">万+</span>
+                    </div>
+                    <div class="stat-label">已知海洋物种数量</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--surface), var(--bioluminescent));" data-width="45"></div>
+                    </div>
+                </div>
+                <div class="stat-card" data-delay="300">
+                    <div class="stat-card-glow" style="background: radial-gradient(circle, rgba(255,0,102,0.1), transparent);"></div>
+                    <span class="stat-icon">⛏️</span>
+                    <div class="stat-number">
+                        <span class="counter" data-target="11034">0</span>
+                        <span class="stat-suffix">米</span>
+                    </div>
+                    <div class="stat-label">马里亚纳海沟最深处</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" style="background: linear-gradient(90deg, #ff3366, var(--bioluminescent));" data-width="100"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ocean Zones Visual -->
+            <div class="zones-visual" id="zones">
+                <div class="zone-layer">
+                    <div class="zone-info">
+                        <span class="zone-icon">☀️</span>
+                        <div class="zone-text">
+                            <h4>透光层 (Epipelagic)</h4>
+                            <p>阳光充足，光合作用活跃</p>
+                        </div>
+                    </div>
+                    <span class="zone-depth-label">0 - 200m</span>
+                    <div class="zone-divider" style="bottom: 0;"></div>
+                </div>
+                <div class="zone-layer">
+                    <div class="zone-info">
+                        <span class="zone-icon">🌅</span>
+                        <div class="zone-text">
+                            <h4>暮光层 (Mesopelagic)</h4>
+                            <p>微光区域，生物迁徙通道</p>
+                        </div>
+                    </div>
+                    <span class="zone-depth-label">200 - 1,000m</span>
+                    <div class="zone-divider" style="bottom: 0;"></div>
+                </div>
+                <div class="zone-layer">
+                    <div class="zone-info">
+                        <span class="zone-icon">🌑</span>
+                        <div class="zone-text">
+                            <h4>午夜层 (Bathypelagic)</h4>
+                            <p>完全黑暗，生物发光世界</p>
+                        </div>
+                    </div>
+                    <span class="zone-depth-label">1,000 - 4,000m</span>
+                    <div class="zone-divider" style="bottom: 0;"></div>
+                </div>
+                <div class="zone-layer">
+                    <div class="zone-info">
+                        <span class="zone-icon">❄️</span>
+                        <div class="zone-text">
+                            <h4>深渊层 (Abyssopelagic)</h4>
+                            <p>极端高压，接近冰点温度</p>
+                        </div>
+                    </div>
+                    <span class="zone-depth-label">4,000 - 6,000m</span>
+                    <div class="zone-divider" style="bottom: 0;"></div>
+                </div>
+                <div class="zone-layer">
+                    <div class="zone-info">
+                        <span class="zone-icon">🌋</span>
+                        <div class="zone-text">
+                            <h4>超深渊层 (Hadopelagic)</h4>
+                            <p>海沟地带，生命极限</p>
+                        </div>
+                    </div>
+                    <span class="zone-depth-label">6,000m+</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="explore">
+        <div class="cta-bg"></div>
+        <div class="cta-float cta-float-1"></div>
+        <div class="cta-float cta-float-2"></div>
+        <div class="cta-content">
+            <div class="section-label" style="justify-content: center;">
+                <span class="section-label-line"></span>
+                <span>加入探索</span>
+                <span class="section-label-line"></span>
+            </div>
+            <h2 class="cta-title">准备潜入深渊？</h2>
+            <p class="cta-text">
+                加入我们的深海探索社区，第一时间获取最新发现、
+                深海影像和科学报告。与全球探索者一起，
+                揭开海洋最后的秘密。
+            </p>
+            <form class="cta-form" id="ctaForm" onsubmit="return false;">
+                <input 
+                    type="email" 
+                    class="cta-input" 
+                    placeholder="输入您的邮箱地址"
+                    aria-label="邮箱地址"
+                >
+                <button type="submit" class="btn btn-primary">
+                    <span>立即加入</span>
+                    <span>🌊</span>
+                </button>
+            </form>
+            <p class="cta-note">🔒 我们尊重您的隐私，绝不发送垃圾邮件</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-brand-name">
+                        <div class="footer-brand-icon">🌊</div>
+                        深海探索
+                    </div>
+                    <p class="footer-brand-desc">
+                        致力于深海科学研究与探索教育，
+                        让更多人了解海洋深处的奥秘，
+                        唤起对海洋保护的关注与行动。
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <h4>探索</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">深海生物</a></li>
+                        <li><a href="#">海底地形</a></li>
+                        <li><a href="#">热液喷口</a></li>
+                        <li><a href="#">深海矿物</a></li>
+                        <li><a href="#">探索历史</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>资源</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">科学论文</a></li>
+                        <li><a href="#">影像资料</a></li>
+                        <li><a href="#">深海地图</a></li>
+                        <li><a href="#">教育课程</a></li>
+                        <li><a href="#">数据开放</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>关于</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">合作伙伴</a></li>
+                        <li><a href="#">加入团队</a></li>
+                        <li><a href="#">联系我们</a></li>
+                        <li><a href="#">媒体报道</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2024 深海探索. 保留所有权利.</p>
+                <div class="footer-social">
+                    <a href="#" class="footer-social-link" aria-label="微博">微</a>
+                    <a href="#" class="footer-social-link" aria-label="微信">信</a>
+                    <a href="#" class="footer-social-link" aria-label="B站">B</a>
+                    <a href="#" class="footer-social-link" aria-label="知乎">知</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== THEME TOGGLE ====================
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+
+        // ==================== NAVBAR SCROLL ====================
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // ==================== MOBILE MENU ====================
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // ==================== DEPTH GAUGE ====================
+        const depthFill = document.getElementById('depthFill');
+
+        window.addEventListener('scroll', () => {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollProgress = (window.pageYOffset / scrollHeight) * 100;
+            depthFill.style.height = scrollProgress + '%';
+        });
+
+        // ==================== GENERATE BUBBLES ====================
+        const bubblesContainer = document.getElementById('bubblesContainer');
+
+        function createBubbles() {
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                const size = Math.random() * 30 + 10;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                bubble.style.animationDelay = (Math.random() * 10) + 's';
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+
+        createBubbles();
+
+        // ==================== GENERATE DEPTH PARTICLES ====================
+        const depthParticles =

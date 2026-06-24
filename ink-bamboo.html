@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨竹 · 水墨丹青</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #f8f6f0;
+            --paper-dark: #e8e4da;
+            --ink: #1a1a1a;
+            --ink-light: #3a3a3a;
+            --ink-lighter: #6a6a6a;
+            --ink-faint: #9a9a9a;
+            --bamboo: #2d5016;
+            --bamboo-light: #4a7a2e;
+            --bamboo-dark: #1e3a0e;
+            --seal: #cc0000;
+            --seal-dark: #990000;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-theme="dark"] {
+            --paper: #1a1a18;
+            --paper-dark: #141412;
+            --ink: #f0ede4;
+            --ink-light: #d4d0c6;
+            --ink-lighter: #a8a49a;
+            --ink-faint: #7a7670;
+            --bamboo: #5a9a3a;
+            --bamboo-light: #6aaa4a;
+            --bamboo-dark: #3a6a1e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background-color: var(--paper);
+            color: var(--ink);
+            overflow-x: hidden;
+            line-height: 1.8;
+            transition: background-color var(--transition), color var(--transition);
+        }
+
+        /* Paper Texture Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139,119,101,0.1) 2px, transparent 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139,119,101,0.05) 2px, transparent 4px);
+        }
+
+        /* Ink Wash Background Effects */
+        .ink-wash {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+            animation: inkBleed 20s ease-in-out infinite;
+        }
+
+        .ink-wash-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--ink) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .ink-wash-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--bamboo) 0%, transparent 70%);
+            top: 50%;
+            left: -100px;
+            animation-delay: -7s;
+        }
+
+        .ink-wash-3 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--ink) 0%, transparent 70%);
+            bottom: -100px;
+            right: 20%;
+            animation-delay: -14s;
+        }
+
+        @keyframes inkBleed {
+            0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.03; }
+            33% { transform: scale(1.1) translate(20px, -10px); opacity: 0.05; }
+            66% { transform: scale(0.95) translate(-15px, 15px); opacity: 0.04; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition);
+            background: transparent;
+        }
+
+        nav.scrolled {
+            background: rgba(248, 246, 240, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 1rem 3rem;
+            box-shadow: 0 1px 0 rgba(26, 26, 26, 0.06);
+        }
+
+        [data-theme="dark"] nav.scrolled {
+            background: rgba(26, 26, 24, 0.9);
+        }
+
+        .nav-brand {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.8rem;
+            color: var(--ink);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            transition: color var(--transition);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--ink-lighter);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            transition: color var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--ink);
+            transition: width var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--ink);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--ink-faint);
+            color: var(--ink);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--ink);
+            transform: rotate(30deg);
+        }
+
+        .theme-toggle .sun { display: none; }
+        .theme-toggle .moon { display: inline; }
+        [data-theme="dark"] .theme-toggle .sun { display: inline; }
+        [data-theme="dark"] .theme-toggle .moon { display: none; }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        /* Bamboo CSS Art */
+        .bamboo-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bamboo-stalk {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, var(--bamboo-dark), var(--bamboo), var(--bamboo-light), var(--bamboo));
+            opacity: 0.7;
+            transform-origin: bottom center;
+            animation: bambooSway 8s ease-in-out infinite;
+        }
+
+        .bamboo-stalk::before,
+        .bamboo-stalk::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to bottom, var(--bamboo-dark), var(--bamboo));
+        }
+
+        .bamboo-stalk::before { top: 25%; }
+        .bamboo-stalk::after { top: 55%; }
+
+        .bamboo-1 { left: 5%; height: 70vh; animation-delay: 0s; opacity: 0.5; }
+        .bamboo-2 { left: 8%; height: 85vh; animation-delay: -2s; opacity: 0.6; width: 10px; }
+        .bamboo-3 { left: 12%; height: 60vh; animation-delay: -4s; opacity: 0.4; width: 6px; }
+        .bamboo-4 { right: 5%; height: 75vh; animation-delay: -1s; opacity: 0.5; }
+        .bamboo-5 { right: 8%; height: 65vh; animation-delay: -3s; opacity: 0.4; width: 6px; }
+        .bamboo-6 { right: 12%; height: 80vh; animation-delay: -5s; opacity: 0.55; width: 9px; }
+
+        @keyframes bambooSway {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        /* Bamboo Leaves */
+        .bamboo-leaf {
+            position: absolute;
+            width: 50px;
+            height: 12px;
+            border-radius: 0 50% 50% 0;
+            opacity: 0.5;
+            animation: leafFlutter 6s ease-in-out infinite;
+        }
+
+        .leaf-1 {
+            top: 25%;
+            left: 5%;
+            background: linear-gradient(135deg, transparent, var(--bamboo));
+            transform: rotate(-20deg);
+            animation-delay: 0s;
+        }
+
+        .leaf-2 {
+            top: 22%;
+            left: 7%;
+            background: linear-gradient(135deg, transparent, var(--bamboo-dark));
+            transform: rotate(-45deg);
+            width: 40px;
+            animation-delay: -1s;
+        }
+
+        .leaf-3 {
+            top: 30%;
+            left: 4%;
+            background: linear-gradient(135deg, transparent, var(--bamboo));
+            transform: rotate(10deg);
+            width: 45px;
+            animation-delay: -2s;
+        }
+
+        .leaf-4 {
+            top: 20%;
+            right: 6%;
+            background: linear-gradient(225deg, transparent, var(--bamboo));
+            transform: rotate(20deg);
+            border-radius: 50% 0 0 50%;
+            animation-delay: -1.5s;
+        }
+
+        .leaf-5 {
+            top: 28%;
+            right: 8%;
+            background: linear-gradient(225deg, transparent, var(--bamboo-dark));
+            transform: rotate(50deg);
+            border-radius: 50% 0 0 50%;
+            width: 42px;
+            animation-delay: -3s;
+        }
+
+        .leaf-6 {
+            top: 35%;
+            right: 4%;
+            background: linear-gradient(225deg, transparent, var(--bamboo));
+            transform: rotate(-10deg);
+            border-radius: 50% 0 0 50%;
+            width: 38px;
+            animation-delay: -4s;
+        }
+
+        .leaf-7 {
+            top: 45%;
+            left: 10%;
+            background: linear-gradient(135deg, transparent, var(--bamboo-light));
+            transform: rotate(-30deg);
+            width: 35px;
+            animation-delay: -2.5s;
+            opacity: 0.35;
+        }
+
+        .leaf-8 {
+            top: 50%;
+            right: 10%;
+            background: linear-gradient(225deg, transparent, var(--bamboo-light));
+            transform: rotate(35deg);
+            border-radius: 50% 0 0 50%;
+            width: 35px;
+            animation-delay: -3.5s;
+            opacity: 0.35;
+        }
+
+        @keyframes leafFlutter {
+            0%, 100% { transform: rotate(var(--base-rotation, -20deg)) translateX(0); }
+            25% { transform: rotate(var(--base-rotation, -20deg)) translateX(3px) translateY(-2px); }
+            75% { transform: rotate(var(--base-rotation, -20deg)) translateX(-2px) translateY(1px); }
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .brush-stroke-top {
+            width: 200px;
+            height: 3px;
+            margin: 0 auto 3rem;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--ink) 15%, 
+                var(--ink) 45%, 
+                rgba(26,26,26,0.6) 70%, 
+                transparent
+            );
+            border-radius: 2px;
+            position: relative;
+            opacity: 0;
+            animation: brushDraw 1.5s ease-out 0.5s forwards;
+        }
+
+        .brush-stroke-top::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 10%;
+            width: 20%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, rgba(26,26,26,0.3), transparent);
+            border-radius: 3px;
+        }
+
+        @keyframes brushDraw {
+            0% { width: 0; opacity: 0; }
+            20% { opacity: 1; }
+            100% { width: 200px; opacity: 0.8; }
+        }
+
+        .hero-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(5rem, 12vw, 10rem);
+            line-height: 1;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            position: relative;
+            opacity: 0;
+            animation: inkReveal 2s ease-out 0.8s forwards;
+            text-shadow: 
+                2px 2px 4px rgba(26,26,26,0.1),
+                0 0 40px rgba(26,26,26,0.05);
+        }
+
+        @keyframes inkReveal {
+            0% { opacity: 0; transform: translateY(20px); filter: blur(8px); }
+            60% { filter: blur(0); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .seal-stamp {
+            display: inline-block;
+            width: 70px;
+            height: 70px;
+            border: 3px solid var(--seal);
+            border-radius: 8px;
+            position: relative;
+            margin-left: 1.5rem;
+            opacity: 0;
+            animation: stampPress 0.6s ease-out 2s forwards;
+            transform: rotate(-5deg);
+            vertical-align: middle;
+        }
+
+        .seal-stamp::after {
+            content: '竹';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.2rem;
+            color: var(--seal);
+            line-height: 1;
+        }
+
+        @keyframes stampPress {
+            0% { opacity: 0; transform: rotate(-5deg) scale(1.5); }
+            50% { opacity: 1; transform: rotate(-5deg) scale(0.95); }
+            100% { opacity: 0.85; transform: rotate(-5deg) scale(1); }
+        }
+
+        .brush-stroke-bottom {
+            width: 160px;
+            height: 2px;
+            margin: 2rem auto 2.5rem;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(26,26,26,0.5) 20%, 
+                var(--ink) 50%, 
+                rgba(26,26,26,0.5) 80%, 
+                transparent
+            );
+            border-radius: 2px;
+            opacity: 0;
+            animation: brushDraw 1.5s ease-out 1.5s forwards;
+        }
+
+        .hero-subtitle {
+            font-weight: 300;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--ink-lighter);
+            letter-spacing: 0.3em;
+            opacity: 0;
+            animation: fadeUp 1.2s ease-out 2.2s forwards;
+        }
+
+        .hero-subtitle span {
+            display: inline-block;
+            margin: 0 0.8rem;
+            color: var(--ink-faint);
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 3s forwards;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--ink), transparent);
+            margin: 0 auto;
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        .scroll-text {
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            color: var(--ink-faint);
+            margin-top: 0.8rem;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            margin-left: -0.3rem;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(1); }
+            50% { opacity: 0.8; transform: scaleY(1.2); }
+        }
+
+        /* Section Styling */
+        section {
+            position: relative;
+            z-index: 5;
+            padding: 8rem 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            color: var(--ink);
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+            transition: color var(--transition);
+        }
+
+        .section-line {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--ink), transparent);
+            margin: 1.5rem auto;
+            opacity: 0.5;
+        }
+
+        .section-desc {
+            color: var(--ink-lighter);
+            font-weight: 300;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            max-width: 500px;
+            margin: 0 auto;
+            transition: color var(--transition);
+        }
+
+        /* Features Section */
+        .features {
+            background: transparent;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 3rem 2.5rem;
+            position: relative;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: all var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
+            background: linear-gradient(135deg, 
+                rgba(248,246,240,0.5), 
+                rgba(248,246,240,0.8)
+            );
+        }
+
+        [data-theme="dark"] .feature-card {
+            background: linear-gradient(135deg, 
+                rgba(26,26,24,0.5), 
+                rgba(26,26,24,0.8)
+            );
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ink-faint), transparent);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.5;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(26, 26, 26, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(26, 26, 26, 0.06);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .feature-icon .ink-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(26,26,26,0.08), 
+                rgba(26,26,26,0.03)
+            );
+            border: 1px solid rgba(26,26,26,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+            color: var(--ink);
+            transition: all var(--transition);
+        }
+
+        .feature-card:hover .ink-circle {
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(26,26,26,0.12), 
+                rgba(26,26,26,0.05)
+            );
+            border-color: rgba(26,26,26,0.2);
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+            color: var(--ink);
+            transition: color var(--transition);
+        }
+
+        .feature-desc {
+            color: var(--ink-lighter);
+            font-weight: 300;
+            font-size: 0.95rem;
+            line-height: 1.9;
+            transition: color var(--transition);
+        }
+
+        .feature-card .ink-accent {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 2rem;
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--ink-faint), transparent);
+            opacity: 0;
+            transition: all var(--transition);
+            transform: scaleX(0);
+            transform-origin: right;
+        }
+
+        .feature-card:hover .ink-accent {
+            opacity: 0.5;
+            transform: scaleX(1);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 5%, var(--ink-faint) 50%, transparent 95%);
+            opacity: 0.3;
+        }
+
+        .stats::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 5%, var(--ink-faint) 50%, transparent 95%);
+            opacity: 0.3;
+        }
+
+        .stats-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stat-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-number-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-number {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            color: var(--ink);
+            line-height: 1;
+            transition: color var(--transition);
+        }
+
+        .stat-number .brush-underline {
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--ink) 20%, 
+                var(--ink) 60%, 
+                rgba(26,26,26,0.4) 80%, 
+                transparent 100%
+            );
+            border-radius: 2px;
+            opacity: 0.4;
+        }
+
+        .stat-unit {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            color: var(--ink-lighter);
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            transition: color var(--transition);
+        }
+
+        .stat-label {
+            color: var(--ink-faint);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            font-weight: 300;
+            margin-top: 1.2rem;
+            transition: color var(--transition);
+        }
+
+        /* Philosophy Section */
+        .philosophy {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .philosophy-quote {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .philosophy-quote::before {
+            content: '"';
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 8rem;
+            color: var(--ink);
+            opacity: 0.06;
+            position: absolute;
+            top: -4rem;
+            left: -2rem;
+            line-height: 1;
+        }
+
+        .quote-text {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: var(--ink);
+            line-height: 2;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transition: color var(--transition);
+        }
+
+        .quote-author {
+            color: var(--ink-faint);
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            font-weight: 300;
+        }
+
+        .ink-splash {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(26,26,26,0.04), transparent 70%);
+            pointer-events: none;
+        }
+
+        .splash-1 { top: 10%; left: 5%; }
+        .splash-2 { bottom: 15%; right: 8%; width: 80px; height: 80px; }
+        .splash-3 { top: 30%; right: 15%; width: 60px; height: 60px; }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--ink);
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            transition: color var(--transition);
+        }
+
+        .cta-desc {
+            color: var(--ink-lighter);
+            font-weight: 300;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            margin-bottom: 3rem;
+            line-height: 2;
+            transition: color var(--transition);
+        }
+
+        .ink-button {
+            display: inline-block;
+            padding: 1rem 3.5rem;
+            background: var(--ink);
+            color: var(--paper);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .ink-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(248,246,240,0.1), 
+                transparent
+            );
+            transition: left 0.6s ease;
+        }
+
+        .ink-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(26,26,26,0.2);
+        }
+
+        .ink-button:hover::before {
+            left: 100%;
+        }
+
+        .ink-button-outline {
+            display: inline-block;
+            padding: 1rem 3.5rem;
+            background: transparent;
+            color: var(--ink);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-decoration: none;
+            border: 1px solid var(--ink);
+            cursor: pointer;
+            transition: all var(--transition);
+            margin-left: 1rem;
+        }
+
+        .ink-button-outline:hover {
+            background: var(--ink);
+            color: var(--paper);
+            transform: translateY(-2px);
+        }
+
+        .seal-mark {
+            margin-top: 3rem;
+            display: inline-block;
+            opacity: 0.15;
+            transition: opacity var(--transition);
+        }
+
+        .seal-mark:hover {
+            opacity: 0.3;
+        }
+
+        .seal-mark svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem 3rem;
+            border-top: 1px solid rgba(26,26,26,0.06);
+            position: relative;
+            z-index: 5;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2rem;
+            color: var(--ink);
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+            transition: color var(--transition);
+        }
+
+        .footer-desc {
+            color: var(--ink-faint);
+            font-size: 0.9rem;
+            font-weight: 300;
+            line-height: 1.8;
+            max-width: 280px;
+            transition: color var(--transition);
+        }
+
+        .footer-heading {
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            transition: color var(--transition);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--ink-faint);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            transition: color var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--ink);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(26,26,26,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copy {
+            color: var(--ink-faint);
+            font-size: 0.8rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            transition: color var(--transition);
+        }
+
+        .footer-copy .seal-text {
+            color: var(--seal);
+            font-weight: 400;
+        }
+
+        /* Scroll Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Ink Drops Decoration */
+        .ink-drop {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--ink);
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .drop-1 { width: 6px; height: 6px; top: 20%; left: 20%; }
+        .drop-2 { width: 4px; height: 4px; top: 60%; right: 25%; }
+        .drop-3 { width: 8px; height: 8px; bottom: 30%; left: 35%; }
+        .drop-4 { width: 3px; height: 3px; top: 40%; right: 40%; }
+        .drop-5 { width: 5px; height: 5px; bottom: 20%; right: 15%; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .bamboo-stalk {
+                opacity: 0.3 !important;
+            }
+
+            .bamboo-leaf {
+                opacity: 0.25 !important;
+            }
+
+            section {
+                padding: 5rem 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+
+            .ink-button-outline {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .seal-stamp {
+                width: 50px;
+                height: 50px;
+                margin-left: 0.8rem;
+            }
+
+            .seal-stamp::after {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                letter-spacing: 0.1em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 30px;
+            height: 20px;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 100%;
+            height: 1.5px;
+            background: var(--ink);
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn span:nth-child(1) { top: 0; }
+        .mobile-menu-btn span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .mobile-menu-btn span:nth-child(3) { bottom: 0; }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .theme-toggle {
+                margin-right: 1rem;
+            }
+
+            .nav-right {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Ink Painting Gallery Preview */
+        .gallery-strip {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 4rem auto 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .gallery-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .gallery-item {
+            min-width: 200px;
+            height: 260px;
+            border: 1px solid rgba(26,26,26,0.08);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: all var(--transition);
+            background: linear-gradient(180deg, 
+                rgba(248,246,240,0.3), 
+                rgba(248,246,240,0.8)
+            );
+        }
+
+        [data-theme="dark"] .gallery-item {
+            background: linear-gradient(180deg, 
+                rgba(26,26,24,0.3), 
+                rgba(26,26,24,0.8)
+            );
+        }
+
+        .gallery-item:hover {
+            border-color: rgba(26,26,26,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(26,26,26,0.08);
+        }
+
+        .gallery-item .gallery-bamboo {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to right, var(--bamboo-dark), var(--bamboo));
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+
+        .gallery-item .gallery-leaf {
+            position: absolute;
+            width: 30px;
+            height: 8px;
+            border-radius: 0 50% 50% 0;
+            background: linear-gradient(135deg, transparent, var(--bamboo));
+            opacity: 0.5;
+        }
+
+        .gallery-item .gallery-label {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 1.2rem;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1rem;
+            color: var(--ink-lighter);
+            letter-spacing: 0.1em;
+        }
+
+        .gallery-item .gallery-seal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid var(--seal);
+            border-radius: 3px;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Ink Wash Background -->
+    <div class="ink-wash ink-wash-1"></div>
+    <div class="ink-wash ink-wash-2"></div>
+    <div class="ink-wash ink-wash-3"></div>
+
+    <!-- Navigation -->
+    <nav id="mainNav">
+        <a href="#" class="nav-brand">墨竹</a>
+        <ul class="nav-links">
+            <li><a href="#philosophy">理念</a></li>
+            <li><a href="#features">特色</a></li>
+            <li><a href="#stats">成就</a></li>
+            <li><a href="#contact">联络</a></li>
+        </ul>
+        <div class="nav-right" style="display:flex;align-items:center;gap:0.5rem;">
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <span class="moon">☽</span>
+                <span class="sun">☀</span>
+            </button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <!-- Bamboo CSS Art -->
+        <div class="bamboo-scene">
+            <div class="bamboo-stalk bamboo-1"></div>
+            <div class="bamboo-stalk bamboo-2"></div>
+            <div class="bamboo-stalk bamboo-3"></div>
+            <div class="bamboo-stalk bamboo-4"></div>
+            <div class="bamboo-stalk bamboo-5"></div>
+            <div class="bamboo-stalk bamboo-6"></div>
+
+            <div class="bamboo-leaf leaf-1"></div>
+            <div class="bamboo-leaf leaf-2"></div>
+            <div class="bamboo-leaf leaf-3"></div>
+            <div class="bamboo-leaf leaf-4"></div>
+            <div class="bamboo-leaf leaf-5"></div>
+            <div class="bamboo-leaf leaf-6"></div>
+            <div class="bamboo-leaf leaf-7"></div>
+            <div class="bamboo-leaf leaf-8"></div>
+
+            <!-- Ink Drops -->
+            <div class="ink-drop drop-1"></div>
+            <div class="ink-drop drop-2"></div>
+            <div class="ink-drop drop-3"></div>
+            <div class="ink-drop drop-4"></div>
+            <div class="ink-drop drop-5"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <div class="brush-stroke-top"></div>
+            <h1 class="hero-title">
+                墨竹
+                <span class="seal-stamp"></span>
+            </h1>
+            <div class="brush-stroke-bottom"></div>
+            <p class="hero-subtitle">
+                以墨为骨<span>·</span>以竹为魂<span>·</span>道法自然
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-line"></div>
+            <div class="scroll-text">向下探索</div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="philosophy" id="philosophy">
+        <div class="ink-splash splash-1"></div>
+        <div class="ink-splash splash-2"></div>
+        <div class="ink-splash splash-3"></div>
+
+        <div class="philosophy-quote animate-on-scroll">
+            <blockquote class="quote-text">
+                未出土时便有节<br>及凌云处尚虚心
+            </blockquote>
+            <p class="quote-author">—— 咏竹古训</p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header animate-on-scroll">
+            <h2 class="section-title">丹青四韵</h2>
+            <div class="section-line"></div>
+            <p class="section-desc">承千年水墨之道，融当代美学之韵</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card" data-delay="0">
+                <div class="feature-icon">
+                    <div class="ink-circle">墨</div>
+                </div>
+                <h3 class="feature-title">墨韵天成</h3>
+                <p class="feature-desc">
+                    取古法松烟墨，研磨至细腻如绸。一笔一画间，浓淡干湿皆成韵律，尽显水墨之妙。
+                </p>
+                <div class="ink-accent"></div>
+            </div>
+
+            <div class="feature-card" data-delay="100">
+                <div class="feature-icon">
+                    <div class="ink-circle">竹</div>
+                </div>
+                <h3 class="feature-title">竹韵清风</h3>
+                <p class="feature-desc">
+                    竹有千节而不骄，凌霜傲雪而常青。以竹为师，修心养性，悟君子之德。
+                </p>
+                <div class="ink-accent"></div>
+            </div>
+
+            <div class="feature-card" data-delay="200">
+                <div class="feature-icon">
+                    <div class="ink-circle">意</div>
+                </div>
+                <h3 class="feature-title">意在笔先</h3>
+                <p class="feature-desc">
+                    落笔之前，胸有成竹。意到笔随，不拘形似而得神韵，方为上乘之作。
+                </p>
+                <div class="ink-accent"></div>
+            </div>
+
+            <div class="feature-card" data-delay="300">
+                <div class="feature-icon">
+                    <div class="ink-circle">道</div>
+                </div>
+                <h3 class="feature-title">道法自然</h3>
+                <p class="feature-desc">
+                    师法自然而超于自然。水墨之间，留白即是意境，虚实相生方得真趣。
+                </p>
+                <div class="ink-accent"></div>
+            </div>
+        </div>
+
+        <!-- Gallery Strip -->
+        <div class="gallery-strip animate-on-scroll">
+            <div class="gallery-item">
+                <div class="gallery-bamboo" style="left:30%;height:80%;"></div>
+                <div class="gallery-bamboo" style="left:60%;height:65%;width:3px;"></div>
+                <div class="gallery-leaf" style="top:25%;left:28%;transform:rotate(-25deg);"></div>
+                <div class="gallery-leaf" style="top:35%;left:28%;transform:rotate(15deg);"></div>
+                <div class="gallery-seal"></div>
+                <span class="gallery-label">风竹图</span>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-bamboo" style="left:45%;height:75%;width:5px;"></div>
+                <div class="gallery-bamboo" style="left:55%;height:90%;width:3px;"></div>
+                <div class="gallery-leaf" style="top:20%;left:43%;transform:rotate(-30deg);"></div>
+                <div class="gallery-leaf" style="top:40%;left:53%;transform:rotate(10deg);"></div>
+                <div class="gallery-seal"></div>
+                <span class="gallery-label">雨竹图</span>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-bamboo" style="left:35%;height:85%;"></div>
+                <div class="gallery-bamboo" style="left:65%;height:70%;width:3px;"></div>
+                <div class="gallery-bamboo" style="left:50%;height:55%;width:4px;opacity:0.4;"></div>
+                <div class="gallery-leaf" style="top:30%;left:33%;transform:rotate(-20deg);"></div>
+                <div class="gallery-seal"></div>
+                <span class="gallery-label">晴竹图</span>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-bamboo" style="left:50%;height:90%;width:6px;"></div>
+                <div class="gallery-leaf" style="top:15%;left:48%;transform:rotate(-35deg);"></div>
+                <div class="gallery-leaf" style="top:25%;left:48%;transform:rotate(20deg);width:35px;"></div>
+                <div class="gallery-leaf" style="top:45%;left:48%;transform:rotate(-15deg);width:25px;"></div>
+                <div class="gallery-seal"></div>
+                <span class="gallery-label">雪竹图</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats" id="stats">
+        <div class="section-header animate-on-scroll">
+            <h2 class="section-title">墨迹千秋</h2>
+            <div class="section-line"></div>
+            <p class="section-desc">数字见证传承的力量</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item" data-delay="0">
+                <div class="stat-number-wrap">
+                    <div class="stat-number" data-target="1200">0</div>
+                    <div class="brush-underline"></div>
+                </div>
+                <div class="stat-unit">年</div>
+                <div class="stat-label">水墨传承</div>
+            </div>
+
+            <div class="stat-item" data-delay="150">
+                <div class="stat-number-wrap">
+                    <div class="stat-number" data-target="368">0</div>
+                    <div class="brush-underline"></div>
+                </div>
+                <div class="stat-unit">位</div>
+                <div class="stat-label">当代画师</div>
+            </div>
+
+            <div class="stat-item" data-delay="300">
+                <div class="stat-number-wrap">
+                    <div class="stat-number" data-target="5600">0</div>
+                    <div class="brush-underline"></div>
+                </div>
+                <div class="stat-unit">幅</div>
+                <div class="stat-label">传世作品</div>
+            </div>
+
+            <div class="stat-item" data-delay="450">
+                <div class="stat-number-wrap">
+                    <div class="stat-number" data-target="89">0</div>
+                    <div class="brush-underline"></div>
+                </div>
+                <div class="stat-unit">国</div>
+                <div class="stat-label">艺术传播</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="cta-content animate-on-scroll">
+            <h2 class="cta-title">执笔问道</h2>
+            <p class="cta-desc">
+                踏入水墨之境，感受千年文脉的温度。<br>
+                一笔一画，皆是修行；一竹一叶，尽显人生。
+            </p>
+            <div>
+                <a href="#" class="ink-button">开始探索</a>
+                <a href="#" class="ink-button-outline">了解更多</a>
+            </div>
+            <div class="seal-mark">
+                <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="56" height="56" rx="6" stroke="#cc0000" stroke-width="3"/>
+                    <text x="30" y="38" text-anchor="middle" font-family="'Ma Shan Zheng', cursive" font-size="28" fill="#cc0000">印</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand-section">
+                <div class="footer-brand">墨竹</div>
+                <p class="footer-desc">
+                    传承水墨丹青之道，以竹之精神启迪当代美学。愿与天下雅士，共赏笔墨之趣。
+                </p>
+            </div>
+            <div>
+                <h4 class="footer-heading">探索</h4>
+                <ul class="footer-links">
+                    <li><a href="#">作品赏析</a></li>
+                    <li><a href="#">画师介绍</a></li>
+                    <li><a href="#">技法传承</a></li>
+                    <li><a href="#">展览动态</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">学习</h4>
+                <ul class="footer-links">
+                    <li><a href="#">水墨入门</a></li>
+                    <li><a href="#">竹画技法</a></li>
+                    <li><a href="#">名作临摹</a></li>
+                    <li><a href="#">在线课堂</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-heading">关于</h4>
+                <ul class="footer-links">
+                    <li><a href="#">关于我们</a></li>
+                    <li><a href="#">联系我们</a></li>
+                    <li><a href="#">合作洽谈</a></li>
+                    <li><a href="#">加入我们</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">
+                © 2024 <span class="seal-text">墨竹</span> · 水墨丹青 — 传承千年文脉
+            </p>
+            <p class="footer-copy">
+                以墨为骨 · 以竹为魂 · 道法自然
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Navbar scroll effect
+        const mainNav = document.getElementById('mainNav');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 80) {
+                mainNav.classList.add('scrolled');
+            } else {
+                mainNav.classList.remove('scrolled');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -80px 0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = entry.target.dataset.delay || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, parseInt(delay));
+
+                    // Start counting animation for stat numbers
+                    if (entry.target.classList.contains('stat-item')) {
+                        const numberEl = entry.target.querySelector('.stat-number');
+                        if (numberEl && numberEl.dataset.target) {
+                            animateCounter(numberEl, parseInt(numberEl.dataset.target));
+                        }
+                    }
+
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements
+        document.querySelectorAll('.animate-on-scroll, .feature-card, .stat-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Counter animation
+        function animateCounter(element, target) {
+            const duration = 2000;
+            const start = 0;
+            const startTime = performance.now();
+
+            function easeOutExpo(t) {
+                return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+            }
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOutExpo(progress);
+                const current = Math.floor(start + (target - start) * easedProgress);
+
+                element.textContent = current.toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = target.toLocaleString();
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Smooth parallax for bamboo on mouse move
+        const bambooScene = document.querySelector('.bamboo-scene');
+        let mouseX = 0;
+        let mouseY = 0;
+        let currentX = 0;
+        let currentY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        function animateBamboo() {
+            const dx = mouseX - currentX;
+            const dy = mouseY - currentY;
+            currentX += dx * 0.02;
+            currentY += dy * 0.02;
+
+            const stalks = document.querySelectorAll('.bamboo-stalk');
+            stalks.forEach((stalk, index) => {
+                const factor = (index % 2 === 0) ? 1 : -1;
+                const rotateAmount = currentX * 2 * factor;
+                const swayBase = Math.sin(Date.now() / (3000 + index * 500)) * 1.5;
+                stalk.style.transform = `rotate(${rotateAmount + swayBase}deg)`;
+            });
+
+            const leaves = document.querySelectorAll('.bamboo-leaf');
+            leaves.forEach((leaf, index) => {
+                const factor = (index % 2 === 0) ? 1 : -1;
+                const translateX = currentX * 5 * factor;
+                const translateY = currentY * 3;
+                const baseRotation = leaf.style.transform ? 
+                    parseFloat(leaf.style.transform.replace(/[^-\d.]/g, '')) || 0 : 0;
+                leaf.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${baseRotation + currentX * 3}deg)`;
+            });
+
+            requestAnimationFrame(animateBamboo);
+        }
+
+        // Only enable mouse parallax on non-touch devices
+        if (!('ontouchstart' in window)) {
+            animateBamboo();
+        }
+
+        // Ink splash animation on CTA button hover
+        const inkButton = document.querySelector('.ink-button');
+        if (inkButton) {
+            inkButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                createInkSplash(e.clientX, e.clientY);
+            });
+        }
+
+        function createInkSplash(x, y) {
+            for (let i = 0; i < 6; i++) {
+                const splash = document.createElement('div');
+                splash.style.cssText = `
+                    position: fixed;
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: ${4 + Math.random() * 8}px;
+                    height: ${4 + Math.random() * 8}px;
+                    border-radius: 50%;
+                    background: var(--ink);
+                    opacity: 0.3;
+                    pointer-events: none;
+                    z-index: 9998;
+                    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                `;
+                document.body.appendChild(splash);
+
+                const angle = (Math.PI * 2 * i) / 6 + Math.random() * 0.5;
+                const distance = 30 + Math.random() * 50;
+                const destX = Math.cos(angle) * distance;
+                const destY = Math.sin(angle) * distance;
+
+                requestAnimationFrame(() => {
+                    splash.style.transform = `translate(${destX}px, ${destY}px) scale(${0.5 + Math.random()})`;
+                    splash.style.opacity = '0';
+                });
+
+                setTimeout(() => {
+                    splash.remove();
+                }, 900);
+            }
+        }
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.querySelector('.nav-links');
+        let menuOpen = false;
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                menuOpen = !menuOpen;
+                if (menuOpen) {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'fixed';
+                    navLinks.style.top = '0';
+                    navLinks.style.left = '0';
+                    navLinks.style.right = '0';
+                    navLinks.style.bottom = '0';
+                    navLinks.style.background = 'var(--paper)';
+                    navLinks.style.justifyContent = 'center';
+                    navLinks.style.alignItems = 'center';
+                    navLinks.style.zIndex = '999';
+                    navLinks.style.gap = '2rem';
+                    navLinks.style.fontSize = '1.2rem';
+                } else {
+                    navLinks.style.display = '';
+                    navLinks.style.flexDirection = '';
+                    navLinks.style.position = '';
+                    navLinks.style.top = '';
+                    navLinks.style.left = '';
+                    navLinks.style.right = '';
+                    navLinks.style.bottom = '';
+                    navLinks.style.background = '';
+                    navLinks.style.justifyContent = '';
+                    navLinks.style.alignItems = '';
+                    navLinks.style.zIndex = '';
+                    navLinks.style.gap = '';
+                    navLinks.style.fontSize = '';
+                }
+            });
+
+            // Close menu on link click
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (menuOpen) {
+                        menuOpen = false;
+                        navLinks.style.display = '';
+                        navLinks.style.flexDirection = '';
+                        navLinks.style.position = '';
+                        navLinks.style.top = '';
+                        navLinks.style.left = '';
+                        navLinks.style.right = '';
+                        navLinks.style.bottom = '';
+                        navLinks.style.background = '';
+                        navLinks.style.justifyContent = '';
+                        navLinks.style.alignItems = '';
+                        navLinks.style.zIndex = '';
+                        navLinks.style.gap = '';
+                        navLinks.style.fontSize = '';
+                    }
+                });
+            });
+        }
+
+        // Dynamic ink drop generation
+        function createRandomInkDrop() {
+            const drop = document.createElement('div');
+            const size = 2 + Math.random() * 4;
+            drop.style.cssText = `
+                position: fixed;
+                left: ${Math.random() * 100}vw;
+                top: ${Math.random() * 100}vh;
+                width: ${size}px;
+                height: ${size}px;
+                border-radius: 50%;
+                background: var(--ink);
+                opacity: 0;
+                pointer-events: none;
+                z-index: 1;
+                transition: opacity 3s ease-in-out;
+            `;
+            document.body.appendChild(drop);
+
+            requestAnimationFrame(() => {
+                drop.style.opacity = '0.03';
+            });
+
+            setTimeout(() => {
+                drop.style.opacity = '0';
+                setTimeout(() => drop.remove(), 3000);
+            }, 4000);
+        }
+
+        // Periodically create subtle ink drops
+        setInterval(createRandomInkDrop, 5000);
+
+        // Page load animation sequence
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity

@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金龙 · 皇家奢华</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========== CSS Variables & Themes ========== */
+        :root {
+            --dragon-red: #8b0000;
+            --imperial-gold: #ffd700;
+            --black: #0a0a0a;
+            --dark-red-bg: #1a0000;
+            --deep-crimson: #2d0a0a;
+            --gold-light: #fff3b0;
+            --gold-dark: #b8960c;
+            --red-glow: rgba(139, 0, 0, 0.6);
+            --gold-glow: rgba(255, 215, 0, 0.4);
+            --text-primary: #ffd700;
+            --text-secondary: #e8d5a3;
+            --text-muted: #a89070;
+            --bg-primary: #1a0000;
+            --bg-secondary: #2d0a0a;
+            --bg-card: rgba(45, 10, 10, 0.8);
+            --border-color: rgba(255, 215, 0, 0.2);
+            --shadow-gold: 0 0 30px rgba(255, 215, 0, 0.15);
+            --shadow-red: 0 0 40px rgba(139, 0, 0, 0.3);
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-theme="light"] {
+            --text-primary: #8b0000;
+            --text-secondary: #5a3d2b;
+            --text-muted: #7a6555;
+            --bg-primary: #fff8f0;
+            --bg-secondary: #ffe8d6;
+            --bg-card: rgba(255, 232, 214, 0.9);
+            --border-color: rgba(139, 0, 0, 0.2);
+            --shadow-gold: 0 0 30px rgba(139, 0, 0, 0.1);
+            --shadow-red: 0 0 40px rgba(139, 0, 0, 0.1);
+            --gold-glow: rgba(139, 0, 0, 0.15);
+            --red-glow: rgba(139, 0, 0, 0.15);
+        }
+
+        /* ========== Reset & Base ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.8;
+            transition: var(--transition);
+        }
+
+        /* ========== Dragon Scale Pattern ========== */
+        .dragon-scales {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.06;
+            background-image:
+                radial-gradient(ellipse 60px 50px at 50% 50%, var(--dragon-red) 0%, transparent 70%),
+                radial-gradient(ellipse 60px 50px at 0% 0%, var(--dragon-red) 0%, transparent 70%),
+                radial-gradient(ellipse 60px 50px at 100% 0%, var(--dragon-red) 0%, transparent 70%),
+                radial-gradient(ellipse 60px 50px at 0% 100%, var(--dragon-red) 0%, transparent 70%),
+                radial-gradient(ellipse 60px 50px at 100% 100%, var(--dragon-red) 0%, transparent 70%);
+            background-size: 120px 100px;
+            background-position: 0 0, 60px 50px;
+        }
+
+        [data-theme="light"] .dragon-scales {
+            opacity: 0.04;
+        }
+
+        /* ========== Floating Particles ========== */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--imperial-gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 8s infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
+        }
+
+        /* ========== Theme Toggle ========== */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--imperial-gold);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .theme-toggle .icon {
+            font-size: 24px;
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .theme-toggle .icon::after {
+            content: '☀️';
+        }
+
+        [data-theme="light"] .theme-toggle .icon::after {
+            content: '🌙';
+        }
+
+        /* ========== Navigation ========== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            background: transparent;
+        }
+
+        .nav.scrolled {
+            background: rgba(26, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 40px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] .nav.scrolled {
+            background: rgba(255, 248, 240, 0.95);
+        }
+
+        .nav-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--imperial-gold);
+            text-decoration: none;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 36px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            transition: var(--transition);
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--imperial-gold);
+            transition: width 0.4s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--imperial-gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ========== Hero Section ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 50%, rgba(139, 0, 0, 0.4) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(139, 0, 0, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, var(--dark-red-bg) 0%, var(--black) 100%);
+            z-index: -1;
+        }
+
+        .hero-scales-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.08;
+            background:
+                repeating-conic-gradient(
+                    from 0deg at 50% 50%,
+                    transparent 0deg 30deg,
+                    rgba(255, 215, 0, 0.3) 30deg 32deg,
+                    transparent 32deg 60deg
+                );
+            background-size: 80px 80px;
+            animation: scalesShimmer 15s linear infinite;
+        }
+
+        @keyframes scalesShimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: heroGlowPulse 4s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes heroGlowPulse {
+            0%, 100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            padding: 0 20px;
+        }
+
+        .hero-dragon-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: dragonFloat 3s ease-in-out infinite;
+            display: inline-block;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+        }
+
+        @keyframes dragonFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(2deg); }
+            75% { transform: translateY(5px) rotate(-2deg); }
+        }
+
+        .hero-title {
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 900;
+            letter-spacing: 20px;
+            background: linear-gradient(135deg, var(--imperial-gold) 0%, #fff3b0 30%, var(--imperial-gold) 50%, var(--gold-dark) 70%, var(--imperial-gold) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShimmer 3s ease-in-out infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.3));
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        @keyframes goldShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            letter-spacing: 12px;
+            margin-bottom: 12px;
+            font-weight: 400;
+            opacity: 0;
+            animation: fadeInUp 1s 0.5s forwards;
+        }
+
+        .hero-tagline {
+            font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+            color: var(--text-muted);
+            letter-spacing: 6px;
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeInUp 1s 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-divider {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--imperial-gold), transparent);
+            margin: 0 auto 48px;
+            opacity: 0;
+            animation: fadeInUp 1s 0.3s forwards;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 1s 1.1s forwards;
+        }
+
+        .btn {
+            padding: 16px 48px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 4px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--imperial-gold), var(--gold-dark), var(--imperial-gold));
+            background-size: 200% auto;
+            color: var(--black);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-position: right center;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--imperial-gold);
+            border: 2px solid var(--imperial-gold);
+            border-radius: 4px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeInUp 1s 1.5s forwards;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+        }
+
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border-right: 2px solid var(--imperial-gold);
+            border-bottom: 2px solid var(--imperial-gold);
+            transform: rotate(45deg);
+            animation: scrollBounce 2s infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.3; }
+            50% { transform: rotate(45deg) translate(5px, 5px); opacity: 1; }
+        }
+
+        /* ========== Section Styles ========== */
+        section {
+            position: relative;
+            z-index: 2;
+            padding: 120px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            letter-spacing: 8px;
+            color: var(--imperial-gold);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: 8px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--imperial-gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 2;
+        }
+
+        .section-divider {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--imperial-gold), transparent);
+            margin: 24px auto 0;
+        }
+
+        /* ========== Features / Imperial Cards ========== */
+        .features-section {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+        }
+
+        .imperial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 48px 36px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .imperial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--imperial-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .imperial-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .imperial-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--gold-glow);
+        }
+
+        .imperial-card:hover::before {
+            opacity: 1;
+        }
+
+        .imperial-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 24px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--imperial-gold);
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: rgba(255, 215, 0, 0.06);
+            line-height: 1;
+        }
+
+        /* ========== Stats Section ========== */
+        .stats-section {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--deep-crimson) 50%, var(--bg-primary) 100%);
+            position: relative;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(139, 0, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            position: relative;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .stat-item::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, var(--border-color), transparent);
+        }
+
+        .stat-item:last-child::after {
+            display: none;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: statIconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes statIconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .stat-number {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            color: var(--imperial-gold);
+            line-height: 1.2;
+            margin-bottom: 8px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+        }
+
+        .stat-description {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        /* ========== Showcase Section ========== */
+        .showcase-section {
+            background: var(--bg-primary);
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            align-items: center;
+        }
+
+        .showcase-image {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .showcase-image-inner {
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(135deg, var(--deep-crimson) 0%, var(--dark-red-bg) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.3));
+            position: relative;
+        }
+
+        .showcase-image-inner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-conic-gradient(
+                    from 0deg at 50% 50%,
+                    transparent 0deg 30deg,
+                    rgba(255, 215, 0, 0.05) 30deg 32deg,
+                    transparent 32deg 60deg
+                );
+            background-size: 60px 60px;
+            animation: scalesShimmer 20s linear infinite;
+        }
+
+        .showcase-content {
+            padding: 20px;
+        }
+
+        .showcase-badge {
+            display: inline-block;
+            padding: 6px 20px;
+            border: 1px solid var(--imperial-gold);
+            color: var(--imperial-gold);
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            margin-bottom: 24px;
+            border-radius: 2px;
+        }
+
+        .showcase-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            font-weight: 900;
+            color: var(--imperial-gold);
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .showcase-text {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 2;
+            margin-bottom: 32px;
+        }
+
+        .showcase-list {
+            list-style: none;
+            margin-bottom: 36px;
+        }
+
+        .showcase-list li {
+            padding: 10px 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .showcase-list li::before {
+            content: '◆';
+            color: var(--imperial-gold);
+            font-size: 0.6rem;
+        }
+
+        /* ========== Testimonials ========== */
+        .testimonials-section {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px 32px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .testimonial-quote {
+            font-size: 2.5rem;
+            color: var(--imperial-gold);
+            opacity: 0.3;
+            font-family: 'Cinzel', serif;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 2;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--dragon-red), var(--imperial-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        /* ========== CTA Section ========== */
+        .cta-section {
+            padding: 160px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 50%, rgba(139, 0, 0, 0.6) 0%, transparent 70%),
+                linear-gradient(135deg, var(--dark-red-bg) 0%, var(--black) 50%, var(--deep-crimson) 100%);
+            z-index: -2;
+        }
+
+        .cta-glow-left,
+        .cta-glow-right {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(80px);
+        }
+
+        .cta-glow-left {
+            background: rgba(255, 215, 0, 0.08);
+            top: -100px;
+            left: -100px;
+            animation: ctaGlowMove 8s ease-in-out infinite;
+        }
+
+        .cta-glow-right {
+            background: rgba(139, 0, 0, 0.2);
+            bottom: -100px;
+            right: -100px;
+            animation: ctaGlowMove 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes ctaGlowMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        .cta-content {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cta-icon {
+            font-size: 4rem;
+            margin-bottom: 32px;
+            display: inline-block;
+            animation: dragonFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.4));
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: 10px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--imperial-gold), var(--gold-light), var(--imperial-gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShimmer 4s ease-in-out infinite;
+        }
+
+        .cta-text {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 48px;
+            line-height: 2;
+        }
+
+        .cta-button {
+            padding: 20px 80px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--imperial-gold) 0%, var(--gold-dark) 30%, var(--dragon-red) 60%, var(--imperial-gold) 100%);
+            background-size: 300% auto;
+            color: white;
+            border-radius: 4px;
+            transition: var(--transition);
+            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.3), 0 0 80px rgba(139, 0, 0, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            animation: buttonSheen 3s ease-in-out infinite;
+        }
+
+        @keyframes buttonSheen {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .cta-button:hover {
+            background-position: right center;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 60px rgba(255, 215, 0, 0.5), 0 0 100px rgba(139, 0, 0, 0.3);
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            position: relative;
+            z-index: 2;
+            padding: 80px 20px 40px;
+            background: var(--black);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand {
+            padding-right: 40px;
+        }
+
+        .footer-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--imperial-gold);
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .footer-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+            margin-bottom: 24px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            border-color: var(--imperial-gold);
+            color: var(--imperial-gold);
+            box-shadow: 0 0 15px var(--gold-glow);
+            transform: translateY(-3px);
+        }
+
+        .footer-column h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--imperial-gold);
+            letter-spacing: 4px;
+            margin-bottom: 24px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 14px;
+        }
+
+        .footer-column ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            letter-spacing: 1px;
+        }
+
+        .footer-column ul li a:hover {
+            color: var(--imperial-gold);
+            padding-left: 8px;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-legal a {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-legal a:hover {
+            color: var(--imperial-gold);
+        }
+
+        /* ========== Scroll Animations ========== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ========== Responsive Design ========== */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-item:nth-child(2)::after {
+                display: none;
+            }
+
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav {
+                padding: 16px 24px;
+            }
+
+            section {
+                padding: 80px 16px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .stat-item::after {
+                display: none;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                letter-spacing: 10px;
+            }
+
+            .cta-button {
+                padding: 16px 48px;
+                letter-spacing: 4px;
+                font-size: 1rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 36px;
+            }
+
+            .footer-brand {
+                padding-right: 0;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-cta-group {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                letter-spacing: 4px;
+            }
+
+            .hero-dragon-icon {
+                font-size: 3.5rem;
+            }
+        }
+
+        /* ========== Loading Animation ========== */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--black);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-dragon {
+            font-size: 4rem;
+            animation: dragonFloat 2s ease-in-out infinite;
+            margin-bottom: 30px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar-inner {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--dragon-red), var(--imperial-gold));
+            border-radius: 2px;
+            animation: loadingProgress 1.5s ease forwards;
+        }
+
+        @keyframes loadingProgress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        /* ========== Mobile Menu ========== */
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .mobile-menu-btn span {
+            width: 28px;
+            height: 2px;
+            background: var(--imperial-gold);
+            transition: var(--transition);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-dragon">🐉</div>
+        <div class="loading-bar">
+            <div class="loading-bar-inner"></div>
+        </div>
+    </div>
+
+    <!-- Dragon Scale Pattern Background -->
+    <div class="dragon-scales"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <span class="icon"></span>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <a href="#" class="nav-logo">金龙 JINLONG</a>
+        <ul class="nav-links">
+            <li><a href="#features">传承</a></li>
+            <li><a href="#showcase">珍品</a></li>
+            <li><a href="#stats">荣耀</a></li>
+            <li><a href="#testimonials">赞誉</a></li>
+            <li><a href="#contact">联络</a></li>
+        </ul>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-scales-overlay"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+            <div class="hero-dragon-icon">🐉</div>
+            <h1 class="hero-title">金龙</h1>
+            <p class="hero-subtitle">皇家传承 · 至臻奢华</p>
+            <div class="hero-divider"></div>
+            <p class="hero-tagline">承千年皇室风华，铸当代传世经典</p>
+            <div class="hero-cta-group">
+                <a href="#contact" class="btn btn-primary">探索珍品</a>
+                <a href="#features" class="btn btn-secondary">了解更多</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>向下探索</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">皇家传承</span>
+                <h2 class="section-title">御用匠心</h2>
+                <p class="section-desc">
+                    每一件金龙臻品，皆承载千年皇家工艺精髓，以无与伦比的匠心，演绎东方美学的极致风华
+                </p>
+                <div class="section-divider"></div>
+            </div>
+            <div class="cards-grid">
+                <div class="imperial-card reveal" style="transition-delay: 0.1s;">
+                    <span class="card-number">壹</span>
+                    <div class="card-icon">🏮</div>
+                    <h3 class="card-title">宫廷御制</h3>
+                    <p class="card-text">
+                        源自明清宫廷造办处的古老技艺，每一道工序皆由国匠大师亲手操刀。精选天下至臻材料，历经七十二道繁复工序，方成就一件传世之作。
+                    </p>
+                </div>
+                <div class="imperial-card reveal" style="transition-delay: 0.2s;">
+                    <span class="card-number">贰</span>
+                    <div class="card-icon">⚔️</div>
+                    <h3 class="card-title">龙纹精髓</h3>
+                    <p class="card-text">
+                        独创龙鳞纹理锻造工艺，以当代科技重现古代失传技法。每片龙鳞皆经万次捶打，呈现出如真龙附体般的灵动气韵与磅礴之势。
+                    </p>
+                </div>
+                <div class="imperial-card reveal" style="transition-delay: 0.3s;">
+                    <span class="card-number">叁</span>
+                    <div class="card-icon">💎</div>
+                    <h3 class="card-title">臻材瑰宝</h3>
+                    <p class="card-text">
+                        甄选和田羊脂美玉、缅甸帝王翡翠、南非稀世彩钻等天地精华。每一颗宝石皆经权威鉴定，确保每件作品都价值连城，光华永驻。
+                    </p>
+                </div>
+                <div class="imperial-card reveal" style="transition-delay: 0.4s;">
+                    <span class="card-number">肆</span>
+                    <div class="card-icon">📜</div>
+                    <h3 class="card-title">专属定制</h3>
+                    <p class="card-text">
+                        一对一皇家礼遇服务，从设计草图到成品交付，每一步皆为您专属打造。可镌刻家族徽章、生辰吉语，成就独一无二的传家之宝。
+                    </p>
+                </div>
+                <div class="imperial-card reveal" style="transition-delay: 0.5s;">
+                    <span class="card-number">伍</span>
+                    <div class="card-icon">🏆</div>
+                    <h3 class="card-title">鉴藏臻品</h3>
+                    <p class="card-text">
+                        每件作品均附皇家金龙典藏证书，独立编号全球唯一。配备紫檀木宝匣与丝绸锦缎内衬，尊享博物馆级珍藏待遇。
+                    </p>
+                </div>
+                <div class="imperial-card reveal" style="transition-delay: 0.6s;">
+                    <span class="card-number">陆</span>
+                    <div class="card-icon">🌍</div>
+                    <h3 class="card-title">环球礼遇</h3>
+                    <p class="card-text">
+                        全球顶级物流安保团队护送，专车直达府邸。尊享终身免费保养、专属管家全天候服务，让您的珍品永葆璀璨光华。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase Section -->
+    <section class="showcase-section" id="showcase">
+        <div class="container">
+            <div class="showcase-grid">
+                <div class="showcase-image reveal-left">
+                    <div class="showcase-image-inner">🐲</div>
+                </div>
+                <div class="showcase-content reveal-right">
+                    <span class="showcase-badge">镇殿之宝</span>
+                    <h2 class="showcase-title">九龙至尊<br>帝王宝鼎</h2>
+                    <p class="showcase-text">
+                        历时三年精心打造，集九十九位国匠大师毕生功力于一身。以纯金铸造九龙腾飞之势，镶嵌九十九颗天然宝石，象征九五至尊的无上荣耀。
+                    </p>
+                    <ul class="showcase-list">
+                        <li>纯金铸造 · 重达九十九两</li>
+                        <li>天然红蓝宝石 · 九十九颗精镶</li>
+                        <li>国家博物馆认证 · 一级文物标准</li>
+                        <li>全球限量九尊 · 独立编号典藏</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">预约鉴赏</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">荣耀传承</span>
+                <h2 class="section-title">龙耀千秋</h2>
+                <p class="section-desc">
+                    以匠心铸就传奇，用品质书写辉煌
+                </p>
+                <div class="section-divider"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item reveal" style="transition-delay: 0.1s;">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-number" data-target="1688">0</div>
+                    <div class="stat-label">创始年份</div>
+                    <div class="stat-description">始于明末清初</div>
+                </div>
+                <div class="stat-item reveal" style="transition-delay: 0.2s;">
+                    <div class="stat-icon">🐉</div>
+                    <div class="stat-number" data-target="376">0</div>
+                    <div class="stat-label">年传承</div>
+                    <div class="stat-description">薪火相传至今</div>
+                </div>
+                <div class="stat-item reveal" style="transition-delay: 0.3s;">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-number" data-target="99">0</div>
+                    <div class="stat-label">位国匠大师</div>
+                    <div class="stat-description">匠心独运传承</div>
+                </div>
+                <div class="stat-item reveal" style="transition-delay: 0.4s;">
+                    <div class="stat-icon">✨</div>
+                    <div class="stat-number" data-target="12000">0</div>
+                    <div class="stat-label">件传世臻品</div>
+                    <div class="stat-description">遍布全球珍藏</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" id="testimonials">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">至尊赞誉</span>
+                <h2 class="section-title">名仕鉴赏</h2>
+                <p class="section-desc">
+                    万千名仕的至臻之选，品质与荣耀的最佳见证
+                </p>
+                <div class="section-divider"></div>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal" style="transition-delay: 0.1s;">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">
+                        金龙的作品让我深刻感受到中华文明的博大精深。每一件珍品都是艺术与工艺的完美融合，令人叹为观止。这是我见过最具东方神韵的奢侈品。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">👨</div>
+                        <div>
+                            <div class="testimonial-name">陈景明</div>
+                            <div class="testimonial-role">亚洲收藏家协会会长</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal" style="transition-delay: 0.2s;">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">
+                        作为皇室珠宝鉴定师，我对金龙的工艺水准深感敬佩。其龙纹锻造技术已达到登峰造极之境，堪称当代工艺美术的最高成就。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">👩</div>
+                        <div>
+                            <div class="testimonial-name">爱新觉罗·明珠</div>
+                            <div class="testimonial-role">皇室珠宝鉴定大师</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal" style="transition-delay: 0.3s;">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">
+                        金龙为我们的家族打造了传世家徽，每一处细节都彰显着皇家气度。这不仅是一件珍品，更是家族荣耀的永恒传承。
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">👨</div>
+                        <div>
+                            <div class="testimonial-name">李承恩</div>
+                            <div class="testimonial-role">承恩集团创始人</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="cta-bg"></div>
+        <div class="cta-glow-left"></div>
+        <div class="cta-glow-right"></div>
+        <div class="cta-content reveal">
+            <div class="cta-icon">🐉</div>
+            <h2 class="cta-title">开启皇家之旅</h2>
+            <p class="cta-text">
+                预约专属鉴赏体验，亲临金龙皇家殿堂。<br>
+                每一次莅临，皆是一场穿越时空的奢华之旅。
+            </p>
+            <button class="cta-button" onclick="alert('感谢您的关注！金龙皇家礼遇团队将在24小时内与您联系。')">
+                立即预约
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span class="footer-logo">金龙 JINLONG</span>
+                <p class="footer-desc">
+                    始于1688年，金龙秉承皇家御制传统，以三百年匠心传承，为全球尊贵客户打造至臻奢华的传世珍品。
+                </p>
+                <div class="footer-social">
+                    <a href="#" aria-label="微信">微</a>
+                    <a href="#" aria-label="微博">博</a>
+                    <a href="#" aria-label="抖音">抖</a>
+                    <a href="#" aria-label="小红书">红</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>珍品系列</h4>
+                <ul>
+                    <li><a href="#">龙纹金器</a></li>
+                    <li><a href="#">御制珠宝</a></li>
+                    <li><a href="#">宫廷玉雕</a></li>
+                    <li><a href="#">皇家典藏</a></li>
+                    <li><a href="#">定制服务</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>关于我们</h4>
+                <ul>
+                    <li><a href="#">品牌故事</a></li>
+                    <li><a href="#">国匠大师</a></li>
+                    <li><a href="#">工艺传承</a></li>
+                    <li><a href="#">新闻资讯</a></li>
+                    <li><a href="#">加入我们</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>尊享服务</h4>
+                <ul>
+                    <li><a href="#">预约鉴赏</a></li>
+                    <li><a href="#">专属定制</a></li>
+                    <li><a href="#">养护指南</a></li>
+                    <li><a href="#">全球配送</a></li>
+                    <li><a href="#">联系客服</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span class="footer-copyright">© 2024 金龙皇家御制 · 版权所有</span>
+            <div class="footer-legal">
+                <a href="#">隐私政策</a>
+                <a href="#">服务条款</a>
+                <a href="#">Cookie政策</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========== Loading Screen ==========
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1800);
+        });
+
+        // ========== Theme Toggle ==========
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('jinlong-theme');
+        if (savedTheme) {
+            html.setAttribute('data-theme', savedTheme);
+        }
+
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('jinlong-theme', newTheme);
+        });
+
+        // ========== Navbar Scroll Effect ==========
+        const nav = document.getElementById('mainNav');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // ========== Scroll Reveal Animations ==========
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+
+            reveals.forEach(function(element) {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const revealPoint = 100;
+
+                if (elementTop < windowHeight - revealPoint) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', function() {
+            setTimeout(revealOnScroll, 200);
+        });
+
+        // ========== Counter Animation ==========
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-target]');
+
+            counters.forEach(function(counter) {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const windowHeight = window.innerHeight;
+                const elementTop = counter.getBoundingClientRect().top;
+
+                if (elementTop < windowHeight - 100 && !counter.classList.contains('counted')) {
+                    counter.classList.add('counted');
+
+                    let current = 0;
+                    const increment = target / 80;
+                    const duration = 2000;
+                    const stepTime = duration / 80;
+
+                    const timer = setInterval(function() {
+                        current += increment;
+
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+
+                        counter.textContent = Math.floor(current).toLocaleString();
+                    }, stepTime);
+                }
+            });
+        }
+
+        window.addEventListener('scroll', animateCounters);
+        window.addEventListener('load', function() {
+            setTimeout(animateCounters, 2200);
+        });
+
+        // ========== Floating Particles ==========
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 25;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = Math.random() * 6 + 6 + 's';
+
+                container.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // ========== Smooth Scroll for Nav Links ==========
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ========== Parallax Effect on Mouse Move ==========
+        document.addEventListener('mousemove', function(e) {
+            const heroGlow = document.querySelector('.hero-glow');
+
+            if (heroGlow) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 30;
+                const y = (e.clientY / window.innerHeight - 0.5) * 30;
+                heroGlow.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px))';
+            }
+        });
+
+        // ========== Card Tilt Effect ==========
+        document.querySelectorAll('.imperial-card').forEach(function(card) {
+            card.addEventListener('mousemove', function(e) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+
+                card.style.transform = 'translateY(-8px) perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                card.style.transform = 'translateY(0) perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        });
+
+        // ========== Dynamic Dragon Scale Cursor Trail ==========
+        (function() {
+            const maxTrails = 8;
+            const trails = [];
+
+            document.addEventListener('mousemove', function(e) {
+                const trail = document.createElement('div');
+                trail.style.cssText = 'position:fixed;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#ffd700,transparent);pointer-events:none;z-index:9999;left:' + e.clientX + 'px;top:' + e.clientY + 'px;opacity:0.6;transition:all 0.8s ease;';
+                document.body.appendChild(trail);
+                trails.push(trail);
+
+                setTimeout(function() {
+                    trail.style.opacity = '0';
+                    trail.style.transform = 'scale(3)';
+                }, 50);
+
+                setTimeout(function() {
+                    if (trail.parentNode) {
+                        trail.parentNode.removeChild(trail);
+                    }
+                    const index = trails.indexOf(trail);
+                    if (index > -1) {
+                        trails.splice(index, 1);
+                    }
+                }, 850);
+
+                if (trails.length > maxTrails) {
+                    const oldTrail = trails.shift();
+                    if (oldTrail && oldTrail.parentNode) {
+                        oldTrail.parentNode.removeChild(oldTrail);
+                    }
+                }
+            });
+        })();
+
+        // ========== Year Auto-Update ==========
+        (function() {
+            const yearElements = document.querySelectorAll('.footer-copyright');
+            const currentYear = new Date().getFullYear();
+            yearElements.forEach(function(el) {
+                el.textContent = el.textContent.replace('2024', currentYear);
+            });
+        })();
+    </script>
+</body>
+</html>
