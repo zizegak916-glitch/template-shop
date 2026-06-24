@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>樱花梦 - 梦幻樱花主题</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS Variables & Themes ===== */
+        :root {
+            --sakura: #ffb7c5;
+            --sakura-dark: #f8a4b8;
+            --sakura-light: #ffd6e0;
+            --dream-white: #fff0f5;
+            --soft-pink: #ffc0cb;
+            --branch-brown: #5c4033;
+            --branch-light: #8b6f5e;
+            --text-primary: #4a3040;
+            --text-secondary: #7a5a6a;
+            --bg-primary: #fff0f5;
+            --bg-secondary: #fff5f8;
+            --bg-card: rgba(255, 255, 255, 0.6);
+            --shadow-pink: rgba(255, 183, 197, 0.3);
+            --shadow-deep: rgba(92, 64, 51, 0.1);
+            --glass-bg: rgba(255, 240, 245, 0.7);
+            --glass-border: rgba(255, 183, 197, 0.4);
+            --gradient-sakura: linear-gradient(135deg, #ffb7c5 0%, #ffc0cb 30%, #fff0f5 70%, #ffd6e0 100%);
+            --gradient-cta: linear-gradient(135deg, #ffb7c5 0%, #f8a4b8 50%, #e8919f 100%);
+            --blur-amount: 20px;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            --sakura: #e8899a;
+            --sakura-dark: #d47088;
+            --sakura-light: #f0a0b0;
+            --dream-white: #1a1015;
+            --soft-pink: #3d2030;
+            --branch-brown: #c4a882;
+            --branch-light: #a88a70;
+            --text-primary: #f0dde5;
+            --text-secondary: #c8a8b8;
+            --bg-primary: #1a1015;
+            --bg-secondary: #241820;
+            --bg-card: rgba(40, 25, 35, 0.7);
+            --shadow-pink: rgba(232, 137, 154, 0.15);
+            --shadow-deep: rgba(0, 0, 0, 0.2);
+            --glass-bg: rgba(30, 18, 25, 0.8);
+            --glass-border: rgba(232, 137, 154, 0.25);
+            --gradient-sakura: linear-gradient(135deg, #1a1015 0%, #2a1520 50%, #1a1015 100%);
+            --gradient-cta: linear-gradient(135deg, #e8899a 0%, #d47088 50%, #c0607a 100%);
+        }
+
+        /* ===== Reset & Base ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            overflow-x: hidden;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            position: relative;
+        }
+
+        /* ===== Sakura Petals Falling Animation ===== */
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            top: -60px;
+            opacity: 0;
+            animation: petalFall linear infinite;
+            pointer-events: none;
+        }
+
+        .petal::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: var(--sakura);
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(45deg);
+            box-shadow: 0 0 8px rgba(255, 183, 197, 0.4);
+        }
+
+        /* Petal Layer 1 - Slow, Large */
+        .petal.layer-1 {
+            width: 18px;
+            height: 18px;
+            animation-duration: 12s;
+            animation-delay: 0s;
+        }
+
+        .petal.layer-1:nth-child(1) { left: 5%; animation-duration: 14s; animation-delay: 0s; }
+        .petal.layer-1:nth-child(2) { left: 15%; animation-duration: 11s; animation-delay: 2s; }
+        .petal.layer-1:nth-child(3) { left: 30%; animation-duration: 13s; animation-delay: 4s; }
+        .petal.layer-1:nth-child(4) { left: 50%; animation-duration: 15s; animation-delay: 1s; }
+        .petal.layer-1:nth-child(5) { left: 70%; animation-duration: 12s; animation-delay: 3s; }
+        .petal.layer-1:nth-child(6) { left: 85%; animation-duration: 14s; animation-delay: 5s; }
+        .petal.layer-1:nth-child(7) { left: 95%; animation-duration: 11s; animation-delay: 2.5s; }
+
+        /* Petal Layer 2 - Medium, Medium */
+        .petal.layer-2 {
+            width: 12px;
+            height: 12px;
+            animation-duration: 9s;
+            opacity: 0.8;
+        }
+
+        .petal.layer-2::before {
+            background: var(--soft-pink);
+            box-shadow: 0 0 6px rgba(255, 192, 203, 0.5);
+        }
+
+        .petal.layer-2:nth-child(8) { left: 10%; animation-duration: 10s; animation-delay: 1s; }
+        .petal.layer-2:nth-child(9) { left: 25%; animation-duration: 8s; animation-delay: 3s; }
+        .petal.layer-2:nth-child(10) { left: 40%; animation-duration: 11s; animation-delay: 0.5s; }
+        .petal.layer-2:nth-child(11) { left: 55%; animation-duration: 9s; animation-delay: 4s; }
+        .petal.layer-2:nth-child(12) { left: 65%; animation-duration: 10s; animation-delay: 2s; }
+        .petal.layer-2:nth-child(13) { left: 80%; animation-duration: 8s; animation-delay: 1.5s; }
+        .petal.layer-2:nth-child(14) { left: 92%; animation-duration: 11s; animation-delay: 3.5s; }
+
+        /* Petal Layer 3 - Fast, Small */
+        .petal.layer-3 {
+            width: 8px;
+            height: 8px;
+            animation-duration: 6s;
+            opacity: 0.6;
+        }
+
+        .petal.layer-3::before {
+            background: var(--sakura-light);
+            box-shadow: 0 0 4px rgba(255, 214, 224, 0.6);
+        }
+
+        .petal.layer-3:nth-child(15) { left: 8%; animation-duration: 7s; animation-delay: 0.5s; }
+        .petal.layer-3:nth-child(16) { left: 20%; animation-duration: 5s; animation-delay: 2.5s; }
+        .petal.layer-3:nth-child(17) { left: 35%; animation-duration: 6.5s; animation-delay: 1s; }
+        .petal.layer-3:nth-child(18) { left: 48%; animation-duration: 5.5s; animation-delay: 4s; }
+        .petal.layer-3:nth-child(19) { left: 60%; animation-duration: 7s; animation-delay: 0s; }
+        .petal.layer-3:nth-child(20) { left: 75%; animation-duration: 6s; animation-delay: 3s; }
+        .petal.layer-3:nth-child(21) { left: 88%; animation-duration: 5.5s; animation-delay: 1.5s; }
+        .petal.layer-3:nth-child(22) { left: 42%; animation-duration: 7.5s; animation-delay: 2s; }
+
+        /* Petal Layer 4 - Extra floating */
+        .petal.layer-4 {
+            width: 15px;
+            height: 15px;
+            animation-duration: 16s;
+            opacity: 0.7;
+        }
+
+        .petal.layer-4::before {
+            background: linear-gradient(135deg, var(--sakura), #fff);
+            box-shadow: 0 0 10px rgba(255, 183, 197, 0.3);
+        }
+
+        .petal.layer-4:nth-child(23) { left: 12%; animation-duration: 17s; animation-delay: 6s; }
+        .petal.layer-4:nth-child(24) { left: 38%; animation-duration: 15s; animation-delay: 3s; }
+        .petal.layer-4:nth-child(25) { left: 58%; animation-duration: 18s; animation-delay: 5s; }
+        .petal.layer-4:nth-child(26) { left: 78%; animation-duration: 16s; animation-delay: 1s; }
+
+        @keyframes petalFall {
+            0% {
+                top: -60px;
+                opacity: 0;
+                transform: rotate(0deg) translateX(0);
+            }
+            10% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.9;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                top: 105vh;
+                opacity: 0;
+                transform: rotate(720deg) translateX(100px);
+            }
+        }
+
+        @keyframes petalSway {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(30px); }
+            50% { transform: translateX(-20px); }
+            75% { transform: translateX(15px); }
+        }
+
+        /* ===== Navigation ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border-bottom: 1px solid var(--glass-border);
+            transition: all var(--transition-speed);
+        }
+
+        .nav-logo {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: 1.6rem;
+            color: var(--sakura-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo .sakura-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--sakura);
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(45deg);
+            display: inline-block;
+            position: relative;
+            box-shadow: 0 0 10px var(--shadow-pink);
+        }
+
+        .nav-logo .sakura-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: var(--branch-brown);
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            transition: color var(--transition-speed);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--sakura);
+            transition: width var(--transition-speed);
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover {
+            color: var(--sakura-dark);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all var(--transition-speed);
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--sakura-light);
+            transform: scale(1.05);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .mobile-menu-btn span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all var(--transition-speed);
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 2rem 4rem;
+            background: var(--gradient-sakura);
+        }
+
+        .hero-bg-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            opacity: 0.5;
+            filter: blur(60px);
+            z-index: 0;
+        }
+
+        .hero-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .hero-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--sakura);
+            opacity: 0.1;
+            animation: floatCircle 8s ease-in-out infinite;
+        }
+
+        .hero-circle:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+            filter: blur(40px);
+        }
+
+        .hero-circle:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: 2s;
+            filter: blur(30px);
+            background: var(--soft-pink);
+        }
+
+        .hero-circle:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 4s;
+            filter: blur(50px);
+            opacity: 0.08;
+        }
+
+        .hero-circle:nth-child(4) {
+            width: 250px;
+            height: 250px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 1s;
+            filter: blur(35px);
+            opacity: 0.06;
+            background: var(--sakura-light);
+        }
+
+        @keyframes floatCircle {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(20px, -20px) scale(1.05); }
+            66% { transform: translate(-15px, 15px) scale(0.95); }
+        }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1.2s ease-out 0.2s backwards;
+        }
+
+        .hero-title {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            text-shadow: 0 0 40px var(--shadow-pink);
+            animation: fadeInUp 1.2s ease-out 0.4s backwards;
+        }
+
+        .hero-title .sakura-char {
+            background: linear-gradient(135deg, var(--sakura-dark), var(--sakura), var(--soft-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 1.2s ease-out 0.6s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1.2s ease-out 0.8s backwards;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all var(--transition-speed);
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--gradient-cta);
+            color: white;
+            box-shadow: 0 8px 30px var(--shadow-pink);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px var(--shadow-pink);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--sakura-light);
+            transform: translateY(-3px);
+        }
+
+        .hero-floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-branch {
+            position: absolute;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--branch-light), transparent);
+            border-radius: 2px;
+            opacity: 0.3;
+        }
+
+        .floating-branch:nth-child(1) {
+            top: 15%;
+            right: 5%;
+            transform: rotate(-30deg);
+            animation: floatBranch 6s ease-in-out infinite;
+        }
+
+        .floating-branch:nth-child(2) {
+            bottom: 20%;
+            left: 8%;
+            transform: rotate(20deg);
+            animation: floatBranch 8s ease-in-out infinite 2s;
+        }
+
+        .floating-bloom {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(45deg);
+            opacity: 0.15;
+            background: var(--sakura);
+        }
+
+        .floating-bloom:nth-child(3) {
+            top: 25%;
+            left: 15%;
+            width: 30px;
+            height: 30px;
+            animation: floatBloom 7s ease-in-out infinite;
+        }
+
+        .floating-bloom:nth-child(4) {
+            bottom: 30%;
+            right: 12%;
+            width: 50px;
+            height: 50px;
+            animation: floatBloom 9s ease-in-out infinite 3s;
+        }
+
+        .floating-bloom:nth-child(5) {
+            top: 60%;
+            right: 25%;
+            width: 25px;
+            height: 25px;
+            animation: floatBloom 6s ease-in-out infinite 1s;
+            background: var(--soft-pink);
+        }
+
+        @keyframes floatBranch {
+            0%, 100% { transform: rotate(-30deg) translateX(0); }
+            50% { transform: rotate(-25deg) translateX(10px); }
+        }
+
+        @keyframes floatBloom {
+            0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.15; }
+            50% { transform: rotate(45deg) translate(10px, -15px); opacity: 0.25; }
+        }
+
+        /* ===== Section Common ===== */
+        .section {
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: var(--sakura-dark);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== Features Section ===== */
+        .features {
+            background: var(--bg-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-cta);
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px var(--shadow-pink), 0 8px 20px var(--shadow-deep);
+            border-color: var(--sakura);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--sakura-light), var(--dream-white));
+            border: 1px solid var(--glass-border);
+            transition: all var(--transition-speed);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 8px 25px var(--shadow-pink);
+        }
+
+        .feature-title {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--sakura-light), var(--dream-white));
+            color: var(--sakura-dark);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* ===== Showcase / Gallery Section ===== */
+        .showcase {
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .showcase-wrapper {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .showcase-card {
+            flex: 0 0 300px;
+            height: 400px;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .showcase-card:hover {
+            transform: scale(1.03);
+        }
+
+        .showcase-card-bg {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+        }
+
+        .showcase-card:nth-child(1) .showcase-card-bg {
+            background: linear-gradient(135deg, #ffb7c5, #ffd6e0, #fff0f5);
+        }
+
+        .showcase-card:nth-child(2) .showcase-card-bg {
+            background: linear-gradient(135deg, #ffc0cb, #ffb7c5, #ffd6e0);
+        }
+
+        .showcase-card:nth-child(3) .showcase-card-bg {
+            background: linear-gradient(135deg, #ffd6e0, #ffc0cb, #ffb7c5);
+        }
+
+        .showcase-card:nth-child(4) .showcase-card-bg {
+            background: linear-gradient(135deg, #fff0f5, #ffd6e0, #ffc0cb);
+        }
+
+        .showcase-card-content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .showcase-card-emoji {
+            font-size: 4rem;
+            margin-bottom: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        .showcase-card-title {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: 1.4rem;
+            color: var(--branch-brown);
+            margin-bottom: 0.3rem;
+        }
+
+        .showcase-card-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .showcase-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 40%, rgba(255,240,245,0.8));
+            border-radius: 24px;
+            z-index: 1;
+        }
+
+        /* ===== Stats Section ===== */
+        .stats {
+            background: var(--bg-primary);
+            padding: 4rem 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--shadow-pink), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-pink);
+        }
+
+        .stat-number {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient-cta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-suffix {
+            font-size: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== Testimonials ===== */
+        .testimonials {
+            background: var(--bg-secondary);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-pink);
+        }
+
+        .testimonial-stars {
+            color: #f5c542;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gradient-cta);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .testimonial-info h4 {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .testimonial-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== CTA Section ===== */
+        .cta-section {
+            padding: 6rem 2rem;
+            background: var(--bg-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--gradient-cta);
+            border-radius: 32px;
+            padding: 4rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px var(--shadow-pink);
+        }
+
+        .cta-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.15), transparent 50%);
+            animation: ctaGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes ctaGlow {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(5%, -5%); }
+        }
+
+        .cta-container::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(45deg);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: floatBloom 3s ease-in-out infinite;
+        }
+
+        .cta-title {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .cta-desc {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: var(--sakura-dark);
+            border: none;
+            border-radius: 50px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .cta-floating {
+            position: absolute;
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(45deg);
+            background: rgba(255,255,255,0.12);
+        }
+
+        .cta-floating:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 5%;
+            animation: floatBloom 8s ease-in-out infinite;
+        }
+
+        .cta-floating:nth-child(2) {
+            width: 50px;
+            height: 50px;
+            bottom: 15%;
+            right: 10%;
+            animation: floatBloom 6s ease-in-out infinite 2s;
+        }
+
+        .cta-floating:nth-child(3) {
+            width: 30px;
+            height: 30px;
+            top: 50%;
+            right: 20%;
+            animation: floatBloom 7s ease-in-out infinite 1s;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--glass-border);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-logo {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: 1.5rem;
+            color: var(--sakura-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-logo .sakura-icon-sm {
+            width: 24px;
+            height: 24px;
+            background: var(--sakura);
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(45deg);
+            display: inline-block;
+        }
+
+        .footer-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .footer-col h4 {
+            font-family: 'ZCOOL XiaoWei', cursive;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            transition: color var(--transition-speed);
+        }
+
+        .footer-links a:hover {
+            color: var(--sakura-dark);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all var(--transition-speed);
+        }
+
+        .social-link:hover {
+            background: var(--sakura-light);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow-pink);
+        }
+
+        /* ===== Scroll Animations ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ===== Counter Animation ===== */
+        .counter-animated {
+            display: inline-block;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--glass-bg);
+                backdrop-filter: blur(var(--blur-amount));
+                -webkit-backdrop-filter: blur(var(--blur-amount));
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 1rem;
+                border-bottom: 1px solid var(--glass-border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .hero {
+                padding: 8rem 1.5rem 4rem;
+            }
+
+            .hero-title {
+                font-size: clamp(2.5rem, 10vw, 4rem);
+            }
+
+            .section {
+                padding: 4rem 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .showcase-wrapper {
+                overflow-x: auto;
+                padding-bottom: 1rem;
+                scroll-snap-type: x mandatory;
+            }
+
+            .showcase-card {
+                flex: 0 0 260px;
+                scroll-snap-align: start;
+            }
+
+            .cta-container {
+                padding: 3rem 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+        }
+
+        /* ===== Custom Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--sakura);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--sakura-dark);
+        }
+
+        /* ===== Smooth Transitions for Theme ===== */
+        .hero,
+        .features,
+        .showcase,
+        .stats,
+        .testimonials,
+        .cta-section,
+        .footer {
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sakura Petals Container -->
+    <div class="petals-container" aria-hidden="true">
+        <!-- Layer 1 - Slow, Large -->
+        <div class="petal layer-1"></div>
+        <div class="petal layer-1"></div>
+        <div class="petal layer-1"></div>
+        <div class="petal layer-1"></div>
+        <div class="petal layer-1"></div>
+        <div class="petal layer-1"></div>
+        <div class="petal layer-1"></div>
+        <!-- Layer 2 - Medium -->
+        <div class="petal layer-2"></div>
+        <div class="petal layer-2"></div>
+        <div class="petal layer-2"></div>
+        <div class="petal layer-2"></div>
+        <div class="petal layer-2"></div>
+        <div class="petal layer-2"></div>
+        <div class="petal layer-2"></div>
+        <!-- Layer 3 - Fast, Small -->
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <div class="petal layer-3"></div>
+        <!-- Layer 4 - Extra -->
+        <div class="petal layer-4"></div>
+        <div class="petal layer-4"></div>
+        <div class="petal layer-4"></div>
+        <div class="petal layer-4"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="nav-logo">
+            <span class="sakura-icon"></span>
+            樱花梦
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#features">特色</a></li>
+            <li><a href="#showcase">画卷</a></li>
+            <li><a href="#stats">成就</a></li>
+            <li><a href="#testimonials">心声</a></li>
+            <li><a href="#contact">联系我们</a></li>
+            <li>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </li>
+        </ul>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-blur"></div>
+        <div class="hero-circles">
+            <div class="hero-circle"></div>
+            <div class="hero-circle"></div>
+            <div class="hero-circle"></div>
+            <div class="hero-circle"></div>
+        </div>
+        <div class="hero-floating-elements">
+            <div class="floating-branch"></div>
+            <div class="floating-branch"></div>
+            <div class="floating-bloom"></div>
+            <div class="floating-bloom"></div>
+            <div class="floating-bloom"></div>
+        </div>
+        <div class="hero-content">
+            <span class="hero-badge">🌸 探索梦幻樱花世界</span>
+            <h1 class="hero-title">
+                <span class="sakura-char">樱花</span>梦
+            </h1>
+            <p class="hero-subtitle">在粉色的梦境中，花瓣如雪般纷飞，编织着最温柔的春日物语</p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn btn-primary">
+                    ✨ 开启梦境
+                </a>
+                <a href="#showcase" class="btn btn-secondary">
+                    🎋 探索更多
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features section" id="features">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">核心特色</span>
+                <h2 class="section-title">梦中的花瓣信笺</h2>
+                <p class="section-desc">每一片花瓣都承载着一个故事，每一缕花香都诉说着一段温柔的记忆</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon">🌸</div>
+                    <h3 class="feature-title">花之舞</h3>
+                    <p class="feature-desc">如梦似幻的花瓣飘落动画，每一帧都是一幅画。多层视觉效果营造出沉浸式的梦幻体验。</p>
+                    <span class="feature-tag">动效设计</span>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">色彩之境</h3>
+                    <p class="feature-desc">精心调配的粉色系色板，从樱花粉到梦幻白，每一个色调都经过反复推敲，只为呈现最温柔的视觉。</p>
+                    <span class="feature-tag">色彩美学</span>
+                </div>
+                <div class="feature-card reveal reveal-delay-3">
+                    <div class="feature-icon">💫</div>
+                    <h3 class="feature-title">梦幻滤镜</h3>
+                    <p class="feature-desc">毛玻璃效果与模糊滤镜的完美融合，创造出朦胧而精致的层次感，如同透过晨雾看花。</p>
+                    <span class="feature-tag">视觉效果</span>
+                </div>
+                <div class="feature-card reveal reveal-delay-4">
+                    <div class="feature-icon">🌸</div>
+                    <h3 class="feature-title">昼夜之歌</h3>
+                    <p class="feature-desc">支持明亮与暗黑两种主题切换，无论白天黑夜，樱花的温柔都与你同在。</p>
+                    <span class="feature-tag">主题切换</span>
+                </div>
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">响应之美</h3>
+                    <p class="feature-desc">完美的响应式设计，从手机到桌面，从竖屏到横屏，每一处细节都精心适配。</p>
+                    <span class="feature-tag">响应式</span>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon">🎭</div>
+                    <h3 class="feature-title">丝滑体验</h3>
+                    <p class="feature-desc">流畅的过渡动画与滚动触发效果，每一个交互都如春风般轻柔，如花瓣般优雅。</p>
+                    <span class="feature-tag">交互设计</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase Section -->
+    <section class="showcase section" id="showcase">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">画卷长廊</span>
+                <h2 class="section-title">四季樱花物语</h2>
+                <p class="section-desc">每一季都有属于它的樱花故事，让我们一起走进这片粉色的梦境</p>
+            </div>
+        </div>
+        <div class="showcase-wrapper" id="showcaseWrapper">
+            <div class="showcase-card reveal reveal-delay-1">
+                <div class="showcase-card-bg"></div>
+                <div class="showcase-card-content">
+                    <div class="showcase-card-emoji">🌸</div>
+                    <h3 class="showcase-card-title">春之初见</h3>
+                    <p class="showcase-card-text">第一朵樱花绽放的瞬间</p>
+                </div>
+            </div>
+            <div class="showcase-card reveal reveal-delay-2">
+                <div class="showcase-card-bg"></div>
+                <div class="showcase-card-content">
+                    <div class="showcase-card-emoji">🌸✨</div>
+                    <h3 class="showcase-card-title">花之盛宴</h3>
+                    <p class="showcase-card-text">满树繁花如云似霞</p>
+                </div>
+            </div>
+            <div class="showcase-card reveal reveal-delay-3">
+                <div class="showcase-card-bg"></div>
+                <div class="showcase-card-content">
+                    <div class="showcase-card-emoji">🌸🍃</div>
+                    <h3 class="showcase-card-title">花雨纷飞</h3>
+                    <p class="showcase-card-text">花瓣飘落如粉色雨滴</p>
+                </div>
+            </div>
+            <div class="showcase-card reveal reveal-delay-4">
+                <div class="showcase-card-bg"></div>
+                <div class="showcase-card-content">
+                    <div class="showcase-card-emoji">🌸🌙</div>
+                    <h3 class="showcase-card-title">月下花影</h3>
+                    <p class="showcase-card-text">月光下的樱花更显梦幻</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats section" id="stats">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">我们的成就</span>
+                <h2 class="section-title">花开满枝的数据</h2>
+                <p class="section-desc">每一个数字背后，都是无数个追梦人的故事</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card reveal reveal-delay-1">
+                    <div class="stat-icon">🌸</div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="12800">0</span>
+                        <span class="stat-suffix">+</span>
+                    </div>
+                    <div class="stat-label">花瓣信笺</div>
+                </div>
+                <div class="stat-card reveal reveal-delay-2">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="5600">0</span>
+                        <span class="stat-suffix">+</span>
+                    </div>
+                    <div class="stat-label">梦中旅人</div>
+                </div>
+                <div class="stat-card reveal reveal-delay-3">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="99">0</span>
+                        <span class="stat-suffix">%</span>
+                    </div>
+                    <div class="stat-label">满意度</div>
+                </div>
+                <div class="stat-card reveal reveal-delay-4">
+                    <div class="stat-icon">🌏</div>
+                    <div class="stat-number">
+                        <span class="counter" data-target="36">0</span>
+                        <span class="stat-suffix">个</span>
+                    </div>
+                    <div class="stat-label">覆盖城市</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section" id="testimonials">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">用户心声</span>
+                <h2 class="section-title">她们眼中的樱花梦</h2>
+                <p class="section-desc">来自世界各地的真实评价，每一句话都温暖如春</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal reveal-delay-1">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"第一次打开页面的瞬间，就仿佛置身于一片粉色的花海之中。那些飘落的花瓣，让我想起了在京都的那个春天。"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">美</div>
+                        <div class="testimonial-info">
+                            <h4>花见美咲</h4>
+                            <p>东京 · 设计师</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal reveal-delay-2">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"作为前端开发者，我对这个页面的动效细节赞叹不已。每一层花瓣的飘落都如此自然，性能优化也做得非常出色。"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">李</div>
+                        <div class="testimonial-info">
+                            <h4>李梦瑶</h4>
+                            <p>上海 · 前端工程师</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal reveal-delay-3">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"主题切换功能太贴心了！夜晚的暗黑模式让樱花更显梦幻，像是在月光下赏花一般，美得令人心醉。"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">S</div>
+                        <div class="testimonial-info">
+                            <h4>Sakura Tanaka</h4>
+                            <p>大阪 · 摄影师</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section section" id="contact">
+        <div class="cta-container">
+            <div class="cta-floating"></div>
+            <div class="cta-floating"></div>
+            <div class="cta-floating"></div>
+            <div class="cta-content reveal">
+                <span class="cta-emoji">🌸</span>
+                <h2 class="cta-title">加入樱花梦境</h2>
+                <p class="cta-desc">订阅我们的花瓣信笺，每周收到一封来自樱花世界的温暖问候</p>
+                <button class="cta-btn" id="ctaBtn">
+                    ✨ 立即订阅
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <span class="sakura-icon-sm"></span>
+                    樱花梦
+                </div>
+                <p class="footer-desc">在粉色的梦境中，我们用心打造每一个像素，只为给你最温柔的数字体验。让花瓣带你走进一个不一样的世界。</p>
+            </div>
+            <div class="footer-col">
+                <h4>探索</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">核心特色</a></li>
+                    <li><a href="#showcase">画卷长廊</a></li>
+                    <li><a href="#stats">数据成就</a></li>
+                    <li><a href="#testimonials">用户心声</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>关于</h4>
+                <ul class="footer-links">
+                    <li><a href="#">关于我们</a></li>
+                    <li><a href="#">设计理念</a></li>
+                    <li><a href="#">加入团队</a></li>
+                    <li><a href="#">新闻动态</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>支持</h4>
+                <ul class="footer-links">
+                    <li><a href="#">帮助中心</a></li>
+                    <li><a href="#">联系客服</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                    <li><a href="#">使用条款</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 樱花梦 Sakura Dream. 保留所有权利。</p>
+            <div class="footer-socials">
+                <a href="#" class="social-link" aria-label="微博">🌸</a>
+                <a href="#" class="social-link" aria-label="微信">💬</a>
+                <a href="#" class="social-link" aria-label="小红书">📕</a>
+                <a href="#" class="social-link" aria-label="抖音">🎵</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ===== Theme Toggle ===== */
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('sakura-theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('sakura-theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
+        /* ===== Mobile Menu ===== */
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.classList.remove('active');
+            });
+        });
+
+        /* ===== Scroll Reveal Animation ===== */
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        /* ===== Counter Animation ===== */
+        const counters = document.querySelectorAll('.counter');
+        let countersAnimated = false;
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !countersAnimated) {
+                    countersAnimated = true;
+                    animateCounters();
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        const statsSection = document.getElementById('stats');
+        if (statsSection) {
+            counterObserver.observe(statsSection);
+        }
+
+        function animateCounters() {
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current).toLocaleString();
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target.toLocaleString();
+                    }
+                };
+
+                updateCounter();
+            });
+        }
+
+        /* ===== Navbar Background on Scroll ===== */
+        const navbar = document.querySelector('.navbar');
+        let lastScrollY = 0;
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+
+            if (scrollY > 100) {
+                navbar.style.boxShadow = '0 4px 30px var(--shadow-pink)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+
+            lastScrollY = scrollY;
+        });
+
+        /* ===== Smooth Scroll for Navigation ===== */
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const navHeight = navbar.offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        /* ===== CTA Button Click Handler ===== */
+        const ctaBtn = document.getElementById('ctaBtn');
+
+        ctaBtn.addEventListener('click', () => {
+            // Create a burst of petals effect
+            createBurstPetals(ctaBtn);
+
+            // Show a simple confirmation
+            ctaBtn.textContent = '🌸 已订阅成功！';
+            ctaBtn.style.background = 'linear-gradient(135deg, #90EE90, #98FB98)';
+
+            setTimeout(() => {
+                ctaBtn.innerHTML = '✨ 立即订阅';
+                ctaBtn.style.background = 'white';
+            }, 3000);
+        });
+
+        function createBurstPetals(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 12; i++) {
+                const petal = document.createElement('div');
+                petal.style.cssText = `
+                    position: fixed;
+                    width: 12px;
+                    height: 12px;
+                    background: #ffb7c5;
+                    border-radius: 50% 0 50% 50%;
+                    transform: rotate(45deg);
+                    left: ${centerX}px;
+                    top: ${centerY}px;
+                    pointer-events: none;
+                    z-index: 10000;
+                    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    opacity: 1;
+                `;
+                document.body.appendChild(petal);
+
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 80 + Math.random() *
