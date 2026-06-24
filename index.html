@@ -303,6 +303,48 @@ h1 {
 }
 .fbtn.active::before { opacity: 1; }
 
+/* Filter row + layout switch */
+.filter-row { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
+.layout-switch { display: flex; gap: 4px; background: var(--s1); border: 1px solid var(--bd); border-radius: 10px; padding: 3px; }
+.layout-btn {
+  background: transparent; border: none; padding: 6px 10px; border-radius: 8px;
+  color: var(--td); cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+}
+.layout-btn i { width: 16px; height: 16px; }
+.layout-btn:hover { color: var(--p); background: rgba(108,92,231,0.08); }
+.layout-btn.active { color: var(--p); background: rgba(108,92,231,0.12); }
+
+/* List view */
+.tpl-grid.list-view {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.tpl-grid.list-view .tpl-card {
+  display: grid; grid-template-columns: 280px 1fr; gap: 0;
+}
+.tpl-grid.list-view .tpl-preview { height: 180px; border-radius: var(--r) 0 0 var(--r); }
+.tpl-grid.list-view .tpl-info { padding: 16px 20px; display: flex; flex-direction: column; justify-content: center; }
+.tpl-grid.list-view .tpl-features { display: none; }
+.tpl-grid.list-view .tpl-desc { font-size: 14px; margin-bottom: 8px; }
+.tpl-grid.list-view .tpl-btns { margin-top: 8px; }
+
+/* Compact view */
+.tpl-grid.compact-view {
+  grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.tpl-grid.compact-view .tpl-card { overflow: hidden; }
+.tpl-grid.compact-view .tpl-preview { height: 120px; }
+.tpl-grid.compact-view .tpl-info { padding: 10px 12px; }
+.tpl-grid.compact-view .tpl-features { display: none; }
+.tpl-grid.compact-view .tpl-desc { font-size: 12px; }
+.tpl-grid.compact-view .tpl-tag { font-size: 10px; padding: 2px 6px; }
+
+/* File size badge */
+.tpl-size {
+  position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6);
+  color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 6px;
+  backdrop-filter: blur(4px); z-index: 2;
+}
+
 /* ═══════════════════════════════════════════════════════════
    Template Grid & Cards
    ═══════════════════════════════════════════════════════════ */
@@ -821,6 +863,11 @@ h1 {
   .fbtn { padding: 7px 14px; font-size: 12px; }
   .tpl-preview .preview-hover { display: none; }
   .scroll-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+  .tpl-grid.list-view .tpl-card { grid-template-columns: 1fr; }
+  .tpl-grid.list-view .tpl-preview { height: 160px; border-radius: var(--r) var(--r) 0 0; }
+  .tpl-grid.compact-view { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .filter-row { flex-direction: column; gap: 10px; }
+  .layout-switch { align-self: center; }
 }
 </style>
 </head>
@@ -890,9 +937,9 @@ h1 {
 
 <!-- HERO -->
 <header class="hero">
-  <div class="badge reveal"><span class="dot"></span> 50 套模板 · 持续更新</div>
+  <div class="badge reveal"><span class="dot"></span> 74+ 套模板 · 持续更新</div>
   <h1 class="reveal">落地页<br><span class="gradient-text">模板合集</span></h1>
-  <p class="sub reveal">精选 49 套不同风格的落地页模板，即买即用。<br>纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
+  <p class="sub reveal">精选 63+ 套不同风格的落地页模板，覆盖暗黑、水墨、赛博、自然、奢华等多种视觉风格。<br>纯 HTML/CSS/JS，无依赖，完全响应式，一键换色。</p>
   <div class="hero-tags reveal">
     <span class="hero-tag"><i data-lucide="file-code"></i> 纯 HTML 单文件</span>
     <span class="hero-tag"><i data-lucide="smartphone"></i> 完全响应式</span>
@@ -904,8 +951,8 @@ h1 {
 
 <!-- STATS -->
 <div class="stats reveal">
-  <div class="stat-item"><div class="stat-num">63</div><div class="stat-label">套模板</div></div>
-  <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">种分类</div></div>
+  <div class="stat-item"><div class="stat-num" id="totalCount">73</div><div class="stat-label">套模板</div></div>
+  <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">种分类</div></div>
   <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">响应式</div></div>
   <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">依赖</div></div>
 </div>
@@ -917,14 +964,23 @@ h1 {
     <input type="text" id="searchInput" placeholder="搜索模板名称或描述...">
   </div>
   <div class="search-count" id="searchCount"></div>
-  <div class="filters" id="filterBar">
-    <button class="fbtn active" data-filter="all">全部 (50)</button>
-    <button class="fbtn" data-filter="dark">暗色系 (28)</button>
-    <button class="fbtn" data-filter="light">亮色系 (17)</button>
-    <button class="fbtn" data-filter="ink">水墨国风 (7)</button>
-    <button class="fbtn" data-filter="minimal">简约极简 (6)</button>
-    <button class="fbtn" data-filter="luxury">轻奢高端 (7)</button>
-    <button class="fbtn" data-filter="industry">行业专属 (6)</button>
+  <div class="filter-row">
+    <div class="filters" id="filterBar">
+      <button class="fbtn active" data-filter="all">全部</button>
+      <button class="fbtn" data-filter="dark">暗色</button>
+      <button class="fbtn" data-filter="light">亮色</button>
+      <button class="fbtn" data-filter="ink">水墨国风</button>
+      <button class="fbtn" data-filter="cyber">赛博科技</button>
+      <button class="fbtn" data-filter="nature">自然景观</button>
+      <button class="fbtn" data-filter="luxury">轻奢高端</button>
+      <button class="fbtn" data-filter="industry">行业专属</button>
+      <button class="fbtn" data-filter="minimal">极简</button>
+    </div>
+    <div class="layout-switch">
+      <button class="layout-btn active" data-layout="grid" title="网格视图"><i data-lucide="layout-grid"></i></button>
+      <button class="layout-btn" data-layout="list" title="列表视图"><i data-lucide="list"></i></button>
+      <button class="layout-btn" data-layout="compact" title="紧凑视图"><i data-lucide="grid-2x2"></i></button>
+    </div>
   </div>
 </div>
 
@@ -2047,6 +2103,171 @@ h1 {
     </div>
   </div>
 
+  <div class="tpl-card reveal" data-cat="dark" data-name="暗物质" data-desc="暗物质网络 · 宇宙粒子 · 能量脉冲 · 深空可视化" style="--card-accent:#7c3aed">
+    <div class="tpl-preview" style="background:#000"><iframe data-src="dark-matter.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="dark-matter.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="dark-matter.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">暗物质</div><span class="tpl-tag tag-dark">宇宙深空</span></div>
+      <div class="tpl-desc">暗物质网络 · 宇宙粒子 · 能量脉冲 · 深空可视化</div>
+      <div class="tpl-features"><span class="tpl-feat">暗物质网</span><span class="tpl-feat">粒子集群</span><span class="tpl-feat">能量脉冲</span><span class="tpl-feat">深空美学</span></div>
+      <div class="tpl-btns"><a href="dark-matter.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="dark-matter.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="light ink" data-name="水墨丹青" data-desc="宣纸质感 · 毛笔笔触 · 印章点缀 · 国画意境" style="--card-accent:#1a1a1a">
+    <div class="tpl-preview" style="background:#f5f0e8"><iframe data-src="ink-painting.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="ink-painting.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ink-painting.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">水墨丹青</div><span class="tpl-tag tag-ink">传统国画</span></div>
+      <div class="tpl-desc">宣纸质感 · 毛笔笔触 · 印章点缀 · 国画意境</div>
+      <div class="tpl-features"><span class="tpl-feat">宣纸质感</span><span class="tpl-feat">毛笔笔触</span><span class="tpl-feat">印章点缀</span><span class="tpl-feat">国画意境</span></div>
+      <div class="tpl-btns"><a href="ink-painting.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="ink-painting.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="light minimal" data-name="极简白" data-desc="极致留白 · 发丝线条 · 纯净排版 · 少即是多" style="--card-accent:#2563eb">
+    <div class="tpl-preview" style="background:#ffffff"><iframe data-src="minimal-white.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="minimal-white.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="minimal-white.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">极简白</div><span class="tpl-tag tag-minimal">极致简约</span></div>
+      <div class="tpl-desc">极致留白 · 发丝线条 · 纯净排版 · 少即是多</div>
+      <div class="tpl-features"><span class="tpl-feat">极致留白</span><span class="tpl-feat">发丝线条</span><span class="tpl-feat">纯净排版</span><span class="tpl-feat">少即是多</span></div>
+      <div class="tpl-btns"><a href="minimal-white.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="minimal-white.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="dark nature" data-name="深海珊瑚" data-desc="珊瑚礁群 · 气泡上升 · 海洋渐变 · 珊瑚色彩" style="--card-accent:#ff6b6b">
+    <div class="tpl-preview" style="background:#001833"><iframe data-src="coral-reef.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="coral-reef.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="coral-reef.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">深海珊瑚</div><span class="tpl-tag tag-nature">海底世界</span></div>
+      <div class="tpl-desc">珊瑚礁群 · 气泡上升 · 海洋渐变 · 珊瑚色彩</div>
+      <div class="tpl-features"><span class="tpl-feat">珊瑚礁群</span><span class="tpl-feat">气泡上升</span><span class="tpl-feat">海洋渐变</span><span class="tpl-feat">珊瑚色彩</span></div>
+      <div class="tpl-btns"><a href="coral-reef.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="coral-reef.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="dark cyber" data-name="赛博修仙" data-desc="数字曼陀罗 · 量子气脉 · 修仙阶段 · 赛博飞升" style="--card-accent:#00ffcc">
+    <div class="tpl-preview" style="background:#0a0a14"><iframe data-src="cyber-cultivation.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="cyber-cultivation.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="cyber-cultivation.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">赛博修仙</div><span class="tpl-tag tag-cyber">赛博修真</span></div>
+      <div class="tpl-desc">数字曼陀罗 · 量子气脉 · 修仙阶段 · 赛博飞升</div>
+      <div class="tpl-features"><span class="tpl-feat">数字曼陀罗</span><span class="tpl-feat">量子气脉</span><span class="tpl-feat">修仙阶段</span><span class="tpl-feat">赛博飞升</span></div>
+      <div class="tpl-btns"><a href="cyber-cultivation.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="cyber-cultivation.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="dark luxury" data-name="暗黑哥特" data-desc="哥特尖拱 · 彩色玻璃 · 大教堂 · 暗黑美学" style="--card-accent:#8b0000">
+    <div class="tpl-preview" style="background:#0a0510"><iframe data-src="dark-gothic.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="dark-gothic.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="dark-gothic.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">暗黑哥特</div><span class="tpl-tag tag-luxury">哥特美学</span></div>
+      <div class="tpl-desc">哥特尖拱 · 彩色玻璃 · 大教堂 · 暗黑美学</div>
+      <div class="tpl-features"><span class="tpl-feat">哥特尖拱</span><span class="tpl-feat">彩色玻璃</span><span class="tpl-feat">大教堂</span><span class="tpl-feat">暗黑美学</span></div>
+      <div class="tpl-btns"><a href="dark-gothic.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="dark-gothic.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="dark cyber" data-name="星际迷航" data-desc="曲速引擎 · 星云探索 · 舰队徽章 · 太空航行" style="--card-accent:#00bfff">
+    <div class="tpl-preview" style="background:#000011"><iframe data-src="warp-drive.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="warp-drive.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="warp-drive.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">星际迷航</div><span class="tpl-tag tag-cyber">太空探索</span></div>
+      <div class="tpl-desc">曲速引擎 · 星云探索 · 舰队徽章 · 太空航行</div>
+      <div class="tpl-features"><span class="tpl-feat">曲速引擎</span><span class="tpl-feat">星云探索</span><span class="tpl-feat">舰队徽章</span><span class="tpl-feat">太空航行</span></div>
+      <div class="tpl-btns"><a href="warp-drive.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="warp-drive.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="dark cyber" data-name="赛博城市" data-desc="霓虹街景 · 全息广告 · 雨夜反光 · 赛博都市" style="--card-accent:#ff1493">
+    <div class="tpl-preview" style="background:#0a0a14"><iframe data-src="neon-city.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="neon-city.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="neon-city.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">赛博城市</div><span class="tpl-tag tag-cyber">霓虹都市</span></div>
+      <div class="tpl-desc">霓虹街景 · 全息广告 · 雨夜反光 · 赛博都市</div>
+      <div class="tpl-features"><span class="tpl-feat">霓虹街景</span><span class="tpl-feat">全息广告</span><span class="tpl-feat">雨夜反光</span><span class="tpl-feat">赛博都市</span></div>
+      <div class="tpl-btns"><a href="neon-city.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="neon-city.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="light ink" data-name="水墨山水" data-desc="层叠远山 · 云雾缭绕 · 流水意境 · 留白构图" style="--card-accent:#4a6fa5">
+    <div class="tpl-preview" style="background:#f0ece4"><iframe data-src="ink-landscape.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="ink-landscape.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="ink-landscape.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">水墨山水</div><span class="tpl-tag tag-ink">山水画意</span></div>
+      <div class="tpl-desc">层叠远山 · 云雾缭绕 · 流水意境 · 留白构图</div>
+      <div class="tpl-features"><span class="tpl-feat">层叠远山</span><span class="tpl-feat">云雾缭绕</span><span class="tpl-feat">流水意境</span><span class="tpl-feat">留白构图</span></div>
+      <div class="tpl-btns"><a href="ink-landscape.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="ink-landscape.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="dark nature" data-name="极光森林" data-desc="极光树冠 · 萤火虫光 · 森林剪影 · 神秘秘境" style="--card-accent:#00ff88">
+    <div class="tpl-preview" style="background:#020a05"><iframe data-src="aurora-forest.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="aurora-forest.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="aurora-forest.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">极光森林</div><span class="tpl-tag tag-nature">极光秘境</span></div>
+      <div class="tpl-desc">极光树冠 · 萤火虫光 · 森林剪影 · 神秘秘境</div>
+      <div class="tpl-features"><span class="tpl-feat">极光树冠</span><span class="tpl-feat">萤火虫光</span><span class="tpl-feat">森林剪影</span><span class="tpl-feat">神秘秘境</span></div>
+      <div class="tpl-btns"><a href="aurora-forest.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="aurora-forest.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
+  <div class="tpl-card reveal" data-cat="light nature" data-name="冰川" data-desc="冰川形态 · 冰晶图案 · 极地蓝调 · 冰裂纹理" style="--card-accent:#4fc3f7">
+    <div class="tpl-preview" style="background:#e8f4f8"><iframe data-src="glacier.html" loading="lazy" tabindex="-1"></iframe><div class="overlay"></div>
+      <div class="preview-hover">
+        <a href="glacier.html" target="_blank" class="preview-hover-btn primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="glacier.html" download class="preview-hover-btn secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+    <div class="tpl-info">
+      <div class="tpl-head"><div class="tpl-name">冰川</div><span class="tpl-tag tag-nature">极地冰川</span></div>
+      <div class="tpl-desc">冰川形态 · 冰晶图案 · 极地蓝调 · 冰裂纹理</div>
+      <div class="tpl-features"><span class="tpl-feat">冰川形态</span><span class="tpl-feat">冰晶图案</span><span class="tpl-feat">极地蓝调</span><span class="tpl-feat">冰裂纹理</span></div>
+      <div class="tpl-btns"><a href="glacier.html" target="_blank" class="tpl-btn primary"><i data-lucide="eye"></i> 预览</a><a href="glacier.html" download class="tpl-btn secondary"><i data-lucide="download"></i> 源码</a></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- CTA -->
@@ -2144,6 +2365,19 @@ filterBtns.forEach(btn => {
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
     filterCards();
+  });
+});
+
+// ── Layout Switch ──
+const layoutBtns = document.querySelectorAll('.layout-btn');
+layoutBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    layoutBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const layout = btn.dataset.layout;
+    grid.classList.remove('list-view', 'compact-view');
+    if (layout === 'list') grid.classList.add('list-view');
+    else if (layout === 'compact') grid.classList.add('compact-view');
   });
 });
 
