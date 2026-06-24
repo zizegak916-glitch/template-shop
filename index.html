@@ -866,8 +866,8 @@ h1 {
   .tpl-grid.list-view .tpl-card { grid-template-columns: 1fr; }
   .tpl-grid.list-view .tpl-preview { height: 160px; border-radius: var(--r) var(--r) 0 0; }
   .tpl-grid.compact-view { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .filter-row { flex-direction: column; gap: 10px; }
-  .layout-switch { align-self: center; }
+  .filter-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .layout-switch { order: -1; }
 }
 </style>
 </head>
@@ -965,6 +965,11 @@ h1 {
   </div>
   <div class="search-count" id="searchCount"></div>
   <div class="filter-row">
+    <div class="layout-switch">
+      <button class="layout-btn active" data-layout="grid" title="网格视图"><i data-lucide="layout-grid"></i></button>
+      <button class="layout-btn" data-layout="list" title="列表视图"><i data-lucide="list"></i></button>
+      <button class="layout-btn" data-layout="compact" title="紧凑视图"><i data-lucide="grid-2x2"></i></button>
+    </div>
     <div class="filters" id="filterBar">
       <button class="fbtn active" data-filter="all">全部</button>
       <button class="fbtn" data-filter="dark">暗色</button>
@@ -975,11 +980,6 @@ h1 {
       <button class="fbtn" data-filter="luxury">轻奢高端</button>
       <button class="fbtn" data-filter="industry">行业专属</button>
       <button class="fbtn" data-filter="minimal">极简</button>
-    </div>
-    <div class="layout-switch">
-      <button class="layout-btn active" data-layout="grid" title="网格视图"><i data-lucide="layout-grid"></i></button>
-      <button class="layout-btn" data-layout="list" title="列表视图"><i data-lucide="list"></i></button>
-      <button class="layout-btn" data-layout="compact" title="紧凑视图"><i data-lucide="grid-2x2"></i></button>
     </div>
   </div>
 </div>
