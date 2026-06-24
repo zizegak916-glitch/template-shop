@@ -867,7 +867,8 @@ h1 {
   .tpl-grid.list-view .tpl-preview { height: 160px; border-radius: var(--r) var(--r) 0 0; }
   .tpl-grid.compact-view { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .filter-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .layout-switch { order: -1; }
+  .layout-switch { order: -1; padding: 4px 6px; }
+  .layout-btn { padding: 8px 14px; }
 }
 </style>
 </head>
@@ -2297,6 +2298,9 @@ h1 {
 <script src="keys.js"></script>
 <script src="auth.js"></script>
 <script>
+// ── Init Lucide Icons ──
+if (window.lucide) lucide.createIcons();
+
 // ── Theme Toggle ──
 const toggle = document.getElementById('themeToggle');
 const icon = document.getElementById('themeIcon');
