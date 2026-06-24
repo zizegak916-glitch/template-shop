@@ -41,19 +41,24 @@
     countDisplay: null,
     init() {
       this.container = document.querySelector('.template-grid') ||
+                       document.querySelector('.tpl-grid') ||
                        document.querySelector('[data-template-grid]') ||
-                       document.getElementById('template-grid');
+                       document.getElementById('template-grid') ||
+                       document.getElementById('tpl-grid');
       this.loadMoreBtn = document.querySelector('.load-more-btn') ||
+                         document.querySelector('.tpl-load-more') ||
                          document.querySelector('[data-load-more]');
       this.searchInput = document.querySelector('.template-search') ||
+                         document.querySelector('#searchInput') ||
                          document.querySelector('[data-search]') ||
                          document.querySelector('input[type="search"]');
       this.countDisplay = document.querySelector('.template-count') ||
+                          document.querySelector('#tplCount') ||
                           document.querySelector('[data-count]');
     },
     refreshCards() {
       this.cards = this.container
-        ? Array.from(this.container.querySelectorAll('.template-card'))
+        ? Array.from(this.container.querySelectorAll('.template-card, .tpl-card'))
         : [];
     }
   };
@@ -102,21 +107,19 @@
   function initPagination() {
     state.allTemplates = collectTemplateData();
     state.filteredTemplates = [...state.allTemplates];
-    state.displayedCount = 0;
+    state.displayedCount = state.allTemplates.length;
 
-    hideAllCards();
-    loadNextBatch();
-    updateCountDisplay();
-
-    if (dom.loadMoreBtn) {
-      dom.loadMoreBtn.addEventListener('click', handleLoadMore);
-      dom.loadMoreBtn.style.cursor = 'pointer';
-    }
+    // Don't hide cards - let existing filterCards handle visibility
+    // Only set up iframe lazy loading
+    state.allTemplates.forEach(t => {
+      t.element.style.opacity = '1';
+      t.element.style.transform = 'none';
+    });
   }
 
   function collectTemplateData() {
     const cards = dom.container
-      ? Array.from(dom.container.querySelectorAll('.template-card'))
+      ? Array.from(dom.container.querySelectorAll('.template-card, .tpl-card'))
       : [];
 
     return cards.map((card, index) => ({
@@ -647,19 +650,20 @@
         searchTemplates(e.target.value);
       }, CONFIG.SEARCH_DEBOUNCE_MS);
 
-      dom.searchInput.addEventListener('input', debouncedSearch);
-
-      // Clear search on ESC
-      dom.searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          dom.searchInput.value = '';
-          resetSearch();
-          dom.searchInput.blur();
+// [disabled]       dom.searchInput.addEventListener('input', debouncedSearch);
+// [disabled] 
+// [disabled]       // Clear search on ESC
+// [disabled]       dom.searchInput.addEventListener('keydown', (e) => {
+// [disabled]         if (e.key === 'Escape') {
+// [disabled]           dom.searchInput.value = '';
+// [disabled]           resetSearch();
+// [disabled]           dom.searchInput.blur();
         }
       });
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Scroll handler disabled - no pagination, just iframe lazy loading
+    // window.addEventListener('scroll', handleScroll, { passive: true });
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', cleanup, { once: true });
