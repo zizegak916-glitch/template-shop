@@ -59,7 +59,9 @@
         }
 
         body {
-            font-family: var(--font-body);
+    word-break: break-word;
+    overflow-wrap: break-word;
+            font-family: 'Noto Sans SC', var(--font-body);
             background-color: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.7;
@@ -1645,4 +1647,7 @@
 
             themeToggle.addEventListener('click', function () {
                 const currentTheme = html.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark'
+                const newTheme = currentTheme === 'dark'));
+    </script>
+</body>
+</html>

@@ -83,7 +83,9 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  font-family: 'Noto Sans SC', 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--tx);
   min-height: 100vh;
@@ -395,40 +397,91 @@ h1 {
 }
 .tpl-preview .preview-hover {
   position: absolute; inset: 0; z-index: 2;
-  display: flex; align-items: center; justify-content: center;
-  gap: 12px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  display: none; flex-direction: column;
+  align-items: stretch; justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px) saturate(1.2);
   opacity: 0;
   transition: opacity 0.3s;
 }
+.tpl-preview .preview-hover.show-hover { display: flex; }
 [data-theme="light"] .tpl-preview .preview-hover {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.65);
 }
 .tpl-card:hover .preview-hover { opacity: 1; }
-.preview-hover-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 10px 20px; border-radius: 10px;
-  font-size: 13px; font-weight: 600;
-  cursor: pointer; border: none; font-family: inherit;
-  transition: all 0.25s;
+.hover-card-inner {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 16px;
+  transform: translateY(16px);
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tpl-card:hover .hover-card-inner {
+  transform: translateY(0);
+  opacity: 1;
+}
+[data-theme="light"] .hover-card-inner {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.hover-thumb {
+  width: 100%; height: 80px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, var(--p), var(--acc));
+  opacity: 0.5;
+}
+.hover-thumb-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(108,92,231,0.3), rgba(0,206,201,0.2));
+}
+.hover-thumb-placeholder i { width: 24px; height: 24px; color: rgba(255,255,255,0.6); }
+.hover-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+[data-theme="light"] .hover-desc { color: rgba(0, 0, 0, 0.6); }
+.hover-btns {
+  display: flex; gap: 8px;
+}
+.hover-btns a {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  gap: 5px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
   text-decoration: none;
+  transition: all 0.2s;
 }
-.preview-hover-btn i { width: 16px; height: 16px; }
-.preview-hover-btn.primary {
+.hover-btns a.primary {
   background: var(--p); color: #fff;
-  box-shadow: 0 4px 16px var(--p-glow);
 }
-.preview-hover-btn.primary:hover { background: #5b4bcf; transform: translateY(-2px); }
-.preview-hover-btn.secondary {
-  background: rgba(255, 255, 255, 0.15); color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.hover-btns a.primary:hover { background: #5b4bcf; }
+.hover-btns a.secondary {
+  background: rgba(255, 255, 255, 0.12); color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
-[data-theme="light"] .preview-hover-btn.secondary {
-  background: rgba(0, 0, 0, 0.05); color: var(--tx);
+[data-theme="light"] .hover-btns a.secondary {
+  background: rgba(0, 0, 0, 0.06); color: var(--tx);
   border: 1px solid var(--bd);
 }
-.preview-hover-btn.secondary:hover { background: rgba(255, 255, 255, 0.25); }
+.hover-btns a.secondary:hover { background: rgba(255, 255, 255, 0.2); }
+.hover-btns a i { width: 14px; height: 14px; }
 
 /* Card Info */
 .tpl-info { padding: 20px 24px 24px; }
@@ -808,6 +861,25 @@ h1 {
 /* ═══════════════════════════════════════════════════════════
    Responsive
    ═══════════════════════════════════════════════════════════ */
+/* ═══ Debounce Search Indicator ═══ */
+.search-bar .search-icon {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; color: var(--td); pointer-events: none;
+  transition: color 0.3s;
+}
+.search-bar input:focus ~ .search-icon { color: var(--p); }
+
+/* ═══ Enhanced Preview Hover Card (injected via JS) ═══ */
+@media (max-width: 640px) {
+  .tpl-preview .preview-hover { display: none !important; }
+  .tpl-card:active .preview-hover { display: flex !important; opacity: 1 !important; }
+}
+@media (hover: none) {
+  .tpl-preview .preview-hover { display: none !important; }
+  .tpl-card:active .preview-hover { display: flex !important; opacity: 1 !important; }
+}
+
+/* ═══ Responsive ═══ */
 @media (max-width: 1024px) {
   .tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
 }
@@ -815,30 +887,64 @@ h1 {
   .tpl-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .tpl-grid { grid-template-columns: 1fr; }
-  .hero { padding: 120px 0 30px; }
-  h1 { font-size: 34px; }
-  .sub { font-size: 15px; }
-  .tpl-preview { height: 200px; }
-  .tpl-info { padding: 16px 18px 20px; }
-  .tpl-name { font-size: 16px; }
-  .cta-banner { padding: 32px 20px; margin-bottom: 40px; }
-  .auth-card { padding: 36px 24px; border-radius: 22px; }
+  .tpl-grid { grid-template-columns: 1fr; gap: 16px; }
+  .hero { padding: 100px 0 20px; }
+  h1 { font-size: 28px; letter-spacing: -0.03em; }
+  .sub { font-size: 13px; line-height: 1.7; }
+  .tpl-preview { height: 180px; }
+  .tpl-info { padding: 12px 14px 16px; }
+  .tpl-name { font-size: 15px; }
+  .tpl-desc { font-size: 12px; margin-bottom: 8px; }
+  .tpl-features { gap: 4px; margin-bottom: 10px; }
+  .tpl-feat { font-size: 9px; padding: 3px 7px; }
+  .tpl-btns { gap: 6px; }
+  .tpl-btn { padding: 9px 10px; font-size: 12px; }
+  .cta-banner { padding: 24px 16px; margin-bottom: 32px; border-radius: 14px; }
+  .cta-banner h2 { font-size: 18px; }
+  .cta-banner p { font-size: 12px; margin-bottom: 14px; }
+  .cta-banner .btn { padding: 10px 20px; font-size: 13px; }
+  .auth-card { padding: 28px 18px; border-radius: 20px; }
   .hero-tags { gap: 6px; }
-  .hero-tag { padding: 5px 10px; font-size: 11px; }
-  .stats { gap: 24px; }
-  .stat-num { font-size: 24px; }
-  .top-bar { padding: 12px 16px; }
+  .hero-tag { padding: 5px 10px; font-size: 10px; }
+  .stats { gap: 16px; padding: 20px 0; }
+  .stat-num { font-size: 22px; }
+  .stat-label { font-size: 11px; }
+  .top-bar { padding: 10px 14px; }
+  .search-bar { max-width: 100%; }
+  .search-bar input { padding: 12px 14px 12px 40px; font-size: 14px; }
   .filters { gap: 6px; }
-  .fbtn { padding: 7px 14px; font-size: 12px; }
-  .tpl-preview .preview-hover { display: none; }
-  .scroll-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+  .fbtn { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
+  .scroll-top { bottom: 16px; right: 16px; width: 38px; height: 38px; border-radius: 10px; }
   .tpl-grid.list-view .tpl-card { grid-template-columns: 1fr; }
-  .tpl-grid.list-view .tpl-preview { height: 160px; border-radius: var(--r) var(--r) 0 0; }
+  .tpl-grid.list-view .tpl-preview { height: 140px; border-radius: var(--r) var(--r) 0 0; }
   .tpl-grid.compact-view { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .tpl-grid.compact-view .tpl-preview { height: 100px; }
+  .tpl-grid.compact-view .tpl-info { padding: 8px 10px; }
+  .tpl-grid.compact-view .tpl-name { font-size: 13px; }
+  .tpl-grid.compact-view .tpl-tag { font-size: 9px; padding: 2px 6px; }
+  .tpl-grid.compact-view .tpl-desc { font-size: 11px; }
   .filter-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .layout-switch { order: -1; padding: 4px 6px; }
-  .layout-btn { padding: 8px 14px; }
+  .layout-switch { order: -1; padding: 3px 5px; }
+  .layout-btn { padding: 7px 12px; }
+  .page-footer { padding: 24px 0; }
+  .footer-links { gap: 16px; }
+  .footer-links a { font-size: 12px; }
+  .footer-copy { font-size: 11px; }
+  .wrap { padding: 0 12px; }
+  .badge { font-size: 11px; padding: 6px 14px; margin-bottom: 20px; }
+  .hover-card-inner { margin: 10px; padding: 10px; }
+  .hover-thumb { height: 60px; }
+  .hover-desc { font-size: 11px; margin-bottom: 8px; }
+  .hover-btns a { padding: 7px 10px; font-size: 11px; }
+}
+@media (max-width: 380px) {
+  .tpl-grid { grid-template-columns: 1fr; }
+  .fbtn { padding: 6px 10px; font-size: 11px; }
+  .hero-tag { padding: 4px 8px; font-size: 9px; }
+  h1 { font-size: 24px; }
+  .stat-num { font-size: 20px; }
+  .filter-row { gap: 8px; }
+  .badge { font-size: 10px; padding: 5px 12px; }
 }
 </style>
 </head>
@@ -881,6 +987,49 @@ h1 {
   </div>
 </header>
 
+<!-- SEARCH & FILTER -->
+<div style="max-width:800px;margin:0 auto 32px;padding:0 20px" class="reveal">
+  <div style="position:relative">
+    <input type="text" id="templateSearch" placeholder="🔍 搜索模板..." oninput="filterTemplates()" style="width:100%;padding:14px 20px 14px 48px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:inherit;font-size:16px;outline:none;box-sizing:border-box;transition:border-color 0.2s">
+    <svg style="position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:0.5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </div>
+  <div id="filterTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center">
+    <button onclick="filterByCategory('all')" class="filter-tag active" data-cat="all">全部</button>
+    <button onclick="filterByCategory('dark')" class="filter-tag" data-cat="dark">🌙 暗色</button>
+    <button onclick="filterByCategory('light')" class="filter-tag" data-cat="light">☀️ 亮色</button>
+    <button onclick="filterByCategory('creative')" class="filter-tag" data-cat="creative">🎨 创意</button>
+    <button onclick="filterByCategory('business')" class="filter-tag" data-cat="business">💼 商务</button>
+    <button onclick="filterByCategory('nature')" class="filter-tag" data-cat="nature">🌿 自然</button>
+  </div>
+</div>
+<style>.filter-tag{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:inherit;cursor:pointer;font-size:13px;transition:all 0.2s}.filter-tag.active,.filter-tag:hover{background:rgba(124,58,237,0.3);border-color:rgba(124,58,237,0.5);color:#a78bfa}</style>
+<script>
+const CATEGORIES = {
+  'dark': ['aurora','cyber','deep-ocean','neon','volcanic','dark','shadow','void','mech','samurai','gothic','pixel','samurai'],
+  'light': ['sakura','bamboo','festival','botanical','pearl','cloud','dawn','bloom','spring'],
+  'creative': ['pixel','cyber','neon','samurai','cosmos','volcanic','mech','gothic'],
+  'business': ['agency','minimal','corporate','landing'],
+  'nature': ['bamboo','forest','ocean','mountain','aurora','volcanic','spring','bloom','frost','ember']
+};
+function filterTemplates() {
+  const q = document.getElementById('templateSearch').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    const name = (c.querySelector('.card-name')?.textContent || c.textContent || '').toLowerCase();
+    const tags = (c.dataset.tags || '').toLowerCase();
+    c.style.display = (name.includes(q) || tags.includes(q)) ? '' : 'none';
+  });
+}
+function filterByCategory(cat) {
+  document.querySelectorAll('.filter-tag').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  if (cat === 'all') { document.querySelectorAll('.card').forEach(c => c.style.display = ''); return; }
+  const list = CATEGORIES[cat] || [];
+  document.querySelectorAll('.card').forEach(c => {
+    const name = (c.querySelector('.card-name')?.textContent || c.textContent || '').toLowerCase();
+    c.style.display = list.some(k => name.includes(k)) ? '' : 'none';
+  });
+}
+</script>
+
 <!-- STATS -->
 <div class="stats reveal">
   <div class="stat-item"><div class="stat-num" id="totalCount">83</div><div class="stat-label">套模板</div></div>
@@ -903,15 +1052,11 @@ h1 {
       <button class="layout-btn" data-layout="compact" title="紧凑视图"><i data-lucide="grid-2x2"></i></button>
     </div>
     <div class="filters" id="filterBar">
-      <button class="fbtn active" data-filter="all">全部</button>
-      <button class="fbtn" data-filter="dark">暗色</button>
-      <button class="fbtn" data-filter="light">亮色</button>
-      <button class="fbtn" data-filter="ink">水墨国风</button>
-      <button class="fbtn" data-filter="cyber">赛博科技</button>
-      <button class="fbtn" data-filter="nature">自然景观</button>
-      <button class="fbtn" data-filter="luxury">轻奢高端</button>
-      <button class="fbtn" data-filter="industry">行业专属</button>
-      <button class="fbtn" data-filter="minimal">极简</button>
+      <button class="fbtn active" data-filter="all"><span>全部</span></button>
+      <button class="fbtn" data-filter="dark"><span>🌑 暗色</span></button>
+      <button class="fbtn" data-filter="light"><span>☀️ 亮色</span></button>
+      <button class="fbtn" data-filter="creative"><span>🎨 创意</span></button>
+      <button class="fbtn" data-filter="business"><span>💼 商务</span></button>
     </div>
   </div>
 </div>
@@ -2301,6 +2446,44 @@ h1 {
 <script src="auth.js"></script>
 <script src="perf.js"></script>
 <script>
+// ── Scroll Progress Bar ──
+(function(){
+  const bar = document.createElement('div');
+  bar.style.cssText = 'position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--p),var(--acc));z-index:200;width:0;transition:width .12s linear;pointer-events:none';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+    bar.style.width = Math.min(pct * 100, 100) + '%';
+  }, { passive: true });
+})();
+
+// ── Keyboard Shortcuts ──
+document.addEventListener('keydown', e => {
+  const si = document.getElementById('searchInput');
+  // / = focus search
+  if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    si.focus();
+  }
+  // Esc = clear search and blur
+  if (e.key === 'Escape') {
+    si.value = '';
+    si.blur();
+    filterCards();
+  }
+  // Ctrl+K or Cmd+K = focus search
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    si.focus();
+  }
+  // 1-4 = quick filter
+  const filterKeys = { '1': 'all', '2': 'dark', '3': 'light', '4': 'creative' };
+  if (filterKeys[e.key] && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    const btn = document.querySelector(`.fbtn[data-filter="${filterKeys[e.key]}"]`);
+    if (btn) btn.click();
+  }
+});
+
 // ── Init Lucide Icons ──
 if (window.lucide) lucide.createIcons();
 
@@ -2327,6 +2510,30 @@ const stb = document.getElementById('scrollTop');
 window.addEventListener('scroll', () => stb.classList.toggle('visible', window.scrollY > 600));
 stb.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
+// ── Inject Hover Cards ──
+document.querySelectorAll('.tpl-card').forEach(card => {
+  const previewDiv = card.querySelector('.tpl-preview .preview-hover');
+  if (!previewDiv) return;
+  const name = card.dataset.name || '';
+  const desc = card.dataset.desc || '';
+  const template = card.dataset.template || '#';
+  const accent = card.style.getPropertyValue('--card-accent') || 'var(--p)';
+  previewDiv.innerHTML = `
+    <div class="hover-card-inner">
+      <div class="hover-thumb" style="background:linear-gradient(135deg, ${accent}33, ${accent}11)">
+        <div class="hover-thumb-placeholder"><i data-lucide="layout-template"></i></div>
+      </div>
+      <div class="hover-desc">${desc}</div>
+      <div class="hover-btns">
+        <a href="${template}" target="_blank" class="primary"><i data-lucide="eye"></i> 预览</a>
+        <a href="${template}" download class="secondary"><i data-lucide="download"></i> 源码</a>
+      </div>
+    </div>
+  `;
+  previewDiv.classList.add('show-hover');
+});
+if (window.lucide) lucide.createIcons();
+
 // ── Search & Filter ──
 const searchInput = document.getElementById('searchInput');
 const searchCount = document.getElementById('searchCount');
@@ -2334,15 +2541,30 @@ const filterBtns = document.querySelectorAll('.fbtn');
 const grid = document.getElementById('tpl-grid');
 let currentFilter = 'all';
 
+// ── Category mapping: new 4 categories → original data-cat keywords ──
+const categoryMap = {
+  dark: ['dark'],
+  light: ['light'],
+  creative: ['ink', 'cyber', 'nature', 'minimal'],
+  business: ['industry', 'luxury']
+};
+
+// ── Debounce utility ──
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
 function filterCards() {
-  const q = searchInput.value.toLowerCase();
+  const q = searchInput.value.toLowerCase().trim();
   let shown = 0;
+  const filterKeys = categoryMap[currentFilter] || [];
   grid.querySelectorAll('.tpl-card').forEach(card => {
     const name = (card.dataset.name || '').toLowerCase();
     const desc = (card.dataset.desc || '').toLowerCase();
-    const cat = (card.dataset.cat || '');
-    const matchSearch = !q || name.includes(q) || desc.includes(q);
-    const matchFilter = currentFilter === 'all' || cat.includes(currentFilter);
+    const cat = (card.dataset.cat || '').toLowerCase();
+    const matchSearch = !q || name.includes(q) || desc.includes(q) || cat.replace(/\s+/g, ' ').includes(q);
+    let matchFilter = true;
+    if (currentFilter !== 'all') {
+      matchFilter = filterKeys.some(k => cat.includes(k));
+    }
     const show = matchSearch && matchFilter;
     card.style.display = show ? '' : 'none';
     if (show) shown++;
@@ -2365,7 +2587,8 @@ function filterCards() {
   }
 }
 
-searchInput.addEventListener('input', filterCards);
+const debouncedFilter = debounce(filterCards, 200);
+searchInput.addEventListener('input', debouncedFilter);
 filterBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     filterBtns.forEach(b => b.classList.remove('active'));
@@ -2394,19 +2617,37 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ── Lazy-load iframes (only load when card enters viewport) ──
-const iframeObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const iframe = e.target.querySelector('iframe');
-      if (iframe && !iframe.src) {
-        iframe.src = iframe.dataset.src || iframe.getAttribute('src');
-      }
-      iframeObserver.unobserve(e.target);
+// ── Lazy-load iframes (queue-based, max 3 concurrent) ──
+(function() {
+  const queue = [];
+  let loading = 0;
+  const MAX_CONCURRENT = 3;
+  const previews = document.querySelectorAll('.tpl-preview');
+  
+  function loadNext() {
+    if (loading >= MAX_CONCURRENT || queue.length === 0) return;
+    const el = queue.shift();
+    const iframe = el.querySelector('iframe');
+    if (iframe && !iframe.src) {
+      loading++;
+      iframe.onload = () => { loading--; loadNext(); };
+      iframe.onerror = () => { loading--; loadNext(); };
+      iframe.src = iframe.dataset.src || iframe.getAttribute('src');
     }
-  });
-}, { rootMargin: '200px' });
-document.querySelectorAll('.tpl-preview').forEach(el => iframeObserver.observe(el));
+  }
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        queue.push(e.target);
+        loadNext();
+        observer.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '100px' });
+  
+  previews.forEach(el => observer.observe(el));
+})();
 
 // ── Particles ──
 (function() {
@@ -2418,7 +2659,12 @@ document.querySelectorAll('.tpl-preview').forEach(el => iframeObserver.observe(e
   resize();
   window.addEventListener('resize', resize);
   for (let i = 0; i < 24; i++) particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.5+0.5, dx: (Math.random()-0.5)*0.3, dy: (Math.random()-0.5)*0.3, o: Math.random()*0.3+0.1 });
+  let animating = true;
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { animating = false; } else { animating = true; requestAnimationFrame(draw); } });
+  window.addEventListener('blur', () => animating = false);
+  window.addEventListener('focus', () => { animating = true; requestAnimationFrame(draw); });
   function draw() {
+    if (!animating) return;
     ctx.clearRect(0,0,w,h);
     particles.forEach(p => {
       p.x += p.dx; p.y += p.dy;
