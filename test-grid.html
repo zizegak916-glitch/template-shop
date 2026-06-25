@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Grid</title>
+<style>
+:root { --p: #6C5CE7; --acc: #00cec9; --r: 20px; }
+[data-theme="dark"] { --bg: #07070e; --s1: #0e0e1a; --tx: #e8e8f4; --bd: rgba(255,255,255,0.06); --card-bg: #0e0e1a; }
+body { font-family: sans-serif; background: var(--bg); color: var(--tx); margin: 0; padding: 20px; }
+.tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.tpl-card { background: var(--card-bg); border: 1px solid var(--bd); border-radius: var(--r); padding: 20px; }
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s, transform 0.7s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media (max-width: 640px) { .tpl-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1 style="color:var(--acc)">Test: 83 Cards Grid</h1>
+<div class="tpl-grid" id="tpl-grid">
+<div class="tpl-card reveal">Card 1</div>
+<div class="tpl-card reveal">Card 2</div>
+<div class="tpl-card reveal">Card 3</div>
+<div class="tpl-card reveal">Card 4</div>
+</div>
+<script>
+// Same IntersectionObserver as the real page
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+console.log('Observer set up, observed', document.querySelectorAll('.reveal').length, 'elements');
+</script>
+</body>
+</html>
