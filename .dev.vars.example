@@ -1,0 +1,3 @@
+# Local-only Worker secrets. Copy to .dev.vars; never commit the copied file.
+ALLOWED_ORIGIN=https://your-template-shop-domain.example
+ADMIN_UNBIND_SECRET=replace-with-a-long-random-value
