@@ -150,6 +150,15 @@ a { color: inherit; text-decoration: none; }
   display: flex; align-items: center; gap: 8px;
 }
 .top-bar .logo span { background: linear-gradient(135deg, var(--p), var(--acc)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.top-actions { display:flex; align-items:center; gap:10px; }
+.top-nav { display:flex; gap:20px; margin-left:auto; margin-right:18px; }
+.top-nav a { color:var(--td); font-size:13px; font-weight:600; transition:color .2s; }
+.top-nav a:hover { color:var(--tx); }
+.hero-actions { display:flex; justify-content:center; gap:10px; margin:28px 0 0; }
+.hero-action { display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px; border:1px solid var(--bd); color:var(--tx); font-size:13px; font-weight:700; background:var(--input-bg); transition:transform .2s, background .2s; }
+.hero-action:hover { transform:translateY(-2px); background:var(--s2); }.hero-action.primary { background:linear-gradient(135deg,var(--p),#826ff0); border-color:transparent; color:#fff; }
+.favorite-toggle { border:0; background:transparent; color:var(--td); cursor:pointer; padding:3px; line-height:1; font-size:17px; }.favorite-toggle.active { color:#f6c94a; }
+.copy-template { border:0; background:transparent; color:var(--td); cursor:pointer; padding:0 2px; font:inherit; font-size:12px; }.copy-template:hover { color:var(--tx); }
 .theme-toggle {
   width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--bd);
   background: var(--input-bg); color: var(--td); cursor: pointer;
@@ -909,7 +918,7 @@ h1 {
   .stats { gap: 16px; padding: 20px 0; }
   .stat-num { font-size: 22px; }
   .stat-label { font-size: 11px; }
-  .top-bar { padding: 10px 14px; }
+  .top-bar { padding: 10px 14px; }.top-nav{display:none}.top-actions{gap:6px}
   .search-bar { max-width: 100%; }
   .search-bar input { padding: 12px 14px 12px 40px; font-size: 14px; }
   .filters { gap: 6px; }
@@ -965,9 +974,8 @@ h1 {
     <i data-lucide="layout-grid" style="width:20px;height:20px;color:var(--p)"></i>
     <span>Template Shop</span>
   </div>
-  <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-    <i data-lucide="sun" id="themeIcon"></i>
-  </button>
+  <nav class="top-nav" aria-label="主导航"><a href="#templates">模板</a><a href="docs.html">文档</a><a href="#custom">定制</a></nav>
+  <div class="top-actions"><button class="theme-toggle" id="themeToggle" aria-label="切换主题"><i data-lucide="sun" id="themeIcon"></i></button></div>
 </div>
 
 <!-- CONTENT -->
@@ -985,50 +993,8 @@ h1 {
     <span class="hero-tag"><i data-lucide="zap"></i> 零依赖</span>
     <span class="hero-tag"><i data-lucide="package"></i> 即买即发</span>
   </div>
+  <div class="hero-actions reveal"><a class="hero-action primary" href="#templates"><i data-lucide="compass"></i> 开始挑选</a><a class="hero-action" href="docs.html"><i data-lucide="book-open"></i> 使用文档</a></div>
 </header>
-
-<!-- SEARCH & FILTER -->
-<div style="max-width:800px;margin:0 auto 32px;padding:0 20px" class="reveal">
-  <div style="position:relative">
-    <input type="text" id="templateSearch" placeholder="🔍 搜索模板..." oninput="filterTemplates()" style="width:100%;padding:14px 20px 14px 48px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:inherit;font-size:16px;outline:none;box-sizing:border-box;transition:border-color 0.2s">
-    <svg style="position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:0.5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-  </div>
-  <div id="filterTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center">
-    <button onclick="filterByCategory('all')" class="filter-tag active" data-cat="all">全部</button>
-    <button onclick="filterByCategory('dark')" class="filter-tag" data-cat="dark">🌙 暗色</button>
-    <button onclick="filterByCategory('light')" class="filter-tag" data-cat="light">☀️ 亮色</button>
-    <button onclick="filterByCategory('creative')" class="filter-tag" data-cat="creative">🎨 创意</button>
-    <button onclick="filterByCategory('business')" class="filter-tag" data-cat="business">💼 商务</button>
-    <button onclick="filterByCategory('nature')" class="filter-tag" data-cat="nature">🌿 自然</button>
-  </div>
-</div>
-<style>.filter-tag{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:inherit;cursor:pointer;font-size:13px;transition:all 0.2s}.filter-tag.active,.filter-tag:hover{background:rgba(124,58,237,0.3);border-color:rgba(124,58,237,0.5);color:#a78bfa}</style>
-<script>
-const CATEGORIES = {
-  'dark': ['aurora','cyber','deep-ocean','neon','volcanic','dark','shadow','void','mech','samurai','gothic','pixel','samurai'],
-  'light': ['sakura','bamboo','festival','botanical','pearl','cloud','dawn','bloom','spring'],
-  'creative': ['pixel','cyber','neon','samurai','cosmos','volcanic','mech','gothic'],
-  'business': ['agency','minimal','corporate','landing'],
-  'nature': ['bamboo','forest','ocean','mountain','aurora','volcanic','spring','bloom','frost','ember']
-};
-function filterTemplates() {
-  const q = document.getElementById('templateSearch').value.toLowerCase();
-  document.querySelectorAll('.card').forEach(c => {
-    const name = (c.querySelector('.card-name')?.textContent || c.textContent || '').toLowerCase();
-    const tags = (c.dataset.tags || '').toLowerCase();
-    c.style.display = (name.includes(q) || tags.includes(q)) ? '' : 'none';
-  });
-}
-function filterByCategory(cat) {
-  document.querySelectorAll('.filter-tag').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-  if (cat === 'all') { document.querySelectorAll('.card').forEach(c => c.style.display = ''); return; }
-  const list = CATEGORIES[cat] || [];
-  document.querySelectorAll('.card').forEach(c => {
-    const name = (c.querySelector('.card-name')?.textContent || c.textContent || '').toLowerCase();
-    c.style.display = list.some(k => name.includes(k)) ? '' : 'none';
-  });
-}
-</script>
 
 <!-- STATS -->
 <div class="stats reveal">
@@ -1039,7 +1005,7 @@ function filterByCategory(cat) {
 </div>
 
 <!-- SEARCH & FILTERS -->
-<div class="controls reveal">
+<div class="controls reveal" id="templates">
   <div class="search-bar">
     <i data-lucide="search"></i>
     <input type="text" id="searchInput" placeholder="搜索模板名称或描述...">
@@ -1057,6 +1023,7 @@ function filterByCategory(cat) {
       <button class="fbtn" data-filter="light"><span>☀️ 亮色</span></button>
       <button class="fbtn" data-filter="creative"><span>🎨 创意</span></button>
       <button class="fbtn" data-filter="business"><span>💼 商务</span></button>
+      <button class="fbtn" data-filter="favorites"><span>★ 收藏</span></button>
     </div>
   </div>
 </div>
@@ -2441,7 +2408,7 @@ function filterByCategory(cat) {
   <i data-lucide="arrow-up"></i>
 </button>
 
-<script src="keys.js"></script>
+<script src="auth-config.js"></script>
 <script src="premium.js"></script>
 <script src="auth.js"></script>
 <script src="perf.js"></script>
@@ -2540,6 +2507,27 @@ const searchCount = document.getElementById('searchCount');
 const filterBtns = document.querySelectorAll('.fbtn');
 const grid = document.getElementById('tpl-grid');
 let currentFilter = 'all';
+const FAVORITES_STORAGE_KEY = 'template-shop:favorites:v1';
+const favorites = new Set(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'));
+
+function persistFavorites() {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favorites]));
+}
+
+function showShopNotice(message) {
+  let notice = document.getElementById('shopNotice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'shopNotice';
+    notice.setAttribute('role', 'status');
+    notice.style.cssText = 'position:fixed;left:50%;bottom:28px;z-index:300;transform:translateX(-50%);padding:10px 14px;border:1px solid var(--bd-hover);border-radius:10px;background:var(--s2);box-shadow:0 14px 40px #0008;font-size:13px;opacity:0;transition:opacity .18s';
+    document.body.appendChild(notice);
+  }
+  notice.textContent = message;
+  notice.style.opacity = '1';
+  clearTimeout(showShopNotice.timer);
+  showShopNotice.timer = setTimeout(() => { notice.style.opacity = '0'; }, 1800);
+}
 
 // ── Category mapping: new 4 categories → original data-cat keywords ──
 const categoryMap = {
@@ -2562,7 +2550,9 @@ function filterCards() {
     const cat = (card.dataset.cat || '').toLowerCase();
     const matchSearch = !q || name.includes(q) || desc.includes(q) || cat.replace(/\s+/g, ' ').includes(q);
     let matchFilter = true;
-    if (currentFilter !== 'all') {
+    if (currentFilter === 'favorites') {
+      matchFilter = favorites.has(card.dataset.template);
+    } else if (currentFilter !== 'all') {
       matchFilter = filterKeys.some(k => cat.includes(k));
     }
     const show = matchSearch && matchFilter;
@@ -2610,6 +2600,39 @@ layoutBtns.forEach(btn => {
     else if (layout === 'compact') grid.classList.add('compact-view');
   });
 });
+
+// ── Favorites and shareable template links ──
+grid.querySelectorAll('.tpl-card').forEach(card => {
+  const template = card.dataset.template;
+  const head = card.querySelector('.tpl-head');
+  const buttonRow = card.querySelector('.tpl-btns');
+  if (!template || !head) return;
+  const favoriteButton = document.createElement('button');
+  favoriteButton.type = 'button';
+  favoriteButton.className = 'favorite-toggle' + (favorites.has(template) ? ' active' : '');
+  favoriteButton.setAttribute('aria-label', '收藏模板');
+  favoriteButton.textContent = '★';
+  favoriteButton.addEventListener('click', () => {
+    if (favorites.has(template)) favorites.delete(template); else favorites.add(template);
+    persistFavorites();
+    favoriteButton.classList.toggle('active', favorites.has(template));
+    if (currentFilter === 'favorites') filterCards();
+  });
+  head.appendChild(favoriteButton);
+  if (buttonRow) {
+    const copyButton = document.createElement('button');
+    copyButton.type = 'button';
+    copyButton.className = 'copy-template';
+    copyButton.textContent = '复制链接';
+    copyButton.addEventListener('click', async () => {
+      const url = new URL(template, window.location.href).href;
+      try { await navigator.clipboard.writeText(url); showShopNotice('模板链接已复制'); }
+      catch { showShopNotice(url); }
+    });
+    buttonRow.appendChild(copyButton);
+  }
+});
+document.getElementById('totalCount').textContent = grid.querySelectorAll('.tpl-card').length;
 
 // ── Scroll Reveal ──
 const observer = new IntersectionObserver((entries) => {
