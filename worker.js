@@ -23,11 +23,23 @@ function corsHeaders(request, env) {
 };
 }
 
+function originIsAllowed(request, env) {
+  const origin = request.headers.get('Origin');
+  return Boolean(env.ALLOWED_ORIGIN && origin === env.ALLOWED_ORIGIN);
+}
+
 export default {
   async fetch(request, env) {
+    if (!env.ALLOWED_ORIGIN) {
+      return new Response(JSON.stringify({ success: false, message: '服务未配置允许来源' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
+    }
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders(request, env) });
+    }
+
+    if (!originIsAllowed(request, env)) {
+      return jsonResponse({ success: false, message: 'Origin not allowed' }, 403, request, env);
     }
 
     const url = new URL(request.url);
@@ -107,7 +119,7 @@ async function handleLogin(env, key, clientFingerprint, request) {
     const raw = await env.KEY_BINDINGS.get(bindingKey);
     if (raw) existingBinding = JSON.parse(raw);
   } catch (e) {
-    // KV not configured
+    return jsonResponse({ success: false, message: '设备绑定服务不可用' }, 503, request, env);
   }
 
   if (existingBinding) {
@@ -144,7 +156,7 @@ async function handleLogin(env, key, clientFingerprint, request) {
       expirationTtl: 365 * 24 * 3600, // 1 year
     });
   } catch (e) {
-    // KV not configured — still allow login
+    return jsonResponse({ success: false, message: '设备绑定服务不可用' }, 503, request, env);
   }
 
   return jsonResponse({
