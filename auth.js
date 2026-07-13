@@ -206,36 +206,32 @@
     },
 
     // ─── Key Login ───────────────────────────────────────────────
+    // Key validation must happen in the Worker. Keeping valid hashes in a
+    // browser bundle makes every paid key check bypassable.
     async loginWithKey(keyCode) {
       keyCode = keyCode.trim();
       if (!keyCode) {
         return { ok: false, msg: '请输入密钥' };
       }
-
-      const keyHash = await this.sha256(keyCode);
-      const validHashes = window.__VALID_HASHES || [];
-
-      if (!validHashes.includes(keyHash)) {
-        return { ok: false, msg: '密钥无效' };
-      }
-
       const fp = await this.getDeviceFingerprint();
-      const bounds = this.getDeviceBounds();
-
-      // Check if this key is already bound to this device
-      if (bounds[keyHash] === fp) {
-        // Already bound device, just log in
-      } else if (!bounds[keyHash]) {
-        // First time: bind this device
-        bounds[keyHash] = fp;
-        this.setDeviceBounds(bounds);
-      } else {
-        // Key is bound to a different device
-        return { ok: false, msg: '此密钥已绑定其他设备' };
+      const endpoint = window.TEMPLATE_AUTH_ENDPOINT;
+      if (!endpoint) return { ok: false, msg: '密钥服务尚未配置' };
+      let payload;
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login', key: keyCode, fingerprint: fp })
+        });
+        payload = await response.json();
+      } catch (error) {
+        return { ok: false, msg: '密钥服务暂不可用，请稍后再试' };
       }
 
-      // Create or find key user
-      const keyUsername = 'key_' + keyHash.substring(0, 8);
+      if (!payload.success) return { ok: false, msg: payload.message || '密钥无效' };
+
+      // Never store the raw key or a reusable authorization hash locally.
+      const keyUsername = 'key_' + fp.substring(0, 12);
       const users = this.getUsers();
       let keyUser = users.find(u => u.username === keyUsername);
 
@@ -255,7 +251,7 @@
       }
 
       this.setCurrentUser(keyUser);
-      return { ok: true, msg: '密钥验证成功！旗舰版已激活 ✓' };
+      return { ok: true, msg: payload.message || '密钥验证成功！旗舰版已激活 ✓' };
     },
 
     logout() {
