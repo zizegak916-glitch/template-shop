@@ -1,4 +1,4 @@
-# Linux.do Topic Flipper
+# Linux.do Flip
 
 Tampermonkey userscript for browsing `https://linux.do` topics with a conservative reading pattern.
 

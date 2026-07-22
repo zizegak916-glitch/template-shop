@@ -2,6 +2,9 @@
 
 > 一个精心策划的落地页模板库，收录 **63** 款高质量单页模板，覆盖暗黑、明亮、水墨国风、奢华、行业、AI/科技等多种视觉风格。所有模板均为纯 HTML/CSS/JS 构建，无任何框架依赖，即开即用。
 
+附加工具：
+`linuxdo-flip/` 目录下提供一个 `linux.do` 的 Tampermonkey 浏览脚本和本地烟雾测试。
+
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Templates](https://img.shields.io/badge/templates-63-green.svg)
 ![Stack](https://img.shields.io/badge/stack-Pure%20HTML%2FCSS%2FJS-orange.svg)
