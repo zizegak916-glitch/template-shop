@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.2.0
-// @description  Linux.do 阅读进度助手：恢复原阅读状态、原生列表导航、长帖续读与点赞审查
+// @version      1.3.0
+// @description  Linux.do 阅读进度助手：搜索定位、故障恢复、原生导航、长帖续读与点赞审查
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -31,6 +31,9 @@
     reset: "linuxdo-flip-reset",
     approveLike: "linuxdo-flip-approve-like",
     skipLike: "linuxdo-flip-skip-like",
+    retryCurrent: "linuxdo-flip-retry-current",
+    skipCurrent: "linuxdo-flip-skip-current",
+    diagnostics: "linuxdo-flip-diagnostics",
     likeTarget: "linuxdo-flip-like-target",
     navigationMode: "linuxdo-flip-navigation-mode",
   };
@@ -56,6 +59,9 @@
   var FETCH_DELAY_MIN_MS = 1100;
   var FETCH_DELAY_MAX_MS = 2200;
   var FETCH_RETRIES = 3;
+  var SEARCH_WAIT_MS = 9000;
+  var NAVIGATION_TIMEOUT_MS = 25000;
+  var MAX_NAVIGATION_RECOVERIES = 2;
 
   var DEFAULT_CONFIG = {
     pages: 3,
@@ -73,6 +79,8 @@
 
   var processing = false;
   var lockTimer = null;
+  var routeTimer = null;
+  var lastObservedHref = "";
 
   function loadJSON(storage, key, fallback) {
     try {
@@ -153,12 +161,34 @@
     if (!session || session.version !== VERSION) {
       return null;
     }
+    session.queue = Array.isArray(session.queue) ? session.queue : [];
+    session.index = clamp(
+      Math.floor(Number(session.index) || 0),
+      0,
+      session.queue.length
+    );
+    session.config = normalizeConfig(
+      Object.assign({}, DEFAULT_CONFIG, session.config || {})
+    );
+    session.navigation = session.navigation || null;
+    session.listContext = session.listContext || null;
+    session.diagnostics = Object.assign(
+      {
+        stage: "idle",
+        retries: 0,
+        lastError: "",
+        queueSkipped: 0,
+        updatedAt: 0,
+      },
+      session.diagnostics || {}
+    );
     return session;
   }
 
   function saveSession(session) {
     session.updatedAt = Date.now();
     saveJSON(localStorage, KEYS.session, session);
+    renderDiagnostics(session);
   }
 
   function clearSession() {
@@ -292,6 +322,169 @@
     status.style.color = isError ? "#b42318" : "#202124";
   }
 
+  function stageLabel(stage) {
+    var labels = {
+      idle: "待命",
+      list: "列表寻帖",
+      searching: "站内搜索",
+      opening: "打开主题",
+      reading: "阅读主题",
+      returning: "返回列表",
+      review: "点赞审查",
+      paused: "已暂停",
+    };
+    return labels[stage] || String(stage || "未知");
+  }
+
+  function renderDiagnostics(session) {
+    var node = document.getElementById(IDS.diagnostics);
+    if (!node) {
+      return;
+    }
+    if (!session) {
+      node.textContent = "阶段：待命";
+      return;
+    }
+
+    var queue = Array.isArray(session.queue) ? session.queue : [];
+    var topic = queue[session.index] || null;
+    var navigation = session.navigation || {};
+    var diagnostics = session.diagnostics || {};
+    var parts = [
+      "阶段：" +
+        stageLabel(
+          navigation.stage ||
+            diagnostics.stage ||
+            (session.status === "paused" ? "paused" : "idle")
+        ),
+      "队列：" +
+        Math.min(Number(session.index || 0) + 1, queue.length) +
+        "/" +
+        queue.length,
+      "恢复：" + Number(diagnostics.retries || navigation.retries || 0),
+    ];
+    if (topic) {
+      var progress = getTopicProgress(topic.id);
+      parts.push(
+        "主题 #" +
+          topic.id +
+          " · 楼层 " +
+          Number(progress.lastPostNumber || 1) +
+          "/" +
+          (progress.highestPostNumber || "?")
+      );
+    }
+    if (diagnostics.lastError) {
+      parts.push("上次错误：" + diagnostics.lastError);
+    }
+    node.textContent = parts.join("\n");
+  }
+
+  function setNavigationState(session, stage, patch) {
+    session.navigation = Object.assign(
+      {
+        stage: stage,
+        topicId: null,
+        query: "",
+        startedAt: Date.now(),
+        retries: 0,
+        lastError: "",
+      },
+      session.navigation || {},
+      patch || {},
+      {
+        stage: stage,
+        startedAt: Date.now(),
+      }
+    );
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: stage,
+      retries: Number(session.navigation.retries || 0),
+      lastError: String(session.navigation.lastError || ""),
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    return session.navigation;
+  }
+
+  function recordSessionError(session, message) {
+    if (!session) {
+      return;
+    }
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      lastError: String(message || "未知错误"),
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+  }
+
+  function auditSessionQueue(session) {
+    if (!session || !Array.isArray(session.queue)) {
+      return { changed: false, removed: 0, skipped: 0 };
+    }
+    if (session.status === "review") {
+      return { changed: false, removed: 0, skipped: 0 };
+    }
+
+    var originalIndex = clamp(
+      Math.floor(Number(session.index) || 0),
+      0,
+      session.queue.length
+    );
+    var visited = getVisited();
+    var queue = [];
+    var nextIndex = 0;
+    var removed = 0;
+    var skipped = 0;
+
+    session.queue.slice(0, originalIndex).forEach(function (rawTopic) {
+      var topic = rawTopic && rawTopic.id ? normalizeTopic(rawTopic) : null;
+      if (!topic || !Number(topic.id)) {
+        removed += 1;
+        return;
+      }
+      queue.push(topic);
+      nextIndex += 1;
+    });
+
+    var seenRemaining = new Set();
+    session.queue.slice(originalIndex).forEach(function (rawTopic) {
+      var topic = rawTopic && rawTopic.id ? normalizeTopic(rawTopic) : null;
+      var id = topic ? Number(topic.id) : 0;
+      if (!id || seenRemaining.has(id)) {
+        removed += 1;
+        skipped += 1;
+        return;
+      }
+      seenRemaining.add(id);
+      var completed =
+        visited.has(id) || Boolean(getTopicProgress(id).completed);
+      if (completed) {
+        removed += 1;
+        skipped += 1;
+        return;
+      }
+
+      queue.push(topic);
+    });
+
+    var changed =
+      removed > 0 ||
+      nextIndex !== originalIndex ||
+      queue.length !== session.queue.length;
+    if (changed) {
+      session.queue = queue;
+      session.index = clamp(nextIndex, 0, queue.length);
+      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+        queueSkipped:
+          Number((session.diagnostics || {}).queueSkipped || 0) + skipped,
+        updatedAt: Date.now(),
+      });
+      saveSession(session);
+    }
+    return { changed: changed, removed: removed, skipped: skipped };
+  }
+
   function loadConfig() {
     var stored = loadJSON(localStorage, KEYS.config, {});
     return Object.assign({}, DEFAULT_CONFIG, stored || {});
@@ -384,27 +577,31 @@
   }
 
   function normalizeTopic(topic) {
+    var id = Number(topic.id);
+    var slug = String(topic.slug || "topic");
     return {
-      id: Number(topic.id),
+      id: id,
       title: String(topic.title || "(无标题)"),
-      slug: String(topic.slug || "topic"),
-      categoryId: topic.category_id ? Number(topic.category_id) : null,
+      slug: slug,
+      categoryId:
+        topic.category_id || topic.categoryId
+          ? Number(topic.category_id || topic.categoryId)
+          : null,
       pinned: Boolean(topic.pinned),
-      highestPostNumber: topic.highest_post_number
-        ? Number(topic.highest_post_number)
+      highestPostNumber: topic.highest_post_number || topic.highestPostNumber
+        ? Number(topic.highest_post_number || topic.highestPostNumber)
         : null,
-      postsCount: topic.posts_count ? Number(topic.posts_count) : null,
+      postsCount: topic.posts_count || topic.postsCount
+        ? Number(topic.posts_count || topic.postsCount)
+        : null,
       sourcePage:
         topic.sourcePage === null || topic.sourcePage === undefined
           ? null
           : Number(topic.sourcePage),
       listHref: topic.listHref ? String(topic.listHref) : null,
-      url:
-        location.origin +
-        "/t/" +
-        String(topic.slug || "topic") +
-        "/" +
-        Number(topic.id),
+      url: String(
+        topic.url || location.origin + "/t/" + slug + "/" + id
+      ),
     };
   }
 
@@ -684,9 +881,60 @@
     return topic.url + (postNumber > 1 ? "/" + postNumber : "");
   }
 
+  function buildSearchQuery(topic) {
+    return String((topic || {}).title || "")
+      .replace(/["“”]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 140);
+  }
+
+  function findExactSearchTopic(data, topicId) {
+    var id = Number(topicId);
+    var topics = Array.isArray((data || {}).topics) ? data.topics : [];
+    var exactTopic = topics.find(function (topic) {
+      return Number(topic && topic.id) === id;
+    });
+    if (exactTopic) {
+      return normalizeTopic(exactTopic);
+    }
+
+    var posts = Array.isArray((data || {}).posts) ? data.posts : [];
+    var exactPost = posts.find(function (post) {
+      return Number(post && post.topic_id) === id;
+    });
+    if (!exactPost) {
+      return null;
+    }
+
+    return normalizeTopic({
+      id: id,
+      slug: exactPost.topic_slug || exactPost.slug || "topic",
+      title: exactPost.topic_title || exactPost.blurb || "主题 #" + id,
+    });
+  }
+
+  async function searchExactTopic(topic) {
+    var query = buildSearchQuery(topic);
+    if (query.length < 2) {
+      return { query: query, match: null };
+    }
+    var data = await fetchJsonWithRetry(
+      "/search.json?q=" + encodeURIComponent(query)
+    );
+    return {
+      query: query,
+      match: findExactSearchTopic(data, topic.id),
+    };
+  }
+
+  function isSearchPage() {
+    return /^\/search(?:\/|$)/.test(String(location.pathname || ""));
+  }
+
   function findTopicLink(topicId) {
     var links = document.querySelectorAll(
-      "a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title"
+      'a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title, a.search-link, .fps-result a[href*="/t/"], a[href*="/t/"]'
     );
     for (var index = 0; index < links.length; index += 1) {
       var href = links[index].getAttribute("href") || "";
@@ -736,6 +984,96 @@
       await sleep(450);
     }
     return link;
+  }
+
+  async function waitForSearchResult(topic) {
+    var deadline = Date.now() + SEARCH_WAIT_MS;
+    var link = findTopicLink(topic.id);
+    var attempt = 0;
+    while (!link && Date.now() < deadline) {
+      attempt += 1;
+      setStatus(
+        "搜索结果核验中：" +
+          topic.title +
+          " · 等待精确主题 #" +
+          topic.id
+      );
+      if (attempt % 4 === 0 && typeof window.scrollBy === "function") {
+        window.scrollBy({
+          top: Math.max(280, Math.floor(window.innerHeight * 0.62)),
+          behavior: "smooth",
+        });
+      }
+      await sleep(350);
+      link = findTopicLink(topic.id);
+    }
+    if (link && typeof link.scrollIntoView === "function") {
+      link.scrollIntoView({ behavior: "smooth", block: "center" });
+      await sleep(350);
+    }
+    return link;
+  }
+
+  async function openTopicFromSearch(topic, session) {
+    var link = await waitForSearchResult(topic);
+    if (link) {
+      setNavigationState(session, "opening", {
+        topicId: topic.id,
+        query: (session.navigation || {}).query || buildSearchQuery(topic),
+        retries: Number((session.navigation || {}).retries || 0),
+        lastError: "",
+        source: "search",
+      });
+      setStatus("搜索精确命中主题 #" + topic.id + "，点击打开。");
+      link.click();
+      return true;
+    }
+
+    var message = "搜索页未渲染精确主题 #" + topic.id;
+    recordSessionError(session, message);
+    setNavigationState(session, "opening", {
+      topicId: topic.id,
+      retries: Number((session.navigation || {}).retries || 0),
+      lastError: message,
+      source: "last",
+    });
+    setStatus(message + "，回退站点上次阅读入口。", true);
+    location.href = topic.url + "/last";
+    return false;
+  }
+
+  async function startTopicSearch(topic, session) {
+    setStatus("列表未找到，正在站内搜索并核验主题 ID：" + topic.title);
+    try {
+      var result = await searchExactTopic(topic);
+      if (!result.match) {
+        recordSessionError(
+          session,
+          "站内搜索没有返回精确主题 #" + topic.id
+        );
+        return false;
+      }
+
+      session.listContext = Object.assign({}, session.listContext || {}, {
+        canHistoryBack: false,
+      });
+      setNavigationState(session, "searching", {
+        topicId: topic.id,
+        query: result.query,
+        retries: Number((session.navigation || {}).retries || 0),
+        lastError: "",
+        source: "list",
+      });
+      setStatus(
+        "搜索已核验主题 #" + topic.id + "，打开站内搜索结果页。"
+      );
+      location.href =
+        location.origin + "/search?q=" + encodeURIComponent(result.query);
+      return true;
+    } catch (error) {
+      recordSessionError(session, "站内搜索失败：" + error.message);
+      return false;
+    }
   }
 
   function captureListContext(session) {
@@ -800,12 +1138,17 @@
       scrollY: 0,
       canHistoryBack: false,
     };
-    session.navigation = {
-      stage: "returning",
+    setNavigationState(session, "returning", {
+      topicId:
+        session.queue && session.queue[session.index]
+          ? session.queue[session.index].id
+          : null,
       url: context.url,
       scrollY: context.scrollY,
-    };
-    saveSession(session);
+      retries: 0,
+      lastError: "",
+      source: "topic",
+    });
     setStatus("返回主题列表…");
 
     if (
@@ -840,7 +1183,14 @@
     session.listContext = {
       url: location.href,
       scrollY: scrollY,
+      canHistoryBack: true,
     };
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "list",
+      retries: 0,
+      lastError: "",
+      updatedAt: Date.now(),
+    });
     saveSession(session);
     window.setTimeout(function () {
       if (typeof window.scrollTo === "function") {
@@ -1074,10 +1424,33 @@
       session.config.navigationMode === "native" &&
       !getTopicId(location.pathname)
     ) {
-      session.listContext = captureListContext(session);
-      saveSession(session);
+      if (
+        isSearchPage() &&
+        session.navigation &&
+        session.navigation.stage === "searching" &&
+        Number(session.navigation.topicId) === Number(topic.id)
+      ) {
+        await openTopicFromSearch(topic, session);
+        return;
+      }
+
+      if (!isSearchPage()) {
+        session.listContext = captureListContext(session);
+      }
+      setNavigationState(session, "list", {
+        topicId: topic.id,
+        retries: Number((session.navigation || {}).retries || 0),
+        lastError: "",
+        source: "list",
+      });
       var link = await findTopicLinkByScrolling(topic);
       if (link) {
+        setNavigationState(session, "opening", {
+          topicId: topic.id,
+          retries: Number((session.navigation || {}).retries || 0),
+          lastError: "",
+          source: "list",
+        });
         setStatus(
           "点击主题：" +
             topic.title +
@@ -1089,7 +1462,22 @@
         return;
       }
 
-      setStatus("列表未找到主题，使用站点“上次阅读”入口：" + topic.title);
+      if (await startTopicSearch(topic, session)) {
+        return;
+      }
+
+      var searchError =
+        ((session.diagnostics || {}).lastError || "站内搜索未精确命中");
+      setNavigationState(session, "opening", {
+        topicId: topic.id,
+        retries: Number((session.navigation || {}).retries || 0),
+        lastError: searchError,
+        source: "last",
+      });
+      setStatus(
+        searchError + "，使用站点“上次阅读”入口：" + topic.title,
+        true
+      );
       await sleep(500);
       location.href = topic.url + "/last";
       return;
@@ -1103,6 +1491,15 @@
           : "")
     );
     await sleep(500);
+    if (session) {
+      setNavigationState(session, "opening", {
+        topicId: topic.id,
+        retries: Number((session.navigation || {}).retries || 0),
+        lastError: "",
+        source:
+          session.config.navigationMode === "native" ? "last" : "direct",
+      });
+    }
     location.href =
       session && session.config.navigationMode === "native"
         ? topic.url + "/last"
@@ -1140,6 +1537,13 @@
         reviewTopic: null,
         listContext: null,
         navigation: null,
+        diagnostics: {
+          stage: "idle",
+          retries: 0,
+          lastError: "",
+          queueSkipped: 0,
+          updatedAt: Date.now(),
+        },
         config: config,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -1194,6 +1598,174 @@
     remove(localStorage, KEYS.visited);
     clearProgress();
     setStatus("已清空已读记录。");
+  }
+
+  function retryCurrentTopic() {
+    var session = getSession();
+    if (!session || !session.queue[session.index]) {
+      setStatus("当前没有可重试的话题。");
+      return;
+    }
+    if (session.status === "review") {
+      setStatus("当前处于点赞审查，请先确认或跳过点赞。");
+      return;
+    }
+
+    session.status = "running";
+    session.error = null;
+    session.navigation = null;
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "idle",
+      retries: 0,
+      lastError: "",
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    setStatus("手动重试：" + session.queue[session.index].title);
+    if (getTopicId(location.pathname) === session.queue[session.index].id) {
+      processCurrentTopic();
+    } else {
+      navigateToTopic(session.queue[session.index], session);
+    }
+  }
+
+  function skipCurrentTopic() {
+    var session = getSession();
+    if (!session || !session.queue[session.index]) {
+      setStatus("当前没有可跳过的话题。");
+      return;
+    }
+    if (session.status === "review") {
+      setStatus("请使用“不点赞，继续”完成当前审查。");
+      return;
+    }
+
+    var skipped = session.queue[session.index];
+    session.status = "running";
+    session.index += 1;
+    session.navigation = null;
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "idle",
+      lastError: "",
+      updatedAt: Date.now(),
+    });
+
+    if (session.index >= session.queue.length) {
+      var listUrl =
+        (session.listContext || {}).url || location.origin + "/latest";
+      clearSession();
+      setStatus(
+        "已跳过但未标记已读：" + skipped.title + "；本轮队列结束。"
+      );
+      if (getTopicId(location.pathname) || isSearchPage()) {
+        location.href = listUrl;
+      }
+      return;
+    }
+
+    saveSession(session);
+    setStatus(
+      "已跳过但未标记已读：" +
+        skipped.title +
+        "；下一项：" +
+        session.queue[session.index].title
+    );
+    if (getTopicId(location.pathname)) {
+      returnToList(session);
+    } else {
+      navigateToTopic(session.queue[session.index], session);
+    }
+  }
+
+  function recoverStalledNavigation() {
+    var session = getSession();
+    if (
+      processing ||
+      !session ||
+      session.status !== "running" ||
+      !session.navigation
+    ) {
+      return false;
+    }
+
+    var navigation = session.navigation;
+    if (
+      ["list", "searching", "opening", "returning"].indexOf(
+        navigation.stage
+      ) === -1 ||
+      Date.now() - Number(navigation.startedAt || 0) <
+        NAVIGATION_TIMEOUT_MS
+    ) {
+      return false;
+    }
+
+    var topic = session.queue[session.index];
+    if (!topic) {
+      return false;
+    }
+    var retries = Number(navigation.retries || 0) + 1;
+    var message =
+      stageLabel(navigation.stage) +
+      "超时，执行第 " +
+      retries +
+      " 次恢复";
+
+    if (retries > MAX_NAVIGATION_RECOVERIES) {
+      session.status = "paused";
+      session.error = message;
+      session.navigation.lastError = message;
+      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+        stage: "paused",
+        retries: retries,
+        lastError: message,
+        updatedAt: Date.now(),
+      });
+      saveSession(session);
+      setStatus(
+        "已安全暂停：" +
+          message +
+          "。可点击“重试当前”或“跳过当前”。",
+        true
+      );
+      return true;
+    }
+
+    setNavigationState(session, "opening", {
+      topicId: topic.id,
+      retries: retries,
+      lastError: message,
+      source: retries === 1 ? "last" : "direct",
+    });
+    setStatus(message + "。", true);
+    location.href =
+      retries === 1
+        ? topic.url + "/last"
+        : buildResumeUrl(topic, getTopicProgress(topic.id));
+    return true;
+  }
+
+  function installRouteWatcher() {
+    if (routeTimer) {
+      return;
+    }
+    lastObservedHref = String(location.href || "");
+    routeTimer = window.setInterval(function () {
+      var href = String(location.href || "");
+      if (href !== lastObservedHref) {
+        lastObservedHref = href;
+        window.setTimeout(function () {
+          var session = getSession();
+          if (!session || session.status === "stopped") {
+            return;
+          }
+          if (!restoreReturnedList(session)) {
+            processCurrentTopic();
+          }
+        }, 350);
+        return;
+      }
+      recoverStalledNavigation();
+    }, 1200);
   }
 
   function shouldRequestLikeReview(session, topic, audit) {
@@ -1375,7 +1947,19 @@
     if (!session || session.status === "stopped") {
       return;
     }
+    if (session.status !== "review") {
+      auditSessionQueue(session);
+      session = getSession();
+      if (!session) {
+        return;
+      }
+    }
     if (session.status === "review") {
+      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+        stage: "review",
+        updatedAt: Date.now(),
+      });
+      saveSession(session);
       updateReviewButtons(session);
       setStatus(
         "点赞候选待审查：" +
@@ -1408,6 +1992,12 @@
       return;
     }
 
+    setNavigationState(session, "reading", {
+      topicId: topic.id,
+      retries: 0,
+      lastError: "",
+      source: (session.navigation || {}).source || "topic",
+    });
     processing = true;
     try {
       var result = await scrollAndRead(topic, session);
@@ -1432,6 +2022,17 @@
             title: topic.title,
             firstPostId: result.audit.firstPostId,
           };
+          session.navigation = null;
+          session.diagnostics = Object.assign(
+            {},
+            session.diagnostics || {},
+            {
+              stage: "review",
+              retries: 0,
+              lastError: "",
+              updatedAt: Date.now(),
+            }
+          );
           saveSession(session);
           updateReviewButtons(session);
           setStatus(
@@ -1489,6 +2090,15 @@
       if (failed) {
         failed.status = "paused";
         failed.error = error.message;
+        failed.diagnostics = Object.assign(
+          {},
+          failed.diagnostics || {},
+          {
+            stage: "paused",
+            lastError: error.message,
+            updatedAt: Date.now(),
+          }
+        );
         saveSession(failed);
       }
       setStatus("已暂停：" + error.message, true);
@@ -1656,6 +2266,7 @@
       ".ldf-actions button:hover{background:#efca68;}",
       ".ldf-actions button:disabled{opacity:.5;cursor:not-allowed;}",
       "#" + IDS.status + "{padding:8px;background:#f7f1e3;border-radius:8px;word-break:break-word;}",
+      "#" + IDS.diagnostics + "{margin-top:7px;padding:7px;background:#f2eee4;border-radius:8px;color:#655b47;font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;word-break:break-word;}",
       ".ldf-note{margin:8px 0;color:#6b5a32;font-size:12px;}",
       "#" + IDS.resize + "{position:absolute;right:5px;bottom:4px;width:22px;height:22px;cursor:nwse-resize;touch-action:none;opacity:.55;text-align:center;}",
       "</style>",
@@ -1677,12 +2288,15 @@
       '<button id="' + IDS.start + '" type="button">开始</button>',
       '<button id="' + IDS.pause + '" type="button">暂停</button>',
       '<button id="' + IDS.stop + '" type="button">停止</button>',
+      '<button id="' + IDS.retryCurrent + '" type="button">重试当前</button>',
+      '<button id="' + IDS.skipCurrent + '" type="button">跳过当前</button>',
       '<button id="' + IDS.reset + '" type="button">清空已读</button>',
       '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
       '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
-      '<p class="ldf-note">原生导航会在列表滑动寻找并点击主题，优先恢复站点原阅读位置；读完后返回列表。直接续读则按本地楼层跳转。</p>',
+      '<p class="ldf-note">原生导航按“列表滑动 → 站内搜索并核验 ID → /last → 本地楼层”分层恢复；失败会安全暂停。跳过当前不会标记已读。</p>',
       '<div id="' + IDS.status + '">待命</div>',
+      '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
     ].join("");
 
@@ -1694,6 +2308,12 @@
     document.getElementById(IDS.start).addEventListener("click", startSession);
     document.getElementById(IDS.pause).addEventListener("click", togglePause);
     document.getElementById(IDS.stop).addEventListener("click", stopSession);
+    document
+      .getElementById(IDS.retryCurrent)
+      .addEventListener("click", retryCurrentTopic);
+    document
+      .getElementById(IDS.skipCurrent)
+      .addEventListener("click", skipCurrentTopic);
     document.getElementById(IDS.reset).addEventListener("click", resetVisited);
     document
       .getElementById(IDS.approveLike)
@@ -1715,6 +2335,7 @@
 
   function refreshPanelState() {
     var session = getSession();
+    renderDiagnostics(session);
     var pauseButton = document.getElementById(IDS.pause);
     if (!session) {
       setStatus("待命，已记录 " + getVisited().size + " 个已读主题。");
@@ -1743,9 +2364,12 @@
 
   function boot() {
     buildPanel();
+    installRouteWatcher();
     refreshPanelState();
     var session = getSession();
     if (session && session.status !== "stopped") {
+      auditSessionQueue(session);
+      session = getSession();
       if (restoreReturnedList(session)) {
         return;
       }
@@ -1778,6 +2402,9 @@
       topicMatches: topicMatches,
       normalizeTopic: normalizeTopic,
       fetchTopics: fetchTopics,
+      buildSearchQuery: buildSearchQuery,
+      findExactSearchTopic: findExactSearchTopic,
+      searchExactTopic: searchExactTopic,
       parseTopicAudit: parseTopicAudit,
       buildResumeUrl: buildResumeUrl,
       resolveResumePost: resolveResumePost,
@@ -1790,6 +2417,9 @@
       saveTopicProgress: saveTopicProgress,
       clearProgress: clearProgress,
       shouldRequestLikeReview: shouldRequestLikeReview,
+      stageLabel: stageLabel,
+      auditSessionQueue: auditSessionQueue,
+      recoverStalledNavigation: recoverStalledNavigation,
       getSession: getSession,
       saveSession: saveSession,
       clearSession: clearSession,
