@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Topic Flipper
 // @namespace    local.codex
-// @version      0.3.0
-// @description  在 linux.do 站内抓取最新主题并按正文长度估算阅读时长逐帖浏览
+// @version      0.4.0
+// @description  在 linux.do 站内抓取最新主题并按弹性阅读速度估算整帖阅读时长
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -14,12 +14,13 @@
   var PANEL_ID = "linuxdo-flip-panel";
   var STATUS_ID = "linuxdo-flip-status";
   var DRAG_ID = "linuxdo-flip-drag";
+  var RESIZE_ID = "linuxdo-flip-resize";
   var STATE_KEY = "linuxdoFlipSession";
   var VISITED_KEY = "linuxdoFlipVisited";
   var ACTIVE_KEY = "linuxdoFlipActive";
   var PANEL_STYLE_KEY = "linuxdoFlipPanelStyle";
   var TOPIC_RE = /\/t\/[^/]+\/(\d+)(?:\/|$)/;
-  var SESSION_NOTE = "仅浏览，不点赞、不回复、不收藏。阅读时长按正文估算，默认 10 字/秒。";
+  var SESSION_NOTE = "仅浏览，不点赞、不回复、不收藏。整帖时长按字数估算，阅读速度按你设置值做弹性波动。";
 
   function loadJSON(key, fallback) {
     try {
@@ -87,6 +88,10 @@
     return new Promise(function (resolve) {
       window.setTimeout(resolve, ms);
     });
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
   }
 
   function normalizeTextLength(text) {
@@ -310,8 +315,30 @@
     return total;
   }
 
+  function sampleReadingSpeed(baseCharsPerSecond) {
+    var base = Math.max(1, Number(baseCharsPerSecond) || 10);
+    var buckets = [
+      { max: 0.12, factors: [0.6, 0.7] },
+      { max: 0.58, factors: [0.8, 0.9, 1.0, 1.1, 1.2] },
+      { max: 0.9, factors: [1.3, 1.5, 1.8] },
+      { max: 1.0, factors: [2.0, 2.2] },
+    ];
+    var roll = Math.random();
+    var selected = buckets[buckets.length - 1].factors;
+
+    buckets.some(function (bucket) {
+      if (roll <= bucket.max) {
+        selected = bucket.factors;
+        return true;
+      }
+      return false;
+    });
+
+    return Math.max(1, Math.round(base * selected[randomInt(0, selected.length - 1)]));
+  }
+
   function estimateReadDurationMs(options) {
-    var charsPerSecond = Math.max(1, Number(options.charsPerSecond) || 10);
+    var charsPerSecond = sampleReadingSpeed(options.charsPerSecond);
     var textLength = getTopicTextLength();
     var estimatedSec = Math.ceil(textLength / charsPerSecond);
     var minSec = Math.max(Number(options.readMinSec) || 0, estimatedSec);
@@ -319,6 +346,7 @@
 
     return {
       textLength: textLength,
+      charsPerSecond: charsPerSecond,
       estimatedSec: estimatedSec,
       readForMs: randomInt(minSec * 1000, maxSec * 1000),
     };
@@ -326,12 +354,10 @@
 
   function loadPanelStyle() {
     return loadJSON(PANEL_STYLE_KEY, {
-      top: null,
+      top: 16,
       left: null,
-      right: 16,
-      bottom: 16,
       width: 260,
-      height: null,
+      height: 360,
     });
   }
 
@@ -341,51 +367,42 @@
 
   function applyPanelStyle(panel) {
     var style = loadPanelStyle();
+    var viewportWidth = Math.max(window.innerWidth || 0, 320);
+    var viewportHeight = Math.max(window.innerHeight || 0, 320);
+    var width = clamp(Number(style.width) || 260, 220, Math.max(220, viewportWidth - 16));
+    var height = clamp(Number(style.height) || 360, 220, Math.max(220, viewportHeight - 16));
+    var leftDefault = viewportWidth - width - 16;
+    var left = style.left === null || style.left === undefined
+      ? leftDefault
+      : Number(style.left);
+    var top = Number(style.top);
 
-    if (style.top !== null) {
-      panel.style.top = style.top + "px";
-      panel.style.bottom = "auto";
-    }
-    if (style.left !== null) {
-      panel.style.left = style.left + "px";
-      panel.style.right = "auto";
-    }
-    if (style.right !== null) {
-      panel.style.right = style.right + "px";
-    }
-    if (style.bottom !== null) {
-      panel.style.bottom = style.bottom + "px";
-    }
-    if (style.width) {
-      panel.style.width = style.width + "px";
-    }
-    if (style.height) {
-      panel.style.height = style.height + "px";
-    }
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+    panel.style.width = width + "px";
+    panel.style.height = height + "px";
+    panel.style.left = clamp(left, 8, Math.max(8, viewportWidth - width - 8)) + "px";
+    panel.style.top = clamp(top, 8, Math.max(8, viewportHeight - height - 8)) + "px";
   }
 
   function persistPanelStyle(panel) {
     savePanelStyle({
-      top: panel.style.top ? parseInt(panel.style.top, 10) : null,
+      top: panel.style.top ? parseInt(panel.style.top, 10) : 16,
       left: panel.style.left ? parseInt(panel.style.left, 10) : null,
-      right: panel.style.right && panel.style.right !== "auto"
-        ? parseInt(panel.style.right, 10)
-        : null,
-      bottom: panel.style.bottom && panel.style.bottom !== "auto"
-        ? parseInt(panel.style.bottom, 10)
-        : null,
       width: panel.offsetWidth || parseInt(panel.style.width, 10) || 260,
-      height: panel.offsetHeight || null,
+      height: panel.offsetHeight || parseInt(panel.style.height, 10) || 360,
     });
   }
 
   function enablePanelInteractions(panel) {
     var dragHandle = document.getElementById(DRAG_ID);
-    if (!dragHandle) {
+    var resizeHandle = document.getElementById(RESIZE_ID);
+    if (!dragHandle || !resizeHandle) {
       return;
     }
 
     var dragState = null;
+    var resizeState = null;
 
     dragHandle.addEventListener("mousedown", function (event) {
       dragState = {
@@ -394,33 +411,63 @@
         startLeft: panel.offsetLeft,
         startTop: panel.offsetTop,
       };
-      panel.style.right = "auto";
-      panel.style.bottom = "auto";
       event.preventDefault();
     });
 
+    dragHandle.addEventListener("dblclick", function () {
+      savePanelStyle({
+        top: 16,
+        left: null,
+        width: 260,
+        height: 360,
+      });
+      applyPanelStyle(panel);
+    });
+
+    resizeHandle.addEventListener("mousedown", function (event) {
+      resizeState = {
+        startX: event.clientX,
+        startY: event.clientY,
+        startWidth: panel.offsetWidth,
+        startHeight: panel.offsetHeight,
+      };
+      event.preventDefault();
+      event.stopPropagation();
+    });
+
     document.addEventListener("mousemove", function (event) {
-      if (!dragState) {
-        return;
+      if (dragState) {
+        var viewportWidth = Math.max(window.innerWidth || 0, 320);
+        var viewportHeight = Math.max(window.innerHeight || 0, 320);
+        var nextLeft = dragState.startLeft + (event.clientX - dragState.startX);
+        var nextTop = dragState.startTop + (event.clientY - dragState.startY);
+
+        panel.style.left =
+          clamp(nextLeft, 8, Math.max(8, viewportWidth - panel.offsetWidth - 8)) + "px";
+        panel.style.top =
+          clamp(nextTop, 8, Math.max(8, viewportHeight - panel.offsetHeight - 8)) + "px";
       }
 
-      panel.style.left =
-        dragState.startLeft + (event.clientX - dragState.startX) + "px";
-      panel.style.top =
-        dragState.startTop + (event.clientY - dragState.startY) + "px";
+      if (resizeState) {
+        var viewWidth = Math.max(window.innerWidth || 0, 320);
+        var viewHeight = Math.max(window.innerHeight || 0, 320);
+        var width = resizeState.startWidth + (event.clientX - resizeState.startX);
+        var height = resizeState.startHeight + (event.clientY - resizeState.startY);
+
+        panel.style.width =
+          clamp(width, 220, Math.max(220, viewWidth - panel.offsetLeft - 8)) + "px";
+        panel.style.height =
+          clamp(height, 220, Math.max(220, viewHeight - panel.offsetTop - 8)) + "px";
+      }
     });
 
     document.addEventListener("mouseup", function () {
-      if (!dragState) {
-        return;
+      if (dragState || resizeState) {
+        dragState = null;
+        resizeState = null;
+        persistPanelStyle(panel);
       }
-      dragState = null;
-      persistPanelStyle(panel);
     });
-
-    window.setInterval(function () {
-      persistPanelStyle(panel);
-    }, 2000);
   }
 
   async function waitBetweenTopics(index) {
@@ -443,12 +490,12 @@
     var panel = document.createElement("div");
     panel.id = PANEL_ID;
     panel.innerHTML = [
-      '<div id="' + DRAG_ID + '" style="font-weight:700;font-size:14px;margin-bottom:8px;cursor:move;display:flex;justify-content:space-between;align-items:center;">Linux.do 翻帖 <span style="font-size:11px;font-weight:400;opacity:.7;">拖动</span></div>',
+      '<div id="' + DRAG_ID + '" style="font-weight:700;font-size:14px;margin-bottom:8px;cursor:move;display:flex;justify-content:space-between;align-items:center;">Linux.do 翻帖 <span style="font-size:11px;font-weight:400;opacity:.7;">拖动 / 双击复位</span></div>',
       '<label style="display:block;margin-bottom:6px;">页数 <input id="linuxdo-flip-pages" type="number" min="1" value="3" style="width:72px;margin-left:8px;"></label>',
       '<label style="display:block;margin-bottom:6px;">数量 <input id="linuxdo-flip-limit" type="number" min="1" value="10" style="width:72px;margin-left:8px;"></label>',
       '<label style="display:block;margin-bottom:6px;">阅读最短秒数 <input id="linuxdo-flip-min" type="number" min="3" value="12" style="width:72px;margin-left:8px;"></label>',
       '<label style="display:block;margin-bottom:6px;">阅读最长秒数 <input id="linuxdo-flip-max" type="number" min="5" value="28" style="width:72px;margin-left:8px;"></label>',
-      '<label style="display:block;margin-bottom:6px;">阅读速度 <input id="linuxdo-flip-cps" type="number" min="1" value="10" style="width:72px;margin-left:8px;"> 字/秒</label>',
+      '<label style="display:block;margin-bottom:6px;">基础速度 <input id="linuxdo-flip-cps" type="number" min="1" value="10" style="width:72px;margin-left:8px;"> 字/秒</label>',
       '<label style="display:block;margin-bottom:8px;"><input id="linuxdo-flip-pinned" type="checkbox"> 包含置顶帖</label>',
       '<label style="display:block;margin-bottom:6px;">包含关键词 <input id="linuxdo-flip-include" type="text" placeholder="AI, VPS" style="width:100%;margin-top:4px;box-sizing:border-box;"></label>',
       '<label style="display:block;margin-bottom:6px;">排除关键词 <input id="linuxdo-flip-exclude" type="text" placeholder="广告, 交易" style="width:100%;margin-top:4px;box-sizing:border-box;"></label>',
@@ -459,7 +506,9 @@
       '<button id="linuxdo-flip-reset" type="button">清空记录</button>',
       "</div>",
       '<div style="font-size:12px;line-height:1.5;margin-bottom:6px;color:#5a4a22;">' + SESSION_NOTE + "</div>",
+      '<div style="font-size:12px;line-height:1.5;margin-bottom:6px;color:#5a4a22;">例：基础速度 10，实际单帖可能采样成 8 / 9 / 11 / 15 / 22。</div>',
       '<div id="' + STATUS_ID + '" style="font-size:12px;line-height:1.5;">待命</div>',
+      '<div id="' + RESIZE_ID + '" style="position:absolute;right:6px;bottom:6px;width:16px;height:16px;cursor:nwse-resize;opacity:.55;user-select:none;">◢</div>',
     ].join("");
 
     panel.style.cssText = [
@@ -469,6 +518,8 @@
       "z-index:999999",
       "width:260px",
       "min-width:220px",
+      "height:360px",
+      "min-height:220px",
       "padding:12px",
       "background:#fff6df",
       "border:1px solid #d7b46a",
@@ -476,8 +527,8 @@
       "box-shadow:0 10px 30px rgba(0,0,0,.15)",
       "font:13px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif",
       "color:#1a1a1a",
-      "resize:both",
       "overflow:auto",
+      "box-sizing:border-box",
     ].join(";");
 
     document.body.appendChild(panel);
@@ -668,7 +719,9 @@
         formatTopic(current) +
         " · 约 " +
         readEstimate.textLength +
-        " 字"
+        " 字 · " +
+        readEstimate.charsPerSecond +
+        " 字/秒"
     );
 
     await sleep(randomInt(1200, 3600));
@@ -688,9 +741,10 @@
           " 秒" +
           " · " +
           readEstimate.textLength +
-          " 字/" +
-          state.options.charsPerSecond +
-          " 字每秒"
+          " 字" +
+          " · 实际 " +
+          readEstimate.charsPerSecond +
+          " 字/秒"
       );
 
       if (nearBottom) {

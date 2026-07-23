@@ -186,6 +186,7 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
   };
 
   const window = {
+    innerWidth: 1440,
     innerHeight: 1000,
     scrollY: 0,
     document,

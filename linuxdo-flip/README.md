@@ -9,11 +9,14 @@ Behavior:
 - random pause, scroll distance, and interval between topics
 - optional keyword and category filters
 - per-topic reading time based on visible text length
-- default reading speed: `10` chars/second
+- draggable panel with explicit resize handle
+- reading speed is elastic, not fixed
+- default base reading speed: `10` chars/second
 
 Example:
 
-- visible topic text `320` chars -> estimated reading time `32` seconds
+- visible topic text `320` chars + base speed `10` -> actual single-topic speed may be `8 / 9 / 11 / 15 / 22`
+- the script samples one actual speed per topic, then estimates the whole-topic reading time from that sampled speed
 - actual reading time uses `max(estimated, manual minimum seconds)`
 
 Files:
