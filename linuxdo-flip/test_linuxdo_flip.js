@@ -134,32 +134,47 @@ class MockDocument {
   }
 }
 
-function buildLatestResponse() {
+function buildLatestResponse(page) {
+  const startId = 101 + page * 40;
+  const topics = [];
+
+  for (let index = 0; index < 40; index += 1) {
+    topics.push({
+      id: startId + index,
+      slug: "topic-" + (startId + index),
+      title: index % 17 === 0 ? "Trade topic " + (startId + index) : "AI topic " + (startId + index),
+      pinned: false,
+      category_id: index % 9 === 0 ? 8 : 5,
+    });
+  }
+
+  if (page === 0) {
+    topics[0] = {
+      id: 101,
+      slug: "ai-vps-guide",
+      title: "AI VPS guide",
+      pinned: false,
+      category_id: 5,
+    };
+    topics[1] = {
+      id: 102,
+      slug: "trade-post",
+      title: "Trade post",
+      pinned: false,
+      category_id: 8,
+    };
+    topics[2] = {
+      id: 103,
+      slug: "daily-chat",
+      title: "Daily chat",
+      pinned: true,
+      category_id: 9,
+    };
+  }
+
   return {
     topic_list: {
-      topics: [
-        {
-          id: 101,
-          slug: "ai-vps-guide",
-          title: "AI VPS guide",
-          pinned: false,
-          category_id: 5,
-        },
-        {
-          id: 102,
-          slug: "trade-post",
-          title: "Trade post",
-          pinned: false,
-          category_id: 8,
-        },
-        {
-          id: 103,
-          slug: "daily-chat",
-          title: "Daily chat",
-          pinned: true,
-          category_id: 9,
-        },
-      ],
+      topics: page < 3 ? topics : [],
     },
   };
 }
@@ -210,10 +225,18 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
       if (!String(requestUrl).includes("/latest.json")) {
         throw new Error("Unexpected fetch: " + requestUrl);
       }
+      const parsed = new URL(String(requestUrl), "https://linux.do");
+      const page = Number(parsed.searchParams.get("page") || 0);
       return {
         ok: true,
         async json() {
-          return buildLatestResponse();
+          return buildLatestResponse(page);
+        },
+        status: 200,
+        headers: {
+          get() {
+            return null;
+          },
         },
       };
     },
@@ -283,7 +306,7 @@ async function runSmokeTest() {
     navigations
   );
 
-  env1.document.getElementById("linuxdo-flip-include").value = "AI";
+  env1.document.getElementById("linuxdo-flip-include").value = "guide";
   env1.document.getElementById("linuxdo-flip-exclude").value = "trade";
   env1.document.getElementById("linuxdo-flip-categories").value = "development";
   env1.document.getElementById("linuxdo-flip-limit").value = "2";
@@ -324,11 +347,40 @@ async function runSmokeTest() {
   };
 }
 
+async function runLargeQueueTest() {
+  const localStorage = new StorageMock();
+  const sessionStorage = new StorageMock();
+  const navigations = [];
+  const env = createEnv(
+    "https://linux.do/latest",
+    localStorage,
+    sessionStorage,
+    navigations
+  );
+
+  env.document.getElementById("linuxdo-flip-limit").value = "100";
+  env.document.getElementById("linuxdo-flip-pages").value = "1";
+  env.document.getElementById("linuxdo-flip-cps").value = "10";
+  await env.document.getElementById("linuxdo-flip-start").listeners.click();
+  await flushAsync(8);
+
+  const state = JSON.parse(localStorage.getItem("linuxdoFlipSession"));
+  if (!state || state.queue.length !== 100) {
+    throw new Error("100-topic queue support failed");
+  }
+}
+
 runSmokeTest()
+  .then(function (result) {
+    return runLargeQueueTest().then(function () {
+      return result;
+    });
+  })
   .then(function (result) {
     console.log("Smoke test passed");
     console.log("Visited:", JSON.stringify(result.visited));
     console.log("Navigations:", JSON.stringify(result.navigations));
+    console.log("Large queue test passed");
   })
   .catch(function (error) {
     console.error("Smoke test failed:", error.message);

@@ -21,6 +21,11 @@
   var PANEL_STYLE_KEY = "linuxdoFlipPanelStyle";
   var TOPIC_RE = /\/t\/[^/]+\/(\d+)(?:\/|$)/;
   var SESSION_NOTE = "仅浏览，不点赞、不回复、不收藏。整帖时长按字数估算，阅读速度按你设置值做弹性波动。";
+  var LATEST_PAGE_DELAY_MIN_MS = 1200;
+  var LATEST_PAGE_DELAY_MAX_MS = 2600;
+  var RATE_LIMIT_RETRY_MAX = 3;
+  var ESTIMATED_TOPICS_PER_PAGE = 30;
+  var MAX_AUTO_PAGES = 12;
 
   function loadJSON(key, fallback) {
     try {
@@ -177,24 +182,141 @@
     });
   }
 
+  function shouldIncludeTopic(topic, includePinned, filters, categoryMap, seen) {
+    if (!topic || !topic.id || seen.has(Number(topic.id))) {
+      return false;
+    }
+    if (!includePinned && topic.pinned) {
+      return false;
+    }
+    if (
+      !matchesKeywordFilters(
+        topic.title,
+        filters.includeKeywords,
+        filters.excludeKeywords
+      )
+    ) {
+      return false;
+    }
+    if (!matchesCategoryFilters(topic, categoryMap, filters.categoryFilters)) {
+      return false;
+    }
+    return true;
+  }
+
+  function normalizeTopic(topic) {
+    return {
+      id: Number(topic.id),
+      title: topic.title || "(无标题)",
+      url: location.origin + "/t/" + (topic.slug || "topic") + "/" + topic.id,
+      pinned: Boolean(topic.pinned),
+      category_id: topic.category_id ? Number(topic.category_id) : null,
+    };
+  }
+
+  function collectTopicsFromCurrentPage(filters, includePinned, categoryMap, seen) {
+    var links = document.querySelectorAll(
+      "a.raw-topic-link, .topic-list a.title, a.title.raw-link.raw-topic-link"
+    );
+    var topics = [];
+
+    links.forEach(function (link) {
+      var href = link.getAttribute("href") || "";
+      var text = (link.innerText || link.textContent || "").trim();
+      var match = href.match(TOPIC_RE);
+      var row = link.closest ? link.closest("tr, .topic-list-item, .latest-topic-list-item") : null;
+      var topic = null;
+
+      if (!match || !text) {
+        return;
+      }
+
+      topic = {
+        id: Number(match[1]),
+        slug: href.split("/").filter(Boolean).slice(-2, -1)[0] || "topic",
+        title: text,
+        pinned: Boolean(row && /pinned/i.test((row.className || ""))),
+        category_id: row && row.dataset ? Number(row.dataset.categoryId || 0) || null : null,
+      };
+
+      if (!shouldIncludeTopic(topic, includePinned, filters, categoryMap, seen)) {
+        return;
+      }
+
+      seen.add(topic.id);
+      topics.push(normalizeTopic(topic));
+    });
+
+    return topics;
+  }
+
+  async function fetchLatestPageJson(page) {
+    return fetch("/latest.json?page=" + page, {
+      credentials: "include",
+      headers: {
+        accept: "application/json, text/plain, */*",
+      },
+    });
+  }
+
+  async function fetchLatestPageWithRetry(page) {
+    var attempt = 0;
+
+    while (attempt <= RATE_LIMIT_RETRY_MAX) {
+      var response = await fetchLatestPageJson(page);
+
+      if (response.status !== 429) {
+        if (!response.ok) {
+          throw new Error("latest.json 返回 " + response.status);
+        }
+        return response.json();
+      }
+
+      attempt += 1;
+      if (attempt > RATE_LIMIT_RETRY_MAX) {
+        throw new Error("latest.json 返回 429，稍后再试，或把页数调低到 1");
+      }
+
+      var retryAfter = Number(response.headers.get("retry-after") || 0);
+      var waitMs = retryAfter > 0
+        ? retryAfter * 1000
+        : randomInt(3000, 6000) * attempt;
+      setStatus("触发 429，等待 " + Math.ceil(waitMs / 1000) + " 秒后重试...");
+      await sleep(waitMs);
+    }
+  }
+
   async function fetchTopics(pageCount, includePinned, filters) {
     var topics = [];
     var seen = new Set();
     var categoryMap = getCategoryMap();
+    var targetCount = Math.max(1, Number(filters.limit) || 10);
+    var visibleTopics = collectTopicsFromCurrentPage(
+      filters,
+      includePinned,
+      categoryMap,
+      seen
+    );
+    var startPage = 0;
+    var effectivePageCount = Math.min(
+      MAX_AUTO_PAGES,
+      Math.max(
+        pageCount,
+        Math.ceil(targetCount / ESTIMATED_TOPICS_PER_PAGE) + 1
+      )
+    );
 
-    for (var page = 0; page < pageCount; page += 1) {
-      var response = await fetch("/latest.json?page=" + page, {
-        credentials: "include",
-        headers: {
-          accept: "application/json, text/plain, */*",
-        },
-      });
+    if (visibleTopics.length) {
+      topics = topics.concat(visibleTopics);
+      startPage = 1;
+    }
 
-      if (!response.ok) {
-        throw new Error("latest.json 返回 " + response.status);
+    for (var page = startPage; page < effectivePageCount; page += 1) {
+      if (topics.length >= targetCount) {
+        break;
       }
 
-      var data = await response.json();
+      var data = await fetchLatestPageWithRetry(page);
       var items =
         (((data || {}).topic_list || {}).topics || []);
 
@@ -203,32 +325,16 @@
       }
 
       items.forEach(function (topic) {
-        if (!topic || !topic.id || seen.has(topic.id)) {
+        if (!shouldIncludeTopic(topic, includePinned, filters, categoryMap, seen)) {
           return;
         }
-        if (!includePinned && topic.pinned) {
-          return;
-        }
-        if (
-          !matchesKeywordFilters(
-            topic.title,
-            filters.includeKeywords,
-            filters.excludeKeywords
-          )
-        ) {
-          return;
-        }
-        if (!matchesCategoryFilters(topic, categoryMap, filters.categoryFilters)) {
-          return;
-        }
-
-        seen.add(topic.id);
-        topics.push({
-          id: Number(topic.id),
-          title: topic.title || "(无标题)",
-          url: location.origin + "/t/" + (topic.slug || "topic") + "/" + topic.id,
-        });
+        seen.add(Number(topic.id));
+        topics.push(normalizeTopic(topic));
       });
+
+      if (page + 1 < effectivePageCount && topics.length < targetCount) {
+        await sleep(randomInt(LATEST_PAGE_DELAY_MIN_MS, LATEST_PAGE_DELAY_MAX_MS));
+      }
     }
 
     return topics;
