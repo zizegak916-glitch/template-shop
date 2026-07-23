@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.1.0
-// @description  Linux.do 阅读进度助手：长帖分段续读、完成审查与手动点赞候选
+// @version      1.2.0
+// @description  Linux.do 阅读进度助手：恢复原阅读状态、原生列表导航、长帖续读与点赞审查
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -32,6 +32,7 @@
     approveLike: "linuxdo-flip-approve-like",
     skipLike: "linuxdo-flip-skip-like",
     likeTarget: "linuxdo-flip-like-target",
+    navigationMode: "linuxdo-flip-navigation-mode",
   };
 
   var KEYS = {
@@ -44,7 +45,7 @@
     lock: "linuxdoFlipLockV2",
   };
 
-  var TOPIC_RE = /\/t\/(?:[^/]+\/)?(\d+)(?:\/\d+)?(?:[/?#]|$)/;
+  var TOPIC_RE = /\/t\/(?:[^/]+\/)?(\d+)(?:\/(?:\d+|last))?(?:[/?#]|$)/;
   var VERSION = 2;
   var MAX_VISITED = 5000;
   var MAX_PROGRESS = 2000;
@@ -60,6 +61,7 @@
     pages: 3,
     limit: 180,
     likeTarget: 30,
+    navigationMode: "native",
     minSeconds: 12,
     maxSeconds: 90,
     charsPerSecond: 10,
@@ -304,6 +306,8 @@
         0,
         100
       ),
+      navigationMode:
+        config.navigationMode === "direct" ? "direct" : "native",
       minSeconds: clamp(
         Math.floor(Number(config.minSeconds) || DEFAULT_CONFIG.minSeconds),
         3,
@@ -337,6 +341,7 @@
       pages: document.getElementById(IDS.pages).value,
       limit: document.getElementById(IDS.limit).value,
       likeTarget: document.getElementById(IDS.likeTarget).value,
+      navigationMode: document.getElementById(IDS.navigationMode).value,
       minSeconds: document.getElementById(IDS.minSeconds).value,
       maxSeconds: document.getElementById(IDS.maxSeconds).value,
       charsPerSecond: document.getElementById(IDS.charsPerSecond).value,
@@ -363,6 +368,8 @@
     document.getElementById(IDS.pages).value = String(config.pages);
     document.getElementById(IDS.limit).value = String(config.limit);
     document.getElementById(IDS.likeTarget).value = String(config.likeTarget);
+    document.getElementById(IDS.navigationMode).value =
+      config.navigationMode;
     document.getElementById(IDS.minSeconds).value = String(config.minSeconds);
     document.getElementById(IDS.maxSeconds).value = String(config.maxSeconds);
     document.getElementById(IDS.charsPerSecond).value = String(
@@ -387,6 +394,11 @@
         ? Number(topic.highest_post_number)
         : null,
       postsCount: topic.posts_count ? Number(topic.posts_count) : null,
+      sourcePage:
+        topic.sourcePage === null || topic.sourcePage === undefined
+          ? null
+          : Number(topic.sourcePage),
+      listHref: topic.listHref ? String(topic.listHref) : null,
       url:
         location.origin +
         "/t/" +
@@ -541,6 +553,8 @@
           href.split("/").filter(Boolean).slice(-2, -1)[0] || "topic",
         pinned: Boolean(row && /pinned/i.test(String(row.className || ""))),
         category_id: null,
+        sourcePage: null,
+        listHref: href,
       };
 
       if (!title || !topicMatches(topic, config, categoryMap, seen)) {
@@ -579,6 +593,7 @@
         if (!topicMatches(topic, config, categoryMap, seen)) {
           return;
         }
+        topic.sourcePage = page;
         seen.add(Number(topic.id));
         result.push(normalizeTopic(topic));
       });
@@ -667,6 +682,173 @@
   function buildResumeUrl(topic, progress) {
     var postNumber = Math.max(1, Number(progress.lastPostNumber) || 1);
     return topic.url + (postNumber > 1 ? "/" + postNumber : "");
+  }
+
+  function findTopicLink(topicId) {
+    var links = document.querySelectorAll(
+      "a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title"
+    );
+    for (var index = 0; index < links.length; index += 1) {
+      var href = links[index].getAttribute("href") || "";
+      if (getTopicId(href) === Number(topicId)) {
+        return links[index];
+      }
+    }
+    return null;
+  }
+
+  async function findTopicLinkByScrolling(topic) {
+    var link = findTopicLink(topic.id);
+    var unchangedBottomCount = 0;
+    var previousMax = -1;
+
+    for (var attempt = 0; !link && attempt < 28; attempt += 1) {
+      var metrics = getScrollMetrics();
+      var atBottom = metrics.max <= 0 || metrics.current >= metrics.max - 32;
+
+      if (atBottom && metrics.max === previousMax) {
+        unchangedBottomCount += 1;
+      } else {
+        unchangedBottomCount = 0;
+      }
+      previousMax = metrics.max;
+      if (unchangedBottomCount >= 3) {
+        break;
+      }
+
+      window.scrollBy({
+        top: Math.max(320, Math.floor(window.innerHeight * 0.76)),
+        behavior: "smooth",
+      });
+      setStatus(
+        "在主题列表中寻找：" +
+          topic.title +
+          " · 第 " +
+          (attempt + 1) +
+          " 次加载"
+      );
+      await sleep(700);
+      link = findTopicLink(topic.id);
+    }
+
+    if (link && typeof link.scrollIntoView === "function") {
+      link.scrollIntoView({ behavior: "smooth", block: "center" });
+      await sleep(450);
+    }
+    return link;
+  }
+
+  function captureListContext(session) {
+    if (getTopicId(location.pathname)) {
+      return session.listContext || {
+        url: location.origin + "/latest",
+        scrollY: 0,
+        canHistoryBack: false,
+      };
+    }
+    return {
+      url: location.href,
+      scrollY: Math.max(0, Number(window.scrollY) || 0),
+      canHistoryBack: true,
+    };
+  }
+
+  function resolveResumePost(localPostNumber, sitePostNumber) {
+    return Math.max(
+      1,
+      Number(localPostNumber) || 1,
+      Number(sitePostNumber) || 1
+    );
+  }
+
+  async function reconcileResumePosition(topic) {
+    await waitForArticle();
+    var progress = getTopicProgress(topic.id);
+    var sitePost = getHighestVisiblePostNumber();
+    var resumePost = resolveResumePost(progress.lastPostNumber, sitePost);
+
+    if (sitePost > Number(progress.lastPostNumber || 1)) {
+      saveTopicProgress(topic.id, { lastPostNumber: sitePost });
+      return true;
+    }
+
+    if (
+      Number(progress.lastPostNumber || 1) > 1 &&
+      sitePost > 0 &&
+      sitePost + 1 < Number(progress.lastPostNumber)
+    ) {
+      setStatus(
+        "站点恢复到第 " +
+          sitePost +
+          " 楼，本地记录更靠后；切到第 " +
+          resumePost +
+          " 楼。"
+      );
+      location.href = topic.url + "/" + resumePost;
+      return false;
+    }
+    return true;
+  }
+
+  async function returnToList(session) {
+    if (session.config.navigationMode !== "native") {
+      return false;
+    }
+
+    var context = session.listContext || {
+      url: location.origin + "/latest",
+      scrollY: 0,
+      canHistoryBack: false,
+    };
+    session.navigation = {
+      stage: "returning",
+      url: context.url,
+      scrollY: context.scrollY,
+    };
+    saveSession(session);
+    setStatus("返回主题列表…");
+
+    if (
+      context.canHistoryBack &&
+      window.history &&
+      window.history.length > 1
+    ) {
+      window.history.back();
+      window.setTimeout(function () {
+        if (getTopicId(location.pathname)) {
+          location.href = context.url;
+        }
+      }, 1600);
+    } else {
+      location.href = context.url;
+    }
+    return true;
+  }
+
+  function restoreReturnedList(session) {
+    if (
+      !session ||
+      !session.navigation ||
+      session.navigation.stage !== "returning" ||
+      getTopicId(location.pathname)
+    ) {
+      return false;
+    }
+
+    var scrollY = Math.max(0, Number(session.navigation.scrollY) || 0);
+    session.navigation = null;
+    session.listContext = {
+      url: location.href,
+      scrollY: scrollY,
+    };
+    saveSession(session);
+    window.setTimeout(function () {
+      if (typeof window.scrollTo === "function") {
+        window.scrollTo({ top: scrollY, behavior: "auto" });
+      }
+      processCurrentTopic();
+    }, 500);
+    return true;
   }
 
   function isTopicComplete(progress, audit, bottomStableCount) {
@@ -883,8 +1065,36 @@
     );
   }
 
-  async function navigateToTopic(topic) {
+  async function navigateToTopic(topic, session) {
+    session = session || getSession();
     var progress = getTopicProgress(topic.id);
+
+    if (
+      session &&
+      session.config.navigationMode === "native" &&
+      !getTopicId(location.pathname)
+    ) {
+      session.listContext = captureListContext(session);
+      saveSession(session);
+      var link = await findTopicLinkByScrolling(topic);
+      if (link) {
+        setStatus(
+          "点击主题：" +
+            topic.title +
+            (progress.lastPostNumber > 1
+              ? " · 站点将恢复原阅读位置"
+              : "")
+        );
+        link.click();
+        return;
+      }
+
+      setStatus("列表未找到主题，使用站点“上次阅读”入口：" + topic.title);
+      await sleep(500);
+      location.href = topic.url + "/last";
+      return;
+    }
+
     setStatus(
       "打开：" +
         topic.title +
@@ -893,7 +1103,10 @@
           : "")
     );
     await sleep(500);
-    location.href = buildResumeUrl(topic, progress);
+    location.href =
+      session && session.config.navigationMode === "native"
+        ? topic.url + "/last"
+        : buildResumeUrl(topic, progress);
   }
 
   async function startSession() {
@@ -925,12 +1138,15 @@
         likedCount: 0,
         reviewedCount: 0,
         reviewTopic: null,
+        listContext: null,
+        navigation: null,
         config: config,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
+      session.listContext = captureListContext(session);
       saveSession(session);
-      await navigateToTopic(queue[0]);
+      await navigateToTopic(queue[0], session);
     } catch (error) {
       releaseLock();
       setStatus("启动失败：" + error.message, true);
@@ -1065,6 +1281,7 @@
     session.index += 1;
     updateReviewButtons(session);
     if (session.index >= session.queue.length) {
+      var context = session.listContext;
       clearSession();
       setStatus(
         "本轮完成：读完 " +
@@ -1073,10 +1290,29 @@
           session.likedCount +
           " 个。"
       );
+      if (
+        session.config.navigationMode === "native" &&
+        context &&
+        getTopicId(location.pathname)
+      ) {
+        if (
+          context.canHistoryBack &&
+          window.history &&
+          window.history.length > 1
+        ) {
+          window.history.back();
+        } else {
+          location.href = context.url;
+        }
+      }
       return;
     }
     saveSession(session);
-    processCurrentTopic();
+    returnToList(session).then(function (returned) {
+      if (!returned) {
+        processCurrentTopic();
+      }
+    });
   }
 
   async function approveLikeAndContinue() {
@@ -1164,7 +1400,11 @@
     }
 
     if (getTopicId(location.pathname) !== topic.id) {
-      await navigateToTopic(topic);
+      await navigateToTopic(topic, session);
+      return;
+    }
+
+    if (!(await reconcileResumePosition(topic))) {
       return;
     }
 
@@ -1240,7 +1480,10 @@
       if (!shouldContinue) {
         return;
       }
-      await navigateToTopic(session.queue[session.index]);
+      if (await returnToList(session)) {
+        return;
+      }
+      await navigateToTopic(session.queue[session.index], session);
     } catch (error) {
       var failed = getSession();
       if (failed) {
@@ -1405,6 +1648,7 @@
       ".ldf-field{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0;}",
       ".ldf-control{display:flex;align-items:center;gap:5px;white-space:nowrap;}",
       ".ldf-field input[type=number]{width:76px;}",
+      ".ldf-field select{width:116px;padding:3px;}",
       ".ldf-wide{display:block;margin:8px 0;}",
       ".ldf-wide input{display:block;width:100%;margin-top:4px;}",
       ".ldf-actions{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0;}",
@@ -1419,6 +1663,9 @@
       field("读取页数", IDS.pages, "number", "3"),
       field("本轮话题", IDS.limit, "number", "180"),
       field("点赞目标", IDS.likeTarget, "number", "30"),
+      '<label class="ldf-field"><span>打开方式</span><select id="' +
+        IDS.navigationMode +
+        '"><option value="native">原生导航</option><option value="direct">直接续读</option></select></label>',
       field("最短停留", IDS.minSeconds, "number", "12", "秒"),
       field("单次最长", IDS.maxSeconds, "number", "90", "秒"),
       field("基础速度", IDS.charsPerSecond, "number", "10", "字/秒"),
@@ -1434,7 +1681,7 @@
       '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
       '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
-      '<p class="ldf-note">长帖按楼层保存进度，单次时间到后排到队尾续读。点赞必须在完整读完并通过审查后手动确认。</p>',
+      '<p class="ldf-note">原生导航会在列表滑动寻找并点击主题，优先恢复站点原阅读位置；读完后返回列表。直接续读则按本地楼层跳转。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
     ].join("");
@@ -1455,8 +1702,8 @@
       .getElementById(IDS.skipLike)
       .addEventListener("click", skipLikeAndContinue);
 
-    panel.querySelectorAll("input").forEach(function (input) {
-      input.addEventListener("change", function () {
+    panel.querySelectorAll("input, select").forEach(function (control) {
+      control.addEventListener("change", function () {
         try {
           readConfigFromPanel();
         } catch (error) {
@@ -1499,8 +1746,23 @@
     refreshPanelState();
     var session = getSession();
     if (session && session.status !== "stopped") {
+      if (restoreReturnedList(session)) {
+        return;
+      }
       processCurrentTopic();
     }
+
+    window.addEventListener("popstate", function () {
+      window.setTimeout(function () {
+        var current = getSession();
+        if (!current || current.status === "stopped") {
+          return;
+        }
+        if (!restoreReturnedList(current)) {
+          processCurrentTopic();
+        }
+      }, 350);
+    });
   }
 
   if (window.__LINUXDO_FLIP_TEST__) {
@@ -1518,6 +1780,7 @@
       fetchTopics: fetchTopics,
       parseTopicAudit: parseTopicAudit,
       buildResumeUrl: buildResumeUrl,
+      resolveResumePost: resolveResumePost,
       isTopicComplete: isTopicComplete,
       calculateReadPlan: calculateReadPlan,
       sampleReadingSpeed: sampleReadingSpeed,

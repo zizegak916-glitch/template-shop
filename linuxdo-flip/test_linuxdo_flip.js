@@ -186,6 +186,7 @@ async function run() {
   );
   assert.strictEqual(api.textLength(" 你 好\nLinux.do "), 10);
   assert.strictEqual(api.getTopicId("/t/hello/123/4"), 123);
+  assert.strictEqual(api.getTopicId("/t/hello/123/last"), 123);
   assert.strictEqual(api.getTopicId("/t/123"), 123);
   assert.strictEqual(api.getTopicId("/latest"), null);
 
@@ -209,11 +210,18 @@ async function run() {
     includeKeywords: ["ai"],
     excludeKeywords: ["交易"],
     categories: [],
+    navigationMode: "native",
   });
+  assert.strictEqual(config.navigationMode, "native");
+  assert.strictEqual(
+    api.normalizeConfig({ ...config, navigationMode: "direct" }).navigationMode,
+    "direct"
+  );
   const topics = await api.fetchTopics(config);
   assert.strictEqual(topics.length, 180, "180-topic queues should fetch extra pages");
   assert(topics.every((topic) => topic.title.includes("AI")));
   assert(topics.every((topic) => !topic.pinned));
+  assert(topics.every((topic) => Number.isInteger(topic.sourcePage)));
 
   const categoryConfig = api.normalizeConfig({
     ...config,
@@ -263,6 +271,8 @@ async function run() {
     api.buildResumeUrl(topics[0], partial),
     `${topics[0].url}/437`
   );
+  assert.strictEqual(api.resolveResumePost(437, 512), 512);
+  assert.strictEqual(api.resolveResumePost(640, 512), 640);
   assert.strictEqual(api.isTopicComplete(partial, audit, 2), false);
   const finished = api.saveTopicProgress(topics[0].id, {
     lastPostNumber: 850,
