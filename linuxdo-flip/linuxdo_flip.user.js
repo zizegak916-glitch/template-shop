@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Topic Flipper
 // @namespace    local.codex
-// @version      0.2.0
-// @description  在 linux.do 站内抓取最新主题并模拟正常阅读节奏逐帖浏览
+// @version      0.3.0
+// @description  在 linux.do 站内抓取最新主题并按正文长度估算阅读时长逐帖浏览
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -13,11 +13,13 @@
 
   var PANEL_ID = "linuxdo-flip-panel";
   var STATUS_ID = "linuxdo-flip-status";
+  var DRAG_ID = "linuxdo-flip-drag";
   var STATE_KEY = "linuxdoFlipSession";
   var VISITED_KEY = "linuxdoFlipVisited";
   var ACTIVE_KEY = "linuxdoFlipActive";
+  var PANEL_STYLE_KEY = "linuxdoFlipPanelStyle";
   var TOPIC_RE = /\/t\/[^/]+\/(\d+)(?:\/|$)/;
-  var SESSION_NOTE = "仅浏览，不点赞、不回复、不收藏";
+  var SESSION_NOTE = "仅浏览，不点赞、不回复、不收藏。阅读时长按正文估算，默认 10 字/秒。";
 
   function loadJSON(key, fallback) {
     try {
@@ -85,6 +87,10 @@
     return new Promise(function (resolve) {
       window.setTimeout(resolve, ms);
     });
+  }
+
+  function normalizeTextLength(text) {
+    return String(text || "").replace(/\s+/g, "").length;
   }
 
   function parseListInput(value) {
@@ -291,6 +297,132 @@
     return false;
   }
 
+  function getTopicTextLength() {
+    var nodes = document.querySelectorAll(
+      ".topic-post .cooked, .post-stream .topic-post .cooked, article .cooked"
+    );
+    var total = 0;
+
+    nodes.forEach(function (node) {
+      total += normalizeTextLength(node.innerText || node.textContent || "");
+    });
+
+    return total;
+  }
+
+  function estimateReadDurationMs(options) {
+    var charsPerSecond = Math.max(1, Number(options.charsPerSecond) || 10);
+    var textLength = getTopicTextLength();
+    var estimatedSec = Math.ceil(textLength / charsPerSecond);
+    var minSec = Math.max(Number(options.readMinSec) || 0, estimatedSec);
+    var maxSec = Math.max(Number(options.readMaxSec) || 0, minSec);
+
+    return {
+      textLength: textLength,
+      estimatedSec: estimatedSec,
+      readForMs: randomInt(minSec * 1000, maxSec * 1000),
+    };
+  }
+
+  function loadPanelStyle() {
+    return loadJSON(PANEL_STYLE_KEY, {
+      top: null,
+      left: null,
+      right: 16,
+      bottom: 16,
+      width: 260,
+      height: null,
+    });
+  }
+
+  function savePanelStyle(style) {
+    saveJSON(PANEL_STYLE_KEY, style);
+  }
+
+  function applyPanelStyle(panel) {
+    var style = loadPanelStyle();
+
+    if (style.top !== null) {
+      panel.style.top = style.top + "px";
+      panel.style.bottom = "auto";
+    }
+    if (style.left !== null) {
+      panel.style.left = style.left + "px";
+      panel.style.right = "auto";
+    }
+    if (style.right !== null) {
+      panel.style.right = style.right + "px";
+    }
+    if (style.bottom !== null) {
+      panel.style.bottom = style.bottom + "px";
+    }
+    if (style.width) {
+      panel.style.width = style.width + "px";
+    }
+    if (style.height) {
+      panel.style.height = style.height + "px";
+    }
+  }
+
+  function persistPanelStyle(panel) {
+    savePanelStyle({
+      top: panel.style.top ? parseInt(panel.style.top, 10) : null,
+      left: panel.style.left ? parseInt(panel.style.left, 10) : null,
+      right: panel.style.right && panel.style.right !== "auto"
+        ? parseInt(panel.style.right, 10)
+        : null,
+      bottom: panel.style.bottom && panel.style.bottom !== "auto"
+        ? parseInt(panel.style.bottom, 10)
+        : null,
+      width: panel.offsetWidth || parseInt(panel.style.width, 10) || 260,
+      height: panel.offsetHeight || null,
+    });
+  }
+
+  function enablePanelInteractions(panel) {
+    var dragHandle = document.getElementById(DRAG_ID);
+    if (!dragHandle) {
+      return;
+    }
+
+    var dragState = null;
+
+    dragHandle.addEventListener("mousedown", function (event) {
+      dragState = {
+        startX: event.clientX,
+        startY: event.clientY,
+        startLeft: panel.offsetLeft,
+        startTop: panel.offsetTop,
+      };
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+      event.preventDefault();
+    });
+
+    document.addEventListener("mousemove", function (event) {
+      if (!dragState) {
+        return;
+      }
+
+      panel.style.left =
+        dragState.startLeft + (event.clientX - dragState.startX) + "px";
+      panel.style.top =
+        dragState.startTop + (event.clientY - dragState.startY) + "px";
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (!dragState) {
+        return;
+      }
+      dragState = null;
+      persistPanelStyle(panel);
+    });
+
+    window.setInterval(function () {
+      persistPanelStyle(panel);
+    }, 2000);
+  }
+
   async function waitBetweenTopics(index) {
     var gapMs = randomInt(9000, 22000);
     setStatus("帖间等待 " + Math.ceil(gapMs / 1000) + " 秒");
@@ -311,11 +443,12 @@
     var panel = document.createElement("div");
     panel.id = PANEL_ID;
     panel.innerHTML = [
-      '<div style="font-weight:700;font-size:14px;margin-bottom:8px;">Linux.do 翻帖</div>',
+      '<div id="' + DRAG_ID + '" style="font-weight:700;font-size:14px;margin-bottom:8px;cursor:move;display:flex;justify-content:space-between;align-items:center;">Linux.do 翻帖 <span style="font-size:11px;font-weight:400;opacity:.7;">拖动</span></div>',
       '<label style="display:block;margin-bottom:6px;">页数 <input id="linuxdo-flip-pages" type="number" min="1" value="3" style="width:72px;margin-left:8px;"></label>',
       '<label style="display:block;margin-bottom:6px;">数量 <input id="linuxdo-flip-limit" type="number" min="1" value="10" style="width:72px;margin-left:8px;"></label>',
       '<label style="display:block;margin-bottom:6px;">阅读最短秒数 <input id="linuxdo-flip-min" type="number" min="3" value="12" style="width:72px;margin-left:8px;"></label>',
       '<label style="display:block;margin-bottom:6px;">阅读最长秒数 <input id="linuxdo-flip-max" type="number" min="5" value="28" style="width:72px;margin-left:8px;"></label>',
+      '<label style="display:block;margin-bottom:6px;">阅读速度 <input id="linuxdo-flip-cps" type="number" min="1" value="10" style="width:72px;margin-left:8px;"> 字/秒</label>',
       '<label style="display:block;margin-bottom:8px;"><input id="linuxdo-flip-pinned" type="checkbox"> 包含置顶帖</label>',
       '<label style="display:block;margin-bottom:6px;">包含关键词 <input id="linuxdo-flip-include" type="text" placeholder="AI, VPS" style="width:100%;margin-top:4px;box-sizing:border-box;"></label>',
       '<label style="display:block;margin-bottom:6px;">排除关键词 <input id="linuxdo-flip-exclude" type="text" placeholder="广告, 交易" style="width:100%;margin-top:4px;box-sizing:border-box;"></label>',
@@ -334,7 +467,8 @@
       "right:16px",
       "bottom:16px",
       "z-index:999999",
-      "width:220px",
+      "width:260px",
+      "min-width:220px",
       "padding:12px",
       "background:#fff6df",
       "border:1px solid #d7b46a",
@@ -342,9 +476,13 @@
       "box-shadow:0 10px 30px rgba(0,0,0,.15)",
       "font:13px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif",
       "color:#1a1a1a",
+      "resize:both",
+      "overflow:auto",
     ].join(";");
 
     document.body.appendChild(panel);
+    applyPanelStyle(panel);
+    enablePanelInteractions(panel);
 
     panel.querySelectorAll("button").forEach(function (button) {
       button.style.cssText = [
@@ -375,6 +513,7 @@
     var limit = Number(document.getElementById("linuxdo-flip-limit").value || 10);
     var readMinSec = Number(document.getElementById("linuxdo-flip-min").value || 12);
     var readMaxSec = Number(document.getElementById("linuxdo-flip-max").value || 28);
+    var charsPerSecond = Number(document.getElementById("linuxdo-flip-cps").value || 10);
     var includePinned = document.getElementById("linuxdo-flip-pinned").checked;
     var includeKeywords = parseListInput(
       document.getElementById("linuxdo-flip-include").value
@@ -386,7 +525,13 @@
       document.getElementById("linuxdo-flip-categories").value
     );
 
-    if (pages < 1 || limit < 1 || readMinSec < 1 || readMaxSec < readMinSec) {
+    if (
+      pages < 1 ||
+      limit < 1 ||
+      readMinSec < 1 ||
+      readMaxSec < readMinSec ||
+      charsPerSecond < 1
+    ) {
       throw new Error("参数不合法");
     }
 
@@ -395,6 +540,7 @@
       limit: limit,
       readMinSec: readMinSec,
       readMaxSec: readMaxSec,
+      charsPerSecond: charsPerSecond,
       includePinned: includePinned,
       includeKeywords: includeKeywords,
       excludeKeywords: excludeKeywords,
@@ -507,10 +653,8 @@
 
     sessionStorage.setItem(ACTIVE_KEY, String(current.id));
 
-    var readForMs = randomInt(
-      Math.round(state.options.readMinSec * 1000),
-      Math.round(state.options.readMaxSec * 1000)
-    );
+    var readEstimate = estimateReadDurationMs(state.options);
+    var readForMs = readEstimate.readForMs;
     var deadline = Date.now() + readForMs;
     var bottomHits = 0;
     var stepCount = 0;
@@ -521,7 +665,10 @@
         "/" +
         state.queue.length +
         " : " +
-        formatTopic(current)
+        formatTopic(current) +
+        " · 约 " +
+        readEstimate.textLength +
+        " 字"
     );
 
     await sleep(randomInt(1200, 3600));
@@ -538,7 +685,12 @@
           state.queue.length +
           " 剩余约 " +
           remaining +
-          " 秒"
+          " 秒" +
+          " · " +
+          readEstimate.textLength +
+          " 字/" +
+          state.options.charsPerSecond +
+          " 字每秒"
       );
 
       if (nearBottom) {

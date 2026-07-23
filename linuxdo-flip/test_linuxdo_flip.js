@@ -34,7 +34,12 @@ class MockElement {
     this.checked = false;
     this.value = "";
     this.textContent = "";
+    this.innerText = "";
     this._innerHTML = "";
+    this.offsetLeft = 16;
+    this.offsetTop = 16;
+    this.offsetWidth = 260;
+    this.offsetHeight = 200;
   }
 
   set innerHTML(value) {
@@ -101,6 +106,10 @@ class MockDocument {
     this.documentElement = { scrollHeight: 5200 };
     this.body = new MockElement(this, "body", "body");
     this.body.scrollHeight = 5200;
+    this.listeners = {};
+    this.topicNodes = [
+      { innerText: "这是一段用于测试的帖子正文".repeat(20) },
+    ];
   }
 
   createElement(tagName) {
@@ -111,7 +120,18 @@ class MockDocument {
     return this._elements.get(id) || null;
   }
 
-  addEventListener() {}
+  addEventListener(type, listener) {
+    this.listeners[type] = listener;
+  }
+
+  querySelectorAll(selector) {
+    if (
+      selector === ".topic-post .cooked, .post-stream .topic-post .cooked, article .cooked"
+    ) {
+      return this.topicNodes;
+    }
+    return [];
+  }
 }
 
 function buildLatestResponse() {
@@ -201,6 +221,9 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
       callback();
       return 1;
     },
+    setInterval() {
+      return 1;
+    },
     scrollBy(options) {
       const delta = typeof options === "number" ? options : Number(options.top || 0);
       const maxScroll = Math.max(
@@ -263,6 +286,7 @@ async function runSmokeTest() {
   env1.document.getElementById("linuxdo-flip-exclude").value = "trade";
   env1.document.getElementById("linuxdo-flip-categories").value = "development";
   env1.document.getElementById("linuxdo-flip-limit").value = "2";
+  env1.document.getElementById("linuxdo-flip-cps").value = "10";
 
   await env1.document.getElementById("linuxdo-flip-start").listeners.click();
   await flushAsync(4);
