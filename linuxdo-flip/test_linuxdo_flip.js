@@ -123,6 +123,32 @@ function createEnvironment(options = {}) {
     }
 
     const parsed = new URL(String(url), location.origin);
+    if (parsed.pathname === "/search.json") {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        async json() {
+          return {
+            topics: [
+              {
+                id: 42,
+                slug: "exact-search-result",
+                title: "精确搜索结果",
+                category_id: 5,
+              },
+              {
+                id: 420,
+                slug: "similar-search-result",
+                title: "相似但错误的搜索结果",
+                category_id: 5,
+              },
+            ],
+            posts: [{ id: 9001, topic_id: 42 }],
+          };
+        },
+      };
+    }
     const page = Number(parsed.searchParams.get("page") || 0);
     return {
       ok: true,
@@ -189,6 +215,40 @@ async function run() {
   assert.strictEqual(api.getTopicId("/t/hello/123/last"), 123);
   assert.strictEqual(api.getTopicId("/t/123"), 123);
   assert.strictEqual(api.getTopicId("/latest"), null);
+  assert.strictEqual(
+    api.buildSearchQuery({ title: '  “Linux.do”   搜索 "能力"  ' }),
+    "Linux.do 搜索 能力"
+  );
+  assert.strictEqual(
+    api.findExactSearchTopic(
+      {
+        topics: [
+          { id: 420, slug: "wrong", title: "相似结果" },
+          { id: 42, slug: "right", title: "精确结果" },
+        ],
+      },
+      42
+    ).id,
+    42
+  );
+  assert.strictEqual(
+    api.findExactSearchTopic(
+      { topics: [{ id: 420, slug: "wrong", title: "相似结果" }] },
+      42
+    ),
+    null
+  );
+  const searchResult = await api.searchExactTopic({
+    id: 42,
+    title: "精确搜索结果",
+  });
+  assert.strictEqual(searchResult.match.id, 42);
+  assert(
+    env.calls.some((url) =>
+      url.startsWith("/search.json?q=")
+    ),
+    "site search should use the Discourse search endpoint"
+  );
 
   assert.strictEqual(
     api.titleMatches("AI 开发工具", ["ai"], ["交易"]),
@@ -313,6 +373,59 @@ async function run() {
   assert.strictEqual(api.getSession().status, "running");
   api.clearSession();
   assert.strictEqual(api.getSession(), null);
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [topics[0], topics[0], topics[1]],
+    index: 0,
+    config,
+  });
+  const queueAudit = api.auditSessionQueue(api.getSession());
+  assert.strictEqual(queueAudit.changed, true);
+  assert.strictEqual(queueAudit.removed, 2);
+  assert.strictEqual(api.getSession().queue.length, 1);
+  assert.strictEqual(api.getSession().queue[0].id, topics[1].id);
+  assert.strictEqual(api.stageLabel("searching"), "站内搜索");
+  api.clearSession();
+
+  api.saveTopicProgress(topics[2].id, {
+    lastPostNumber: 20,
+    highestPostNumber: 100,
+    completed: false,
+  });
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [topics[2], topics[3], topics[2]],
+    index: 1,
+    config,
+  });
+  api.auditSessionQueue(api.getSession());
+  assert.deepStrictEqual(
+    Array.from(api.getSession().queue, (topic) => topic.id),
+    [topics[2].id, topics[3].id, topics[2].id],
+    "a partial long topic requeued after the current index must be preserved"
+  );
+  api.clearSession();
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [topics[4]],
+    index: 0,
+    config,
+    navigation: {
+      stage: "opening",
+      topicId: topics[4].id,
+      startedAt: 0,
+      retries: 2,
+    },
+  });
+  assert.strictEqual(api.recoverStalledNavigation(), true);
+  assert.strictEqual(api.getSession().status, "paused");
+  assert.strictEqual(api.getSession().diagnostics.stage, "paused");
+  api.clearSession();
 
   const retryEnv = createEnvironment({ retry429: true });
   const retried = await retryEnv.api.fetchTopics(
