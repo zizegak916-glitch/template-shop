@@ -200,7 +200,8 @@ async function run() {
 
   const config = api.normalizeConfig({
     pages: 1,
-    limit: 100,
+    limit: 180,
+    likeTarget: 30,
     minSeconds: 12,
     maxSeconds: 90,
     charsPerSecond: 10,
@@ -210,7 +211,7 @@ async function run() {
     categories: [],
   });
   const topics = await api.fetchTopics(config);
-  assert.strictEqual(topics.length, 100, "large queues should fetch extra pages");
+  assert.strictEqual(topics.length, 180, "180-topic queues should fetch extra pages");
   assert(topics.every((topic) => topic.title.includes("AI")));
   assert(topics.every((topic) => !topic.pinned));
 
@@ -230,6 +231,61 @@ async function run() {
   assert.strictEqual(normalPlan.seconds, 50, "estimated duration should be used");
   const longPlan = api.calculateReadPlan(config, 5000, 10);
   assert.strictEqual(longPlan.seconds, 90, "maximum should be a hard cap");
+
+  const audit = api.parseTopicAudit(
+    {
+      highest_post_number: 850,
+      posts_count: 812,
+      post_stream: {
+        stream: Array.from({ length: 812 }, (_, index) => index + 1000),
+        posts: [
+          {
+            id: 1000,
+            post_number: 1,
+            actions_summary: [{ id: 2, acted: false }],
+          },
+        ],
+      },
+    },
+    topics[0]
+  );
+  assert.strictEqual(audit.highestPostNumber, 850);
+  assert.strictEqual(audit.firstPostId, 1000);
+  assert.strictEqual(audit.alreadyLiked, false);
+
+  const partial = api.saveTopicProgress(topics[0].id, {
+    lastPostNumber: 437,
+    highestPostNumber: 850,
+    accumulatedSeconds: 300,
+  });
+  assert.strictEqual(partial.lastPostNumber, 437);
+  assert.strictEqual(
+    api.buildResumeUrl(topics[0], partial),
+    `${topics[0].url}/437`
+  );
+  assert.strictEqual(api.isTopicComplete(partial, audit, 2), false);
+  const finished = api.saveTopicProgress(topics[0].id, {
+    lastPostNumber: 850,
+    highestPostNumber: 850,
+    completed: true,
+  });
+  assert.strictEqual(api.isTopicComplete(finished, audit, 2), true);
+  assert.strictEqual(api.isTopicComplete(finished, audit, 1), false);
+
+  const reviewSession = {
+    config: { limit: 180, likeTarget: 30 },
+    completed: 6,
+    likedCount: 0,
+  };
+  assert.strictEqual(
+    api.shouldRequestLikeReview(reviewSession, topics[0], audit),
+    true
+  );
+  reviewSession.completed = 5;
+  assert.strictEqual(
+    api.shouldRequestLikeReview(reviewSession, topics[0], audit),
+    false
+  );
 
   api.markVisited(101);
   api.markVisited(102);

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.0.0
-// @description  Linux.do 只读翻帖助手：筛选主题、按正文长度停留、自动滚动并跨页面续跑
+// @version      1.1.0
+// @description  Linux.do 阅读进度助手：长帖分段续读、完成审查与手动点赞候选
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -29,20 +29,25 @@
     pause: "linuxdo-flip-pause",
     stop: "linuxdo-flip-stop",
     reset: "linuxdo-flip-reset",
+    approveLike: "linuxdo-flip-approve-like",
+    skipLike: "linuxdo-flip-skip-like",
+    likeTarget: "linuxdo-flip-like-target",
   };
 
   var KEYS = {
-    config: "linuxdoFlipConfigV1",
-    session: "linuxdoFlipSessionV1",
+    config: "linuxdoFlipConfigV2",
+    session: "linuxdoFlipSessionV2",
     visited: "linuxdoFlipVisitedV1",
-    panel: "linuxdoFlipPanelV1",
-    tabId: "linuxdoFlipTabIdV1",
-    lock: "linuxdoFlipLockV1",
+    progress: "linuxdoFlipProgressV2",
+    panel: "linuxdoFlipPanelV2",
+    tabId: "linuxdoFlipTabIdV2",
+    lock: "linuxdoFlipLockV2",
   };
 
   var TOPIC_RE = /\/t\/(?:[^/]+\/)?(\d+)(?:\/\d+)?(?:[/?#]|$)/;
-  var VERSION = 1;
+  var VERSION = 2;
   var MAX_VISITED = 5000;
+  var MAX_PROGRESS = 2000;
   var MAX_PAGES = 20;
   var MAX_TOPICS = 200;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
@@ -53,7 +58,8 @@
 
   var DEFAULT_CONFIG = {
     pages: 3,
-    limit: 10,
+    limit: 180,
+    likeTarget: 30,
     minSeconds: 12,
     maxSeconds: 90,
     charsPerSecond: 10,
@@ -177,6 +183,55 @@
     saveVisited(visited);
   }
 
+  function getProgressMap() {
+    var value = loadJSON(localStorage, KEYS.progress, {});
+    return value && typeof value === "object" ? value : {};
+  }
+
+  function getTopicProgress(topicId) {
+    var progress = getProgressMap()[String(Number(topicId))];
+    return Object.assign(
+      {
+        topicId: Number(topicId),
+        lastPostNumber: 1,
+        highestPostNumber: null,
+        accumulatedSeconds: 0,
+        completed: false,
+        liked: false,
+        updatedAt: 0,
+      },
+      progress || {}
+    );
+  }
+
+  function saveTopicProgress(topicId, patch) {
+    var map = getProgressMap();
+    var key = String(Number(topicId));
+    map[key] = Object.assign({}, getTopicProgress(topicId), patch, {
+      topicId: Number(topicId),
+      updatedAt: Date.now(),
+    });
+
+    var entries = Object.keys(map)
+      .map(function (itemKey) {
+        return [itemKey, map[itemKey]];
+      })
+      .sort(function (left, right) {
+        return Number(right[1].updatedAt || 0) - Number(left[1].updatedAt || 0);
+      })
+      .slice(0, MAX_PROGRESS);
+    var trimmed = {};
+    entries.forEach(function (entry) {
+      trimmed[entry[0]] = entry[1];
+    });
+    saveJSON(localStorage, KEYS.progress, trimmed);
+    return trimmed[key];
+  }
+
+  function clearProgress() {
+    remove(localStorage, KEYS.progress);
+  }
+
   function readLock() {
     return loadJSON(localStorage, KEYS.lock, null);
   }
@@ -244,6 +299,11 @@
     return {
       pages: clamp(Math.floor(Number(config.pages) || 1), 1, MAX_PAGES),
       limit: clamp(Math.floor(Number(config.limit) || 1), 1, MAX_TOPICS),
+      likeTarget: clamp(
+        Math.floor(Number(config.likeTarget) || 0),
+        0,
+        100
+      ),
       minSeconds: clamp(
         Math.floor(Number(config.minSeconds) || DEFAULT_CONFIG.minSeconds),
         3,
@@ -276,6 +336,7 @@
     var config = normalizeConfig({
       pages: document.getElementById(IDS.pages).value,
       limit: document.getElementById(IDS.limit).value,
+      likeTarget: document.getElementById(IDS.likeTarget).value,
       minSeconds: document.getElementById(IDS.minSeconds).value,
       maxSeconds: document.getElementById(IDS.maxSeconds).value,
       charsPerSecond: document.getElementById(IDS.charsPerSecond).value,
@@ -301,6 +362,7 @@
     config = normalizeConfig(config);
     document.getElementById(IDS.pages).value = String(config.pages);
     document.getElementById(IDS.limit).value = String(config.limit);
+    document.getElementById(IDS.likeTarget).value = String(config.likeTarget);
     document.getElementById(IDS.minSeconds).value = String(config.minSeconds);
     document.getElementById(IDS.maxSeconds).value = String(config.maxSeconds);
     document.getElementById(IDS.charsPerSecond).value = String(
@@ -321,6 +383,10 @@
       slug: String(topic.slug || "topic"),
       categoryId: topic.category_id ? Number(topic.category_id) : null,
       pinned: Boolean(topic.pinned),
+      highestPostNumber: topic.highest_post_number
+        ? Number(topic.highest_post_number)
+        : null,
+      postsCount: topic.posts_count ? Number(topic.posts_count) : null,
       url:
         location.origin +
         "/t/" +
@@ -524,6 +590,95 @@
     return result.slice(0, config.limit);
   }
 
+  function parseTopicAudit(data, topic) {
+    var stream = (((data || {}).post_stream || {}).stream || []);
+    var loadedPosts = (((data || {}).post_stream || {}).posts || []);
+    var firstPost = loadedPosts.find(function (post) {
+      return Number(post.post_number) === 1;
+    });
+    var actions = firstPost && Array.isArray(firstPost.actions_summary)
+      ? firstPost.actions_summary
+      : [];
+    var likeAction = actions.find(function (action) {
+      return Number(action.id) === 2;
+    });
+    var highest = Number(
+      (data || {}).highest_post_number ||
+        (topic || {}).highestPostNumber ||
+        stream.length ||
+        1
+    );
+
+    return {
+      highestPostNumber: Math.max(1, highest),
+      postsCount: Number((data || {}).posts_count || stream.length || 1),
+      firstPostId: firstPost ? Number(firstPost.id) : null,
+      alreadyLiked: Boolean(likeAction && likeAction.acted),
+      closed: Boolean((data || {}).closed),
+      archived: Boolean((data || {}).archived),
+    };
+  }
+
+  async function fetchTopicAudit(topic) {
+    try {
+      var data = await fetchJsonWithRetry(
+        "/t/" +
+          encodeURIComponent(topic.slug || "topic") +
+          "/" +
+          topic.id +
+          ".json"
+      );
+      return parseTopicAudit(data, topic);
+    } catch (error) {
+      if (topic.highestPostNumber) {
+        return {
+          highestPostNumber: Number(topic.highestPostNumber),
+          postsCount: Number(topic.postsCount || topic.highestPostNumber),
+          firstPostId: null,
+          alreadyLiked: false,
+          closed: false,
+          archived: false,
+          warning: error.message,
+        };
+      }
+      throw new Error("主题完成审查失败：" + error.message);
+    }
+  }
+
+  function getHighestVisiblePostNumber() {
+    var nodes = document.querySelectorAll(
+      "article[data-post-number], .topic-post[data-post-number], [id^=post_]"
+    );
+    var highest = 0;
+    nodes.forEach(function (node) {
+      var fromData =
+        node.dataset && node.dataset.postNumber
+          ? Number(node.dataset.postNumber)
+          : 0;
+      var fromId = String(node.id || "").match(/^post_(\d+)$/);
+      highest = Math.max(
+        highest,
+        fromData || (fromId ? Number(fromId[1]) : 0)
+      );
+    });
+    return highest;
+  }
+
+  function buildResumeUrl(topic, progress) {
+    var postNumber = Math.max(1, Number(progress.lastPostNumber) || 1);
+    return topic.url + (postNumber > 1 ? "/" + postNumber : "");
+  }
+
+  function isTopicComplete(progress, audit, bottomStableCount) {
+    return Boolean(
+      progress &&
+        audit &&
+        Number(progress.lastPostNumber || 0) >=
+          Number(audit.highestPostNumber || Infinity) &&
+        Number(bottomStableCount || 0) >= 2
+    );
+  }
+
   function getArticleTextLength() {
     var nodes = document.querySelectorAll(
       "#post_1 .cooked, .topic-post .cooked, article .cooked"
@@ -586,17 +741,28 @@
   }
 
   async function scrollAndRead(topic, session) {
+    var audit = await fetchTopicAudit(topic);
+    var progress = getTopicProgress(topic.id);
     var length = await waitForArticle();
     var speed = sampleReadingSpeed(session.config.charsPerSecond);
     var plan = calculateReadPlan(session.config, length, speed);
     var deadline = Date.now() + plan.seconds * 1000;
+    var startedAt = Date.now();
     var bottomPasses = 0;
     var steps = 0;
+    var lastHeight = 0;
 
-    while (Date.now() < deadline || bottomPasses < 2) {
+    progress.highestPostNumber = audit.highestPostNumber;
+
+    while (Date.now() < deadline) {
       var currentSession = getSession();
       if (!currentSession || currentSession.status === "stopped") {
-        return false;
+        return {
+          stopped: true,
+          complete: false,
+          progress: progress,
+          audit: audit,
+        };
       }
 
       if (currentSession.status === "paused") {
@@ -609,6 +775,13 @@
       }
 
       var metrics = getScrollMetrics();
+      var visiblePost = getHighestVisiblePostNumber();
+      if (visiblePost > 0) {
+        progress.lastPostNumber = Math.max(
+          Number(progress.lastPostNumber || 1),
+          visiblePost
+        );
+      }
       var remaining = Math.max(
         0,
         Math.ceil((deadline - Date.now()) / 1000)
@@ -626,13 +799,22 @@
           plan.textLength +
           " 字 · " +
           plan.charsPerSecond +
-          " 字/秒 · 约剩 " +
+          " 字/秒 · 楼层 " +
+          progress.lastPostNumber +
+          "/" +
+          audit.highestPostNumber +
+          " · 本段剩 " +
           remaining +
           " 秒"
       );
 
       if (atBottom) {
-        bottomPasses += 1;
+        if (metrics.max === lastHeight) {
+          bottomPasses += 1;
+        } else {
+          bottomPasses = 0;
+        }
+        lastHeight = metrics.max;
         await interruptibleSleep(randomInt(1300, 2600), function () {
           var state = getSession();
           return Boolean(state && state.status !== "stopped");
@@ -653,12 +835,42 @@
         });
       }
 
+      progress.accumulatedSeconds =
+        Number(progress.accumulatedSeconds || 0) +
+        Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+      startedAt = Date.now();
+      saveTopicProgress(topic.id, progress);
+
+      if (isTopicComplete(progress, audit, bottomPasses)) {
+        progress.completed = true;
+        progress.accumulatedSeconds =
+          Number(progress.accumulatedSeconds || 0) +
+          Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+        progress = saveTopicProgress(topic.id, progress);
+        return {
+          stopped: false,
+          complete: true,
+          progress: progress,
+          audit: audit,
+        };
+      }
+
       steps += 1;
       if (steps > 400) {
         throw new Error("滚动步骤异常，已停止本轮任务");
       }
     }
-    return true;
+
+    progress.accumulatedSeconds =
+      Number(progress.accumulatedSeconds || 0) +
+      Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+    progress = saveTopicProgress(topic.id, progress);
+    return {
+      stopped: false,
+      complete: false,
+      progress: progress,
+      audit: audit,
+    };
   }
 
   function formatProgress(session) {
@@ -672,9 +884,16 @@
   }
 
   async function navigateToTopic(topic) {
-    setStatus("打开：" + topic.title);
+    var progress = getTopicProgress(topic.id);
+    setStatus(
+      "打开：" +
+        topic.title +
+        (progress.lastPostNumber > 1
+          ? " · 从第 " + progress.lastPostNumber + " 楼继续"
+          : "")
+    );
     await sleep(500);
-    location.href = topic.url;
+    location.href = buildResumeUrl(topic, progress);
   }
 
   async function startSession() {
@@ -703,6 +922,9 @@
         queue: queue,
         index: 0,
         completed: 0,
+        likedCount: 0,
+        reviewedCount: 0,
+        reviewTopic: null,
         config: config,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -719,6 +941,10 @@
     var session = getSession();
     if (!session) {
       setStatus("当前没有运行中的任务。");
+      return;
+    }
+    if (session.status === "review") {
+      setStatus("当前正在等待点赞审查，请先确认点赞或跳过。");
       return;
     }
 
@@ -750,7 +976,158 @@
 
   function resetVisited() {
     remove(localStorage, KEYS.visited);
+    clearProgress();
     setStatus("已清空已读记录。");
+  }
+
+  function shouldRequestLikeReview(session, topic, audit) {
+    var target = Number(session.config.likeTarget || 0);
+    if (
+      target <= 0 ||
+      Number(session.likedCount || 0) >= target ||
+      topic.pinned ||
+      audit.alreadyLiked ||
+      audit.closed ||
+      audit.archived
+    ) {
+      return false;
+    }
+
+    var interval = Math.max(
+      1,
+      Math.floor(Number(session.config.limit || 1) / target)
+    );
+    return Number(session.completed || 0) % interval === 0;
+  }
+
+  function updateReviewButtons(session) {
+    var approve = document.getElementById(IDS.approveLike);
+    var skip = document.getElementById(IDS.skipLike);
+    if (!approve || !skip) {
+      return;
+    }
+    var reviewing = Boolean(session && session.status === "review");
+    approve.disabled = !reviewing;
+    skip.disabled = !reviewing;
+    approve.style.display = reviewing ? "inline-block" : "none";
+    skip.style.display = reviewing ? "inline-block" : "none";
+  }
+
+  function findFirstPostLikeButton() {
+    var selectors = [
+      '#post_1 button.like',
+      'article[data-post-number="1"] button.like',
+      '#post_1 button[aria-label*="赞"]',
+      '#post_1 button[title*="赞"]',
+      'article[data-post-number="1"] button[aria-label*="like" i]',
+    ];
+    for (var index = 0; index < selectors.length; index += 1) {
+      var button = document.querySelector(selectors[index]);
+      if (button) {
+        return button;
+      }
+    }
+    return null;
+  }
+
+  async function waitForFirstPostLikeButton() {
+    if (typeof window.scrollTo === "function") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    var deadline = Date.now() + 8000;
+    var button = findFirstPostLikeButton();
+    while (!button && Date.now() < deadline) {
+      await sleep(350);
+      button = findFirstPostLikeButton();
+    }
+    return button;
+  }
+
+  function isLikeButtonActive(button) {
+    if (!button) {
+      return false;
+    }
+    var label = (
+      String(button.getAttribute("aria-label") || "") +
+      " " +
+      String(button.getAttribute("title") || "")
+    ).toLowerCase();
+    return Boolean(
+      button.getAttribute("aria-pressed") === "true" ||
+        /has-like|liked|is-liked/.test(String(button.className || "")) ||
+        /取消赞|移除赞|unlike|remove like/.test(label)
+    );
+  }
+
+  function finishReviewAndAdvance(session) {
+    session.status = "running";
+    session.reviewTopic = null;
+    session.index += 1;
+    updateReviewButtons(session);
+    if (session.index >= session.queue.length) {
+      clearSession();
+      setStatus(
+        "本轮完成：读完 " +
+          session.completed +
+          " 个主题，确认点赞 " +
+          session.likedCount +
+          " 个。"
+      );
+      return;
+    }
+    saveSession(session);
+    processCurrentTopic();
+  }
+
+  async function approveLikeAndContinue() {
+    var session = getSession();
+    if (!session || session.status !== "review" || !session.reviewTopic) {
+      setStatus("当前没有等待确认的点赞候选。");
+      return;
+    }
+
+    var button = await waitForFirstPostLikeButton();
+    if (!button) {
+      setStatus(
+        "没有定位到站内点赞按钮。请手动点赞后点击“不赞，继续”，或刷新后重试。",
+        true
+      );
+      return;
+    }
+
+    if (isLikeButtonActive(button)) {
+      setStatus("该主题已经点赞，不会重复点击；继续下一主题。");
+      finishReviewAndAdvance(session);
+      return;
+    }
+
+    button.click();
+    await sleep(900);
+    session = getSession();
+    if (!session || session.status !== "review") {
+      return;
+    }
+
+    session.likedCount = Number(session.likedCount || 0) + 1;
+    saveTopicProgress(session.reviewTopic.id, { liked: true });
+    setStatus(
+      "已提交点赞 " +
+        session.likedCount +
+        "/" +
+        session.config.likeTarget +
+        "，继续下一主题。"
+    );
+    finishReviewAndAdvance(session);
+  }
+
+  function skipLikeAndContinue() {
+    var session = getSession();
+    if (!session || session.status !== "review") {
+      setStatus("当前没有等待确认的点赞候选。");
+      return;
+    }
+    session.reviewedCount = Number(session.reviewedCount || 0) + 1;
+    finishReviewAndAdvance(session);
   }
 
   async function processCurrentTopic() {
@@ -760,6 +1137,18 @@
 
     var session = getSession();
     if (!session || session.status === "stopped") {
+      return;
+    }
+    if (session.status === "review") {
+      updateReviewButtons(session);
+      setStatus(
+        "点赞候选待审查：" +
+          session.reviewTopic.title +
+          " · 已确认 " +
+          session.likedCount +
+          "/" +
+          session.config.likeTarget
+      );
       return;
     }
     if (!acquireLock()) {
@@ -781,22 +1170,61 @@
 
     processing = true;
     try {
-      var completed = await scrollAndRead(topic, session);
-      if (!completed) {
+      var result = await scrollAndRead(topic, session);
+      if (result.stopped) {
         return;
       }
 
-      markVisited(topic.id);
       session = getSession();
       if (!session) {
         return;
       }
-      session.index += 1;
-      session.completed += 1;
+
+      if (result.complete) {
+        markVisited(topic.id);
+        session.completed += 1;
+
+        if (shouldRequestLikeReview(session, topic, result.audit)) {
+          session.status = "review";
+          session.reviewedCount = Number(session.reviewedCount || 0) + 1;
+          session.reviewTopic = {
+            id: topic.id,
+            title: topic.title,
+            firstPostId: result.audit.firstPostId,
+          };
+          saveSession(session);
+          updateReviewButtons(session);
+          setStatus(
+            "已完整读到第 " +
+              result.audit.highestPostNumber +
+              " 楼，进入点赞审查。请确认是否点赞：" +
+              topic.title
+          );
+          return;
+        }
+
+        session.index += 1;
+      } else {
+        session.queue.push(topic);
+        session.index += 1;
+        setStatus(
+          "长帖本段结束，进度已保存到第 " +
+            result.progress.lastPostNumber +
+            "/" +
+            result.audit.highestPostNumber +
+            " 楼；稍后从这里续读。"
+        );
+      }
 
       if (session.index >= session.queue.length) {
         clearSession();
-        setStatus("本轮翻帖完成，共阅读 " + session.completed + " 个主题。");
+        setStatus(
+          "本轮完成：读完 " +
+            session.completed +
+            " 个主题，确认点赞 " +
+            session.likedCount +
+            " 个。"
+        );
         await sleep(1200);
         location.href = location.origin + "/latest";
         return;
@@ -831,7 +1259,7 @@
       left: null,
       top: 16,
       width: 300,
-      height: 520,
+      height: 600,
     });
   }
 
@@ -982,15 +1410,17 @@
       ".ldf-actions{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0;}",
       ".ldf-actions button{border:1px solid #9e7b2f;background:#f5d889;color:#26200f;padding:6px 11px;border-radius:8px;cursor:pointer;font-weight:650;}",
       ".ldf-actions button:hover{background:#efca68;}",
+      ".ldf-actions button:disabled{opacity:.5;cursor:not-allowed;}",
       "#" + IDS.status + "{padding:8px;background:#f7f1e3;border-radius:8px;word-break:break-word;}",
       ".ldf-note{margin:8px 0;color:#6b5a32;font-size:12px;}",
       "#" + IDS.resize + "{position:absolute;right:5px;bottom:4px;width:22px;height:22px;cursor:nwse-resize;touch-action:none;opacity:.55;text-align:center;}",
       "</style>",
       '<header id="' + IDS.drag + '"><span>Linux.do Flip</span><small>拖动 · 双击复位</small></header>',
       field("读取页数", IDS.pages, "number", "3"),
-      field("本轮数量", IDS.limit, "number", "10"),
+      field("本轮话题", IDS.limit, "number", "180"),
+      field("点赞目标", IDS.likeTarget, "number", "30"),
       field("最短停留", IDS.minSeconds, "number", "12", "秒"),
-      field("最长停留", IDS.maxSeconds, "number", "90", "秒"),
+      field("单次最长", IDS.maxSeconds, "number", "90", "秒"),
       field("基础速度", IDS.charsPerSecond, "number", "10", "字/秒"),
       '<label class="ldf-wide"><input id="' + IDS.includePinned + '" type="checkbox"> 包含置顶主题</label>',
       '<label class="ldf-wide">包含关键词<input id="' + IDS.includeKeywords + '" type="text" placeholder="AI, VPS"></label>',
@@ -1001,8 +1431,10 @@
       '<button id="' + IDS.pause + '" type="button">暂停</button>',
       '<button id="' + IDS.stop + '" type="button">停止</button>',
       '<button id="' + IDS.reset + '" type="button">清空已读</button>',
+      '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
+      '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
-      '<p class="ldf-note">只读取公开主题，不点赞、不回复、不收藏。最长停留时间是硬上限。</p>',
+      '<p class="ldf-note">长帖按楼层保存进度，单次时间到后排到队尾续读。点赞必须在完整读完并通过审查后手动确认。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
     ].join("");
@@ -1016,6 +1448,12 @@
     document.getElementById(IDS.pause).addEventListener("click", togglePause);
     document.getElementById(IDS.stop).addEventListener("click", stopSession);
     document.getElementById(IDS.reset).addEventListener("click", resetVisited);
+    document
+      .getElementById(IDS.approveLike)
+      .addEventListener("click", approveLikeAndContinue);
+    document
+      .getElementById(IDS.skipLike)
+      .addEventListener("click", skipLikeAndContinue);
 
     panel.querySelectorAll("input").forEach(function (input) {
       input.addEventListener("change", function () {
@@ -1034,6 +1472,19 @@
     if (!session) {
       setStatus("待命，已记录 " + getVisited().size + " 个已读主题。");
       pauseButton.textContent = "暂停";
+      updateReviewButtons(null);
+      return;
+    }
+    updateReviewButtons(session);
+    if (session.status === "review") {
+      setStatus(
+        "点赞候选待审查：" +
+          session.reviewTopic.title +
+          " · 已确认 " +
+          session.likedCount +
+          "/" +
+          session.config.likeTarget
+      );
       return;
     }
     pauseButton.textContent = session.status === "paused" ? "继续" : "暂停";
@@ -1065,10 +1516,17 @@
       topicMatches: topicMatches,
       normalizeTopic: normalizeTopic,
       fetchTopics: fetchTopics,
+      parseTopicAudit: parseTopicAudit,
+      buildResumeUrl: buildResumeUrl,
+      isTopicComplete: isTopicComplete,
       calculateReadPlan: calculateReadPlan,
       sampleReadingSpeed: sampleReadingSpeed,
       getVisited: getVisited,
       markVisited: markVisited,
+      getTopicProgress: getTopicProgress,
+      saveTopicProgress: saveTopicProgress,
+      clearProgress: clearProgress,
+      shouldRequestLikeReview: shouldRequestLikeReview,
       getSession: getSession,
       saveSession: saveSession,
       clearSession: clearSession,
