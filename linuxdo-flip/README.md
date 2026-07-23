@@ -1,38 +1,62 @@
 # Linux.do Flip
 
-Tampermonkey userscript for browsing `https://linux.do` topics with a conservative reading pattern.
+Linux.do 的只读翻帖 Tampermonkey 脚本。
 
-Behavior:
+它会读取最新主题列表，按照关键词和分类筛选主题，逐个打开并根据当前已加载正文的字数计算停留时间。整个流程不会点赞、回复、收藏或发布任何内容。
 
-- browse only
-- no like / reply / favorite actions
-- random pause, scroll distance, and interval between topics
-- optional keyword and category filters
-- per-topic reading time based on visible text length
-- draggable panel with explicit resize handle
-- reading speed is elastic, not fixed
-- default base reading speed: `10` chars/second
+## 功能
 
-Example:
+- 读取 `/latest.json`，请求失败或遇到 `429` 时限速重试
+- 按主题标题包含词、排除词和分类名称、slug、ID 筛选
+- 自动扩展读取页数，支持最多 200 个主题的队列
+- 已读主题去重，最多保留最近 5000 条记录
+- 根据正文长度和基础阅读速度计算停留时间
+- 最短、最长停留时间都严格生效
+- 自动向下滚动，抵达正文底部后才完成当前主题
+- 跨页面保存任务，刷新或跳转后能够继续
+- 同一时间只允许一个标签页执行任务
+- 支持暂停、继续、停止和清空已读记录
+- 自动保存参数和面板位置
+- 面板支持鼠标与触摸拖动、缩放，双击标题恢复默认位置
 
-- visible topic text `320` chars + base speed `10` -> actual single-topic speed may be `8 / 9 / 11 / 15 / 22`
-- the script samples one actual speed per topic, then estimates the whole-topic reading time from that sampled speed
-- actual reading time uses `max(estimated, manual minimum seconds)`
+## 安装
 
-Files:
+1. 浏览器安装 Tampermonkey。
+2. 新建脚本。
+3. 复制 `linuxdo_flip.user.js` 的完整内容并保存。
+4. 打开 `https://linux.do/latest`。
 
-- `linuxdo_flip.user.js`: main userscript
-- `test_linuxdo_flip.js`: local smoke test for the session flow
+## 参数
 
-Quick use:
+- **读取页数**：至少读取多少页；当主题数量较大时会自动增加，但最多读取 20 页。
+- **本轮数量**：本轮最多打开多少个未读主题，范围为 1–200。
+- **最短停留**：正文很短时仍会停留的最低秒数。
+- **最长停留**：单个主题停留的硬上限。
+- **基础速度**：每秒阅读字符数；每个主题会在该速度附近产生轻微变化。
+- **包含关键词**：标题至少命中其中一个词；留空表示不限制。
+- **排除关键词**：标题命中任意一个词就跳过。
+- **分类**：支持分类名称、slug 或数字 ID，多个值用逗号或换行分隔。
 
-1. Install `linuxdo_flip.user.js` in Tampermonkey.
-2. Open `https://linux.do`.
-3. Set page count, limit, reading range, and optional filters.
-4. Click `开始`.
+## 状态规则
 
-Run smoke test:
+- 点击“暂停”后，脚本保留当前队列和位置；点击“继续”恢复。
+- 点击“停止”后，本轮任务结束，当前未读完的主题不会写入已读记录。
+- 页面异常或处理失败时，任务自动进入暂停状态，不会丢失队列。
+- 如果另一个 Linux.do 标签页正在运行任务，当前标签页不会同时启动第二份任务。
+
+## 测试
 
 ```bash
 node linuxdo-flip/test_linuxdo_flip.js
 ```
+
+测试覆盖：
+
+- URL 主题 ID 解析
+- 中英文逗号和换行参数解析
+- 包含词、排除词和分类过滤
+- 100 个主题队列的自动翻页
+- `429` 重试
+- 阅读时间上下限
+- 已读记录
+- 会话保存和清理

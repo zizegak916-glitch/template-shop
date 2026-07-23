@@ -1,245 +1,82 @@
+const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
 const scriptPath = path.join(__dirname, "linuxdo_flip.user.js");
-const scriptSource = fs.readFileSync(scriptPath, "utf8");
+const source = fs.readFileSync(scriptPath, "utf8");
 
 class StorageMock {
-  constructor(seed) {
-    this.map = new Map(seed ? Array.from(seed.entries()) : []);
+  constructor() {
+    this.values = new Map();
   }
 
   getItem(key) {
-    return this.map.has(key) ? this.map.get(key) : null;
+    return this.values.has(String(key)) ? this.values.get(String(key)) : null;
   }
 
   setItem(key, value) {
-    this.map.set(String(key), String(value));
+    this.values.set(String(key), String(value));
   }
 
   removeItem(key) {
-    this.map.delete(String(key));
+    this.values.delete(String(key));
   }
 }
 
-class MockElement {
-  constructor(document, tagName, id) {
-    this.document = document;
-    this.tagName = String(tagName || "div").toUpperCase();
-    this.id = id || "";
-    this.style = {};
-    this.listeners = {};
-    this.children = [];
-    this.checked = false;
-    this.value = "";
-    this.textContent = "";
-    this.innerText = "";
-    this._innerHTML = "";
-    this.offsetLeft = 16;
-    this.offsetTop = 16;
-    this.offsetWidth = 260;
-    this.offsetHeight = 200;
-  }
-
-  set innerHTML(value) {
-    this._innerHTML = value;
-    this.children = [];
-
-    const elementRe = /<(input|button|div)[^>]*id="([^"]+)"[^>]*>/g;
-    let match;
-    while ((match = elementRe.exec(value))) {
-      const tagName = match[1];
-      const id = match[2];
-      const elementMarkup = match[0];
-      const child = new MockElement(this.document, tagName, id);
-
-      const valueMatch = elementMarkup.match(/value="([^"]*)"/);
-      if (valueMatch) {
-        child.value = valueMatch[1];
-      }
-      if (/type="checkbox"/.test(elementMarkup)) {
-        child.checked = /checked/.test(elementMarkup);
-      }
-
-      this.document._elements.set(id, child);
-      this.children.push(child);
-    }
-  }
-
-  get innerHTML() {
-    return this._innerHTML;
-  }
-
-  appendChild(child) {
-    this.children.push(child);
-    if (child.id) {
-      this.document._elements.set(child.id, child);
-    }
-    return child;
-  }
-
-  addEventListener(type, listener) {
-    this.listeners[type] = listener;
-  }
-
-  click() {
-    if (this.listeners.click) {
-      this.listeners.click({ target: this, preventDefault() {} });
-    }
-  }
-
-  querySelectorAll(selector) {
-    if (selector === "button") {
-      return this.children.filter(function (child) {
-        return child.tagName === "BUTTON";
-      });
-    }
-    return [];
-  }
-}
-
-class MockDocument {
-  constructor() {
-    this._elements = new Map();
-    this.readyState = "complete";
-    this.documentElement = { scrollHeight: 5200 };
-    this.body = new MockElement(this, "body", "body");
-    this.body.scrollHeight = 5200;
-    this.listeners = {};
-    this.topicNodes = [
-      { innerText: "这是一段用于测试的帖子正文".repeat(20) },
-    ];
-  }
-
-  createElement(tagName) {
-    return new MockElement(this, tagName, "");
-  }
-
-  getElementById(id) {
-    return this._elements.get(id) || null;
-  }
-
-  addEventListener(type, listener) {
-    this.listeners[type] = listener;
-  }
-
-  querySelectorAll(selector) {
-    if (
-      selector === ".topic-post .cooked, .post-stream .topic-post .cooked, article .cooked"
-    ) {
-      return this.topicNodes;
-    }
-    return [];
-  }
-}
-
-function buildLatestResponse(page) {
-  const startId = 101 + page * 40;
+function topicBatch(page) {
   const topics = [];
-
+  const first = page * 40 + 1;
   for (let index = 0; index < 40; index += 1) {
+    const id = first + index;
     topics.push({
-      id: startId + index,
-      slug: "topic-" + (startId + index),
-      title: index % 17 === 0 ? "Trade topic " + (startId + index) : "AI topic " + (startId + index),
-      pinned: false,
-      category_id: index % 9 === 0 ? 8 : 5,
+      id,
+      slug: `topic-${id}`,
+      title: id % 7 === 0 ? `交易帖 ${id}` : `AI 开发帖 ${id}`,
+      pinned: id % 19 === 0,
+      category_id: id % 2 === 0 ? 5 : 8,
     });
   }
-
-  if (page === 0) {
-    topics[0] = {
-      id: 101,
-      slug: "ai-vps-guide",
-      title: "AI VPS guide",
-      pinned: false,
-      category_id: 5,
-    };
-    topics[1] = {
-      id: 102,
-      slug: "trade-post",
-      title: "Trade post",
-      pinned: false,
-      category_id: 8,
-    };
-    topics[2] = {
-      id: 103,
-      slug: "daily-chat",
-      title: "Daily chat",
-      pinned: true,
-      category_id: 9,
-    };
-  }
-
-  return {
-    topic_list: {
-      topics: page < 3 ? topics : [],
-    },
-  };
+  return topics;
 }
 
-function createEnv(url, localStorage, sessionStorage, navigations) {
-  const document = new MockDocument();
-  let fakeNow = 0;
-  let href = url;
+function createEnvironment(options = {}) {
+  const localStorage = options.localStorage || new StorageMock();
+  const sessionStorage = options.sessionStorage || new StorageMock();
+  const calls = [];
+  let fakeNow = 1_000_000;
+  let retry429 = Boolean(options.retry429);
 
   const location = {
-    get href() {
-      return href;
-    },
-    set href(value) {
-      href = new URL(value, href).toString();
-      navigations.push(href);
-    },
-    get origin() {
-      return new URL(href).origin;
-    },
-    get pathname() {
-      return new URL(href).pathname;
-    },
+    origin: "https://linux.do",
+    pathname: "/latest",
+    href: "https://linux.do/latest",
   };
 
+  const document = {
+    readyState: "complete",
+    documentElement: { scrollHeight: 5000 },
+    body: { scrollHeight: 5000 },
+    getElementById() {
+      return null;
+    },
+    querySelectorAll() {
+      return [];
+    },
+    addEventListener() {},
+  };
+
+  const math = Object.create(Math);
+  math.random = () => 0.5;
+
   const window = {
-    innerWidth: 1440,
-    innerHeight: 1000,
-    scrollY: 0,
-    document,
+    __LINUXDO_FLIP_TEST__: true,
     location,
     localStorage,
     sessionStorage,
-    Discourse: {
-      Site: {
-        current() {
-          return {
-            categories: [
-              { id: 5, slug: "development", name: "Development" },
-              { id: 8, slug: "market", name: "Market" },
-              { id: 9, slug: "chat", name: "Chat" },
-            ],
-          };
-        },
-      },
-    },
-    fetch: async function (requestUrl) {
-      if (!String(requestUrl).includes("/latest.json")) {
-        throw new Error("Unexpected fetch: " + requestUrl);
-      }
-      const parsed = new URL(String(requestUrl), "https://linux.do");
-      const page = Number(parsed.searchParams.get("page") || 0);
-      return {
-        ok: true,
-        async json() {
-          return buildLatestResponse(page);
-        },
-        status: 200,
-        headers: {
-          get() {
-            return null;
-          },
-        },
-      };
-    },
+    innerWidth: 1280,
+    innerHeight: 800,
+    scrollY: 0,
     setTimeout(callback, ms) {
       fakeNow += Number(ms || 0);
       callback();
@@ -248,15 +85,60 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
     setInterval() {
       return 1;
     },
-    scrollBy(options) {
-      const delta = typeof options === "number" ? options : Number(options.top || 0);
-      const maxScroll = Math.max(
-        document.documentElement.scrollHeight - window.innerHeight,
-        0
-      );
-      window.scrollY = Math.max(0, Math.min(window.scrollY + delta, maxScroll));
-    },
+    clearInterval() {},
+    scrollBy() {},
   };
+
+  async function fetch(url) {
+    calls.push(String(url));
+
+    if (String(url) === "/categories.json") {
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        async json() {
+          return {
+            category_list: {
+              categories: [
+                { id: 5, slug: "development", name: "开发调优" },
+                { id: 8, slug: "market", name: "交易市场" },
+              ],
+            },
+          };
+        },
+      };
+    }
+
+    if (retry429) {
+      retry429 = false;
+      return {
+        ok: false,
+        status: 429,
+        headers: { get: () => "1" },
+        async json() {
+          return {};
+        },
+      };
+    }
+
+    const parsed = new URL(String(url), location.origin);
+    const page = Number(parsed.searchParams.get("page") || 0);
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      async json() {
+        return {
+          topic_list: {
+            topics: page < 6 ? topicBatch(page) : [],
+          },
+        };
+      },
+    };
+  }
+
+  window.fetch = fetch;
 
   const context = {
     window,
@@ -264,9 +146,9 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
     location,
     localStorage,
     sessionStorage,
-    fetch: window.fetch,
+    fetch,
     console,
-    Math,
+    Math: math,
     JSON,
     Promise,
     URL,
@@ -274,6 +156,8 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
     Set,
     String,
     Number,
+    Boolean,
+    Object,
     Date: {
       now() {
         return fakeNow;
@@ -282,107 +166,107 @@ function createEnv(url, localStorage, sessionStorage, navigations) {
   };
 
   vm.createContext(context);
-  vm.runInContext(scriptSource, context, { filename: scriptPath });
-  return { document };
-}
-
-async function flushAsync(rounds) {
-  for (let index = 0; index < rounds; index += 1) {
-    await new Promise(function (resolve) {
-      setImmediate(resolve);
-    });
-  }
-}
-
-async function runSmokeTest() {
-  const localStorage = new StorageMock();
-  const sessionStorage = new StorageMock();
-  const navigations = [];
-
-  const env1 = createEnv(
-    "https://linux.do/latest",
-    localStorage,
-    sessionStorage,
-    navigations
-  );
-
-  env1.document.getElementById("linuxdo-flip-include").value = "guide";
-  env1.document.getElementById("linuxdo-flip-exclude").value = "trade";
-  env1.document.getElementById("linuxdo-flip-categories").value = "development";
-  env1.document.getElementById("linuxdo-flip-limit").value = "2";
-  env1.document.getElementById("linuxdo-flip-cps").value = "10";
-
-  await env1.document.getElementById("linuxdo-flip-start").listeners.click();
-  await flushAsync(4);
-
-  const afterStart = JSON.parse(localStorage.getItem("linuxdoFlipSession"));
-  if (!afterStart || afterStart.queue.length !== 1 || afterStart.queue[0].id !== 101) {
-    throw new Error("Start session filtering failed");
-  }
-
-  if (navigations[navigations.length - 1] !== "https://linux.do/t/ai-vps-guide/101") {
-    throw new Error("Start navigation failed");
-  }
-
-  createEnv(
-    "https://linux.do/t/ai-vps-guide/101",
-    localStorage,
-    sessionStorage,
-    navigations
-  );
-  await flushAsync(8);
-
-  if (localStorage.getItem("linuxdoFlipSession") !== null) {
-    throw new Error("Session should be cleared after finishing");
-  }
-
-  const visited = JSON.parse(localStorage.getItem("linuxdoFlipVisited") || "[]");
-  if (!visited.includes(101)) {
-    throw new Error("Visited topic was not recorded");
-  }
-
+  vm.runInContext(source, context, { filename: scriptPath });
   return {
-    visited,
-    navigations,
+    api: window.__linuxdoFlipTest,
+    calls,
+    localStorage,
+    sessionStorage,
   };
 }
 
-async function runLargeQueueTest() {
-  const localStorage = new StorageMock();
-  const sessionStorage = new StorageMock();
-  const navigations = [];
-  const env = createEnv(
-    "https://linux.do/latest",
-    localStorage,
-    sessionStorage,
-    navigations
+async function run() {
+  const env = createEnvironment();
+  const api = env.api;
+
+  assert(api, "test API should be exposed");
+  assert.deepStrictEqual(
+    Array.from(api.parseList(" AI，VPS\n开发 ")),
+    ["ai", "vps", "开发"]
+  );
+  assert.strictEqual(api.textLength(" 你 好\nLinux.do "), 10);
+  assert.strictEqual(api.getTopicId("/t/hello/123/4"), 123);
+  assert.strictEqual(api.getTopicId("/t/123"), 123);
+  assert.strictEqual(api.getTopicId("/latest"), null);
+
+  assert.strictEqual(
+    api.titleMatches("AI 开发工具", ["ai"], ["交易"]),
+    true
+  );
+  assert.strictEqual(
+    api.titleMatches("AI 交易工具", ["ai"], ["交易"]),
+    false
   );
 
-  env.document.getElementById("linuxdo-flip-limit").value = "100";
-  env.document.getElementById("linuxdo-flip-pages").value = "1";
-  env.document.getElementById("linuxdo-flip-cps").value = "10";
-  await env.document.getElementById("linuxdo-flip-start").listeners.click();
-  await flushAsync(8);
+  const config = api.normalizeConfig({
+    pages: 1,
+    limit: 100,
+    minSeconds: 12,
+    maxSeconds: 90,
+    charsPerSecond: 10,
+    includePinned: false,
+    includeKeywords: ["ai"],
+    excludeKeywords: ["交易"],
+    categories: [],
+  });
+  const topics = await api.fetchTopics(config);
+  assert.strictEqual(topics.length, 100, "large queues should fetch extra pages");
+  assert(topics.every((topic) => topic.title.includes("AI")));
+  assert(topics.every((topic) => !topic.pinned));
 
-  const state = JSON.parse(localStorage.getItem("linuxdoFlipSession"));
-  if (!state || state.queue.length !== 100) {
-    throw new Error("100-topic queue support failed");
-  }
+  const categoryConfig = api.normalizeConfig({
+    ...config,
+    limit: 20,
+    categories: ["development"],
+  });
+  const categoryTopics = await api.fetchTopics(categoryConfig);
+  assert.strictEqual(categoryTopics.length, 20);
+  assert(categoryTopics.every((topic) => topic.categoryId === 5));
+  assert(env.calls.includes("/categories.json"));
+
+  const shortPlan = api.calculateReadPlan(config, 20, 10);
+  assert.strictEqual(shortPlan.seconds, 12, "minimum should be honored");
+  const normalPlan = api.calculateReadPlan(config, 500, 10);
+  assert.strictEqual(normalPlan.seconds, 50, "estimated duration should be used");
+  const longPlan = api.calculateReadPlan(config, 5000, 10);
+  assert.strictEqual(longPlan.seconds, 90, "maximum should be a hard cap");
+
+  api.markVisited(101);
+  api.markVisited(102);
+  assert.deepStrictEqual(
+    Array.from(api.getVisited()).sort((a, b) => a - b),
+    [101, 102]
+  );
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [{ id: 1 }],
+    index: 0,
+  });
+  assert.strictEqual(api.getSession().status, "running");
+  api.clearSession();
+  assert.strictEqual(api.getSession(), null);
+
+  const retryEnv = createEnvironment({ retry429: true });
+  const retried = await retryEnv.api.fetchTopics(
+    retryEnv.api.normalizeConfig({
+      ...config,
+      limit: 5,
+    })
+  );
+  assert.strictEqual(retried.length, 5);
+  assert(
+    retryEnv.calls.filter((url) => url === "/latest.json?page=0").length >= 2,
+    "429 responses should be retried"
+  );
+
+  console.log("Linux.do Flip tests passed");
+  console.log(`Fetched topics: ${topics.length}`);
+  console.log(`Category-filtered topics: ${categoryTopics.length}`);
 }
 
-runSmokeTest()
-  .then(function (result) {
-    return runLargeQueueTest().then(function () {
-      return result;
-    });
-  })
-  .then(function (result) {
-    console.log("Smoke test passed");
-    console.log("Visited:", JSON.stringify(result.visited));
-    console.log("Navigations:", JSON.stringify(result.navigations));
-    console.log("Large queue test passed");
-  })
-  .catch(function (error) {
-    console.error("Smoke test failed:", error.message);
-    process.exit(1);
-  });
+run().catch((error) => {
+  console.error(error.stack || error.message);
+  process.exit(1);
+});
