@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.7.0
-// @description  Linux.do 阅读进度助手：严格服务端进度核验、断点续读与自动故障恢复
+// @version      1.8.0
+// @description  Linux.do 阅读进度助手：50 话题、10 次确认点赞、断点续读与自动故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -29,8 +29,6 @@
     pause: "linuxdo-flip-pause",
     stop: "linuxdo-flip-stop",
     reset: "linuxdo-flip-reset",
-    approveLike: "linuxdo-flip-approve-like",
-    skipLike: "linuxdo-flip-skip-like",
     retryCurrent: "linuxdo-flip-retry-current",
     skipCurrent: "linuxdo-flip-skip-current",
     diagnostics: "linuxdo-flip-diagnostics",
@@ -61,6 +59,7 @@
   var MAX_PROGRESS = 2000;
   var MAX_PAGES = 20;
   var MAX_TOPICS = 200;
+  var CONFIG_REVISION = 3;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
   var LOCK_TTL_MS = 30000;
   var FETCH_DELAY_MIN_MS = 1100;
@@ -85,9 +84,10 @@
   var PANEL_HEIGHT_STEP = 60;
 
   var DEFAULT_CONFIG = {
+    configRevision: CONFIG_REVISION,
     pages: 3,
-    limit: 180,
-    likeTarget: 30,
+    limit: 50,
+    likeTarget: 10,
     navigationMode: "native",
     interTopicMinSeconds: 2,
     interTopicMaxSeconds: 6,
@@ -183,9 +183,7 @@
   }
 
   async function requestWakeLock(config) {
-    config = normalizeConfig(
-      Object.assign({}, DEFAULT_CONFIG, config || loadConfig())
-    );
+    config = normalizeConfig(config || loadConfig());
     if (!config.keepAwake) {
       releaseWakeLock();
       wakeLockState = "disabled";
@@ -317,12 +315,16 @@
       0,
       session.queue.length
     );
-    session.config = normalizeConfig(
-      Object.assign({}, DEFAULT_CONFIG, session.config || {})
-    );
+    session.config = normalizeConfig(session.config || {});
     session.navigation = session.navigation || null;
     session.listContext = session.listContext || null;
     session.pendingCompletion = session.pendingCompletion || null;
+    session.likeTopic = session.likeTopic || null;
+    if (session.status === "review" && session.reviewTopic) {
+      session.status = "liking";
+      session.likeTopic = Object.assign({}, session.reviewTopic);
+      session.reviewTopic = null;
+    }
     ensureRecoveryState(session);
     session.diagnostics = Object.assign(
       {
@@ -379,7 +381,7 @@
       session &&
         session.status !== "stopped" &&
         (Boolean(session.pendingCompletion) ||
-          session.status === "review" ||
+          session.status === "liking" ||
           (Array.isArray(session.queue) &&
             Number(session.index || 0) < session.queue.length))
     );
@@ -769,7 +771,8 @@
       verifying: "核验站点记录",
       recovering: "自动恢复",
       returning: "返回列表",
-      review: "点赞审查",
+      review: "旧版点赞审查",
+      liking: "自动点赞",
       paused: "已暂停",
     };
     return labels[stage] || String(stage || "未知");
@@ -814,6 +817,12 @@
         Number(recovery.consecutiveFailures || 0) +
         "/" +
         MAX_CONSECUTIVE_FAILURES,
+      "点赞：" +
+        Number(session.likedCount || 0) +
+        "/" +
+        Number(session.config.likeTarget || 0) +
+        " · 未确认 " +
+        Number(session.likeFailureCount || 0),
       "前台阅读：" + (session.config.foregroundOnly ? "开启" : "关闭"),
       "屏幕常亮：" + (wakeLabels[wakeLockState] || wakeLockState),
     ];
@@ -894,7 +903,7 @@
     if (!session || !Array.isArray(session.queue)) {
       return { changed: false, removed: 0, skipped: 0 };
     }
-    if (session.status === "review") {
+    if (session.status === "liking") {
       return { changed: false, removed: 0, skipped: 0 };
     }
 
@@ -959,15 +968,40 @@
 
   function loadConfig() {
     var stored = loadJSON(localStorage, KEYS.config, {});
-    return Object.assign({}, DEFAULT_CONFIG, stored || {});
+    var config = normalizeConfig(stored || {});
+    if (
+      Number((stored || {}).configRevision || 0) < CONFIG_REVISION
+    ) {
+      saveJSON(localStorage, KEYS.config, config);
+    }
+    return config;
   }
 
   function normalizeConfig(config) {
+    config = config || {};
+    var needsDefaultMigration =
+      Number(config.configRevision || 0) < CONFIG_REVISION;
+    config = Object.assign({}, DEFAULT_CONFIG, config);
     return {
+      configRevision: CONFIG_REVISION,
       pages: clamp(Math.floor(Number(config.pages) || 1), 1, MAX_PAGES),
-      limit: clamp(Math.floor(Number(config.limit) || 1), 1, MAX_TOPICS),
+      limit: clamp(
+        Math.floor(
+          Number(
+            needsDefaultMigration ? DEFAULT_CONFIG.limit : config.limit
+          ) || 1
+        ),
+        1,
+        MAX_TOPICS
+      ),
       likeTarget: clamp(
-        Math.floor(Number(config.likeTarget) || 0),
+        Math.floor(
+          Number(
+            needsDefaultMigration
+              ? DEFAULT_CONFIG.likeTarget
+              : config.likeTarget
+          ) || 0
+        ),
         0,
         100
       ),
@@ -1029,6 +1063,7 @@
 
   function readConfigFromPanel() {
     var config = normalizeConfig({
+      configRevision: CONFIG_REVISION,
       pages: document.getElementById(IDS.pages).value,
       limit: document.getElementById(IDS.limit).value,
       likeTarget: document.getElementById(IDS.likeTarget).value,
@@ -2599,8 +2634,8 @@
         index: 0,
         completed: 0,
         likedCount: 0,
-        reviewedCount: 0,
-        reviewTopic: null,
+        likeFailureCount: 0,
+        likeTopic: null,
         pendingCompletion: null,
         listContext: null,
         navigation: null,
@@ -2640,8 +2675,8 @@
       setStatus("当前没有运行中的任务。");
       return;
     }
-    if (session.status === "review") {
-      setStatus("当前正在等待点赞审查，请先确认点赞或跳过。");
+    if (session.status === "liking") {
+      setStatus("当前正在自动点赞并等待站点确认，请稍候。");
       return;
     }
 
@@ -2685,8 +2720,8 @@
       setStatus("当前没有可重试的话题。");
       return;
     }
-    if (session.status === "review") {
-      setStatus("当前处于点赞审查，请先确认或跳过点赞。");
+    if (session.status === "liking") {
+      setStatus("当前正在自动点赞并等待站点确认，请稍候。");
       return;
     }
 
@@ -2722,8 +2757,8 @@
       setStatus("当前没有可跳过的话题。");
       return;
     }
-    if (session.status === "review") {
-      setStatus("请使用“不点赞，继续”完成当前审查。");
+    if (session.status === "liking") {
+      setStatus("当前正在自动点赞并等待站点确认，请稍候。");
       return;
     }
 
@@ -2873,7 +2908,7 @@
     }, 1200);
   }
 
-  function shouldRequestLikeReview(session, topic, audit) {
+  function shouldAutoLikeTopic(session, topic, audit) {
     var target = Number(session.config.likeTarget || 0);
     if (
       target <= 0 ||
@@ -2886,11 +2921,14 @@
       return false;
     }
 
-    var interval = Math.max(
-      1,
-      Math.floor(Number(session.config.limit || 1) / target)
+    var desiredLikesByNow = Math.min(
+      target,
+      Math.floor(
+        (Number(session.completed || 0) * target) /
+          Math.max(1, Number(session.config.limit || 1))
+      )
     );
-    return Number(session.completed || 0) % interval === 0;
+    return Number(session.likedCount || 0) < desiredLikesByNow;
   }
 
   function prepareTopicCompletion(session, topic, result) {
@@ -2898,7 +2936,7 @@
     var projectedSession = Object.assign({}, session, {
       completed: completedNumber,
     });
-    var shouldReview = shouldRequestLikeReview(
+    var shouldAutoLike = shouldAutoLikeTopic(
       projectedSession,
       topic,
       result.audit
@@ -2909,7 +2947,7 @@
       completedNumber: completedNumber,
       highestPostNumber: Number(result.audit.highestPostNumber || 1),
       verifiedPostNumber: Number(result.progress.lastPostNumber || 1),
-      shouldReview: shouldReview,
+      shouldAutoLike: shouldAutoLike,
       title: topic.title,
       slug: topic.slug,
       firstPostId: result.audit.firstPostId,
@@ -2965,11 +3003,10 @@
     );
     session.navigation = null;
 
-    if (pending.shouldReview) {
+    if (pending.shouldAutoLike || pending.shouldReview) {
       var nextIndex = resolvePostCompletionIndex(session, topicId);
-      session.status = "review";
-      session.reviewedCount = Number(session.reviewedCount || 0) + 1;
-      session.reviewTopic = {
+      session.status = "liking";
+      session.likeTopic = {
         id: topicId,
         title: pending.title,
         slug: pending.slug,
@@ -2980,7 +3017,7 @@
         {},
         session.diagnostics || {},
         {
-          stage: "review",
+          stage: "liking",
           retries: 0,
           lastError: "",
           updatedAt: Date.now(),
@@ -2988,6 +3025,7 @@
       );
     } else {
       session.status = "running";
+      session.likeTopic = null;
       session.index = resolvePostCompletionIndex(session, topicId);
       session.diagnostics = Object.assign(
         {},
@@ -3004,19 +3042,6 @@
     session.pendingCompletion = null;
     saveSession(session);
     return session;
-  }
-
-  function updateReviewButtons(session) {
-    var approve = document.getElementById(IDS.approveLike);
-    var skip = document.getElementById(IDS.skipLike);
-    if (!approve || !skip) {
-      return;
-    }
-    var reviewing = Boolean(session && session.status === "review");
-    approve.disabled = !reviewing;
-    skip.disabled = !reviewing;
-    approve.style.display = reviewing ? "inline-block" : "none";
-    skip.style.display = reviewing ? "inline-block" : "none";
   }
 
   function findFirstPostLikeButton() {
@@ -3084,16 +3109,26 @@
     }
   }
 
-  function finishReviewAndAdvance(session) {
+  function finishAutoLikeAndAdvance(session, errorMessage) {
     var nextIndex =
-      session.reviewTopic &&
-      Number.isFinite(Number(session.reviewTopic.nextIndex))
-        ? Number(session.reviewTopic.nextIndex)
+      session.likeTopic &&
+      Number.isFinite(Number(session.likeTopic.nextIndex))
+        ? Number(session.likeTopic.nextIndex)
         : Number(session.index || 0) + 1;
     session.status = "running";
+    session.likeTopic = null;
     session.reviewTopic = null;
     session.index = clamp(nextIndex, 0, session.queue.length);
-    updateReviewButtons(session);
+    session.diagnostics = Object.assign(
+      {},
+      session.diagnostics || {},
+      {
+        stage: "idle",
+        retries: 0,
+        lastError: String(errorMessage || ""),
+        updatedAt: Date.now(),
+      }
+    );
     if (session.index >= session.queue.length) {
       var context = session.listContext;
       clearSession();
@@ -3102,7 +3137,9 @@
           session.completed +
           " 个主题，确认点赞 " +
           session.likedCount +
-          " 个。"
+          " 个，未确认 " +
+          Number(session.likeFailureCount || 0) +
+          " 次。"
       );
       if (
         session.config.navigationMode === "native" &&
@@ -3129,66 +3166,90 @@
     });
   }
 
-  async function approveLikeAndContinue() {
+  function recordAutoLikeFailure(session, message) {
+    session.likeFailureCount =
+      Number(session.likeFailureCount || 0) + 1;
+    setStatus(
+      "自动点赞未获站点确认，未计数并继续：" + message,
+      true
+    );
+    finishAutoLikeAndAdvance(session, message);
+  }
+
+  async function autoLikeAndContinue() {
     var session = getSession();
-    if (!session || session.status !== "review" || !session.reviewTopic) {
-      setStatus("当前没有等待确认的点赞候选。");
+    if (!session || session.status !== "liking" || !session.likeTopic) {
       return;
     }
     if (likeSubmitting) {
-      setStatus("点赞正在等待站点确认，请稍候。");
       return;
     }
-    likeSubmitting = true;
-    var approveButton = document.getElementById(IDS.approveLike);
-    if (approveButton) {
-      approveButton.disabled = true;
+
+    if (getTopicId(location.pathname) !== Number(session.likeTopic.id)) {
+      var resumeTopic = normalizeTopic(session.likeTopic);
+      setNavigationState(session, "opening", {
+        topicId: resumeTopic.id,
+        retries: 0,
+        lastError: "",
+        source: "automatic-like-resume",
+      });
+      setStatus("恢复待完成的自动点赞：" + resumeTopic.title);
+      location.href = resumeTopic.url;
+      return;
     }
+
+    likeSubmitting = true;
     try {
       var button = await waitForFirstPostLikeButton();
+      session = getSession();
+      if (!session || session.status !== "liking" || !session.likeTopic) {
+        return;
+      }
       if (!button) {
-        setStatus(
-          "没有定位到站内点赞按钮。可手动点赞后再次确认，或选择不点赞继续。",
-          true
+        recordAutoLikeFailure(
+          session,
+          "没有定位到当前主题首帖的点赞按钮"
         );
         return;
       }
 
       if (isLikeButtonActive(button)) {
-        setStatus("该主题已经点赞，不会重复计数；继续下一主题。");
-        finishReviewAndAdvance(session);
+        session.likedCount = Math.min(
+          Number(session.config.likeTarget || 0),
+          Number(session.likedCount || 0) + 1
+        );
+        saveTopicProgress(session.likeTopic.id, { liked: true });
+        setStatus(
+          "站点已确认点赞 " +
+            session.likedCount +
+            "/" +
+            session.config.likeTarget +
+            "，继续下一主题。"
+        );
+        finishAutoLikeAndAdvance(session);
         return;
       }
 
       button.click();
-      var topic =
-        session.queue[session.index] ||
-        normalizeTopic(session.reviewTopic);
+      var topic = normalizeTopic(session.likeTopic);
       var confirmed = await waitForLikeConfirmation(topic, button);
       session = getSession();
-      if (!session || session.status !== "review") {
+      if (!session || session.status !== "liking" || !session.likeTopic) {
         return;
       }
       if (!confirmed) {
-        session.diagnostics = Object.assign(
-          {},
-          session.diagnostics || {},
-          {
-            stage: "review",
-            lastError: "点赞点击后未得到站点确认",
-            updatedAt: Date.now(),
-          }
-        );
-        saveSession(session);
-        setStatus(
-          "点赞没有被站点确认，未增加计数。可再次确认或跳过。",
-          true
+        recordAutoLikeFailure(
+          session,
+          "点赞点击后未得到站点确认"
         );
         return;
       }
 
-      session.likedCount = Number(session.likedCount || 0) + 1;
-      saveTopicProgress(session.reviewTopic.id, { liked: true });
+      session.likedCount = Math.min(
+        Number(session.config.likeTarget || 0),
+        Number(session.likedCount || 0) + 1
+      );
+      saveTopicProgress(session.likeTopic.id, { liked: true });
       setStatus(
         "站点已确认点赞 " +
           session.likedCount +
@@ -3196,21 +3257,18 @@
           session.config.likeTarget +
           "，继续下一主题。"
       );
-      finishReviewAndAdvance(session);
+      finishAutoLikeAndAdvance(session);
+    } catch (error) {
+      session = getSession();
+      if (session && session.status === "liking" && session.likeTopic) {
+        recordAutoLikeFailure(
+          session,
+          "自动点赞异常：" + String(error.message || error)
+        );
+      }
     } finally {
       likeSubmitting = false;
-      updateReviewButtons(getSession());
     }
-  }
-
-  function skipLikeAndContinue() {
-    var session = getSession();
-    if (!session || session.status !== "review") {
-      setStatus("当前没有等待确认的点赞候选。");
-      return;
-    }
-    session.reviewedCount = Number(session.reviewedCount || 0) + 1;
-    finishReviewAndAdvance(session);
   }
 
   async function processCurrentTopic() {
@@ -3229,28 +3287,28 @@
         return;
       }
     }
-    if (session.status !== "review") {
+    if (session.status !== "liking") {
       auditSessionQueue(session);
       session = getSession();
       if (!session) {
         return;
       }
     }
-    if (session.status === "review") {
+    if (session.status === "liking") {
       session.diagnostics = Object.assign({}, session.diagnostics || {}, {
-        stage: "review",
+        stage: "liking",
         updatedAt: Date.now(),
       });
       saveSession(session);
-      updateReviewButtons(session);
       setStatus(
-        "点赞候选待审查：" +
-          session.reviewTopic.title +
+        "自动点赞中：" +
+          session.likeTopic.title +
           " · 已确认 " +
           session.likedCount +
           "/" +
           session.config.likeTarget
       );
+      await autoLikeAndContinue();
       return;
     }
     if (!acquireLock()) {
@@ -3297,14 +3355,14 @@
       if (result.complete) {
         prepareTopicCompletion(session, topic, result);
         session = finalizePendingCompletion(getSession());
-        if (session.status === "review") {
-          updateReviewButtons(session);
+        if (session.status === "liking") {
           setStatus(
             "站点已记录到第 " +
               result.audit.highestPostNumber +
-              " 楼，进入点赞审查。请确认是否点赞：" +
+              " 楼，开始自动点赞：" +
               topic.title
           );
+          window.setTimeout(autoLikeAndContinue, 0);
           return;
         }
       } else {
@@ -3325,7 +3383,9 @@
             session.completed +
             " 个主题，确认点赞 " +
             session.likedCount +
-            " 个。"
+            " 个，未确认 " +
+            Number(session.likeFailureCount || 0) +
+            " 次。"
         );
         await sleep(1200);
         location.href = location.origin + "/latest";
@@ -3599,8 +3659,8 @@
       '<button id="' + IDS.sizeUp + '" type="button">＋ 放大</button>',
       "</div>",
       field("读取页数", IDS.pages, "number", "3"),
-      field("本轮话题", IDS.limit, "number", "180"),
-      field("点赞目标", IDS.likeTarget, "number", "30"),
+      field("本轮话题", IDS.limit, "number", "50"),
+      field("点赞目标", IDS.likeTarget, "number", "10"),
       '<label class="ldf-field"><span>打开方式</span><select id="' +
         IDS.navigationMode +
         '"><option value="native">原生导航</option><option value="direct">直接续读</option></select></label>',
@@ -3622,8 +3682,6 @@
       '<button id="' + IDS.retryCurrent + '" type="button">重试当前</button>',
       '<button id="' + IDS.skipCurrent + '" type="button">跳过当前</button>',
       '<button id="' + IDS.reset + '" type="button">清空已读</button>',
-      '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
-      '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
       '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；列表没有时再做宽泛搜索。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
       '<div id="' + IDS.status + '">待命</div>',
@@ -3665,13 +3723,6 @@
       .getElementById(IDS.skipCurrent)
       .addEventListener("click", skipCurrentTopic);
     document.getElementById(IDS.reset).addEventListener("click", resetVisited);
-    document
-      .getElementById(IDS.approveLike)
-      .addEventListener("click", approveLikeAndContinue);
-    document
-      .getElementById(IDS.skipLike)
-      .addEventListener("click", skipLikeAndContinue);
-
     panel.querySelectorAll("input, select").forEach(function (control) {
       control.addEventListener("change", function () {
         try {
@@ -3690,14 +3741,12 @@
     if (!session) {
       setStatus("待命，已记录 " + getVisited().size + " 个已读主题。");
       pauseButton.textContent = "暂停";
-      updateReviewButtons(null);
       return;
     }
-    updateReviewButtons(session);
-    if (session.status === "review") {
+    if (session.status === "liking") {
       setStatus(
-        "点赞候选待审查：" +
-          session.reviewTopic.title +
+        "自动点赞中：" +
+          session.likeTopic.title +
           " · 已确认 " +
           session.likedCount +
           "/" +
@@ -3800,7 +3849,7 @@
       getTopicProgress: getTopicProgress,
       saveTopicProgress: saveTopicProgress,
       clearProgress: clearProgress,
-      shouldRequestLikeReview: shouldRequestLikeReview,
+      shouldAutoLikeTopic: shouldAutoLikeTopic,
       prepareTopicCompletion: prepareTopicCompletion,
       resolvePostCompletionIndex: resolvePostCompletionIndex,
       finalizePendingCompletion: finalizePendingCompletion,
