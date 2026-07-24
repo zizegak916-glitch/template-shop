@@ -44,8 +44,10 @@ function createEnvironment(options = {}) {
   const localStorage = options.localStorage || new StorageMock();
   const sessionStorage = options.sessionStorage || new StorageMock();
   const calls = [];
+  const wakeLockRequests = [];
   let fakeNow = 1_000_000;
   let retry429 = Boolean(options.retry429);
+  let releaseListener = null;
 
   const location = {
     origin: "https://linux.do",
@@ -55,6 +57,7 @@ function createEnvironment(options = {}) {
 
   const document = {
     readyState: "complete",
+    visibilityState: options.hidden ? "hidden" : "visible",
     documentElement: { scrollHeight: 5000 },
     body: { scrollHeight: 5000 },
     getElementById() {
@@ -87,6 +90,30 @@ function createEnvironment(options = {}) {
     },
     clearInterval() {},
     scrollBy() {},
+    navigator:
+      options.wakeLockSupported === false
+        ? {}
+        : {
+            wakeLock: {
+              async request(type) {
+                wakeLockRequests.push(type);
+                return {
+                  released: false,
+                  addEventListener(event, listener) {
+                    if (event === "release") {
+                      releaseListener = listener;
+                    }
+                  },
+                  async release() {
+                    this.released = true;
+                    if (releaseListener) {
+                      releaseListener();
+                    }
+                  },
+                };
+              },
+            },
+          },
   };
 
   async function fetch(url) {
@@ -198,6 +225,9 @@ function createEnvironment(options = {}) {
     calls,
     localStorage,
     sessionStorage,
+    document,
+    window,
+    wakeLockRequests,
   };
 }
 
@@ -273,9 +303,47 @@ async function run() {
     navigationMode: "native",
   });
   assert.strictEqual(config.navigationMode, "native");
+  assert.strictEqual(config.interTopicMinSeconds, 2);
+  assert.strictEqual(config.interTopicMaxSeconds, 6);
+  assert.strictEqual(config.foregroundOnly, true);
+  assert.strictEqual(config.keepAwake, true);
+  assert.strictEqual(api.calculateInterTopicDelay(config), 4000);
   assert.strictEqual(
     api.normalizeConfig({ ...config, navigationMode: "direct" }).navigationMode,
     "direct"
+  );
+  assert.strictEqual(await api.requestWakeLock(config), true);
+  assert.deepStrictEqual(env.wakeLockRequests, ["screen"]);
+  assert.strictEqual(api.getWakeLockState(), "active");
+  api.releaseWakeLock();
+  await Promise.resolve();
+  assert.strictEqual(api.getWakeLockState(), "idle");
+
+  const hiddenEnv = createEnvironment({ hidden: true });
+  assert.strictEqual(
+    hiddenEnv.api.shouldRunInForeground({
+      config: { foregroundOnly: true },
+    }),
+    false
+  );
+  assert.strictEqual(
+    await hiddenEnv.api.requestWakeLock(hiddenEnv.api.DEFAULT_CONFIG),
+    false
+  );
+  assert.strictEqual(hiddenEnv.api.getWakeLockState(), "waiting");
+
+  const unsupportedWakeEnv = createEnvironment({
+    wakeLockSupported: false,
+  });
+  assert.strictEqual(
+    await unsupportedWakeEnv.api.requestWakeLock(
+      unsupportedWakeEnv.api.DEFAULT_CONFIG
+    ),
+    false
+  );
+  assert.strictEqual(
+    unsupportedWakeEnv.api.getWakeLockState(),
+    "unsupported"
   );
   const topics = await api.fetchTopics(config);
   assert.strictEqual(topics.length, 180, "180-topic queues should fetch extra pages");
