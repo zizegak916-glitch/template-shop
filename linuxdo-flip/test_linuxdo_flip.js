@@ -300,6 +300,7 @@ async function run() {
   );
 
   const config = api.normalizeConfig({
+    configRevision: api.DEFAULT_CONFIG.configRevision,
     pages: 1,
     limit: 180,
     likeTarget: 30,
@@ -313,6 +314,18 @@ async function run() {
     navigationMode: "native",
   });
   assert.strictEqual(config.navigationMode, "native");
+  assert.strictEqual(api.DEFAULT_CONFIG.limit, 50);
+  assert.strictEqual(api.DEFAULT_CONFIG.likeTarget, 10);
+  const migratedDefaults = api.normalizeConfig({
+    limit: 180,
+    likeTarget: 30,
+  });
+  assert.strictEqual(migratedDefaults.limit, 50);
+  assert.strictEqual(migratedDefaults.likeTarget, 10);
+  assert.strictEqual(
+    migratedDefaults.configRevision,
+    api.DEFAULT_CONFIG.configRevision
+  );
   assert.strictEqual(config.interTopicMinSeconds, 2);
   assert.strictEqual(config.interTopicMaxSeconds, 6);
   assert.strictEqual(config.foregroundOnly, true);
@@ -605,20 +618,67 @@ async function run() {
   assert.strictEqual(api.isTopicComplete(finished, audit, 2), true);
   assert.strictEqual(api.isTopicComplete(finished, audit, 1), false);
 
-  const reviewSession = {
-    config: { limit: 180, likeTarget: 30 },
-    completed: 6,
+  const autoLikeSession = {
+    config: { limit: 50, likeTarget: 10 },
+    completed: 5,
     likedCount: 0,
   };
   assert.strictEqual(
-    api.shouldRequestLikeReview(reviewSession, topics[0], audit),
+    api.shouldAutoLikeTopic(autoLikeSession, topics[0], audit),
     true
   );
-  reviewSession.completed = 5;
+  autoLikeSession.likedCount = 1;
   assert.strictEqual(
-    api.shouldRequestLikeReview(reviewSession, topics[0], audit),
+    api.shouldAutoLikeTopic(autoLikeSession, topics[0], audit),
     false
   );
+  autoLikeSession.completed = 6;
+  autoLikeSession.likedCount = 0;
+  assert.strictEqual(
+    api.shouldAutoLikeTopic(autoLikeSession, topics[0], audit),
+    true,
+    "a failed automatic like should be caught up on the next eligible topic"
+  );
+
+  const autoLikeTopic = {
+    id: 990009,
+    slug: "automatic-like",
+    title: "自动点赞状态测试",
+  };
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [autoLikeTopic],
+    index: 0,
+    completed: 4,
+    likedCount: 0,
+    config: {
+      ...api.DEFAULT_CONFIG,
+      limit: 50,
+      likeTarget: 10,
+    },
+  });
+  let autoLikeCompletion = api.getSession();
+  const preparedAutoLike = api.prepareTopicCompletion(
+    autoLikeCompletion,
+    autoLikeTopic,
+    {
+      audit: {
+        highestPostNumber: 25,
+        firstPostId: 6901,
+        alreadyLiked: false,
+        closed: false,
+        archived: false,
+      },
+      progress: { lastPostNumber: 25 },
+    }
+  );
+  assert.strictEqual(preparedAutoLike.shouldAutoLike, true);
+  autoLikeCompletion = api.finalizePendingCompletion(api.getSession());
+  assert.strictEqual(autoLikeCompletion.status, "liking");
+  assert.strictEqual(autoLikeCompletion.likeTopic.id, autoLikeTopic.id);
+  assert.strictEqual(autoLikeCompletion.likeTopic.nextIndex, 1);
+  api.clearSession();
 
   const completionTopic = {
     id: 990010,
@@ -631,7 +691,6 @@ async function run() {
     queue: [completionTopic],
     index: 0,
     completed: 0,
-    reviewedCount: 0,
     config: { ...config, likeTarget: 0 },
   });
   let completionSession = api.getSession();
@@ -676,7 +735,6 @@ async function run() {
     queue: [crashTopic, nextAfterCrash],
     index: 0,
     completed: 0,
-    reviewedCount: 0,
     config: { ...config, likeTarget: 0 },
   });
   api.prepareTopicCompletion(api.getSession(), crashTopic, {
