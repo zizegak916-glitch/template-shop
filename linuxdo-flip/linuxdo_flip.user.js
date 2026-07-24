@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.4.1
-// @description  Linux.do 阅读进度助手：手机面板伸缩、前台阅读、屏幕常亮与故障恢复
+// @version      1.5.0
+// @description  Linux.do 阅读进度助手：列表翻找选帖、长帖续读、手机常亮与故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -469,6 +469,7 @@
       idle: "待命",
       list: "列表寻帖",
       searching: "站内搜索",
+      "browsing-search": "宽泛翻找",
       opening: "打开主题",
       reading: "阅读主题",
       returning: "返回列表",
@@ -1143,6 +1144,129 @@
     return null;
   }
 
+  function chooseBrowsableQueueIndex(session, topicIds) {
+    if (!session || !Array.isArray(session.queue)) {
+      return -1;
+    }
+    var visited = getVisited();
+    var order = Array.isArray(topicIds) ? topicIds.map(Number) : [];
+    for (var idIndex = 0; idIndex < order.length; idIndex += 1) {
+      var topicId = order[idIndex];
+      for (
+        var queueIndex = Math.max(0, Number(session.index) || 0);
+        queueIndex < session.queue.length;
+        queueIndex += 1
+      ) {
+        if (Number(session.queue[queueIndex].id) !== topicId) {
+          continue;
+        }
+        var progress = getTopicProgress(topicId);
+        if (!visited.has(topicId) && !progress.completed) {
+          return queueIndex;
+        }
+      }
+    }
+    return -1;
+  }
+
+  function findBrowsableQueueLink(session) {
+    var links = Array.from(
+      document.querySelectorAll(
+        "a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title, a.search-link, .fps-result a[href*='/t/']"
+      )
+    );
+    var topicIds = links.map(function (link) {
+      return getTopicId(link.getAttribute("href") || "");
+    });
+    var queueIndex = chooseBrowsableQueueIndex(session, topicIds);
+    if (queueIndex < 0) {
+      return null;
+    }
+    var topic = session.queue[queueIndex];
+    var link = links.find(function (item) {
+      return (
+        getTopicId(item.getAttribute("href") || "") === Number(topic.id)
+      );
+    });
+    return link
+      ? { link: link, topic: topic, queueIndex: queueIndex }
+      : null;
+  }
+
+  function promoteQueueTopic(session, queueIndex) {
+    if (
+      !session ||
+      !Array.isArray(session.queue) ||
+      queueIndex >= session.queue.length
+    ) {
+      return null;
+    }
+    var currentIndex = Math.max(0, Number(session.index) || 0);
+    if (queueIndex < currentIndex) {
+      return null;
+    }
+    if (queueIndex !== currentIndex) {
+      var selected = session.queue[queueIndex];
+      session.queue[queueIndex] = session.queue[currentIndex];
+      session.queue[currentIndex] = selected;
+      saveSession(session);
+    }
+    return session.queue[currentIndex];
+  }
+
+  function hasReadingProgress(topicId) {
+    var progress = getTopicProgress(topicId);
+    return Boolean(
+      Number(progress.lastPostNumber || 1) > 1 ||
+        Number(progress.accumulatedSeconds || 0) > 0
+    );
+  }
+
+  async function findBrowsableTopicByScrolling(session) {
+    var candidate = findBrowsableQueueLink(session);
+    var unchangedBottomCount = 0;
+    var previousMax = -1;
+
+    for (var attempt = 0; !candidate && attempt < 28; attempt += 1) {
+      var metrics = getScrollMetrics();
+      var atBottom = metrics.max <= 0 || metrics.current >= metrics.max - 32;
+      if (atBottom && metrics.max === previousMax) {
+        unchangedBottomCount += 1;
+      } else {
+        unchangedBottomCount = 0;
+      }
+      previousMax = metrics.max;
+      if (unchangedBottomCount >= 3) {
+        break;
+      }
+
+      window.scrollBy({
+        top: Math.max(320, Math.floor(window.innerHeight * 0.76)),
+        behavior: "smooth",
+      });
+      setStatus(
+        "正在翻找符合条件的未读话题 · 第 " +
+          (attempt + 1) +
+          " 次加载"
+      );
+      await sleep(700);
+      candidate = findBrowsableQueueLink(session);
+    }
+
+    if (
+      candidate &&
+      candidate.link &&
+      typeof candidate.link.scrollIntoView === "function"
+    ) {
+      candidate.link.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      await sleep(450);
+    }
+    return candidate;
+  }
+
   async function findTopicLinkByScrolling(topic) {
     var link = findTopicLink(topic.id);
     var unchangedBottomCount = 0;
@@ -1272,6 +1396,85 @@
       recordSessionError(session, "站内搜索失败：" + error.message);
       return false;
     }
+  }
+
+  function buildBrowseSearchQuery(config) {
+    var keywords = Array.isArray((config || {}).includeKeywords)
+      ? config.includeKeywords.filter(Boolean).slice(0, 3)
+      : [];
+    return keywords.length ? keywords.join(" ") : "order:latest";
+  }
+
+  async function startBrowseSearch(session) {
+    var query = buildBrowseSearchQuery(session.config);
+    session.listContext = Object.assign({}, session.listContext || {}, {
+      canHistoryBack: false,
+    });
+    setNavigationState(session, "browsing-search", {
+      topicId: null,
+      query: query,
+      retries: Number((session.navigation || {}).retries || 0),
+      lastError: "",
+      source: "list-browse",
+    });
+    setStatus("列表暂未翻到合格话题，进入宽泛搜索继续翻找。");
+    location.href =
+      location.origin + "/search?q=" + encodeURIComponent(query);
+    return true;
+  }
+
+  async function openBrowsableTopicFromSearch(session) {
+    var deadline = Date.now() + SEARCH_WAIT_MS;
+    var candidate = findBrowsableQueueLink(session);
+    var attempt = 0;
+    while (!candidate && Date.now() < deadline) {
+      attempt += 1;
+      setStatus("正在宽泛搜索结果中翻找合格话题…");
+      if (attempt % 4 === 0 && typeof window.scrollBy === "function") {
+        window.scrollBy({
+          top: Math.max(280, Math.floor(window.innerHeight * 0.62)),
+          behavior: "smooth",
+        });
+      }
+      await sleep(350);
+      candidate = findBrowsableQueueLink(session);
+    }
+
+    if (candidate && candidate.link) {
+      var topic = promoteQueueTopic(session, candidate.queueIndex);
+      setNavigationState(session, "opening", {
+        topicId: topic.id,
+        query: (session.navigation || {}).query || "",
+        retries: Number((session.navigation || {}).retries || 0),
+        lastError: "",
+        source: "browse-search",
+      });
+      if (typeof candidate.link.scrollIntoView === "function") {
+        candidate.link.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        await sleep(350);
+      }
+      setStatus("翻到合格话题，点击：" + topic.title);
+      candidate.link.click();
+      return true;
+    }
+
+    var message = "列表和宽泛搜索都没有翻到剩余队列中的合格话题";
+    session.status = "paused";
+    session.navigation = null;
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "paused",
+      lastError: message,
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    setStatus(
+      "已安全暂停：" + message + "。可重试当前或跳过当前。",
+      true
+    );
+    return false;
   }
 
   function captureListContext(session) {
@@ -1650,24 +1853,58 @@
       session.config.navigationMode === "native" &&
       !getTopicId(location.pathname)
     ) {
-      if (
-        isSearchPage() &&
-        session.navigation &&
-        session.navigation.stage === "searching" &&
-        Number(session.navigation.topicId) === Number(topic.id)
-      ) {
-        await openTopicFromSearch(topic, session);
-        return;
+      if (isSearchPage() && session.navigation) {
+        if (session.navigation.stage === "browsing-search") {
+          await openBrowsableTopicFromSearch(session);
+          return;
+        }
+        if (
+          session.navigation.stage === "searching" &&
+          Number(session.navigation.topicId) === Number(topic.id) &&
+          hasReadingProgress(topic.id)
+        ) {
+          await openTopicFromSearch(topic, session);
+          return;
+        }
       }
 
       if (!isSearchPage()) {
         session.listContext = captureListContext(session);
       }
+
+      if (!hasReadingProgress(topic.id)) {
+        setNavigationState(session, "list", {
+          topicId: null,
+          retries: Number((session.navigation || {}).retries || 0),
+          lastError: "",
+          source: "list-browse",
+        });
+        var candidate = await findBrowsableTopicByScrolling(session);
+        if (candidate && candidate.link) {
+          var selectedTopic = promoteQueueTopic(
+            session,
+            candidate.queueIndex
+          );
+          setNavigationState(session, "opening", {
+            topicId: selectedTopic.id,
+            retries: Number((session.navigation || {}).retries || 0),
+            lastError: "",
+            source: "list-browse",
+          });
+          setStatus("翻到合格话题，点击：" + selectedTopic.title);
+          candidate.link.click();
+          return;
+        }
+
+        await startBrowseSearch(session);
+        return;
+      }
+
       setNavigationState(session, "list", {
         topicId: topic.id,
         retries: Number((session.navigation || {}).retries || 0),
         lastError: "",
-        source: "list",
+        source: "resume-list",
       });
       var link = await findTopicLinkByScrolling(topic);
       if (link) {
@@ -1675,14 +1912,12 @@
           topicId: topic.id,
           retries: Number((session.navigation || {}).retries || 0),
           lastError: "",
-          source: "list",
+          source: "resume-list",
         });
         setStatus(
-          "点击主题：" +
+          "续读未完成主题：" +
             topic.title +
-            (progress.lastPostNumber > 1
-              ? " · 站点将恢复原阅读位置"
-              : "")
+            " · 站点将恢复原阅读位置"
         );
         link.click();
         return;
@@ -1701,11 +1936,28 @@
         source: "last",
       });
       setStatus(
-        searchError + "，使用站点“上次阅读”入口：" + topic.title,
+        searchError +
+          "，未完成主题使用站点“上次阅读”入口：" +
+          topic.title,
         true
       );
       await sleep(500);
       location.href = topic.url + "/last";
+      return;
+    }
+
+    if (
+      session &&
+      session.config.navigationMode === "native" &&
+      getTopicId(location.pathname) &&
+      getTopicId(location.pathname) !== Number(topic.id) &&
+      !hasReadingProgress(topic.id)
+    ) {
+      setStatus("当前页面不是待处理话题，返回列表继续翻找。");
+      if (!(await returnToList(session))) {
+        location.href =
+          (session.listContext || {}).url || location.origin + "/latest";
+      }
       return;
     }
 
@@ -1921,7 +2173,13 @@
 
     var navigation = session.navigation;
     if (
-      ["list", "searching", "opening", "returning"].indexOf(
+      [
+        "list",
+        "searching",
+        "browsing-search",
+        "opening",
+        "returning",
+      ].indexOf(
         navigation.stage
       ) === -1 ||
       Date.now() - Number(navigation.startedAt || 0) <
@@ -1933,6 +2191,29 @@
     var topic = session.queue[session.index];
     if (!topic) {
       return false;
+    }
+    if (
+      !hasReadingProgress(topic.id) &&
+      ["list", "browsing-search"].indexOf(navigation.stage) !== -1
+    ) {
+      var browseMessage =
+        stageLabel(navigation.stage) +
+        "超时；新主题不会改成明确标题直达";
+      session.status = "paused";
+      session.navigation = null;
+      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+        stage: "paused",
+        lastError: browseMessage,
+        updatedAt: Date.now(),
+      });
+      saveSession(session);
+      setStatus(
+        "已安全暂停：" +
+          browseMessage +
+          "。可重试当前或调整筛选条件。",
+        true
+      );
+      return true;
     }
     var retries = Number(navigation.retries || 0) + 1;
     var message =
@@ -2598,7 +2879,7 @@
       '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
       '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
-      '<p class="ldf-note">原生导航按“列表滑动 → 站内搜索并核验 ID → /last → 本地楼层”分层恢复。屏幕常亮使用浏览器 Wake Lock；系统不支持或拒绝时不会采用隐藏视频等替代手段。</p>',
+      '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；列表没有时再做宽泛搜索。只有未完成长帖续读才按明确主题恢复。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
@@ -2746,8 +3027,12 @@
       normalizeTopic: normalizeTopic,
       fetchTopics: fetchTopics,
       buildSearchQuery: buildSearchQuery,
+      buildBrowseSearchQuery: buildBrowseSearchQuery,
       findExactSearchTopic: findExactSearchTopic,
       searchExactTopic: searchExactTopic,
+      chooseBrowsableQueueIndex: chooseBrowsableQueueIndex,
+      promoteQueueTopic: promoteQueueTopic,
+      hasReadingProgress: hasReadingProgress,
       parseTopicAudit: parseTopicAudit,
       buildResumeUrl: buildResumeUrl,
       resolveResumePost: resolveResumePost,
