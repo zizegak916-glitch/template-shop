@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.4.0
-// @description  Linux.do 阅读进度助手：前台阅读、屏幕常亮、短间隔、搜索定位与故障恢复
+// @version      1.4.1
+// @description  Linux.do 阅读进度助手：手机面板伸缩、前台阅读、屏幕常亮与故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -40,6 +40,9 @@
     interTopicMaxSeconds: "linuxdo-flip-gap-max",
     foregroundOnly: "linuxdo-flip-foreground-only",
     keepAwake: "linuxdo-flip-keep-awake",
+    sizeDown: "linuxdo-flip-size-down",
+    sizeUp: "linuxdo-flip-size-up",
+    sizeReset: "linuxdo-flip-size-reset",
   };
 
   var KEYS = {
@@ -66,6 +69,12 @@
   var SEARCH_WAIT_MS = 9000;
   var NAVIGATION_TIMEOUT_MS = 25000;
   var MAX_NAVIGATION_RECOVERIES = 2;
+  var PANEL_MIN_WIDTH = 240;
+  var PANEL_MIN_HEIGHT = 260;
+  var PANEL_DEFAULT_WIDTH = 300;
+  var PANEL_DEFAULT_HEIGHT = 600;
+  var PANEL_WIDTH_STEP = 40;
+  var PANEL_HEIGHT_STEP = 60;
 
   var DEFAULT_CONFIG = {
     pages: 3,
@@ -2334,17 +2343,49 @@
     return loadJSON(localStorage, KEYS.panel, {
       left: null,
       top: 16,
-      width: 300,
-      height: 600,
+      width: PANEL_DEFAULT_WIDTH,
+      height: PANEL_DEFAULT_HEIGHT,
     });
+  }
+
+  function calculatePanelSize(
+    width,
+    height,
+    direction,
+    maxWidth,
+    maxHeight
+  ) {
+    var step = direction < 0 ? -1 : direction > 0 ? 1 : 0;
+    return {
+      width: clamp(
+        (Number(width) || PANEL_DEFAULT_WIDTH) +
+          step * PANEL_WIDTH_STEP,
+        PANEL_MIN_WIDTH,
+        Math.max(PANEL_MIN_WIDTH, Number(maxWidth) || PANEL_MIN_WIDTH)
+      ),
+      height: clamp(
+        (Number(height) || PANEL_DEFAULT_HEIGHT) +
+          step * PANEL_HEIGHT_STEP,
+        PANEL_MIN_HEIGHT,
+        Math.max(PANEL_MIN_HEIGHT, Number(maxHeight) || PANEL_MIN_HEIGHT)
+      ),
+    };
   }
 
   function applyPanelPosition(panel) {
     var saved = loadPanelPosition();
-    var maxWidth = Math.max(240, window.innerWidth - 16);
-    var maxHeight = Math.max(260, window.innerHeight - 16);
-    var width = clamp(Number(saved.width) || 300, 240, maxWidth);
-    var height = clamp(Number(saved.height) || 520, 260, maxHeight);
+    var maxWidth = Math.max(PANEL_MIN_WIDTH, window.innerWidth - 16);
+    var maxHeight = Math.max(PANEL_MIN_HEIGHT, window.innerHeight - 16);
+    var width = clamp(
+      Number(saved.width) || PANEL_DEFAULT_WIDTH,
+      PANEL_MIN_WIDTH,
+      maxWidth
+    );
+    var height = clamp(
+      Number(saved.height) || PANEL_DEFAULT_HEIGHT,
+      PANEL_MIN_HEIGHT,
+      maxHeight
+    );
     var defaultLeft = window.innerWidth - width - 16;
     var left =
       saved.left === null
@@ -2360,6 +2401,30 @@
     panel.style.top = Math.max(8, top) + "px";
     panel.style.width = width + "px";
     panel.style.height = height + "px";
+  }
+
+  function resizePanelByStep(panel, direction) {
+    var size = calculatePanelSize(
+      panel.offsetWidth,
+      panel.offsetHeight,
+      direction,
+      window.innerWidth - panel.offsetLeft - 8,
+      window.innerHeight - panel.offsetTop - 8
+    );
+    panel.style.width = size.width + "px";
+    panel.style.height = size.height + "px";
+    savePanelPosition(panel);
+    setStatus(
+      "面板尺寸：" + Math.round(size.width) + " × " + Math.round(size.height)
+    );
+    return size;
+  }
+
+  function resetPanelGeometry(panel) {
+    remove(localStorage, KEYS.panel);
+    applyPanelPosition(panel);
+    savePanelPosition(panel);
+    setStatus("面板尺寸和位置已恢复默认。");
   }
 
   function savePanelPosition(panel) {
@@ -2422,14 +2487,20 @@
         panel.style.width =
           clamp(
             action.width + dx,
-            240,
-            Math.max(240, window.innerWidth - panel.offsetLeft - 8)
+            PANEL_MIN_WIDTH,
+            Math.max(
+              PANEL_MIN_WIDTH,
+              window.innerWidth - panel.offsetLeft - 8
+            )
           ) + "px";
         panel.style.height =
           clamp(
             action.height + dy,
-            260,
-            Math.max(260, window.innerHeight - panel.offsetTop - 8)
+            PANEL_MIN_HEIGHT,
+            Math.max(
+              PANEL_MIN_HEIGHT,
+              window.innerHeight - panel.offsetTop - 8
+            )
           ) + "px";
       }
     });
@@ -2443,8 +2514,7 @@
     });
 
     drag.addEventListener("dblclick", function () {
-      remove(localStorage, KEYS.panel);
-      applyPanelPosition(panel);
+      resetPanelGeometry(panel);
     });
   }
 
@@ -2488,12 +2558,19 @@
       ".ldf-actions button{border:1px solid #9e7b2f;background:#f5d889;color:#26200f;padding:6px 11px;border-radius:8px;cursor:pointer;font-weight:650;}",
       ".ldf-actions button:hover{background:#efca68;}",
       ".ldf-actions button:disabled{opacity:.5;cursor:not-allowed;}",
+      ".ldf-size-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:0 0 9px;}",
+      ".ldf-size-actions button{min-height:34px;border:1px solid #c8b98e;background:#faf4e4;color:#40371f;border-radius:8px;cursor:pointer;font-weight:650;touch-action:manipulation;}",
       "#" + IDS.status + "{padding:8px;background:#f7f1e3;border-radius:8px;word-break:break-word;}",
       "#" + IDS.diagnostics + "{margin-top:7px;padding:7px;background:#f2eee4;border-radius:8px;color:#655b47;font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;word-break:break-word;}",
       ".ldf-note{margin:8px 0;color:#6b5a32;font-size:12px;}",
-      "#" + IDS.resize + "{position:absolute;right:5px;bottom:4px;width:22px;height:22px;cursor:nwse-resize;touch-action:none;opacity:.55;text-align:center;}",
+      "#" + IDS.resize + "{position:absolute;right:3px;bottom:2px;width:38px;height:38px;cursor:nwse-resize;touch-action:none;opacity:.65;text-align:right;padding:13px 5px 0 0;font-size:18px;}",
       "</style>",
       '<header id="' + IDS.drag + '"><span>Linux.do Flip</span><small>拖动 · 双击复位</small></header>',
+      '<div class="ldf-size-actions">',
+      '<button id="' + IDS.sizeDown + '" type="button">− 缩小</button>',
+      '<button id="' + IDS.sizeReset + '" type="button">默认</button>',
+      '<button id="' + IDS.sizeUp + '" type="button">＋ 放大</button>',
+      "</div>",
       field("读取页数", IDS.pages, "number", "3"),
       field("本轮话题", IDS.limit, "number", "180"),
       field("点赞目标", IDS.likeTarget, "number", "30"),
@@ -2531,8 +2608,27 @@
     applyPanelPosition(panel);
     applyConfigToPanel(loadConfig());
     enablePanelPointerControls(panel);
+    window.addEventListener("resize", function () {
+      applyPanelPosition(panel);
+      savePanelPosition(panel);
+    });
 
     document.getElementById(IDS.start).addEventListener("click", startSession);
+    document
+      .getElementById(IDS.sizeDown)
+      .addEventListener("click", function () {
+        resizePanelByStep(panel, -1);
+      });
+    document
+      .getElementById(IDS.sizeReset)
+      .addEventListener("click", function () {
+        resetPanelGeometry(panel);
+      });
+    document
+      .getElementById(IDS.sizeUp)
+      .addEventListener("click", function () {
+        resizePanelByStep(panel, 1);
+      });
     document.getElementById(IDS.pause).addEventListener("click", togglePause);
     document.getElementById(IDS.stop).addEventListener("click", stopSession);
     document
@@ -2663,6 +2759,7 @@
       requestWakeLock: requestWakeLock,
       releaseWakeLock: releaseWakeLock,
       getWakeLockState: getWakeLockState,
+      calculatePanelSize: calculatePanelSize,
       getVisited: getVisited,
       markVisited: markVisited,
       getTopicProgress: getTopicProgress,
