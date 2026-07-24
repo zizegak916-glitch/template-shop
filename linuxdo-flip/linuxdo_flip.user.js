@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.5.0
-// @description  Linux.do 阅读进度助手：列表翻找选帖、长帖续读、手机常亮与故障恢复
+// @version      1.6.0
+// @description  Linux.do 阅读进度助手：服务端进度核验、断点续读与自动故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -66,9 +66,16 @@
   var FETCH_DELAY_MIN_MS = 1100;
   var FETCH_DELAY_MAX_MS = 2200;
   var FETCH_RETRIES = 3;
+  var FETCH_TIMEOUT_MS = 20000;
   var SEARCH_WAIT_MS = 9000;
   var NAVIGATION_TIMEOUT_MS = 25000;
   var MAX_NAVIGATION_RECOVERIES = 2;
+  var MAX_TOPIC_AUTO_RETRIES = 2;
+  var MAX_BROWSE_AUTO_RETRIES = 2;
+  var MAX_CONSECUTIVE_FAILURES = 6;
+  var RECOVERY_BACKOFF_BASE_MS = 1500;
+  var READ_VERIFICATION_ATTEMPTS = 3;
+  var READ_VERIFICATION_WAIT_MS = 1800;
   var PANEL_MIN_WIDTH = 240;
   var PANEL_MIN_HEIGHT = 260;
   var PANEL_DEFAULT_WIDTH = 300;
@@ -313,6 +320,7 @@
     );
     session.navigation = session.navigation || null;
     session.listContext = session.listContext || null;
+    ensureRecoveryState(session);
     session.diagnostics = Object.assign(
       {
         stage: "idle",
@@ -336,6 +344,253 @@
     remove(localStorage, KEYS.session);
     releaseLock();
     releaseWakeLock();
+  }
+
+  function ensureRecoveryState(session) {
+    if (!session) {
+      return null;
+    }
+    session.recovery = Object.assign(
+      {
+        totalFailures: 0,
+        consecutiveFailures: 0,
+        topicFailures: {},
+        browseFailures: 0,
+        lastAction: "",
+        lastError: "",
+        updatedAt: 0,
+      },
+      session.recovery || {}
+    );
+    if (
+      !session.recovery.topicFailures ||
+      typeof session.recovery.topicFailures !== "object"
+    ) {
+      session.recovery.topicFailures = {};
+    }
+    return session.recovery;
+  }
+
+  function markRecoverySuccess(session, topicId) {
+    var recovery = ensureRecoveryState(session);
+    if (!recovery) {
+      return null;
+    }
+    recovery.consecutiveFailures = 0;
+    recovery.browseFailures = 0;
+    if (topicId !== null && topicId !== undefined) {
+      delete recovery.topicFailures[String(Number(topicId))];
+    }
+    recovery.lastAction = "success";
+    recovery.lastError = "";
+    recovery.updatedAt = Date.now();
+    session.error = null;
+    return recovery;
+  }
+
+  function moveCurrentTopicToQueueTail(session) {
+    if (
+      !session ||
+      !Array.isArray(session.queue) ||
+      !session.queue[session.index]
+    ) {
+      return null;
+    }
+    var topic = session.queue.splice(session.index, 1)[0];
+    session.queue.push(topic);
+    return topic;
+  }
+
+  function planTopicFailureRecovery(session, topic, error) {
+    var recovery = ensureRecoveryState(session);
+    var message = String(
+      error && error.message ? error.message : error || "未知阅读错误"
+    );
+    var topicId = Number((topic || {}).id || 0);
+    var key = String(topicId);
+    var attempt = Number(recovery.topicFailures[key] || 0) + 1;
+    recovery.topicFailures[key] = attempt;
+    recovery.totalFailures = Number(recovery.totalFailures || 0) + 1;
+    recovery.consecutiveFailures =
+      Number(recovery.consecutiveFailures || 0) + 1;
+    recovery.lastError = message;
+    recovery.updatedAt = Date.now();
+    session.error = message;
+    session.navigation = null;
+
+    var action;
+    if (
+      recovery.consecutiveFailures >= MAX_CONSECUTIVE_FAILURES
+    ) {
+      action = {
+        type: "pause",
+        topicId: topicId,
+        attempt: attempt,
+        delayMs: 0,
+        message: "连续故障达到上限：" + message,
+      };
+    } else if (attempt <= MAX_TOPIC_AUTO_RETRIES) {
+      action = {
+        type: "retry-topic",
+        topicId: topicId,
+        attempt: attempt,
+        delayMs: RECOVERY_BACKOFF_BASE_MS * attempt,
+        message: message,
+      };
+    } else if (
+      Array.isArray(session.queue) &&
+      session.queue.length - Number(session.index || 0) > 1
+    ) {
+      moveCurrentTopicToQueueTail(session);
+      action = {
+        type: "next-topic",
+        topicId: topicId,
+        attempt: attempt,
+        delayMs: RECOVERY_BACKOFF_BASE_MS,
+        message: message,
+      };
+    } else {
+      action = {
+        type: "pause",
+        topicId: topicId,
+        attempt: attempt,
+        delayMs: 0,
+        message: "当前主题多次失败且没有其他待处理主题：" + message,
+      };
+    }
+
+    recovery.lastAction = action.type;
+    session.status = action.type === "pause" ? "paused" : "running";
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: action.type === "pause" ? "paused" : "recovering",
+      retries: attempt,
+      lastError: action.message,
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    return action;
+  }
+
+  function planBrowseFailureRecovery(session, error) {
+    var recovery = ensureRecoveryState(session);
+    var message = String(
+      error && error.message ? error.message : error || "列表翻找失败"
+    );
+    var attempt = Number(recovery.browseFailures || 0) + 1;
+    recovery.browseFailures = attempt;
+    recovery.totalFailures = Number(recovery.totalFailures || 0) + 1;
+    recovery.consecutiveFailures =
+      Number(recovery.consecutiveFailures || 0) + 1;
+    recovery.lastError = message;
+    recovery.updatedAt = Date.now();
+    session.error = message;
+    session.navigation = null;
+
+    var canRetry =
+      attempt <= MAX_BROWSE_AUTO_RETRIES &&
+      recovery.consecutiveFailures < MAX_CONSECUTIVE_FAILURES;
+    var action = {
+      type: canRetry ? "retry-list" : "pause",
+      attempt: attempt,
+      delayMs: canRetry ? RECOVERY_BACKOFF_BASE_MS * attempt : 0,
+      message: canRetry
+        ? message
+        : "列表连续恢复失败，已停止自动重试：" + message,
+    };
+    recovery.lastAction = action.type;
+    session.status = canRetry ? "running" : "paused";
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: canRetry ? "recovering" : "paused",
+      retries: attempt,
+      lastError: action.message,
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    return action;
+  }
+
+  function appendRecoveryMarker(url) {
+    try {
+      var parsed = new URL(String(url || location.origin + "/latest"));
+      parsed.searchParams.set("linuxdo_flip_recover", String(Date.now()));
+      return parsed.toString();
+    } catch (error) {
+      return location.origin + "/latest?linuxdo_flip_recover=" + Date.now();
+    }
+  }
+
+  function scheduleRecoveryAction(action) {
+    if (!action || action.type === "pause") {
+      if (action) {
+        setStatus("已安全暂停：" + action.message, true);
+      }
+      return;
+    }
+
+    setStatus(
+      action.type === "retry-list"
+        ? "列表故障，" +
+            Math.ceil(action.delayMs / 1000) +
+            " 秒后回到原列表重试…"
+        : action.type === "retry-topic"
+          ? "当前主题故障，" +
+            Math.ceil(action.delayMs / 1000) +
+            " 秒后从已核验楼层重试…"
+          : "当前主题多次失败，保留进度并移到队尾，继续下一主题…",
+      true
+    );
+
+    window.setTimeout(function () {
+      var session = getSession();
+      if (!session || session.status !== "running") {
+        return;
+      }
+      if (action.type === "retry-list") {
+        var listUrl =
+          (session.listContext || {}).url || location.origin + "/latest";
+        var listPath = "";
+        try {
+          listPath = new URL(listUrl, location.origin).pathname;
+        } catch (error) {}
+        if (getTopicId(listUrl) || /^\/search/.test(listPath)) {
+          listUrl = location.origin + "/latest";
+        }
+        location.href = appendRecoveryMarker(listUrl);
+        return;
+      }
+
+      var topic = session.queue[session.index];
+      if (!topic) {
+        session.status = "paused";
+        session.diagnostics = Object.assign(
+          {},
+          session.diagnostics || {},
+          {
+            stage: "paused",
+            lastError: "恢复时找不到当前主题",
+            updatedAt: Date.now(),
+          }
+        );
+        saveSession(session);
+        setStatus("已安全暂停：恢复时找不到当前主题。", true);
+        return;
+      }
+
+      if (action.type === "retry-topic") {
+        location.href = appendRecoveryMarker(
+          buildResumeUrl(topic, getTopicProgress(topic.id))
+        );
+        return;
+      }
+
+      if (action.type === "next-topic") {
+        returnToList(session).then(function (returned) {
+          if (!returned) {
+            processCurrentTopic();
+          }
+        });
+      }
+    }, Math.max(0, Number(action.delayMs) || 0));
   }
 
   function getVisited() {
@@ -372,6 +627,11 @@
         accumulatedSeconds: 0,
         completed: false,
         liked: false,
+        observedPostNumber: 1,
+        verifiedPostNumber: 0,
+        verificationStatus: "idle",
+        verificationAttempts: 0,
+        serverCheckedAt: 0,
         updatedAt: 0,
       },
       progress || {}
@@ -472,6 +732,8 @@
       "browsing-search": "宽泛翻找",
       opening: "打开主题",
       reading: "阅读主题",
+      verifying: "核验站点记录",
+      recovering: "自动恢复",
       returning: "返回列表",
       review: "点赞审查",
       paused: "已暂停",
@@ -493,6 +755,7 @@
     var topic = queue[session.index] || null;
     var navigation = session.navigation || {};
     var diagnostics = session.diagnostics || {};
+    var recovery = ensureRecoveryState(session) || {};
     var wakeLabels = {
       active: "生效",
       waiting: "等待前台",
@@ -513,6 +776,10 @@
         "/" +
         queue.length,
       "恢复：" + Number(diagnostics.retries || navigation.retries || 0),
+      "连续故障：" +
+        Number(recovery.consecutiveFailures || 0) +
+        "/" +
+        MAX_CONSECUTIVE_FAILURES,
       "前台阅读：" + (session.config.foregroundOnly ? "开启" : "关闭"),
       "屏幕常亮：" + (wakeLabels[wakeLockState] || wakeLockState),
     ];
@@ -525,6 +792,23 @@
           Number(progress.lastPostNumber || 1) +
           "/" +
           (progress.highestPostNumber || "?")
+      );
+      var verificationLabels = {
+        idle: "待核验",
+        checking: "核验中",
+        verified: "已记录",
+        "not-recorded": "未记录",
+        unavailable: "无法读取",
+        error: "核验失败",
+      };
+      parts.push(
+        "站点记录：" +
+          (verificationLabels[progress.verificationStatus] ||
+            progress.verificationStatus ||
+            "待核验") +
+          (Number(progress.verifiedPostNumber || 0) > 0
+            ? " · 第 " + Number(progress.verifiedPostNumber) + " 楼"
+            : "")
       );
     }
     if (diagnostics.lastError) {
@@ -859,14 +1143,35 @@
     var lastError = null;
     for (var attempt = 0; attempt <= FETCH_RETRIES; attempt += 1) {
       var response;
+      var controller =
+        window.AbortController &&
+        typeof window.AbortController === "function"
+          ? new window.AbortController()
+          : null;
+      var timeoutId = controller
+        ? window.setTimeout(function () {
+            controller.abort();
+          }, FETCH_TIMEOUT_MS)
+        : null;
       try {
         response = await fetch(url, {
           credentials: "include",
           headers: { accept: "application/json" },
+          signal: controller ? controller.signal : undefined,
         });
       } catch (error) {
-        lastError = error;
+        lastError =
+          error && error.name === "AbortError"
+            ? new Error("请求超过 20 秒未响应")
+            : error;
         response = null;
+      } finally {
+        if (
+          timeoutId !== null &&
+          typeof window.clearTimeout === "function"
+        ) {
+          window.clearTimeout(timeoutId);
+        }
       }
 
       if (response && response.ok) {
@@ -1001,6 +1306,27 @@
     return result.slice(0, config.limit);
   }
 
+  function parseServerReadPostNumber(data) {
+    var candidates = [
+      data && data.last_read_post_number,
+      data && data.last_read_post,
+      data && data.details && data.details.last_read_post_number,
+    ];
+    for (var index = 0; index < candidates.length; index += 1) {
+      if (
+        candidates[index] !== null &&
+        candidates[index] !== undefined &&
+        candidates[index] !== ""
+      ) {
+        var value = Number(candidates[index]);
+        if (Number.isFinite(value) && value >= 0) {
+          return value;
+        }
+      }
+    }
+    return null;
+  }
+
   function parseTopicAudit(data, topic) {
     var stream = (((data || {}).post_stream || {}).stream || []);
     var loadedPosts = (((data || {}).post_stream || {}).posts || []);
@@ -1027,18 +1353,25 @@
       alreadyLiked: Boolean(likeAction && likeAction.acted),
       closed: Boolean((data || {}).closed),
       archived: Boolean((data || {}).archived),
+      lastReadPostNumber: parseServerReadPostNumber(data),
     };
+  }
+
+  function topicJsonUrl(topic, cacheBust) {
+    var url =
+      "/t/" +
+      encodeURIComponent(topic.slug || "topic") +
+      "/" +
+      topic.id +
+      ".json";
+    return cacheBust
+      ? url + "?linuxdo_flip_verify=" + encodeURIComponent(cacheBust)
+      : url;
   }
 
   async function fetchTopicAudit(topic) {
     try {
-      var data = await fetchJsonWithRetry(
-        "/t/" +
-          encodeURIComponent(topic.slug || "topic") +
-          "/" +
-          topic.id +
-          ".json"
-      );
+      var data = await fetchJsonWithRetry(topicJsonUrl(topic));
       return parseTopicAudit(data, topic);
     } catch (error) {
       if (topic.highestPostNumber) {
@@ -1049,11 +1382,93 @@
           alreadyLiked: false,
           closed: false,
           archived: false,
+          lastReadPostNumber: null,
           warning: error.message,
         };
       }
       throw new Error("主题完成审查失败：" + error.message);
     }
+  }
+
+  function evaluateReadVerification(
+    baselinePostNumber,
+    observedPostNumber,
+    serverPostNumber,
+    highestPostNumber
+  ) {
+    var baseline = Math.max(0, Number(baselinePostNumber) || 0);
+    var observed = Math.max(1, Number(observedPostNumber) || 1);
+    var highest = Math.max(1, Number(highestPostNumber) || 1);
+    if (
+      serverPostNumber === null ||
+      serverPostNumber === undefined ||
+      !Number.isFinite(Number(serverPostNumber))
+    ) {
+      return {
+        supported: false,
+        effective: false,
+        complete: false,
+        baselinePostNumber: baseline,
+        observedPostNumber: observed,
+        serverPostNumber: null,
+      };
+    }
+
+    var server = Math.max(0, Number(serverPostNumber) || 0);
+    return {
+      supported: true,
+      effective:
+        server >= observed ||
+        server > baseline ||
+        (observed <= 1 && server >= 1),
+      complete: server >= highest,
+      baselinePostNumber: baseline,
+      observedPostNumber: observed,
+      serverPostNumber: server,
+    };
+  }
+
+  async function verifyServerReadProgress(
+    topic,
+    baselinePostNumber,
+    observedPostNumber,
+    highestPostNumber
+  ) {
+    var lastResult = null;
+    var lastError = null;
+    for (
+      var attempt = 1;
+      attempt <= READ_VERIFICATION_ATTEMPTS;
+      attempt += 1
+    ) {
+      if (attempt > 1) {
+        await sleep(READ_VERIFICATION_WAIT_MS * (attempt - 1));
+      }
+      try {
+        var data = await fetchJsonWithRetry(
+          topicJsonUrl(topic, Date.now() + "-" + attempt)
+        );
+        lastResult = evaluateReadVerification(
+          baselinePostNumber,
+          observedPostNumber,
+          parseServerReadPostNumber(data),
+          highestPostNumber
+        );
+        lastResult.attempts = attempt;
+        if (!lastResult.supported || lastResult.effective) {
+          return lastResult;
+        }
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    if (lastResult) {
+      return lastResult;
+    }
+    throw new Error(
+      "站点阅读进度核验请求失败：" +
+        (lastError ? lastError.message : "未知错误")
+    );
   }
 
   function getHighestVisiblePostNumber() {
@@ -1462,18 +1877,8 @@
     }
 
     var message = "列表和宽泛搜索都没有翻到剩余队列中的合格话题";
-    session.status = "paused";
-    session.navigation = null;
-    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
-      stage: "paused",
-      lastError: message,
-      updatedAt: Date.now(),
-    });
-    saveSession(session);
-    setStatus(
-      "已安全暂停：" + message + "。可重试当前或跳过当前。",
-      true
-    );
+    var action = planBrowseFailureRecovery(session, message);
+    scheduleRecoveryAction(action);
     return false;
   }
 
@@ -1507,7 +1912,10 @@
     var resumePost = resolveResumePost(progress.lastPostNumber, sitePost);
 
     if (sitePost > Number(progress.lastPostNumber || 1)) {
-      saveTopicProgress(topic.id, { lastPostNumber: sitePost });
+      saveTopicProgress(topic.id, {
+        observedPostNumber: sitePost,
+        verificationStatus: "idle",
+      });
       return true;
     }
 
@@ -1519,7 +1927,7 @@
       setStatus(
         "站点恢复到第 " +
           sitePost +
-          " 楼，本地记录更靠后；切到第 " +
+          " 楼，已核验记录更靠后；切到第 " +
           resumePost +
           " 楼。"
       );
@@ -1676,6 +2084,16 @@
   async function scrollAndRead(topic, session) {
     var audit = await fetchTopicAudit(topic);
     var progress = getTopicProgress(topic.id);
+    var baselineServerPost = Math.max(
+      0,
+      Number(audit.lastReadPostNumber) ||
+        Number(progress.verifiedPostNumber) ||
+        0
+    );
+    var observedPostNumber = Math.max(
+      1,
+      Number(progress.lastPostNumber) || 1
+    );
     var length = await waitForArticle();
     var speed = sampleReadingSpeed(session.config.charsPerSecond);
     var plan = calculateReadPlan(session.config, length, speed);
@@ -1684,8 +2102,12 @@
     var bottomPasses = 0;
     var steps = 0;
     var lastHeight = 0;
+    var reachedEnd = false;
 
     progress.highestPostNumber = audit.highestPostNumber;
+    progress.verificationStatus = "checking";
+    progress.verificationAttempts = 0;
+    saveTopicProgress(topic.id, progress);
 
     while (Date.now() < deadline) {
       var currentSession = getSession();
@@ -1738,8 +2160,8 @@
       var metrics = getScrollMetrics();
       var visiblePost = getHighestVisiblePostNumber();
       if (visiblePost > 0) {
-        progress.lastPostNumber = Math.max(
-          Number(progress.lastPostNumber || 1),
+        observedPostNumber = Math.max(
+          observedPostNumber,
           visiblePost
         );
       }
@@ -1761,7 +2183,7 @@
           " 字 · " +
           plan.charsPerSecond +
           " 字/秒 · 楼层 " +
-          progress.lastPostNumber +
+          observedPostNumber +
           "/" +
           audit.highestPostNumber +
           " · 本段剩 " +
@@ -1800,20 +2222,18 @@
         Number(progress.accumulatedSeconds || 0) +
         Math.max(0, Math.round((Date.now() - startedAt) / 1000));
       startedAt = Date.now();
+      progress.observedPostNumber = observedPostNumber;
       saveTopicProgress(topic.id, progress);
 
-      if (isTopicComplete(progress, audit, bottomPasses)) {
-        progress.completed = true;
-        progress.accumulatedSeconds =
-          Number(progress.accumulatedSeconds || 0) +
-          Math.max(0, Math.round((Date.now() - startedAt) / 1000));
-        progress = saveTopicProgress(topic.id, progress);
-        return {
-          stopped: false,
-          complete: true,
-          progress: progress,
-          audit: audit,
-        };
+      if (
+        isTopicComplete(
+          { lastPostNumber: observedPostNumber },
+          audit,
+          bottomPasses
+        )
+      ) {
+        reachedEnd = true;
+        break;
       }
 
       steps += 1;
@@ -1825,12 +2245,90 @@
     progress.accumulatedSeconds =
       Number(progress.accumulatedSeconds || 0) +
       Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+    progress.observedPostNumber = observedPostNumber;
+    progress.verificationStatus = "checking";
+    progress = saveTopicProgress(topic.id, progress);
+
+    var currentSession = getSession();
+    if (currentSession) {
+      currentSession.diagnostics = Object.assign(
+        {},
+        currentSession.diagnostics || {},
+        {
+          stage: "verifying",
+          lastError: "",
+          updatedAt: Date.now(),
+        }
+      );
+      saveSession(currentSession);
+    }
+    setStatus(
+      "正在核验站点是否记录阅读进度 · 本页到第 " +
+        observedPostNumber +
+        " 楼…"
+    );
+
+    var verification;
+    try {
+      verification = await verifyServerReadProgress(
+        topic,
+        baselineServerPost,
+        observedPostNumber,
+        audit.highestPostNumber
+      );
+    } catch (error) {
+      saveTopicProgress(topic.id, {
+        observedPostNumber: observedPostNumber,
+        verificationStatus: "error",
+        serverCheckedAt: Date.now(),
+      });
+      throw error;
+    }
+
+    if (!verification.supported) {
+      saveTopicProgress(topic.id, {
+        observedPostNumber: observedPostNumber,
+        verificationStatus: "unavailable",
+        verificationAttempts: verification.attempts || 1,
+        serverCheckedAt: Date.now(),
+      });
+      throw new Error(
+        "站点没有返回 last_read_post_number，无法确认阅读是否被记录"
+      );
+    }
+    if (!verification.effective) {
+      saveTopicProgress(topic.id, {
+        observedPostNumber: observedPostNumber,
+        verifiedPostNumber: verification.serverPostNumber,
+        verificationStatus: "not-recorded",
+        verificationAttempts: verification.attempts || 1,
+        serverCheckedAt: Date.now(),
+      });
+      throw new Error(
+        "站点阅读进度未增长：服务端仍在第 " +
+          verification.serverPostNumber +
+          " 楼，本页已到第 " +
+          observedPostNumber +
+          " 楼"
+      );
+    }
+
+    progress.lastPostNumber = Math.max(
+      1,
+      Number(verification.serverPostNumber) || 1
+    );
+    progress.verifiedPostNumber = progress.lastPostNumber;
+    progress.verificationStatus = "verified";
+    progress.verificationAttempts = verification.attempts || 1;
+    progress.serverCheckedAt = Date.now();
+    progress.completed = Boolean(reachedEnd && verification.complete);
     progress = saveTopicProgress(topic.id, progress);
     return {
       stopped: false,
-      complete: false,
+      complete: progress.completed,
       progress: progress,
       audit: audit,
+      verification: verification,
     };
   }
 
@@ -2017,6 +2515,15 @@
         reviewTopic: null,
         listContext: null,
         navigation: null,
+        recovery: {
+          totalFailures: 0,
+          consecutiveFailures: 0,
+          topicFailures: {},
+          browseFailures: 0,
+          lastAction: "",
+          lastError: "",
+          updatedAt: Date.now(),
+        },
         diagnostics: {
           stage: "idle",
           retries: 0,
@@ -2097,6 +2604,14 @@
     session.status = "running";
     session.error = null;
     session.navigation = null;
+    var retryRecovery = ensureRecoveryState(session);
+    retryRecovery.consecutiveFailures = 0;
+    delete retryRecovery.topicFailures[
+      String(Number(session.queue[session.index].id))
+    ];
+    retryRecovery.lastAction = "manual-retry";
+    retryRecovery.lastError = "";
+    retryRecovery.updatedAt = Date.now();
     session.diagnostics = Object.assign({}, session.diagnostics || {}, {
       stage: "idle",
       retries: 0,
@@ -2127,6 +2642,12 @@
     session.status = "running";
     session.index += 1;
     session.navigation = null;
+    var skipRecovery = ensureRecoveryState(session);
+    skipRecovery.consecutiveFailures = 0;
+    delete skipRecovery.topicFailures[String(Number(skipped.id))];
+    skipRecovery.lastAction = "manual-skip";
+    skipRecovery.lastError = "";
+    skipRecovery.updatedAt = Date.now();
     session.diagnostics = Object.assign({}, session.diagnostics || {}, {
       stage: "idle",
       lastError: "",
@@ -2199,20 +2720,11 @@
       var browseMessage =
         stageLabel(navigation.stage) +
         "超时；新主题不会改成明确标题直达";
-      session.status = "paused";
-      session.navigation = null;
-      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
-        stage: "paused",
-        lastError: browseMessage,
-        updatedAt: Date.now(),
-      });
-      saveSession(session);
-      setStatus(
-        "已安全暂停：" +
-          browseMessage +
-          "。可重试当前或调整筛选条件。",
-        true
+      var browseAction = planBrowseFailureRecovery(
+        session,
+        browseMessage
       );
+      scheduleRecoveryAction(browseAction);
       return true;
     }
     var retries = Number(navigation.retries || 0) + 1;
@@ -2223,22 +2735,12 @@
       " 次恢复";
 
     if (retries > MAX_NAVIGATION_RECOVERIES) {
-      session.status = "paused";
-      session.error = message;
-      session.navigation.lastError = message;
-      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
-        stage: "paused",
-        retries: retries,
-        lastError: message,
-        updatedAt: Date.now(),
-      });
-      saveSession(session);
-      setStatus(
-        "已安全暂停：" +
-          message +
-          "。可点击“重试当前”或“跳过当前”。",
-        true
+      var topicAction = planTopicFailureRecovery(
+        session,
+        topic,
+        new Error(message)
       );
+      scheduleRecoveryAction(topicAction);
       return true;
     }
 
@@ -2510,6 +3012,7 @@
       lastError: "",
       source: (session.navigation || {}).source || "topic",
     });
+    var recoveryAction = null;
     processing = true;
     try {
       var result = await scrollAndRead(topic, session);
@@ -2521,6 +3024,7 @@
       if (!session) {
         return;
       }
+      markRecoverySuccess(session, topic.id);
 
       if (result.complete) {
         markVisited(topic.id);
@@ -2548,7 +3052,7 @@
           saveSession(session);
           updateReviewButtons(session);
           setStatus(
-            "已完整读到第 " +
+            "站点已记录到第 " +
               result.audit.highestPostNumber +
               " 楼，进入点赞审查。请确认是否点赞：" +
               topic.title
@@ -2561,7 +3065,7 @@
         session.queue.push(topic);
         session.index += 1;
         setStatus(
-          "长帖本段结束，进度已保存到第 " +
+          "长帖本段结束，站点已记录到第 " +
             result.progress.lastPostNumber +
             "/" +
             result.audit.highestPostNumber +
@@ -2601,22 +3105,19 @@
     } catch (error) {
       var failed = getSession();
       if (failed) {
-        failed.status = "paused";
-        failed.error = error.message;
-        failed.diagnostics = Object.assign(
-          {},
-          failed.diagnostics || {},
-          {
-            stage: "paused",
-            lastError: error.message,
-            updatedAt: Date.now(),
-          }
+        recoveryAction = planTopicFailureRecovery(
+          failed,
+          topic,
+          error
         );
-        saveSession(failed);
+      } else {
+        setStatus("任务状态已丢失：" + error.message, true);
       }
-      setStatus("已暂停：" + error.message, true);
     } finally {
       processing = false;
+      if (recoveryAction) {
+        scheduleRecoveryAction(recoveryAction);
+      }
     }
   }
 
@@ -3033,7 +3534,9 @@
       chooseBrowsableQueueIndex: chooseBrowsableQueueIndex,
       promoteQueueTopic: promoteQueueTopic,
       hasReadingProgress: hasReadingProgress,
+      parseServerReadPostNumber: parseServerReadPostNumber,
       parseTopicAudit: parseTopicAudit,
+      evaluateReadVerification: evaluateReadVerification,
       buildResumeUrl: buildResumeUrl,
       resolveResumePost: resolveResumePost,
       isTopicComplete: isTopicComplete,
@@ -3053,6 +3556,11 @@
       shouldRequestLikeReview: shouldRequestLikeReview,
       stageLabel: stageLabel,
       auditSessionQueue: auditSessionQueue,
+      ensureRecoveryState: ensureRecoveryState,
+      markRecoverySuccess: markRecoverySuccess,
+      moveCurrentTopicToQueueTail: moveCurrentTopicToQueueTail,
+      planTopicFailureRecovery: planTopicFailureRecovery,
+      planBrowseFailureRecovery: planBrowseFailureRecovery,
       recoverStalledNavigation: recoverStalledNavigation,
       getSession: getSession,
       saveSession: saveSession,
