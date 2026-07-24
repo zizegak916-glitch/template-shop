@@ -250,6 +250,16 @@ async function run() {
     "Linux.do 搜索 能力"
   );
   assert.strictEqual(
+    api.buildBrowseSearchQuery({
+      includeKeywords: ["AI", "VPS", "开发", "第四项"],
+    }),
+    "AI VPS 开发"
+  );
+  assert.strictEqual(
+    api.buildBrowseSearchQuery({ includeKeywords: [] }),
+    "order:latest"
+  );
+  assert.strictEqual(
     api.findExactSearchTopic(
       {
         topics: [
@@ -308,6 +318,28 @@ async function run() {
   assert.strictEqual(config.foregroundOnly, true);
   assert.strictEqual(config.keepAwake, true);
   assert.strictEqual(api.calculateInterTopicDelay(config), 4000);
+  const browseSession = {
+    version: api.VERSION,
+    status: "running",
+    queue: [
+      { id: 901, title: "第一个" },
+      { id: 902, title: "第二个" },
+      { id: 903, title: "列表先遇到的第三个" },
+    ],
+    index: 0,
+    config,
+  };
+  assert.strictEqual(
+    api.chooseBrowsableQueueIndex(browseSession, [903, 901]),
+    2,
+    "native browsing should select the first eligible topic encountered in the list"
+  );
+  assert.strictEqual(api.promoteQueueTopic(browseSession, 2).id, 903);
+  assert.deepStrictEqual(
+    Array.from(browseSession.queue, (topic) => topic.id),
+    [903, 902, 901]
+  );
+  api.clearSession();
   assert.deepStrictEqual(
     Object.assign({}, api.calculatePanelSize(300, 500, 1, 500, 700)),
     { width: 340, height: 560 }
@@ -410,6 +442,8 @@ async function run() {
     highestPostNumber: 850,
     accumulatedSeconds: 300,
   });
+  assert.strictEqual(api.hasReadingProgress(topics[0].id), true);
+  assert.strictEqual(api.hasReadingProgress(999999), false);
   assert.strictEqual(partial.lastPostNumber, 437);
   assert.strictEqual(
     api.buildResumeUrl(topics[0], partial),
@@ -509,6 +543,29 @@ async function run() {
   assert.strictEqual(api.recoverStalledNavigation(), true);
   assert.strictEqual(api.getSession().status, "paused");
   assert.strictEqual(api.getSession().diagnostics.stage, "paused");
+  api.clearSession();
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [{ id: 999998, slug: "fresh", title: "未读新主题" }],
+    index: 0,
+    config,
+    navigation: {
+      stage: "list",
+      topicId: null,
+      startedAt: 0,
+      retries: 0,
+    },
+  });
+  const hrefBeforeBrowseRecovery = env.window.location.href;
+  assert.strictEqual(api.recoverStalledNavigation(), true);
+  assert.strictEqual(api.getSession().status, "paused");
+  assert.strictEqual(
+    env.window.location.href,
+    hrefBeforeBrowseRecovery,
+    "fresh-topic browsing timeout must not fall back to a targeted URL"
+  );
   api.clearSession();
 
   const retryEnv = createEnvironment({ retry429: true });
