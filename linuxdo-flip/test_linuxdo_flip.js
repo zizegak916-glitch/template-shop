@@ -308,6 +308,22 @@ async function run() {
   assert.strictEqual(config.foregroundOnly, true);
   assert.strictEqual(config.keepAwake, true);
   assert.strictEqual(api.calculateInterTopicDelay(config), 4000);
+  assert.deepStrictEqual(
+    Object.assign({}, api.calculatePanelSize(300, 500, 1, 500, 700)),
+    { width: 340, height: 560 }
+  );
+  assert.deepStrictEqual(
+    Object.assign({}, api.calculatePanelSize(300, 500, -1, 500, 700)),
+    { width: 260, height: 440 }
+  );
+  assert.deepStrictEqual(
+    Object.assign({}, api.calculatePanelSize(240, 260, -1, 500, 700)),
+    { width: 240, height: 260 }
+  );
+  assert.deepStrictEqual(
+    Object.assign({}, api.calculatePanelSize(490, 690, 1, 500, 700)),
+    { width: 500, height: 700 }
+  );
   assert.strictEqual(
     api.normalizeConfig({ ...config, navigationMode: "direct" }).navigationMode,
     "direct"
