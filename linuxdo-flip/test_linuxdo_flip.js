@@ -419,6 +419,7 @@ async function run() {
   const audit = api.parseTopicAudit(
     {
       highest_post_number: 850,
+      last_read_post_number: 437,
       posts_count: 812,
       post_stream: {
         stream: Array.from({ length: 812 }, (_, index) => index + 1000),
@@ -434,8 +435,41 @@ async function run() {
     topics[0]
   );
   assert.strictEqual(audit.highestPostNumber, 850);
+  assert.strictEqual(audit.lastReadPostNumber, 437);
   assert.strictEqual(audit.firstPostId, 1000);
   assert.strictEqual(audit.alreadyLiked, false);
+  assert.strictEqual(
+    api.parseServerReadPostNumber({
+      details: { last_read_post_number: 88 },
+    }),
+    88
+  );
+  assert.strictEqual(api.parseServerReadPostNumber({}), null);
+  assert.deepStrictEqual(
+    Object.assign({}, api.evaluateReadVerification(40, 80, 65, 100)),
+    {
+      supported: true,
+      effective: true,
+      complete: false,
+      baselinePostNumber: 40,
+      observedPostNumber: 80,
+      serverPostNumber: 65,
+    },
+    "server progress growth should prove that reading was recorded"
+  );
+  assert.strictEqual(
+    api.evaluateReadVerification(65, 80, 65, 100).effective,
+    false,
+    "unchanged server progress must not be treated as effective reading"
+  );
+  assert.strictEqual(
+    api.evaluateReadVerification(80, 100, 100, 100).complete,
+    true
+  );
+  assert.strictEqual(
+    api.evaluateReadVerification(0, 10, null, 100).supported,
+    false
+  );
 
   const partial = api.saveTopicProgress(topics[0].id, {
     lastPostNumber: 437,
@@ -541,8 +575,12 @@ async function run() {
     },
   });
   assert.strictEqual(api.recoverStalledNavigation(), true);
-  assert.strictEqual(api.getSession().status, "paused");
-  assert.strictEqual(api.getSession().diagnostics.stage, "paused");
+  assert.strictEqual(api.getSession().status, "running");
+  assert.strictEqual(
+    api.getSession().recovery.lastAction,
+    "retry-topic",
+    "a stalled selected topic should recover automatically first"
+  );
   api.clearSession();
 
   api.saveSession({
@@ -560,12 +598,84 @@ async function run() {
   });
   const hrefBeforeBrowseRecovery = env.window.location.href;
   assert.strictEqual(api.recoverStalledNavigation(), true);
-  assert.strictEqual(api.getSession().status, "paused");
+  assert.strictEqual(api.getSession().status, "running");
   assert.strictEqual(
-    env.window.location.href,
-    hrefBeforeBrowseRecovery,
-    "fresh-topic browsing timeout must not fall back to a targeted URL"
+    api.getSession().recovery.lastAction,
+    "retry-list"
   );
+  assert.strictEqual(
+    api.getTopicId(env.window.location.href),
+    null,
+    "fresh-topic browsing recovery must not fall back to a targeted URL"
+  );
+  assert.notStrictEqual(env.window.location.href, hrefBeforeBrowseRecovery);
+  api.clearSession();
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [topics[5], topics[6], topics[7]],
+    index: 0,
+    config,
+  });
+  let recoverySession = api.getSession();
+  let recoveryAction = api.planTopicFailureRecovery(
+    recoverySession,
+    recoverySession.queue[0],
+    new Error("temporary read failure")
+  );
+  assert.strictEqual(recoveryAction.type, "retry-topic");
+  assert.strictEqual(recoveryAction.delayMs, 1500);
+  recoverySession = api.getSession();
+  recoveryAction = api.planTopicFailureRecovery(
+    recoverySession,
+    recoverySession.queue[0],
+    new Error("temporary read failure")
+  );
+  assert.strictEqual(recoveryAction.type, "retry-topic");
+  assert.strictEqual(recoveryAction.delayMs, 3000);
+  recoverySession = api.getSession();
+  const failedTopicId = recoverySession.queue[0].id;
+  recoveryAction = api.planTopicFailureRecovery(
+    recoverySession,
+    recoverySession.queue[0],
+    new Error("persistent read failure")
+  );
+  assert.strictEqual(recoveryAction.type, "next-topic");
+  assert.deepStrictEqual(
+    Array.from(api.getSession().queue, (topic) => topic.id),
+    [topics[6].id, topics[7].id, failedTopicId],
+    "a repeatedly failing topic should keep progress and move to the tail"
+  );
+  recoverySession = api.getSession();
+  api.markRecoverySuccess(recoverySession, recoverySession.queue[0].id);
+  api.saveSession(recoverySession);
+  assert.strictEqual(api.getSession().recovery.consecutiveFailures, 0);
+  api.clearSession();
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [topics[8]],
+    index: 0,
+    config,
+  });
+  let browseSessionState = api.getSession();
+  assert.strictEqual(
+    api.planBrowseFailureRecovery(browseSessionState, "list failed").type,
+    "retry-list"
+  );
+  browseSessionState = api.getSession();
+  assert.strictEqual(
+    api.planBrowseFailureRecovery(browseSessionState, "list failed").type,
+    "retry-list"
+  );
+  browseSessionState = api.getSession();
+  assert.strictEqual(
+    api.planBrowseFailureRecovery(browseSessionState, "list failed").type,
+    "pause"
+  );
+  assert.strictEqual(api.getSession().status, "paused");
   api.clearSession();
 
   const retryEnv = createEnvironment({ retry429: true });
