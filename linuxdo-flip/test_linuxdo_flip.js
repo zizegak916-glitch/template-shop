@@ -318,6 +318,31 @@ async function run() {
   assert.strictEqual(config.foregroundOnly, true);
   assert.strictEqual(config.keepAwake, true);
   assert.strictEqual(api.calculateInterTopicDelay(config), 4000);
+  assert.strictEqual(
+    api.hasResumableSession({
+      status: "running",
+      queue: [{ id: 1 }],
+      index: 0,
+    }),
+    true
+  );
+  assert.strictEqual(
+    api.hasResumableSession({
+      status: "running",
+      queue: [{ id: 1 }],
+      index: 1,
+    }),
+    false
+  );
+  assert.strictEqual(
+    api.hasResumableSession({
+      status: "running",
+      queue: [],
+      index: 0,
+      pendingCompletion: { topicId: 1 },
+    }),
+    true
+  );
   const browseSession = {
     version: api.VERSION,
     status: "running",
@@ -338,6 +363,35 @@ async function run() {
   assert.deepStrictEqual(
     Array.from(browseSession.queue, (topic) => topic.id),
     [903, 902, 901]
+  );
+  const rotationSession = {
+    queue: [
+      { id: 1 },
+      { id: 2 },
+      { id: 3 },
+    ],
+    index: 1,
+  };
+  api.moveCurrentTopicToQueueTail(rotationSession);
+  assert.deepStrictEqual(
+    Array.from(rotationSession.queue, (topic) => topic.id),
+    [1, 3, 2],
+    "partial long topics should rotate without growing the queue"
+  );
+  assert.strictEqual(rotationSession.queue.length, 3);
+  const activeLikeButton = {
+    className: "",
+    getAttribute(name) {
+      return name === "aria-pressed" ? "true" : "";
+    },
+  };
+  assert.strictEqual(api.isLikeButtonActive(activeLikeButton), true);
+  assert.strictEqual(
+    await api.waitForLikeConfirmation(
+      { id: 1, slug: "one" },
+      activeLikeButton
+    ),
+    true
   );
   api.clearSession();
   assert.deepStrictEqual(
@@ -444,7 +498,17 @@ async function run() {
     }),
     88
   );
+  assert.strictEqual(
+    api.parseServerReadPostNumber({ last_read_post_number: null }),
+    0,
+    "a present but empty Discourse read field means no recorded post yet"
+  );
   assert.strictEqual(api.parseServerReadPostNumber({}), null);
+  assert.strictEqual(
+    api.resolveVerificationBaseline(120, 180),
+    180,
+    "a lower fresh response must not roll back the trusted baseline"
+  );
   assert.deepStrictEqual(
     Object.assign({}, api.evaluateReadVerification(40, 80, 65, 100)),
     {
@@ -463,13 +527,60 @@ async function run() {
     "unchanged server progress must not be treated as effective reading"
   );
   assert.strictEqual(
+    api.evaluateReadVerification(65, 65, 65, 100).effective,
+    false,
+    "matching an incomplete baseline must not hide a stalled reader"
+  );
+  assert.strictEqual(
     api.evaluateReadVerification(80, 100, 100, 100).complete,
     true
+  );
+  assert.strictEqual(
+    api.evaluateReadVerification(100, 100, 100, 100).effective,
+    true,
+    "an already server-confirmed final post is valid without further growth"
   );
   assert.strictEqual(
     api.evaluateReadVerification(0, 10, null, 100).supported,
     false
   );
+  const unsupportedVerification = await api.verifyServerReadProgress(
+    topics[0],
+    0,
+    10,
+    100
+  );
+  assert.strictEqual(unsupportedVerification.supported, false);
+  assert.strictEqual(
+    unsupportedVerification.attempts,
+    3,
+    "a temporarily missing read field should be checked three times"
+  );
+
+  const legacyStorage = new StorageMock();
+  legacyStorage.setItem(
+    "linuxdoFlipProgressV2",
+    JSON.stringify({
+      990001: {
+        topicId: 990001,
+        lastPostNumber: 437,
+        highestPostNumber: 850,
+        accumulatedSeconds: 300,
+        completed: true,
+      },
+    })
+  );
+  const legacyEnv = createEnvironment({ localStorage: legacyStorage });
+  const migrated = legacyEnv.api.getTopicProgress(990001);
+  assert.strictEqual(
+    migrated.lastPostNumber,
+    1,
+    "pre-v1.6 local positions must not become trusted resume points"
+  );
+  assert.strictEqual(migrated.observedPostNumber, 437);
+  assert.strictEqual(migrated.verifiedPostNumber, 0);
+  assert.strictEqual(migrated.verificationStatus, "legacy-unverified");
+  assert.strictEqual(migrated.completed, false);
 
   const partial = api.saveTopicProgress(topics[0].id, {
     lastPostNumber: 437,
@@ -508,6 +619,100 @@ async function run() {
     api.shouldRequestLikeReview(reviewSession, topics[0], audit),
     false
   );
+
+  const completionTopic = {
+    id: 990010,
+    slug: "completion-transaction",
+    title: "两阶段完成测试",
+  };
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [completionTopic],
+    index: 0,
+    completed: 0,
+    reviewedCount: 0,
+    config: { ...config, likeTarget: 0 },
+  });
+  let completionSession = api.getSession();
+  api.prepareTopicCompletion(completionSession, completionTopic, {
+    audit: {
+      highestPostNumber: 80,
+      firstPostId: 7001,
+      alreadyLiked: false,
+      closed: false,
+      archived: false,
+    },
+    progress: { lastPostNumber: 80 },
+  });
+  assert(api.getSession().pendingCompletion);
+  completionSession = api.finalizePendingCompletion(api.getSession());
+  assert.strictEqual(completionSession.pendingCompletion, null);
+  assert.strictEqual(completionSession.completed, 1);
+  assert.strictEqual(completionSession.index, 1);
+  assert.strictEqual(api.getTopicProgress(completionTopic.id).completed, true);
+  assert.strictEqual(api.getVisited().has(completionTopic.id), true);
+  completionSession = api.finalizePendingCompletion(api.getSession());
+  assert.strictEqual(
+    completionSession.completed,
+    1,
+    "replaying a finalized completion must be idempotent"
+  );
+  api.clearSession();
+
+  const crashTopic = {
+    id: 990011,
+    slug: "crash-window",
+    title: "崩溃窗口主题",
+  };
+  const nextAfterCrash = {
+    id: 990012,
+    slug: "next-after-crash",
+    title: "崩溃后的下一主题",
+  };
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [crashTopic, nextAfterCrash],
+    index: 0,
+    completed: 0,
+    reviewedCount: 0,
+    config: { ...config, likeTarget: 0 },
+  });
+  api.prepareTopicCompletion(api.getSession(), crashTopic, {
+    audit: {
+      highestPostNumber: 20,
+      firstPostId: 7101,
+      alreadyLiked: false,
+      closed: false,
+      archived: false,
+    },
+    progress: { lastPostNumber: 20 },
+  });
+  api.saveTopicProgress(crashTopic.id, {
+    lastPostNumber: 20,
+    verifiedPostNumber: 20,
+    highestPostNumber: 20,
+    completed: true,
+  });
+  api.markVisited(crashTopic.id);
+  api.auditSessionQueue(api.getSession());
+  assert.deepStrictEqual(
+    Array.from(api.getSession().queue, (topic) => topic.id),
+    [nextAfterCrash.id]
+  );
+  completionSession = api.finalizePendingCompletion(api.getSession());
+  assert.strictEqual(
+    completionSession.index,
+    0,
+    "recovery must not skip the next topic after audit removed the completed one"
+  );
+  assert.strictEqual(
+    completionSession.queue[completionSession.index].id,
+    nextAfterCrash.id
+  );
+  api.clearSession();
+  env.localStorage.removeItem("linuxdoFlipVisitedV1");
 
   api.markVisited(101);
   api.markVisited(102);
@@ -609,6 +814,33 @@ async function run() {
     "fresh-topic browsing recovery must not fall back to a targeted URL"
   );
   assert.notStrictEqual(env.window.location.href, hrefBeforeBrowseRecovery);
+  api.clearSession();
+
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [{ id: 999997, slug: "fresh-return", title: "返回后待翻主题" }],
+    index: 0,
+    config,
+    listContext: {
+      url: "https://linux.do/latest",
+      scrollY: 1200,
+      canHistoryBack: false,
+    },
+    navigation: {
+      stage: "returning",
+      topicId: 999997,
+      startedAt: 0,
+      retries: 0,
+    },
+  });
+  assert.strictEqual(api.recoverStalledNavigation(), true);
+  assert.strictEqual(
+    api.getSession().recovery.lastAction,
+    "retry-list",
+    "a fresh topic must still recover through the list after return timeout"
+  );
+  assert.strictEqual(api.getTopicId(env.window.location.href), null);
   api.clearSession();
 
   api.saveSession({
