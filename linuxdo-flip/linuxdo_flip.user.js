@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.3.0
-// @description  Linux.do 阅读进度助手：搜索定位、故障恢复、原生导航、长帖续读与点赞审查
+// @version      1.4.0
+// @description  Linux.do 阅读进度助手：前台阅读、屏幕常亮、短间隔、搜索定位与故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -36,6 +36,10 @@
     diagnostics: "linuxdo-flip-diagnostics",
     likeTarget: "linuxdo-flip-like-target",
     navigationMode: "linuxdo-flip-navigation-mode",
+    interTopicMinSeconds: "linuxdo-flip-gap-min",
+    interTopicMaxSeconds: "linuxdo-flip-gap-max",
+    foregroundOnly: "linuxdo-flip-foreground-only",
+    keepAwake: "linuxdo-flip-keep-awake",
   };
 
   var KEYS = {
@@ -68,6 +72,10 @@
     limit: 180,
     likeTarget: 30,
     navigationMode: "native",
+    interTopicMinSeconds: 2,
+    interTopicMaxSeconds: 6,
+    foregroundOnly: true,
+    keepAwake: true,
     minSeconds: 12,
     maxSeconds: 90,
     charsPerSecond: 10,
@@ -81,6 +89,8 @@
   var lockTimer = null;
   var routeTimer = null;
   var lastObservedHref = "";
+  var wakeLockSentinel = null;
+  var wakeLockState = "idle";
 
   function loadJSON(storage, key, fallback) {
     try {
@@ -124,6 +134,128 @@
       remaining -= chunk;
     }
     return !predicate || predicate();
+  }
+
+  function isDocumentVisible() {
+    return String(document.visibilityState || "visible") !== "hidden";
+  }
+
+  function shouldRunInForeground(session) {
+    return Boolean(
+      !session ||
+        !session.config ||
+        !session.config.foregroundOnly ||
+        isDocumentVisible()
+    );
+  }
+
+  function releaseWakeLock() {
+    var sentinel = wakeLockSentinel;
+    wakeLockSentinel = null;
+    if (wakeLockState === "active") {
+      wakeLockState = "idle";
+    }
+    if (sentinel && typeof sentinel.release === "function") {
+      Promise.resolve(sentinel.release()).catch(function () {});
+    }
+  }
+
+  function getWakeLockState() {
+    return wakeLockState;
+  }
+
+  async function requestWakeLock(config) {
+    config = normalizeConfig(
+      Object.assign({}, DEFAULT_CONFIG, config || loadConfig())
+    );
+    if (!config.keepAwake) {
+      releaseWakeLock();
+      wakeLockState = "disabled";
+      return false;
+    }
+    if (!isDocumentVisible()) {
+      wakeLockState = "waiting";
+      return false;
+    }
+    if (wakeLockSentinel && !wakeLockSentinel.released) {
+      wakeLockState = "active";
+      return true;
+    }
+    if (
+      !window.navigator ||
+      !window.navigator.wakeLock ||
+      typeof window.navigator.wakeLock.request !== "function"
+    ) {
+      wakeLockState = "unsupported";
+      renderDiagnostics(getSession());
+      return false;
+    }
+
+    try {
+      var sentinel = await window.navigator.wakeLock.request("screen");
+      wakeLockSentinel = sentinel;
+      wakeLockState = "active";
+      if (sentinel && typeof sentinel.addEventListener === "function") {
+        sentinel.addEventListener("release", function () {
+          if (wakeLockSentinel === sentinel) {
+            wakeLockSentinel = null;
+            wakeLockState = "idle";
+            var session = getSession();
+            renderDiagnostics(session);
+            if (
+              session &&
+              session.status === "running" &&
+              session.config.keepAwake &&
+              isDocumentVisible()
+            ) {
+              window.setTimeout(function () {
+                requestWakeLock(session.config);
+              }, 1000);
+            }
+          }
+        });
+      }
+      renderDiagnostics(getSession());
+      return true;
+    } catch (error) {
+      wakeLockSentinel = null;
+      wakeLockState = "denied";
+      renderDiagnostics(getSession());
+      return false;
+    }
+  }
+
+  function calculateInterTopicDelay(config) {
+    config = normalizeConfig(config || DEFAULT_CONFIG);
+    return randomInt(
+      config.interTopicMinSeconds * 1000,
+      config.interTopicMaxSeconds * 1000
+    );
+  }
+
+  async function waitForActiveDelay(ms) {
+    var remaining = Math.max(0, Number(ms) || 0);
+    while (remaining > 0) {
+      var session = getSession();
+      if (!session || session.status === "stopped") {
+        return false;
+      }
+      if (session.status === "paused") {
+        setStatus("已暂停，帖间计时不继续。");
+        await sleep(300);
+        continue;
+      }
+      if (!shouldRunInForeground(session)) {
+        setStatus("页面在后台，帖间计时已暂停。");
+        await sleep(300);
+        continue;
+      }
+
+      var chunk = Math.min(remaining, 300);
+      await sleep(chunk);
+      remaining -= chunk;
+    }
+    return true;
   }
 
   function parseList(value) {
@@ -194,6 +326,7 @@
   function clearSession() {
     remove(localStorage, KEYS.session);
     releaseLock();
+    releaseWakeLock();
   }
 
   function getVisited() {
@@ -350,6 +483,14 @@
     var topic = queue[session.index] || null;
     var navigation = session.navigation || {};
     var diagnostics = session.diagnostics || {};
+    var wakeLabels = {
+      active: "生效",
+      waiting: "等待前台",
+      unsupported: "浏览器不支持",
+      denied: "未获系统许可",
+      disabled: "关闭",
+      idle: "待申请",
+    };
     var parts = [
       "阶段：" +
         stageLabel(
@@ -362,6 +503,8 @@
         "/" +
         queue.length,
       "恢复：" + Number(diagnostics.retries || navigation.retries || 0),
+      "前台阅读：" + (session.config.foregroundOnly ? "开启" : "关闭"),
+      "屏幕常亮：" + (wakeLabels[wakeLockState] || wakeLockState),
     ];
     if (topic) {
       var progress = getTopicProgress(topic.id);
@@ -501,6 +644,32 @@
       ),
       navigationMode:
         config.navigationMode === "direct" ? "direct" : "native",
+      interTopicMinSeconds: clamp(
+        Math.floor(
+          Number(config.interTopicMinSeconds) >= 0
+            ? Number(config.interTopicMinSeconds)
+            : DEFAULT_CONFIG.interTopicMinSeconds
+        ),
+        0,
+        60
+      ),
+      interTopicMaxSeconds: clamp(
+        Math.floor(
+          Number(config.interTopicMaxSeconds) >= 0
+            ? Number(config.interTopicMaxSeconds)
+            : DEFAULT_CONFIG.interTopicMaxSeconds
+        ),
+        0,
+        60
+      ),
+      foregroundOnly:
+        config.foregroundOnly === undefined
+          ? DEFAULT_CONFIG.foregroundOnly
+          : Boolean(config.foregroundOnly),
+      keepAwake:
+        config.keepAwake === undefined
+          ? DEFAULT_CONFIG.keepAwake
+          : Boolean(config.keepAwake),
       minSeconds: clamp(
         Math.floor(Number(config.minSeconds) || DEFAULT_CONFIG.minSeconds),
         3,
@@ -535,6 +704,14 @@
       limit: document.getElementById(IDS.limit).value,
       likeTarget: document.getElementById(IDS.likeTarget).value,
       navigationMode: document.getElementById(IDS.navigationMode).value,
+      interTopicMinSeconds: document.getElementById(
+        IDS.interTopicMinSeconds
+      ).value,
+      interTopicMaxSeconds: document.getElementById(
+        IDS.interTopicMaxSeconds
+      ).value,
+      foregroundOnly: document.getElementById(IDS.foregroundOnly).checked,
+      keepAwake: document.getElementById(IDS.keepAwake).checked,
       minSeconds: document.getElementById(IDS.minSeconds).value,
       maxSeconds: document.getElementById(IDS.maxSeconds).value,
       charsPerSecond: document.getElementById(IDS.charsPerSecond).value,
@@ -551,6 +728,9 @@
     if (config.maxSeconds < config.minSeconds) {
       throw new Error("最长停留时间不能小于最短停留时间");
     }
+    if (config.interTopicMaxSeconds < config.interTopicMinSeconds) {
+      throw new Error("帖间最长时间不能小于帖间最短时间");
+    }
 
     saveJSON(localStorage, KEYS.config, config);
     return config;
@@ -563,6 +743,15 @@
     document.getElementById(IDS.likeTarget).value = String(config.likeTarget);
     document.getElementById(IDS.navigationMode).value =
       config.navigationMode;
+    document.getElementById(IDS.interTopicMinSeconds).value = String(
+      config.interTopicMinSeconds
+    );
+    document.getElementById(IDS.interTopicMaxSeconds).value = String(
+      config.interTopicMaxSeconds
+    );
+    document.getElementById(IDS.foregroundOnly).checked =
+      config.foregroundOnly;
+    document.getElementById(IDS.keepAwake).checked = config.keepAwake;
     document.getElementById(IDS.minSeconds).value = String(config.minSeconds);
     document.getElementById(IDS.maxSeconds).value = String(config.maxSeconds);
     document.getElementById(IDS.charsPerSecond).value = String(
@@ -1306,6 +1495,34 @@
         continue;
       }
 
+      if (!shouldRunInForeground(currentSession)) {
+        var hiddenAt = Date.now();
+        setStatus("页面在后台，阅读与计时已暂停。");
+        while (true) {
+          await sleep(300);
+          currentSession = getSession();
+          if (
+            !currentSession ||
+            currentSession.status === "stopped" ||
+            shouldRunInForeground(currentSession)
+          ) {
+            break;
+          }
+        }
+        if (!currentSession || currentSession.status === "stopped") {
+          return {
+            stopped: true,
+            complete: false,
+            progress: progress,
+            audit: audit,
+          };
+        }
+        deadline += Math.max(0, Date.now() - hiddenAt);
+        startedAt = Date.now();
+        requestWakeLock(currentSession.config);
+        continue;
+      }
+
       var metrics = getScrollMetrics();
       var visiblePost = getHighestVisiblePostNumber();
       if (visiblePost > 0) {
@@ -1512,6 +1729,7 @@
       if (!acquireLock()) {
         throw new Error("另一个标签页正在运行翻帖任务");
       }
+      await requestWakeLock(config);
 
       setStatus("正在读取最新主题…");
       var topics = await fetchTopics(config);
@@ -1522,6 +1740,7 @@
 
       if (!queue.length) {
         releaseLock();
+        releaseWakeLock();
         setStatus("没有符合条件的未读主题。");
         return;
       }
@@ -1553,6 +1772,7 @@
       await navigateToTopic(queue[0], session);
     } catch (error) {
       releaseLock();
+      releaseWakeLock();
       setStatus("启动失败：" + error.message, true);
     }
   }
@@ -1571,6 +1791,7 @@
     if (session.status === "paused") {
       session.status = "running";
       saveSession(session);
+      requestWakeLock(session.config);
       document.getElementById(IDS.pause).textContent = "暂停";
       setStatus("继续：" + formatProgress(session));
       processCurrentTopic();
@@ -1579,6 +1800,7 @@
 
     session.status = "paused";
     saveSession(session);
+    releaseWakeLock();
     document.getElementById(IDS.pause).textContent = "继续";
     setStatus("已暂停。");
   }
@@ -2072,12 +2294,13 @@
       }
 
       saveSession(session);
-      var gap = randomInt(7000, 15000);
-      setStatus("帖间停留 " + Math.ceil(gap / 1000) + " 秒…");
-      var shouldContinue = await interruptibleSleep(gap, function () {
-        var state = getSession();
-        return Boolean(state && state.status !== "stopped");
-      });
+      var gap = calculateInterTopicDelay(session.config);
+      setStatus(
+        gap > 0
+          ? "帖间停留 " + Math.ceil(gap / 1000) + " 秒…"
+          : "立即进入下一主题…"
+      );
+      var shouldContinue = await waitForActiveDelay(gap);
       if (!shouldContinue) {
         return;
       }
@@ -2277,10 +2500,14 @@
       '<label class="ldf-field"><span>打开方式</span><select id="' +
         IDS.navigationMode +
         '"><option value="native">原生导航</option><option value="direct">直接续读</option></select></label>',
+      field("帖间最短", IDS.interTopicMinSeconds, "number", "2", "秒"),
+      field("帖间最长", IDS.interTopicMaxSeconds, "number", "6", "秒"),
       field("最短停留", IDS.minSeconds, "number", "12", "秒"),
       field("单次最长", IDS.maxSeconds, "number", "90", "秒"),
       field("基础速度", IDS.charsPerSecond, "number", "10", "字/秒"),
       '<label class="ldf-wide"><input id="' + IDS.includePinned + '" type="checkbox"> 包含置顶主题</label>',
+      '<label class="ldf-wide"><input id="' + IDS.foregroundOnly + '" type="checkbox"> 仅在页面前台时阅读和计时</label>',
+      '<label class="ldf-wide"><input id="' + IDS.keepAwake + '" type="checkbox"> 阅读时申请手机屏幕常亮</label>',
       '<label class="ldf-wide">包含关键词<input id="' + IDS.includeKeywords + '" type="text" placeholder="AI, VPS"></label>',
       '<label class="ldf-wide">排除关键词<input id="' + IDS.excludeKeywords + '" type="text" placeholder="广告, 交易"></label>',
       '<label class="ldf-wide">分类名称、slug 或 ID<input id="' + IDS.categories + '" type="text" placeholder="development, 5"></label>',
@@ -2294,7 +2521,7 @@
       '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
       '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
-      '<p class="ldf-note">原生导航按“列表滑动 → 站内搜索并核验 ID → /last → 本地楼层”分层恢复；失败会安全暂停。跳过当前不会标记已读。</p>',
+      '<p class="ldf-note">原生导航按“列表滑动 → 站内搜索并核验 ID → /last → 本地楼层”分层恢复。屏幕常亮使用浏览器 Wake Lock；系统不支持或拒绝时不会采用隐藏视频等替代手段。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
@@ -2365,9 +2592,29 @@
   function boot() {
     buildPanel();
     installRouteWatcher();
+    document.addEventListener("visibilitychange", function () {
+      var session = getSession();
+      if (!isDocumentVisible()) {
+        releaseWakeLock();
+        wakeLockState =
+          session && session.config.keepAwake ? "waiting" : "disabled";
+        renderDiagnostics(session);
+        return;
+      }
+      if (
+        session &&
+        session.status !== "stopped" &&
+        session.status !== "paused"
+      ) {
+        requestWakeLock(session.config);
+      }
+    });
     refreshPanelState();
     var session = getSession();
     if (session && session.status !== "stopped") {
+      if (session.status !== "paused") {
+        requestWakeLock(session.config);
+      }
       auditSessionQueue(session);
       session = getSession();
       if (restoreReturnedList(session)) {
@@ -2411,6 +2658,11 @@
       isTopicComplete: isTopicComplete,
       calculateReadPlan: calculateReadPlan,
       sampleReadingSpeed: sampleReadingSpeed,
+      calculateInterTopicDelay: calculateInterTopicDelay,
+      shouldRunInForeground: shouldRunInForeground,
+      requestWakeLock: requestWakeLock,
+      releaseWakeLock: releaseWakeLock,
+      getWakeLockState: getWakeLockState,
       getVisited: getVisited,
       markVisited: markVisited,
       getTopicProgress: getTopicProgress,
