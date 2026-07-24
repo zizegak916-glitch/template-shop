@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.6.0
-// @description  Linux.do 阅读进度助手：服务端进度核验、断点续读与自动故障恢复
+// @version      1.7.0
+// @description  Linux.do 阅读进度助手：严格服务端进度核验、断点续读与自动故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -75,7 +75,8 @@
   var MAX_CONSECUTIVE_FAILURES = 6;
   var RECOVERY_BACKOFF_BASE_MS = 1500;
   var READ_VERIFICATION_ATTEMPTS = 3;
-  var READ_VERIFICATION_WAIT_MS = 1800;
+  var READ_VERIFICATION_WAIT_MS = 3000;
+  var LIKE_CONFIRM_TIMEOUT_MS = 6000;
   var PANEL_MIN_WIDTH = 240;
   var PANEL_MIN_HEIGHT = 260;
   var PANEL_DEFAULT_WIDTH = 300;
@@ -107,6 +108,7 @@
   var lastObservedHref = "";
   var wakeLockSentinel = null;
   var wakeLockState = "idle";
+  var likeSubmitting = false;
 
   function loadJSON(storage, key, fallback) {
     try {
@@ -320,6 +322,7 @@
     );
     session.navigation = session.navigation || null;
     session.listContext = session.listContext || null;
+    session.pendingCompletion = session.pendingCompletion || null;
     ensureRecoveryState(session);
     session.diagnostics = Object.assign(
       {
@@ -369,6 +372,17 @@
       session.recovery.topicFailures = {};
     }
     return session.recovery;
+  }
+
+  function hasResumableSession(session) {
+    return Boolean(
+      session &&
+        session.status !== "stopped" &&
+        (Boolean(session.pendingCompletion) ||
+          session.status === "review" ||
+          (Array.isArray(session.queue) &&
+            Number(session.index || 0) < session.queue.length))
+    );
   }
 
   function markRecoverySuccess(session, topicId) {
@@ -619,7 +633,7 @@
 
   function getTopicProgress(topicId) {
     var progress = getProgressMap()[String(Number(topicId))];
-    return Object.assign(
+    var normalized = Object.assign(
       {
         topicId: Number(topicId),
         lastPostNumber: 1,
@@ -636,6 +650,26 @@
       },
       progress || {}
     );
+    if (
+      progress &&
+      !Object.prototype.hasOwnProperty.call(
+        progress,
+        "verifiedPostNumber"
+      )
+    ) {
+      normalized.observedPostNumber = Math.max(
+        1,
+        Number(progress.lastPostNumber) || 1
+      );
+      normalized.lastPostNumber = 1;
+      normalized.verifiedPostNumber = 0;
+      normalized.verificationStatus =
+        normalized.observedPostNumber > 1
+          ? "legacy-unverified"
+          : "idle";
+      normalized.completed = false;
+    }
+    return normalized;
   }
 
   function saveTopicProgress(topicId, patch) {
@@ -800,9 +834,10 @@
         "not-recorded": "未记录",
         unavailable: "无法读取",
         error: "核验失败",
+        "legacy-unverified": "旧版未核验",
       };
       parts.push(
-        "站点记录：" +
+        "站点已读：" +
           (verificationLabels[progress.verificationStatus] ||
             progress.verificationStatus ||
             "待核验") +
@@ -1139,7 +1174,8 @@
     return categoryMatches(topic, config, categoryMap);
   }
 
-  async function fetchJsonWithRetry(url) {
+  async function fetchJsonWithRetry(url, options) {
+    options = options || {};
     var lastError = null;
     for (var attempt = 0; attempt <= FETCH_RETRIES; attempt += 1) {
       var response;
@@ -1158,6 +1194,7 @@
           credentials: "include",
           headers: { accept: "application/json" },
           signal: controller ? controller.signal : undefined,
+          cache: options.noCache ? "no-store" : "default",
         });
       } catch (error) {
         lastError =
@@ -1308,20 +1345,35 @@
 
   function parseServerReadPostNumber(data) {
     var candidates = [
-      data && data.last_read_post_number,
-      data && data.last_read_post,
-      data && data.details && data.details.last_read_post_number,
+      { owner: data, key: "last_read_post_number" },
+      { owner: data, key: "last_read_post" },
+      {
+        owner: data && data.details,
+        key: "last_read_post_number",
+      },
     ];
     for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
       if (
-        candidates[index] !== null &&
-        candidates[index] !== undefined &&
-        candidates[index] !== ""
+        !candidate.owner ||
+        !Object.prototype.hasOwnProperty.call(
+          candidate.owner,
+          candidate.key
+        )
       ) {
-        var value = Number(candidates[index]);
-        if (Number.isFinite(value) && value >= 0) {
-          return value;
-        }
+        continue;
+      }
+      var rawValue = candidate.owner[candidate.key];
+      if (
+        rawValue === null ||
+        rawValue === undefined ||
+        rawValue === ""
+      ) {
+        return 0;
+      }
+      var value = Number(rawValue);
+      if (Number.isFinite(value) && value >= 0) {
+        return value;
       }
     }
     return null;
@@ -1371,7 +1423,10 @@
 
   async function fetchTopicAudit(topic) {
     try {
-      var data = await fetchJsonWithRetry(topicJsonUrl(topic));
+      var data = await fetchJsonWithRetry(
+        topicJsonUrl(topic, "baseline-" + Date.now()),
+        { noCache: true }
+      );
       return parseTopicAudit(data, topic);
     } catch (error) {
       if (topic.highestPostNumber) {
@@ -1388,6 +1443,17 @@
       }
       throw new Error("主题完成审查失败：" + error.message);
     }
+  }
+
+  function resolveVerificationBaseline(
+    serverPostNumber,
+    verifiedPostNumber
+  ) {
+    return Math.max(
+      0,
+      Number(serverPostNumber) || 0,
+      Number(verifiedPostNumber) || 0
+    );
   }
 
   function evaluateReadVerification(
@@ -1415,13 +1481,12 @@
     }
 
     var server = Math.max(0, Number(serverPostNumber) || 0);
+    var complete = server >= highest;
     return {
       supported: true,
       effective:
-        server >= observed ||
-        server > baseline ||
-        (observed <= 1 && server >= 1),
-      complete: server >= highest,
+        server > baseline || (complete && observed >= highest),
+      complete: complete,
       baselinePostNumber: baseline,
       observedPostNumber: observed,
       serverPostNumber: server,
@@ -1446,7 +1511,8 @@
       }
       try {
         var data = await fetchJsonWithRetry(
-          topicJsonUrl(topic, Date.now() + "-" + attempt)
+          topicJsonUrl(topic, Date.now() + "-" + attempt),
+          { noCache: true }
         );
         lastResult = evaluateReadVerification(
           baselinePostNumber,
@@ -1455,7 +1521,7 @@
           highestPostNumber
         );
         lastResult.attempts = attempt;
-        if (!lastResult.supported || lastResult.effective) {
+        if (lastResult.supported && lastResult.effective) {
           return lastResult;
         }
       } catch (error) {
@@ -2084,11 +2150,9 @@
   async function scrollAndRead(topic, session) {
     var audit = await fetchTopicAudit(topic);
     var progress = getTopicProgress(topic.id);
-    var baselineServerPost = Math.max(
-      0,
-      Number(audit.lastReadPostNumber) ||
-        Number(progress.verifiedPostNumber) ||
-        0
+    var baselineServerPost = resolveVerificationBaseline(
+      audit.lastReadPostNumber,
+      progress.verifiedPostNumber
     );
     var observedPostNumber = Math.max(
       1,
@@ -2251,6 +2315,15 @@
 
     var currentSession = getSession();
     if (currentSession) {
+      currentSession.navigation = Object.assign(
+        {},
+        currentSession.navigation || {},
+        {
+          stage: "verifying",
+          topicId: topic.id,
+          startedAt: Date.now(),
+        }
+      );
       currentSession.diagnostics = Object.assign(
         {},
         currentSession.diagnostics || {},
@@ -2299,7 +2372,10 @@
     if (!verification.effective) {
       saveTopicProgress(topic.id, {
         observedPostNumber: observedPostNumber,
-        verifiedPostNumber: verification.serverPostNumber,
+        verifiedPostNumber: Math.max(
+          Number(progress.verifiedPostNumber) || 0,
+          Number(verification.serverPostNumber) || 0
+        ),
         verificationStatus: "not-recorded",
         verificationAttempts: verification.attempts || 1,
         serverCheckedAt: Date.now(),
@@ -2321,11 +2397,11 @@
     progress.verificationStatus = "verified";
     progress.verificationAttempts = verification.attempts || 1;
     progress.serverCheckedAt = Date.now();
-    progress.completed = Boolean(reachedEnd && verification.complete);
+    progress.completed = false;
     progress = saveTopicProgress(topic.id, progress);
     return {
       stopped: false,
-      complete: progress.completed,
+      complete: Boolean(reachedEnd && verification.complete),
       progress: progress,
       audit: audit,
       verification: verification,
@@ -2484,6 +2560,18 @@
 
   async function startSession() {
     try {
+      var existingSession = getSession();
+      if (hasResumableSession(existingSession)) {
+        setStatus(
+          "已有任务正在保留中：" +
+            (existingSession.pendingCompletion
+              ? "正在补交主题完成状态"
+              : formatProgress(existingSession)) +
+            "。请继续当前任务，或先停止再新建。",
+          true
+        );
+        return;
+      }
       var config = readConfigFromPanel();
       if (!acquireLock()) {
         throw new Error("另一个标签页正在运行翻帖任务");
@@ -2513,6 +2601,7 @@
         likedCount: 0,
         reviewedCount: 0,
         reviewTopic: null,
+        pendingCompletion: null,
         listContext: null,
         navigation: null,
         recovery: {
@@ -2715,7 +2804,9 @@
     }
     if (
       !hasReadingProgress(topic.id) &&
-      ["list", "browsing-search"].indexOf(navigation.stage) !== -1
+      ["list", "browsing-search", "returning"].indexOf(
+        navigation.stage
+      ) !== -1
     ) {
       var browseMessage =
         stageLabel(navigation.stage) +
@@ -2802,6 +2893,119 @@
     return Number(session.completed || 0) % interval === 0;
   }
 
+  function prepareTopicCompletion(session, topic, result) {
+    var completedNumber = Number(session.completed || 0) + 1;
+    var projectedSession = Object.assign({}, session, {
+      completed: completedNumber,
+    });
+    var shouldReview = shouldRequestLikeReview(
+      projectedSession,
+      topic,
+      result.audit
+    );
+    session.pendingCompletion = {
+      topicId: Number(topic.id),
+      queueIndex: Number(session.index || 0),
+      completedNumber: completedNumber,
+      highestPostNumber: Number(result.audit.highestPostNumber || 1),
+      verifiedPostNumber: Number(result.progress.lastPostNumber || 1),
+      shouldReview: shouldReview,
+      title: topic.title,
+      slug: topic.slug,
+      firstPostId: result.audit.firstPostId,
+      preparedAt: Date.now(),
+    };
+    saveSession(session);
+    return session.pendingCompletion;
+  }
+
+  function resolvePostCompletionIndex(session, topicId) {
+    var queue = Array.isArray((session || {}).queue)
+      ? session.queue
+      : [];
+    var topicIndex = queue.findIndex(function (topic) {
+      return Number((topic || {}).id) === Number(topicId);
+    });
+    if (topicIndex >= 0) {
+      return topicIndex + 1;
+    }
+    return clamp(
+      Number((session || {}).index) || 0,
+      0,
+      queue.length
+    );
+  }
+
+  function finalizePendingCompletion(session) {
+    if (!session || !session.pendingCompletion) {
+      return session;
+    }
+    var pending = session.pendingCompletion;
+    var topicId = Number(pending.topicId);
+    saveTopicProgress(topicId, {
+      lastPostNumber: Math.max(
+        1,
+        Number(pending.verifiedPostNumber) || 1
+      ),
+      verifiedPostNumber: Math.max(
+        1,
+        Number(pending.verifiedPostNumber) || 1
+      ),
+      highestPostNumber: Math.max(
+        1,
+        Number(pending.highestPostNumber) || 1
+      ),
+      verificationStatus: "verified",
+      completed: true,
+    });
+    markVisited(topicId);
+    session.completed = Math.max(
+      Number(session.completed || 0),
+      Number(pending.completedNumber || 0)
+    );
+    session.navigation = null;
+
+    if (pending.shouldReview) {
+      var nextIndex = resolvePostCompletionIndex(session, topicId);
+      session.status = "review";
+      session.reviewedCount = Number(session.reviewedCount || 0) + 1;
+      session.reviewTopic = {
+        id: topicId,
+        title: pending.title,
+        slug: pending.slug,
+        firstPostId: pending.firstPostId,
+        nextIndex: nextIndex,
+      };
+      session.diagnostics = Object.assign(
+        {},
+        session.diagnostics || {},
+        {
+          stage: "review",
+          retries: 0,
+          lastError: "",
+          updatedAt: Date.now(),
+        }
+      );
+    } else {
+      session.status = "running";
+      session.index = resolvePostCompletionIndex(session, topicId);
+      session.diagnostics = Object.assign(
+        {},
+        session.diagnostics || {},
+        {
+          stage: "idle",
+          retries: 0,
+          lastError: "",
+          updatedAt: Date.now(),
+        }
+      );
+    }
+
+    session.pendingCompletion = null;
+    saveSession(session);
+    return session;
+  }
+
   function updateReviewButtons(session) {
     var approve = document.getElementById(IDS.approveLike);
     var skip = document.getElementById(IDS.skipLike);
@@ -2861,10 +3065,34 @@
     );
   }
 
+  async function waitForLikeConfirmation(topic, button) {
+    var deadline = Date.now() + LIKE_CONFIRM_TIMEOUT_MS;
+    var currentButton = button;
+    while (Date.now() < deadline) {
+      if (isLikeButtonActive(currentButton)) {
+        return true;
+      }
+      await sleep(350);
+      currentButton = findFirstPostLikeButton() || currentButton;
+    }
+
+    try {
+      var audit = await fetchTopicAudit(topic);
+      return Boolean(audit.alreadyLiked);
+    } catch (error) {
+      return false;
+    }
+  }
+
   function finishReviewAndAdvance(session) {
+    var nextIndex =
+      session.reviewTopic &&
+      Number.isFinite(Number(session.reviewTopic.nextIndex))
+        ? Number(session.reviewTopic.nextIndex)
+        : Number(session.index || 0) + 1;
     session.status = "running";
     session.reviewTopic = null;
-    session.index += 1;
+    session.index = clamp(nextIndex, 0, session.queue.length);
     updateReviewButtons(session);
     if (session.index >= session.queue.length) {
       var context = session.listContext;
@@ -2907,39 +3135,72 @@
       setStatus("当前没有等待确认的点赞候选。");
       return;
     }
+    if (likeSubmitting) {
+      setStatus("点赞正在等待站点确认，请稍候。");
+      return;
+    }
+    likeSubmitting = true;
+    var approveButton = document.getElementById(IDS.approveLike);
+    if (approveButton) {
+      approveButton.disabled = true;
+    }
+    try {
+      var button = await waitForFirstPostLikeButton();
+      if (!button) {
+        setStatus(
+          "没有定位到站内点赞按钮。可手动点赞后再次确认，或选择不点赞继续。",
+          true
+        );
+        return;
+      }
 
-    var button = await waitForFirstPostLikeButton();
-    if (!button) {
+      if (isLikeButtonActive(button)) {
+        setStatus("该主题已经点赞，不会重复计数；继续下一主题。");
+        finishReviewAndAdvance(session);
+        return;
+      }
+
+      button.click();
+      var topic =
+        session.queue[session.index] ||
+        normalizeTopic(session.reviewTopic);
+      var confirmed = await waitForLikeConfirmation(topic, button);
+      session = getSession();
+      if (!session || session.status !== "review") {
+        return;
+      }
+      if (!confirmed) {
+        session.diagnostics = Object.assign(
+          {},
+          session.diagnostics || {},
+          {
+            stage: "review",
+            lastError: "点赞点击后未得到站点确认",
+            updatedAt: Date.now(),
+          }
+        );
+        saveSession(session);
+        setStatus(
+          "点赞没有被站点确认，未增加计数。可再次确认或跳过。",
+          true
+        );
+        return;
+      }
+
+      session.likedCount = Number(session.likedCount || 0) + 1;
+      saveTopicProgress(session.reviewTopic.id, { liked: true });
       setStatus(
-        "没有定位到站内点赞按钮。请手动点赞后点击“不赞，继续”，或刷新后重试。",
-        true
+        "站点已确认点赞 " +
+          session.likedCount +
+          "/" +
+          session.config.likeTarget +
+          "，继续下一主题。"
       );
-      return;
-    }
-
-    if (isLikeButtonActive(button)) {
-      setStatus("该主题已经点赞，不会重复点击；继续下一主题。");
       finishReviewAndAdvance(session);
-      return;
+    } finally {
+      likeSubmitting = false;
+      updateReviewButtons(getSession());
     }
-
-    button.click();
-    await sleep(900);
-    session = getSession();
-    if (!session || session.status !== "review") {
-      return;
-    }
-
-    session.likedCount = Number(session.likedCount || 0) + 1;
-    saveTopicProgress(session.reviewTopic.id, { liked: true });
-    setStatus(
-      "已提交点赞 " +
-        session.likedCount +
-        "/" +
-        session.config.likeTarget +
-        "，继续下一主题。"
-    );
-    finishReviewAndAdvance(session);
   }
 
   function skipLikeAndContinue() {
@@ -2960,6 +3221,13 @@
     var session = getSession();
     if (!session || session.status === "stopped") {
       return;
+    }
+    if (session.pendingCompletion) {
+      finalizePendingCompletion(session);
+      session = getSession();
+      if (!session) {
+        return;
+      }
     }
     if (session.status !== "review") {
       auditSessionQueue(session);
@@ -3027,29 +3295,9 @@
       markRecoverySuccess(session, topic.id);
 
       if (result.complete) {
-        markVisited(topic.id);
-        session.completed += 1;
-
-        if (shouldRequestLikeReview(session, topic, result.audit)) {
-          session.status = "review";
-          session.reviewedCount = Number(session.reviewedCount || 0) + 1;
-          session.reviewTopic = {
-            id: topic.id,
-            title: topic.title,
-            firstPostId: result.audit.firstPostId,
-          };
-          session.navigation = null;
-          session.diagnostics = Object.assign(
-            {},
-            session.diagnostics || {},
-            {
-              stage: "review",
-              retries: 0,
-              lastError: "",
-              updatedAt: Date.now(),
-            }
-          );
-          saveSession(session);
+        prepareTopicCompletion(session, topic, result);
+        session = finalizePendingCompletion(getSession());
+        if (session.status === "review") {
           updateReviewButtons(session);
           setStatus(
             "站点已记录到第 " +
@@ -3059,11 +3307,8 @@
           );
           return;
         }
-
-        session.index += 1;
       } else {
-        session.queue.push(topic);
-        session.index += 1;
+        moveCurrentTopicToQueueTail(session);
         setStatus(
           "长帖本段结束，站点已记录到第 " +
             result.progress.lastPostNumber +
@@ -3380,7 +3625,7 @@
       '<button id="' + IDS.approveLike + '" type="button" style="display:none">确认点赞并继续</button>',
       '<button id="' + IDS.skipLike + '" type="button" style="display:none">不点赞，继续</button>',
       "</div>",
-      '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；列表没有时再做宽泛搜索。只有未完成长帖续读才按明确主题恢复。</p>',
+      '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；列表没有时再做宽泛搜索。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
@@ -3536,7 +3781,9 @@
       hasReadingProgress: hasReadingProgress,
       parseServerReadPostNumber: parseServerReadPostNumber,
       parseTopicAudit: parseTopicAudit,
+      resolveVerificationBaseline: resolveVerificationBaseline,
       evaluateReadVerification: evaluateReadVerification,
+      verifyServerReadProgress: verifyServerReadProgress,
       buildResumeUrl: buildResumeUrl,
       resolveResumePost: resolveResumePost,
       isTopicComplete: isTopicComplete,
@@ -3554,9 +3801,13 @@
       saveTopicProgress: saveTopicProgress,
       clearProgress: clearProgress,
       shouldRequestLikeReview: shouldRequestLikeReview,
+      prepareTopicCompletion: prepareTopicCompletion,
+      resolvePostCompletionIndex: resolvePostCompletionIndex,
+      finalizePendingCompletion: finalizePendingCompletion,
       stageLabel: stageLabel,
       auditSessionQueue: auditSessionQueue,
       ensureRecoveryState: ensureRecoveryState,
+      hasResumableSession: hasResumableSession,
       markRecoverySuccess: markRecoverySuccess,
       moveCurrentTopicToQueueTail: moveCurrentTopicToQueueTail,
       planTopicFailureRecovery: planTopicFailureRecovery,
@@ -3565,6 +3816,8 @@
       getSession: getSession,
       saveSession: saveSession,
       clearSession: clearSession,
+      isLikeButtonActive: isLikeButtonActive,
+      waitForLikeConfirmation: waitForLikeConfirmation,
     };
     return;
   }
