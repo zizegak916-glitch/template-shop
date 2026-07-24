@@ -44,6 +44,7 @@ function createEnvironment(options = {}) {
   const localStorage = options.localStorage || new StorageMock();
   const sessionStorage = options.sessionStorage || new StorageMock();
   const calls = [];
+  const postActionRequests = [];
   const wakeLockRequests = [];
   let fakeNow = 1_000_000;
   let retry429 = Boolean(options.retry429);
@@ -61,6 +62,21 @@ function createEnvironment(options = {}) {
     documentElement: { scrollHeight: 5000 },
     body: { scrollHeight: 5000 },
     getElementById() {
+      return null;
+    },
+    querySelector(selector) {
+      if (
+        selector === 'meta[name="csrf-token"]' &&
+        options.csrfToken !== null
+      ) {
+        return {
+          getAttribute(name) {
+            return name === "content"
+              ? String(options.csrfToken || "test-csrf-token")
+              : "";
+          },
+        };
+      }
       return null;
     },
     querySelectorAll() {
@@ -116,8 +132,29 @@ function createEnvironment(options = {}) {
           },
   };
 
-  async function fetch(url) {
+  async function fetch(url, requestOptions = {}) {
     calls.push(String(url));
+
+    if (String(url) === "/post_actions") {
+      postActionRequests.push(requestOptions);
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        async json() {
+          return {
+            result: [
+              {
+                id: 2,
+                acted: true,
+                can_act: false,
+                can_undo: true,
+              },
+            ],
+          };
+        },
+      };
+    }
 
     if (String(url) === "/categories.json") {
       return {
@@ -228,6 +265,7 @@ function createEnvironment(options = {}) {
     document,
     window,
     wakeLockRequests,
+    postActionRequests,
   };
 }
 
@@ -314,14 +352,14 @@ async function run() {
     navigationMode: "native",
   });
   assert.strictEqual(config.navigationMode, "native");
-  assert.strictEqual(api.DEFAULT_CONFIG.limit, 50);
-  assert.strictEqual(api.DEFAULT_CONFIG.likeTarget, 10);
+  assert.strictEqual(api.DEFAULT_CONFIG.limit, 150);
+  assert.strictEqual(api.DEFAULT_CONFIG.likeTarget, 25);
   const migratedDefaults = api.normalizeConfig({
     limit: 180,
     likeTarget: 30,
   });
-  assert.strictEqual(migratedDefaults.limit, 50);
-  assert.strictEqual(migratedDefaults.likeTarget, 10);
+  assert.strictEqual(migratedDefaults.limit, 150);
+  assert.strictEqual(migratedDefaults.likeTarget, 25);
   assert.strictEqual(
     migratedDefaults.configRevision,
     api.DEFAULT_CONFIG.configRevision
@@ -331,6 +369,20 @@ async function run() {
   assert.strictEqual(config.foregroundOnly, true);
   assert.strictEqual(config.keepAwake, true);
   assert.strictEqual(api.calculateInterTopicDelay(config), 4000);
+  assert.strictEqual(
+    api.normalizeListUrl("https://linux.do/"),
+    "https://linux.do/latest"
+  );
+  assert.strictEqual(
+    api.normalizeListUrl("https://linux.do/u/test"),
+    "https://linux.do/latest"
+  );
+  assert.strictEqual(
+    api.normalizeListUrl("https://linux.do/c/develop/4"),
+    "https://linux.do/c/develop/4"
+  );
+  assert.strictEqual(api.isTopicListPath("/latest"), true);
+  assert.strictEqual(api.isTopicListPath("/t/topic/123"), false);
   assert.strictEqual(
     api.hasResumableSession({
       status: "running",
@@ -389,7 +441,7 @@ async function run() {
   assert.deepStrictEqual(
     Array.from(rotationSession.queue, (topic) => topic.id),
     [1, 3, 2],
-    "partial long topics should rotate without growing the queue"
+    "repeatedly failing topics should rotate without growing the queue"
   );
   assert.strictEqual(rotationSession.queue.length, 3);
   const activeLikeButton = {
@@ -399,6 +451,25 @@ async function run() {
     },
   };
   assert.strictEqual(api.isLikeButtonActive(activeLikeButton), true);
+  const activeReactionButton = {
+    className: "btn-toggle-reaction-like reaction-button",
+    getAttribute(name) {
+      return name === "title" ? "Remove your reaction" : "";
+    },
+  };
+  assert.strictEqual(api.isLikeButtonActive(activeReactionButton), true);
+  assert.strictEqual(
+    api.parseLikeActionConfirmation({
+      result: [{ id: 2, acted: true }],
+    }),
+    true
+  );
+  assert.strictEqual(await api.submitPostLike(7001), true);
+  assert.strictEqual(env.postActionRequests.length, 1);
+  assert.strictEqual(
+    env.postActionRequests[0].headers["X-CSRF-Token"],
+    "test-csrf-token"
+  );
   assert.strictEqual(
     await api.waitForLikeConfirmation(
       { id: 1, slug: "one" },
@@ -494,7 +565,7 @@ async function run() {
           {
             id: 1000,
             post_number: 1,
-            actions_summary: [{ id: 2, acted: false }],
+            actions_summary: [{ id: 2, acted: false, can_act: true }],
           },
         ],
       },
@@ -505,6 +576,43 @@ async function run() {
   assert.strictEqual(audit.lastReadPostNumber, 437);
   assert.strictEqual(audit.firstPostId, 1000);
   assert.strictEqual(audit.alreadyLiked, false);
+  assert.strictEqual(audit.canLike, true);
+  const reactionAudit = api.parseTopicAudit(
+    {
+      highest_post_number: 10,
+      post_stream: {
+        stream: Array.from({ length: 10 }, (_, index) => index + 1),
+        posts: [
+          {
+            id: 9000,
+            post_number: 1,
+            actions_summary: [{ id: 2, acted: false, can_act: false }],
+            current_user_reaction: {
+              id: "heart",
+              type: "emoji",
+              can_undo: true,
+            },
+          },
+        ],
+      },
+    },
+    topics[0]
+  );
+  assert.strictEqual(reactionAudit.alreadyLiked, true);
+  assert.strictEqual(
+    api.parseTopicAudit(
+      {
+        highest_post_number: 1200,
+        post_stream: {
+          stream: [9123, 9124],
+          posts: [],
+        },
+      },
+      topics[0]
+    ).firstPostId,
+    9123,
+    "the stream should recover the first post id when it is not preloaded"
+  );
   assert.strictEqual(
     api.parseServerReadPostNumber({
       details: { last_read_post_number: 88 },
@@ -617,10 +725,24 @@ async function run() {
   });
   assert.strictEqual(api.isTopicComplete(finished, audit, 2), true);
   assert.strictEqual(api.isTopicComplete(finished, audit, 1), false);
+  assert.strictEqual(api.getLongTopicReadCap(1000), null);
+  assert.strictEqual(api.getLongTopicReadCap(1001), 300);
+  assert.strictEqual(
+    api.hasReachedLongTopicCap(1500, 305, 280),
+    true
+  );
+  assert.strictEqual(
+    api.hasReachedLongTopicCap(1500, 299, 290),
+    false
+  );
+  assert.strictEqual(
+    api.hasReachedLongTopicCap(1500, 310, 279),
+    false
+  );
 
   const autoLikeSession = {
-    config: { limit: 50, likeTarget: 10 },
-    completed: 5,
+    config: { limit: 150, likeTarget: 25 },
+    completed: 6,
     likedCount: 0,
   };
   assert.strictEqual(
@@ -632,12 +754,21 @@ async function run() {
     api.shouldAutoLikeTopic(autoLikeSession, topics[0], audit),
     false
   );
-  autoLikeSession.completed = 6;
+  autoLikeSession.completed = 7;
   autoLikeSession.likedCount = 0;
   assert.strictEqual(
     api.shouldAutoLikeTopic(autoLikeSession, topics[0], audit),
     true,
     "a failed automatic like should be caught up on the next eligible topic"
+  );
+  assert.strictEqual(
+    api.shouldAutoLikeTopic(
+      autoLikeSession,
+      topics[0],
+      { ...audit, closed: true }
+    ),
+    true,
+    "closed topics can still receive reactions in current Discourse"
   );
 
   const autoLikeTopic = {
@@ -650,12 +781,12 @@ async function run() {
     status: "running",
     queue: [autoLikeTopic],
     index: 0,
-    completed: 4,
+    completed: 5,
     likedCount: 0,
     config: {
       ...api.DEFAULT_CONFIG,
-      limit: 50,
-      likeTarget: 10,
+      limit: 150,
+      likeTarget: 25,
     },
   });
   let autoLikeCompletion = api.getSession();
@@ -678,6 +809,45 @@ async function run() {
   assert.strictEqual(autoLikeCompletion.status, "liking");
   assert.strictEqual(autoLikeCompletion.likeTopic.id, autoLikeTopic.id);
   assert.strictEqual(autoLikeCompletion.likeTopic.nextIndex, 1);
+  api.clearSession();
+
+  const cappedTopic = {
+    id: 990008,
+    slug: "capped-long-topic",
+    title: "千楼截断测试",
+  };
+  const afterCappedTopic = {
+    id: 990007,
+    slug: "after-capped-topic",
+    title: "截断后的下一主题",
+  };
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [cappedTopic, afterCappedTopic],
+    index: 0,
+    completed: 0,
+    likedCount: 0,
+    config: api.DEFAULT_CONFIG,
+  });
+  let cappedSession = api.finalizeCappedLongTopic(
+    api.getSession(),
+    cappedTopic,
+    {
+      capped: true,
+      progress: { lastPostNumber: 294 },
+      audit: { highestPostNumber: 1800 },
+    }
+  );
+  assert.strictEqual(cappedSession.completed, 1);
+  assert.strictEqual(cappedSession.index, 1);
+  assert.strictEqual(cappedSession.likedCount, 0);
+  assert.strictEqual(api.getVisited().has(cappedTopic.id), true);
+  assert.strictEqual(api.getTopicProgress(cappedTopic.id).capped, true);
+  assert.strictEqual(
+    api.getTopicProgress(cappedTopic.id).completed,
+    false
+  );
   api.clearSession();
 
   const completionTopic = {
