@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.8.0
-// @description  Linux.do 阅读进度助手：50 话题、10 次确认点赞、断点续读与自动故障恢复
+// @version      1.9.0
+// @description  Linux.do 阅读进度助手：150 话题、25 次确认点赞、千楼帖约 300 楼上限与自动故障恢复
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-idle
@@ -59,7 +59,7 @@
   var MAX_PROGRESS = 2000;
   var MAX_PAGES = 20;
   var MAX_TOPICS = 200;
-  var CONFIG_REVISION = 3;
+  var CONFIG_REVISION = 4;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
   var LOCK_TTL_MS = 30000;
   var FETCH_DELAY_MIN_MS = 1100;
@@ -76,6 +76,9 @@
   var READ_VERIFICATION_ATTEMPTS = 3;
   var READ_VERIFICATION_WAIT_MS = 3000;
   var LIKE_CONFIRM_TIMEOUT_MS = 6000;
+  var LONG_TOPIC_THRESHOLD = 1000;
+  var LONG_TOPIC_READ_CAP = 300;
+  var LONG_TOPIC_CAP_TOLERANCE = 20;
   var PANEL_MIN_WIDTH = 240;
   var PANEL_MIN_HEIGHT = 260;
   var PANEL_DEFAULT_WIDTH = 300;
@@ -86,8 +89,8 @@
   var DEFAULT_CONFIG = {
     configRevision: CONFIG_REVISION,
     pages: 3,
-    limit: 50,
-    likeTarget: 10,
+    limit: 150,
+    likeTarget: 25,
     navigationMode: "native",
     interTopicMinSeconds: 2,
     interTopicMaxSeconds: 6,
@@ -1426,6 +1429,13 @@
     var likeAction = actions.find(function (action) {
       return Number(action.id) === 2;
     });
+    var currentUserReaction =
+      firstPost && firstPost.current_user_reaction
+        ? firstPost.current_user_reaction
+        : null;
+    var currentUserUsedMainReaction = Boolean(
+      firstPost && firstPost.current_user_used_main_reaction
+    );
     var highest = Number(
       (data || {}).highest_post_number ||
         (topic || {}).highestPostNumber ||
@@ -1436,8 +1446,19 @@
     return {
       highestPostNumber: Math.max(1, highest),
       postsCount: Number((data || {}).posts_count || stream.length || 1),
-      firstPostId: firstPost ? Number(firstPost.id) : null,
-      alreadyLiked: Boolean(likeAction && likeAction.acted),
+      firstPostId: firstPost
+        ? Number(firstPost.id)
+        : Number(stream[0]) || null,
+      alreadyLiked: Boolean(
+        (likeAction && likeAction.acted) ||
+          currentUserReaction ||
+          currentUserUsedMainReaction
+      ),
+      canLike:
+        likeAction &&
+        Object.prototype.hasOwnProperty.call(likeAction, "can_act")
+          ? Boolean(likeAction.can_act)
+          : null,
       closed: Boolean((data || {}).closed),
       archived: Boolean((data || {}).archived),
       lastReadPostNumber: parseServerReadPostNumber(data),
@@ -1992,10 +2013,34 @@
       };
     }
     return {
-      url: location.href,
+      url: normalizeListUrl(location.href),
       scrollY: Math.max(0, Number(window.scrollY) || 0),
-      canHistoryBack: true,
+      canHistoryBack: false,
     };
+  }
+
+  function isTopicListPath(pathname) {
+    var path = String(pathname || "").replace(/\/+$/, "") || "/";
+    return Boolean(
+      /^\/(?:latest|new|unread|hot|top)$/.test(path) ||
+        /^\/c\/[^/]+(?:\/\d+)?$/.test(path) ||
+        /^\/tag\/[^/]+(?:\/\d+)?$/.test(path)
+    );
+  }
+
+  function normalizeListUrl(rawUrl) {
+    try {
+      var parsed = new URL(String(rawUrl || ""), location.origin);
+      if (
+        parsed.origin === location.origin &&
+        isTopicListPath(parsed.pathname)
+      ) {
+        return parsed.href;
+      }
+    } catch (error) {
+      // Fall through to the canonical latest list.
+    }
+    return location.origin + "/latest";
   }
 
   function resolveResumePost(localPostNumber, sitePostNumber) {
@@ -2048,6 +2093,7 @@
       scrollY: 0,
       canHistoryBack: false,
     };
+    context.url = normalizeListUrl(context.url);
     setNavigationState(session, "returning", {
       topicId:
         session.queue && session.queue[session.index]
@@ -2061,20 +2107,7 @@
     });
     setStatus("返回主题列表…");
 
-    if (
-      context.canHistoryBack &&
-      window.history &&
-      window.history.length > 1
-    ) {
-      window.history.back();
-      window.setTimeout(function () {
-        if (getTopicId(location.pathname)) {
-          location.href = context.url;
-        }
-      }, 1600);
-    } else {
-      location.href = context.url;
-    }
+    location.href = context.url;
     return true;
   }
 
@@ -2089,11 +2122,16 @@
     }
 
     var scrollY = Math.max(0, Number(session.navigation.scrollY) || 0);
+    var listUrl = normalizeListUrl(location.href);
+    if (listUrl !== location.href) {
+      location.href = listUrl;
+      return true;
+    }
     session.navigation = null;
     session.listContext = {
-      url: location.href,
+      url: listUrl,
       scrollY: scrollY,
-      canHistoryBack: true,
+      canHistoryBack: false,
     };
     session.diagnostics = Object.assign({}, session.diagnostics || {}, {
       stage: "list",
@@ -2118,6 +2156,28 @@
         Number(progress.lastPostNumber || 0) >=
           Number(audit.highestPostNumber || Infinity) &&
         Number(bottomStableCount || 0) >= 2
+    );
+  }
+
+  function getLongTopicReadCap(highestPostNumber) {
+    return Number(highestPostNumber || 0) > LONG_TOPIC_THRESHOLD
+      ? LONG_TOPIC_READ_CAP
+      : null;
+  }
+
+  function hasReachedLongTopicCap(
+    highestPostNumber,
+    observedPostNumber,
+    serverPostNumber
+  ) {
+    var cap = getLongTopicReadCap(highestPostNumber);
+    if (!cap) {
+      return false;
+    }
+    return Boolean(
+      Number(observedPostNumber || 0) >= cap &&
+        Number(serverPostNumber || 0) >=
+          cap - LONG_TOPIC_CAP_TOLERANCE
     );
   }
 
@@ -2193,6 +2253,31 @@
       1,
       Number(progress.lastPostNumber) || 1
     );
+    var longTopicCap = getLongTopicReadCap(audit.highestPostNumber);
+    if (
+      longTopicCap &&
+      Number(baselineServerPost || 0) >=
+        longTopicCap - LONG_TOPIC_CAP_TOLERANCE
+    ) {
+      progress.lastPostNumber = Math.max(
+        1,
+        Number(baselineServerPost) || 1
+      );
+      progress.verifiedPostNumber = progress.lastPostNumber;
+      progress.highestPostNumber = audit.highestPostNumber;
+      progress.verificationStatus = "verified";
+      progress.capped = true;
+      progress.cappedAtPostNumber = progress.lastPostNumber;
+      progress.completed = false;
+      progress = saveTopicProgress(topic.id, progress);
+      return {
+        stopped: false,
+        complete: false,
+        capped: true,
+        progress: progress,
+        audit: audit,
+      };
+    }
     var length = await waitForArticle();
     var speed = sampleReadingSpeed(session.config.charsPerSecond);
     var plan = calculateReadPlan(session.config, length, speed);
@@ -2335,6 +2420,13 @@
         break;
       }
 
+      if (
+        longTopicCap &&
+        observedPostNumber >= longTopicCap
+      ) {
+        break;
+      }
+
       steps += 1;
       if (steps > 400) {
         throw new Error("滚动步骤异常，已停止本轮任务");
@@ -2433,10 +2525,19 @@
     progress.verificationAttempts = verification.attempts || 1;
     progress.serverCheckedAt = Date.now();
     progress.completed = false;
+    progress.capped = hasReachedLongTopicCap(
+      audit.highestPostNumber,
+      observedPostNumber,
+      verification.serverPostNumber
+    );
+    progress.cappedAtPostNumber = progress.capped
+      ? progress.lastPostNumber
+      : Number(progress.cappedAtPostNumber || 0);
     progress = saveTopicProgress(topic.id, progress);
     return {
       stopped: false,
       complete: Boolean(reachedEnd && verification.complete),
+      capped: Boolean(progress.capped),
       progress: progress,
       audit: audit,
       verification: verification,
@@ -2915,7 +3016,7 @@
       Number(session.likedCount || 0) >= target ||
       topic.pinned ||
       audit.alreadyLiked ||
-      audit.closed ||
+      audit.canLike === false ||
       audit.archived
     ) {
       return false;
@@ -3044,8 +3145,39 @@
     return session;
   }
 
+  function finalizeCappedLongTopic(session, topic, result) {
+    if (!session || !topic || !result || !result.capped) {
+      return session;
+    }
+    saveTopicProgress(topic.id, {
+      lastPostNumber: Number(result.progress.lastPostNumber || 1),
+      verifiedPostNumber: Number(result.progress.lastPostNumber || 1),
+      highestPostNumber: Number(result.audit.highestPostNumber || 1),
+      verificationStatus: "verified",
+      completed: false,
+      capped: true,
+      cappedAtPostNumber: Number(result.progress.lastPostNumber || 1),
+    });
+    markVisited(topic.id);
+    session.completed = Number(session.completed || 0) + 1;
+    session.status = "running";
+    session.navigation = null;
+    session.index = resolvePostCompletionIndex(session, topic.id);
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "idle",
+      retries: 0,
+      lastError: "",
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    return session;
+  }
+
   function findFirstPostLikeButton() {
     var selectors = [
+      '#post_1 button.btn-toggle-reaction-like',
+      '#post_1 .discourse-reactions-reaction-button button.reaction-button',
+      '#post_1 button.reaction-button',
       '#post_1 button.like',
       'article[data-post-number="1"] button.like',
       '#post_1 button[aria-label*="赞"]',
@@ -3086,8 +3218,74 @@
     return Boolean(
       button.getAttribute("aria-pressed") === "true" ||
         /has-like|liked|is-liked/.test(String(button.className || "")) ||
-        /取消赞|移除赞|unlike|remove like/.test(label)
+        /取消.*(?:赞|回应|反应)|移除.*(?:赞|回应|反应)|unlike|remove (?:your )?(?:like|reaction)/.test(
+          label
+        )
     );
+  }
+
+  function parseLikeActionConfirmation(data) {
+    var payload = data && data.result ? data.result : data;
+    var actions = Array.isArray(payload)
+      ? payload
+      : Array.isArray((payload || {}).actions_summary)
+        ? payload.actions_summary
+        : [];
+    var likeAction = actions.find(function (action) {
+      return Number((action || {}).id) === 2;
+    });
+    return Boolean(
+      (likeAction && likeAction.acted) ||
+        (payload || {}).current_user_reaction ||
+        (payload || {}).current_user_used_main_reaction
+    );
+  }
+
+  function getCsrfToken() {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? String(meta.getAttribute("content") || "") : "";
+  }
+
+  async function submitPostLike(postId) {
+    var id = Number(postId || 0);
+    if (!id) {
+      throw new Error("主题首帖 ID 缺失");
+    }
+    var csrfToken = getCsrfToken();
+    if (!csrfToken) {
+      throw new Error("页面没有登录动作令牌，请确认当前账号仍处于登录状态");
+    }
+
+    var response = await fetch("/post_actions", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "X-CSRF-Token": csrfToken,
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body:
+        "id=" +
+        encodeURIComponent(id) +
+        "&post_action_type_id=2",
+    });
+    var data = {};
+    try {
+      data = await response.json();
+    } catch (error) {
+      data = {};
+    }
+    if (!response.ok) {
+      var errors = Array.isArray(data.errors)
+        ? data.errors.join("；")
+        : String(data.error || data.message || "");
+      throw new Error(
+        "站内点赞接口返回 " +
+          response.status +
+          (errors ? "：" + errors : "")
+      );
+    }
+    return parseLikeActionConfirmation(data);
   }
 
   async function waitForLikeConfirmation(topic, button) {
@@ -3146,15 +3344,7 @@
         context &&
         getTopicId(location.pathname)
       ) {
-        if (
-          context.canHistoryBack &&
-          window.history &&
-          window.history.length > 1
-        ) {
-          window.history.back();
-        } else {
-          location.href = context.url;
-        }
+        location.href = normalizeListUrl(context.url);
       }
       return;
     }
@@ -3205,15 +3395,7 @@
       if (!session || session.status !== "liking" || !session.likeTopic) {
         return;
       }
-      if (!button) {
-        recordAutoLikeFailure(
-          session,
-          "没有定位到当前主题首帖的点赞按钮"
-        );
-        return;
-      }
-
-      if (isLikeButtonActive(button)) {
+      if (button && isLikeButtonActive(button)) {
         session.likedCount = Math.min(
           Number(session.config.likeTarget || 0),
           Number(session.likedCount || 0) + 1
@@ -3230,9 +3412,11 @@
         return;
       }
 
-      button.click();
       var topic = normalizeTopic(session.likeTopic);
-      var confirmed = await waitForLikeConfirmation(topic, button);
+      var confirmed = await submitPostLike(session.likeTopic.firstPostId);
+      if (!confirmed) {
+        confirmed = await waitForLikeConfirmation(topic, button);
+      }
       session = getSession();
       if (!session || session.status !== "liking" || !session.likeTopic) {
         return;
@@ -3352,7 +3536,16 @@
       }
       markRecoverySuccess(session, topic.id);
 
-      if (result.complete) {
+      if (result.capped) {
+        session = finalizeCappedLongTopic(session, topic, result);
+        setStatus(
+          "超长话题已按规则读到站点确认的第 " +
+            result.progress.lastPostNumber +
+            "/" +
+            result.audit.highestPostNumber +
+            " 楼；不点赞，进入下一主题。"
+        );
+      } else if (result.complete) {
         prepareTopicCompletion(session, topic, result);
         session = finalizePendingCompletion(getSession());
         if (session.status === "liking") {
@@ -3377,6 +3570,9 @@
       }
 
       if (session.index >= session.queue.length) {
+        var completedListUrl = normalizeListUrl(
+          (session.listContext || {}).url
+        );
         clearSession();
         setStatus(
           "本轮完成：读完 " +
@@ -3388,7 +3584,7 @@
             " 次。"
         );
         await sleep(1200);
-        location.href = location.origin + "/latest";
+        location.href = completedListUrl;
         return;
       }
 
@@ -3659,8 +3855,8 @@
       '<button id="' + IDS.sizeUp + '" type="button">＋ 放大</button>',
       "</div>",
       field("读取页数", IDS.pages, "number", "3"),
-      field("本轮话题", IDS.limit, "number", "50"),
-      field("点赞目标", IDS.likeTarget, "number", "10"),
+      field("本轮话题", IDS.limit, "number", "150"),
+      field("点赞目标", IDS.likeTarget, "number", "25"),
       '<label class="ldf-field"><span>打开方式</span><select id="' +
         IDS.navigationMode +
         '"><option value="native">原生导航</option><option value="direct">直接续读</option></select></label>',
@@ -3835,6 +4031,10 @@
       verifyServerReadProgress: verifyServerReadProgress,
       buildResumeUrl: buildResumeUrl,
       resolveResumePost: resolveResumePost,
+      getLongTopicReadCap: getLongTopicReadCap,
+      hasReachedLongTopicCap: hasReachedLongTopicCap,
+      isTopicListPath: isTopicListPath,
+      normalizeListUrl: normalizeListUrl,
       isTopicComplete: isTopicComplete,
       calculateReadPlan: calculateReadPlan,
       sampleReadingSpeed: sampleReadingSpeed,
@@ -3853,6 +4053,7 @@
       prepareTopicCompletion: prepareTopicCompletion,
       resolvePostCompletionIndex: resolvePostCompletionIndex,
       finalizePendingCompletion: finalizePendingCompletion,
+      finalizeCappedLongTopic: finalizeCappedLongTopic,
       stageLabel: stageLabel,
       auditSessionQueue: auditSessionQueue,
       ensureRecoveryState: ensureRecoveryState,
@@ -3866,6 +4067,8 @@
       saveSession: saveSession,
       clearSession: clearSession,
       isLikeButtonActive: isLikeButtonActive,
+      parseLikeActionConfirmation: parseLikeActionConfirmation,
+      submitPostLike: submitPostLike,
       waitForLikeConfirmation: waitForLikeConfirmation,
     };
     return;
