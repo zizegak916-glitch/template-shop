@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.11.0
-// @description  Linux.do 阅读进度助手：150 话题、25 次确认点赞、候选池自动续扫与分级放宽、独立心跳与断点自愈
+// @version      1.12.0
+// @description  Linux.do 阅读进度助手：宽候选池、千楼帖约 300 楼、普通长帖读完、仅在完成节点核验
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-start
@@ -64,7 +64,7 @@
   var DISCOVERY_BATCH_PAGES = 10;
   var DISCOVERY_REFILL_SIZE = 30;
   var CANDIDATE_RECHECK_MS = 30000;
-  var CONFIG_REVISION = 4;
+  var CONFIG_REVISION = 5;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
   var LOCK_TTL_MS = 30000;
   var FETCH_DELAY_MIN_MS = 1100;
@@ -113,7 +113,7 @@
     minSeconds: 12,
     maxSeconds: 90,
     charsPerSecond: 10,
-    includePinned: false,
+    includePinned: true,
     includeKeywords: [],
     excludeKeywords: [],
     categories: [],
@@ -1172,12 +1172,17 @@
         "主题 #" +
           topic.id +
           " · 楼层 " +
-          Number(progress.lastPostNumber || 1) +
+          Math.max(
+            1,
+            Number(progress.lastPostNumber || 1),
+            Number(progress.observedPostNumber || 1)
+          ) +
           "/" +
           (progress.highestPostNumber || "?")
       );
       var verificationLabels = {
         idle: "待核验",
+        deferred: "本地断点，完成时核验",
         checking: "核验中",
         verified: "已记录",
         "not-recorded": "未记录",
@@ -1398,7 +1403,9 @@
         1,
         100
       ),
-      includePinned: Boolean(config.includePinned),
+      includePinned: needsDefaultMigration
+        ? DEFAULT_CONFIG.includePinned
+        : Boolean(config.includePinned),
       includeKeywords: Array.isArray(config.includeKeywords)
         ? config.includeKeywords
         : parseList(config.includeKeywords),
@@ -1722,40 +1729,30 @@
 
   function buildDiscoveryConfigs(config) {
     var base = normalizeConfig(config);
-    var levels = [
-      {
-        label: "原筛选",
+    var hasPreference =
+      base.includeKeywords.length > 0 || base.categories.length > 0;
+    var levels = [];
+    if (hasPreference) {
+      levels.push({
+        label: "优先条件",
+        pageLimit: Math.max(
+          DISCOVERY_BATCH_PAGES,
+          Number(base.pages || 0)
+        ),
         config: base,
-      },
-    ];
-    var current = base;
-
-    if (current.includeKeywords.length) {
-      current = normalizeConfig(
-        Object.assign({}, current, {
+      });
+    }
+    levels.push({
+      label: "全部未读",
+      pageLimit: MAX_DISCOVERY_PAGES,
+      config: normalizeConfig(
+        Object.assign({}, base, {
           configRevision: CONFIG_REVISION,
           includeKeywords: [],
-        })
-      );
-      levels.push({
-        label: "放宽包含词",
-        config: current,
-      });
-    }
-
-    if (current.categories.length) {
-      current = normalizeConfig(
-        Object.assign({}, current, {
-          configRevision: CONFIG_REVISION,
           categories: [],
         })
-      );
-      levels.push({
-        label: "放宽分类",
-        config: current,
-      });
-    }
-
+      ),
+    });
     return levels;
   }
 
@@ -1928,9 +1925,15 @@
     );
     var excludedIds = collectSessionTopicIds(session);
     var added = [];
-    var safetyRounds = levels.length * Math.ceil(
-      MAX_DISCOVERY_PAGES / DISCOVERY_BATCH_PAGES
-    );
+    var safetyRounds = levels.reduce(function (total, level) {
+      return (
+        total +
+        Math.ceil(
+          Number(level.pageLimit || MAX_DISCOVERY_PAGES) /
+            DISCOVERY_BATCH_PAGES
+        )
+      );
+    }, 0);
 
     while (added.length < desired && safetyRounds > 0) {
       safetyRounds -= 1;
@@ -1973,7 +1976,11 @@
       if (added.length >= desired) {
         break;
       }
-      if (batch.exhausted || discovery.nextPage >= MAX_DISCOVERY_PAGES) {
+      if (
+        batch.exhausted ||
+        discovery.nextPage >=
+          Number(level.pageLimit || MAX_DISCOVERY_PAGES)
+      ) {
         if (discovery.level + 1 < levels.length) {
           discovery.level += 1;
           discovery.nextPage = 0;
@@ -2335,7 +2342,11 @@
   }
 
   function buildResumeUrl(topic, progress) {
-    var postNumber = Math.max(1, Number(progress.lastPostNumber) || 1);
+    var postNumber = Math.max(
+      1,
+      Number(progress.lastPostNumber) || 1,
+      Number(progress.observedPostNumber) || 1
+    );
     return topic.url + (postNumber > 1 ? "/" + postNumber : "");
   }
 
@@ -2658,10 +2669,7 @@
   }
 
   function buildBrowseSearchQuery(config) {
-    var keywords = Array.isArray((config || {}).includeKeywords)
-      ? config.includeKeywords.filter(Boolean).slice(0, 3)
-      : [];
-    return keywords.length ? keywords.join(" ") : "order:latest";
+    return "order:latest";
   }
 
   async function startBrowseSearch(session) {
@@ -2911,18 +2919,24 @@
     );
   }
 
-  function getLongTopicReadCap(highestPostNumber) {
-    return Number(highestPostNumber || 0) > LONG_TOPIC_THRESHOLD
+  function getLongTopicReadCap(highestPostNumber, postsCount) {
+    var actualPostCount = Number(postsCount || 0);
+    var effectiveCount =
+      Number.isFinite(actualPostCount) && actualPostCount > 0
+        ? actualPostCount
+        : Number(highestPostNumber || 0);
+    return effectiveCount > LONG_TOPIC_THRESHOLD
       ? LONG_TOPIC_READ_CAP
       : null;
   }
 
   function hasReachedLongTopicCap(
     highestPostNumber,
+    postsCount,
     observedPostNumber,
     serverPostNumber
   ) {
-    var cap = getLongTopicReadCap(highestPostNumber);
+    var cap = getLongTopicReadCap(highestPostNumber, postsCount);
     if (!cap) {
       return false;
     }
@@ -2931,6 +2945,19 @@
         Number(serverPostNumber || 0) >=
           cap - LONG_TOPIC_CAP_TOLERANCE
     );
+  }
+
+  function shouldVerifyReadingProgress(
+    highestPostNumber,
+    postsCount,
+    observedPostNumber,
+    reachedEnd
+  ) {
+    if (reachedEnd) {
+      return true;
+    }
+    var cap = getLongTopicReadCap(highestPostNumber, postsCount);
+    return Boolean(cap && Number(observedPostNumber || 0) >= cap);
   }
 
   function getArticleTextLength() {
@@ -3005,7 +3032,10 @@
       1,
       Number(progress.lastPostNumber) || 1
     );
-    var longTopicCap = getLongTopicReadCap(audit.highestPostNumber);
+    var longTopicCap = getLongTopicReadCap(
+      audit.highestPostNumber,
+      audit.postsCount
+    );
     if (
       longTopicCap &&
       Number(baselineServerPost || 0) >=
@@ -3041,11 +3071,10 @@
     var reachedEnd = false;
 
     progress.highestPostNumber = audit.highestPostNumber;
-    progress.verificationStatus = "checking";
-    progress.verificationAttempts = 0;
+    progress.verificationStatus = "deferred";
     saveTopicProgress(topic.id, progress);
 
-    while (Date.now() < deadline) {
+    while (true) {
       var currentSession = getSession();
       if (!currentSession || currentSession.status === "stopped") {
         return {
@@ -3173,19 +3202,33 @@
         )
       ) {
         reachedEnd = true;
-        break;
       }
 
       if (
-        longTopicCap &&
-        observedPostNumber >= longTopicCap
+        shouldVerifyReadingProgress(
+          audit.highestPostNumber,
+          audit.postsCount,
+          observedPostNumber,
+          reachedEnd
+        )
       ) {
         break;
       }
 
       steps += 1;
-      if (steps > 400) {
+      if (steps > 2000) {
         throw new Error("滚动步骤异常，已停止本轮任务");
+      }
+
+      if (Date.now() >= deadline) {
+        progress.verificationStatus = "deferred";
+        progress = saveTopicProgress(topic.id, progress);
+        setStatus(
+          "已保存本地断点到第 " +
+            observedPostNumber +
+            " 楼；普通主题继续读到结尾后再统一核验。"
+        );
+        deadline = Date.now() + plan.seconds * 1000;
       }
     }
 
@@ -3287,6 +3330,7 @@
     progress.completed = false;
     progress.capped = hasReachedLongTopicCap(
       audit.highestPostNumber,
+      audit.postsCount,
       observedPostNumber,
       verification.serverPostNumber
     );
@@ -4553,11 +4597,11 @@
       } else {
         moveCurrentTopicToQueueTail(session);
         setStatus(
-          "长帖本段结束，站点已记录到第 " +
+          "已经读到本主题完成节点，但站点暂只确认到第 " +
             result.progress.lastPostNumber +
             "/" +
             result.audit.highestPostNumber +
-            " 楼；稍后从这里续读。"
+            " 楼；保留本地终点，稍后再复核。"
         );
       }
 
@@ -4874,9 +4918,9 @@
       '<label class="ldf-wide"><input id="' + IDS.includePinned + '" type="checkbox"> 包含置顶主题</label>',
       '<label class="ldf-wide"><input id="' + IDS.foregroundOnly + '" type="checkbox"> 仅在页面前台时阅读和计时</label>',
       '<label class="ldf-wide"><input id="' + IDS.keepAwake + '" type="checkbox"> 阅读时申请手机屏幕常亮</label>',
-      '<label class="ldf-wide">包含关键词<input id="' + IDS.includeKeywords + '" type="text" placeholder="AI, VPS"></label>',
+      '<label class="ldf-wide">优先关键词（不是硬门槛）<input id="' + IDS.includeKeywords + '" type="text" placeholder="AI, VPS"></label>',
       '<label class="ldf-wide">排除关键词<input id="' + IDS.excludeKeywords + '" type="text" placeholder="广告, 交易"></label>',
-      '<label class="ldf-wide">分类名称、slug 或 ID<input id="' + IDS.categories + '" type="text" placeholder="development, 5"></label>',
+      '<label class="ldf-wide">优先分类、slug 或 ID<input id="' + IDS.categories + '" type="text" placeholder="development, 5"></label>',
       '<div class="ldf-actions">',
       '<button id="' + IDS.start + '" type="button">开始</button>',
       '<button id="' + IDS.pause + '" type="button">暂停</button>',
@@ -5077,6 +5121,7 @@
       resolveResumePost: resolveResumePost,
       getLongTopicReadCap: getLongTopicReadCap,
       hasReachedLongTopicCap: hasReachedLongTopicCap,
+      shouldVerifyReadingProgress: shouldVerifyReadingProgress,
       isTopicListPath: isTopicListPath,
       normalizeListUrl: normalizeListUrl,
       getTopicSourceListUrl: getTopicSourceListUrl,
