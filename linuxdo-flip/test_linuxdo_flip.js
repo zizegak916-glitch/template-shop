@@ -354,8 +354,8 @@ async function run() {
     "the runner must start before a slow page reaches document-idle"
   );
   assert(
-    source.includes("// @version      1.10.0"),
-    "the watchdog release should publish a new userscript version"
+    source.includes("// @version      1.11.0"),
+    "candidate discovery fixes should publish a new userscript version"
   );
   assert.deepStrictEqual(
     Array.from(api.parseList(" AI，VPS\n开发 ")),
@@ -437,6 +437,31 @@ async function run() {
   assert.strictEqual(config.navigationMode, "native");
   assert.strictEqual(api.DEFAULT_CONFIG.limit, 150);
   assert.strictEqual(api.DEFAULT_CONFIG.likeTarget, 25);
+  const discoveryLevels = api.buildDiscoveryConfigs(
+    api.normalizeConfig({
+      ...config,
+      includeKeywords: ["ai"],
+      excludeKeywords: ["交易"],
+      categories: ["development"],
+    })
+  );
+  assert.deepStrictEqual(
+    Array.from(discoveryLevels, (level) => level.label),
+    ["原筛选", "放宽包含词", "放宽分类"]
+  );
+  assert.deepStrictEqual(
+    Array.from(discoveryLevels[2].config.includeKeywords),
+    []
+  );
+  assert.deepStrictEqual(
+    Array.from(discoveryLevels[2].config.categories),
+    []
+  );
+  assert.deepStrictEqual(
+    Array.from(discoveryLevels[2].config.excludeKeywords),
+    ["交易"],
+    "automatic relaxation must preserve explicit exclusions"
+  );
   const migratedDefaults = api.normalizeConfig({
     limit: 180,
     likeTarget: 30,
@@ -464,6 +489,10 @@ async function run() {
     api.normalizeListUrl("https://linux.do/c/develop/4"),
     "https://linux.do/c/develop/4"
   );
+  assert.strictEqual(
+    api.getTopicSourceListUrl({ sourcePage: 12 }),
+    "https://linux.do/latest?page=12"
+  );
   assert.strictEqual(api.isTopicListPath("/latest"), true);
   assert.strictEqual(api.isTopicListPath("/t/topic/123"), false);
   assert.strictEqual(
@@ -490,6 +519,16 @@ async function run() {
       pendingCompletion: { topicId: 1 },
     }),
     true
+  );
+  assert.strictEqual(
+    api.hasResumableSession({
+      status: "running",
+      queue: [],
+      index: 0,
+      discovery: { waiting: true },
+    }),
+    true,
+    "an empty queue waiting for fresh candidates must remain resumable"
   );
   const browseSession = {
     version: api.VERSION,
@@ -637,6 +676,31 @@ async function run() {
   assert(topics.every((topic) => topic.title.includes("AI")));
   assert(topics.every((topic) => !topic.pinned));
   assert(topics.every((topic) => Number.isInteger(topic.sourcePage)));
+  const skippedFrontPageBatch = await api.fetchTopicBatch(
+    api.normalizeConfig({
+      ...config,
+      limit: 5,
+      includeKeywords: [],
+    }),
+    {
+      excludedIds: new Set(
+        Array.from({ length: 150 }, (_, index) => index + 1)
+      ),
+      startPage: 0,
+      pagesToScan: 7,
+      limit: 5,
+      skipVisible: true,
+    }
+  );
+  assert.deepStrictEqual(
+    Array.from(skippedFrontPageBatch.topics, (topic) => topic.id),
+    [151, 153, 155, 156, 157],
+    "candidate fetch must exclude already-read topics before applying the queue limit"
+  );
+  assert(
+    skippedFrontPageBatch.scannedPages >= 4,
+    "candidate discovery should continue past fully-read front pages"
+  );
 
   const categoryConfig = api.normalizeConfig({
     ...config,
@@ -647,6 +711,44 @@ async function run() {
   assert.strictEqual(categoryTopics.length, 20);
   assert(categoryTopics.every((topic) => topic.categoryId === 5));
   assert(env.calls.includes("/categories.json"));
+
+  const refillEnv = createEnvironment();
+  const refillApi = refillEnv.api;
+  for (let topicId = 1; topicId <= 150; topicId += 1) {
+    refillApi.markVisited(topicId);
+  }
+  const refillConfig = refillApi.normalizeConfig({
+    configRevision: refillApi.DEFAULT_CONFIG.configRevision,
+    limit: 5,
+    includeKeywords: [],
+    excludeKeywords: [],
+    categories: [],
+  });
+  refillApi.saveSession({
+    version: refillApi.VERSION,
+    status: "running",
+    queue: [],
+    index: 0,
+    completed: 0,
+    config: refillConfig,
+    createdAt: 12345,
+    discovery: {
+      level: 0,
+      nextPage: 0,
+    },
+  });
+  const refilledTopics = await refillApi.refillSessionQueue(
+    refillApi.getSession(),
+    5
+  );
+  assert.deepStrictEqual(
+    Array.from(refilledTopics, (topic) => topic.id),
+    [151, 153, 154, 155, 156],
+    "an empty queue must refill from older pages instead of stopping"
+  );
+  assert.strictEqual(refillApi.getSession().status, "running");
+  assert.strictEqual(refillApi.getSession().discovery.waiting, false);
+  refillApi.clearSession();
 
   const shortPlan = api.calculateReadPlan(config, 20, 10);
   assert.strictEqual(shortPlan.seconds, 12, "minimum should be honored");
@@ -1294,9 +1396,18 @@ async function run() {
   browseSessionState = api.getSession();
   assert.strictEqual(
     api.planBrowseFailureRecovery(browseSessionState, "list failed").type,
-    "pause"
+    "refresh-candidates"
   );
-  assert.strictEqual(api.getSession().status, "paused");
+  assert.strictEqual(
+    api.getSession().status,
+    "running",
+    "candidate scarcity must not pause the task"
+  );
+  assert.strictEqual(
+    api.getSession().recovery.consecutiveFailures,
+    0,
+    "candidate scarcity must not consume the topic failure budget"
+  );
   api.clearSession();
 
   const retryEnv = createEnvironment({ retry429: true });
