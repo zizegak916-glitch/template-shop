@@ -354,8 +354,8 @@ async function run() {
     "the runner must start before a slow page reaches document-idle"
   );
   assert(
-    source.includes("// @version      1.11.0"),
-    "candidate discovery fixes should publish a new userscript version"
+    source.includes("// @version      1.12.0"),
+    "long-topic and deferred-verification fixes should publish a new userscript version"
   );
   assert.deepStrictEqual(
     Array.from(api.parseList(" AI，VPS\n开发 ")),
@@ -374,7 +374,8 @@ async function run() {
     api.buildBrowseSearchQuery({
       includeKeywords: ["AI", "VPS", "开发", "第四项"],
     }),
-    "AI VPS 开发"
+    "order:latest",
+    "fallback browsing must not turn preference keywords into a hard requirement"
   );
   assert.strictEqual(
     api.buildBrowseSearchQuery({ includeKeywords: [] }),
@@ -437,6 +438,11 @@ async function run() {
   assert.strictEqual(config.navigationMode, "native");
   assert.strictEqual(api.DEFAULT_CONFIG.limit, 150);
   assert.strictEqual(api.DEFAULT_CONFIG.likeTarget, 25);
+  assert.strictEqual(
+    api.DEFAULT_CONFIG.includePinned,
+    true,
+    "the default candidate pool should not exclude pinned topics"
+  );
   const discoveryLevels = api.buildDiscoveryConfigs(
     api.normalizeConfig({
       ...config,
@@ -447,20 +453,25 @@ async function run() {
   );
   assert.deepStrictEqual(
     Array.from(discoveryLevels, (level) => level.label),
-    ["原筛选", "放宽包含词", "放宽分类"]
+    ["优先条件", "全部未读"]
   );
   assert.deepStrictEqual(
-    Array.from(discoveryLevels[2].config.includeKeywords),
+    Array.from(discoveryLevels[1].config.includeKeywords),
     []
   );
   assert.deepStrictEqual(
-    Array.from(discoveryLevels[2].config.categories),
+    Array.from(discoveryLevels[1].config.categories),
     []
   );
   assert.deepStrictEqual(
-    Array.from(discoveryLevels[2].config.excludeKeywords),
+    Array.from(discoveryLevels[1].config.excludeKeywords),
     ["交易"],
-    "automatic relaxation must preserve explicit exclusions"
+    "broad candidate discovery must preserve explicit exclusions"
+  );
+  assert.strictEqual(
+    discoveryLevels[0].pageLimit,
+    10,
+    "preference-only filters should not block discovery for dozens of pages"
   );
   const migratedDefaults = api.normalizeConfig({
     limit: 180,
@@ -468,6 +479,7 @@ async function run() {
   });
   assert.strictEqual(migratedDefaults.limit, 150);
   assert.strictEqual(migratedDefaults.likeTarget, 25);
+  assert.strictEqual(migratedDefaults.includePinned, true);
   assert.strictEqual(
     migratedDefaults.configRevision,
     api.DEFAULT_CONFIG.configRevision
@@ -743,7 +755,7 @@ async function run() {
   );
   assert.deepStrictEqual(
     Array.from(refilledTopics, (topic) => topic.id),
-    [151, 153, 154, 155, 156],
+    [151, 152, 153, 154, 155],
     "an empty queue must refill from older pages instead of stopping"
   );
   assert.strictEqual(refillApi.getSession().status, "running");
@@ -918,6 +930,14 @@ async function run() {
     api.buildResumeUrl(topics[0], partial),
     `${topics[0].url}/437`
   );
+  assert.strictEqual(
+    api.buildResumeUrl(topics[0], {
+      lastPostNumber: 20,
+      observedPostNumber: 312,
+    }),
+    `${topics[0].url}/312`,
+    "deferred verification must resume from the local reading checkpoint"
+  );
   assert.strictEqual(api.resolveResumePost(437, 512), 512);
   assert.strictEqual(api.resolveResumePost(640, 512), 640);
   assert.strictEqual(api.isTopicComplete(partial, audit, 2), false);
@@ -928,19 +948,39 @@ async function run() {
   });
   assert.strictEqual(api.isTopicComplete(finished, audit, 2), true);
   assert.strictEqual(api.isTopicComplete(finished, audit, 1), false);
-  assert.strictEqual(api.getLongTopicReadCap(1000), null);
-  assert.strictEqual(api.getLongTopicReadCap(1001), 300);
+  assert.strictEqual(api.getLongTopicReadCap(1000, 1000), null);
+  assert.strictEqual(api.getLongTopicReadCap(1001, 1001), 300);
   assert.strictEqual(
-    api.hasReachedLongTopicCap(1500, 305, 280),
+    api.getLongTopicReadCap(1400, 680),
+    null,
+    "deleted post-number gaps must not turn a hundreds-post topic into a capped thousand-post topic"
+  );
+  assert.strictEqual(
+    api.hasReachedLongTopicCap(1500, 1400, 305, 280),
     true
   );
   assert.strictEqual(
-    api.hasReachedLongTopicCap(1500, 299, 290),
+    api.hasReachedLongTopicCap(1500, 1400, 299, 290),
     false
   );
   assert.strictEqual(
-    api.hasReachedLongTopicCap(1500, 310, 279),
+    api.hasReachedLongTopicCap(1500, 1400, 310, 279),
     false
+  );
+  assert.strictEqual(
+    api.shouldVerifyReadingProgress(900, 680, 320, false),
+    false,
+    "ordinary long topics should not verify at an intermediate checkpoint"
+  );
+  assert.strictEqual(
+    api.shouldVerifyReadingProgress(900, 680, 680, true),
+    true,
+    "ordinary topics should verify once the end is reached"
+  );
+  assert.strictEqual(
+    api.shouldVerifyReadingProgress(1500, 1400, 300, false),
+    true,
+    "genuine thousand-post topics should verify at the 300-post cap"
   );
 
   const autoLikeSession = {
