@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.10.0
-// @description  Linux.do 阅读进度助手：150 话题、25 次确认点赞、千楼帖约 300 楼上限、独立心跳与断点自愈
+// @version      1.11.0
+// @description  Linux.do 阅读进度助手：150 话题、25 次确认点赞、候选池自动续扫与分级放宽、独立心跳与断点自愈
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-start
@@ -60,6 +60,10 @@
   var MAX_PROGRESS = 2000;
   var MAX_PAGES = 20;
   var MAX_TOPICS = 200;
+  var MAX_DISCOVERY_PAGES = 80;
+  var DISCOVERY_BATCH_PAGES = 10;
+  var DISCOVERY_REFILL_SIZE = 30;
+  var CANDIDATE_RECHECK_MS = 30000;
   var CONFIG_REVISION = 4;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
   var LOCK_TTL_MS = 30000;
@@ -128,6 +132,8 @@
   var wakeLockRequestInFlight = false;
   var keepAwakeVideo = null;
   var likeSubmitting = false;
+  var candidateRetryTimer = null;
+  var candidateRefillPromise = null;
   var booted = false;
 
   function loadJSON(storage, key, fallback) {
@@ -469,6 +475,18 @@
     session.listContext = session.listContext || null;
     session.pendingCompletion = session.pendingCompletion || null;
     session.likeTopic = session.likeTopic || null;
+    session.discovery = Object.assign(
+      {
+        level: 0,
+        nextPage: 0,
+        pagesScanned: 0,
+        refills: 0,
+        waiting: false,
+        exhaustedAt: 0,
+        browsePageCursor: 0,
+      },
+      session.discovery || {}
+    );
     if (session.status === "review" && session.reviewTopic) {
       session.status = "liking";
       session.likeTopic = Object.assign({}, session.reviewTopic);
@@ -571,6 +589,10 @@
   function clearSession() {
     remove(localStorage, KEYS.session);
     clearRuntimeState();
+    if (candidateRetryTimer !== null) {
+      window.clearTimeout(candidateRetryTimer);
+      candidateRetryTimer = null;
+    }
     releaseLock();
     releaseWakeLock();
   }
@@ -606,6 +628,7 @@
         session.status !== "stopped" &&
         (Boolean(session.pendingCompletion) ||
           session.status === "liking" ||
+          Boolean((session.discovery || {}).waiting) ||
           (Array.isArray(session.queue) &&
             Number(session.index || 0) < session.queue.length))
     );
@@ -726,27 +749,27 @@
     recovery.browseFailures = attempt;
     recovery.totalFailures = Number(recovery.totalFailures || 0) + 1;
     recovery.consecutiveFailures =
-      Number(recovery.consecutiveFailures || 0) + 1;
+      Number(recovery.consecutiveFailures || 0);
     recovery.lastError = message;
     recovery.updatedAt = Date.now();
     session.error = message;
     session.navigation = null;
 
-    var canRetry =
-      attempt <= MAX_BROWSE_AUTO_RETRIES &&
-      recovery.consecutiveFailures < MAX_CONSECUTIVE_FAILURES;
+    var canRetry = attempt <= MAX_BROWSE_AUTO_RETRIES;
     var action = {
-      type: canRetry ? "retry-list" : "pause",
+      type: canRetry ? "retry-list" : "refresh-candidates",
       attempt: attempt,
-      delayMs: canRetry ? RECOVERY_BACKOFF_BASE_MS * attempt : 0,
+      delayMs: canRetry
+        ? RECOVERY_BACKOFF_BASE_MS * attempt
+        : Math.min(15000, RECOVERY_BACKOFF_BASE_MS * attempt),
       message: canRetry
         ? message
-        : "列表连续恢复失败，已停止自动重试：" + message,
+        : "当前列表候选不足，切换候选页并补充队列：" + message,
     };
     recovery.lastAction = action.type;
-    session.status = canRetry ? "running" : "paused";
+    session.status = "running";
     session.diagnostics = Object.assign({}, session.diagnostics || {}, {
-      stage: canRetry ? "recovering" : "paused",
+      stage: canRetry ? "recovering" : "candidate-refill",
       retries: attempt,
       lastError: action.message,
       updatedAt: Date.now(),
@@ -778,6 +801,10 @@
         ? "列表故障，" +
             Math.ceil(action.delayMs / 1000) +
             " 秒后回到原列表重试…"
+        : action.type === "refresh-candidates"
+          ? "当前页没有可用候选，" +
+            Math.ceil(action.delayMs / 1000) +
+            " 秒后切换候选页并续扫…"
         : action.type === "retry-topic"
           ? "当前主题故障，" +
             Math.ceil(action.delayMs / 1000) +
@@ -802,6 +829,65 @@
           listUrl = location.origin + "/latest";
         }
         location.href = appendRecoveryMarker(listUrl);
+        return;
+      }
+
+      if (action.type === "refresh-candidates") {
+        moveCurrentTopicToQueueTail(session);
+        refillSessionQueue(session, DISCOVERY_REFILL_SIZE)
+          .then(function () {
+            var current = getSession();
+            if (!current || current.status !== "running") {
+              return;
+            }
+            var discovery = ensureDiscoveryState(current);
+            var remaining = current.queue.slice(current.index);
+            var sourcePages = Array.from(
+              new Set(
+                remaining
+                  .map(function (topic) {
+                    return Number(topic && topic.sourcePage);
+                  })
+                  .filter(function (page) {
+                    return Number.isInteger(page) && page >= 0;
+                  })
+              )
+            ).sort(function (left, right) {
+              return left - right;
+            });
+            var listUrl = location.origin + "/latest";
+            if (sourcePages.length) {
+              var cursor =
+                Number(discovery.browsePageCursor || 0) %
+                sourcePages.length;
+              var page = sourcePages[cursor];
+              discovery.browsePageCursor = cursor + 1;
+              listUrl =
+                location.origin +
+                "/latest" +
+                (page > 0 ? "?page=" + page : "");
+            }
+            discovery.waiting = false;
+            current.listContext = {
+              url: listUrl,
+              scrollY: 0,
+              canHistoryBack: false,
+            };
+            current.navigation = null;
+            saveSession(current);
+            location.href = appendRecoveryMarker(listUrl);
+          })
+          .catch(function (error) {
+            var current = getSession();
+            if (current) {
+              recordSessionError(
+                current,
+                "补充候选失败，稍后自动重试：" +
+                  String(error && error.message ? error.message : error)
+              );
+              scheduleCandidateRecheck(CANDIDATE_RECHECK_MS);
+            }
+          });
         return;
       }
 
@@ -994,6 +1080,9 @@
     var labels = {
       idle: "待命",
       list: "列表寻帖",
+      "candidate-page": "候选所在页",
+      "candidate-refill": "补充候选",
+      "waiting-candidates": "等待新候选",
       searching: "站内搜索",
       "browsing-search": "宽泛翻找",
       opening: "打开主题",
@@ -1023,6 +1112,7 @@
     var navigation = session.navigation || {};
     var diagnostics = session.diagnostics || {};
     var recovery = ensureRecoveryState(session) || {};
+    var discovery = ensureDiscoveryState(session) || {};
     var runtime = getRuntimeState() || {};
     var wakeLabels = {
       active: "生效",
@@ -1045,6 +1135,12 @@
         Math.min(Number(session.index || 0) + 1, queue.length) +
         "/" +
         queue.length,
+      "候选续扫：第 " +
+        (Number(discovery.nextPage || 0) + 1) +
+        " 页 · 已补 " +
+        Number(discovery.refills || 0) +
+        " 轮" +
+        (discovery.waiting ? " · 等待新帖" : ""),
       "恢复：" + Number(diagnostics.retries || navigation.retries || 0),
       "连续故障：" +
         Number(recovery.consecutiveFailures || 0) +
@@ -1604,26 +1700,115 @@
     return result;
   }
 
-  async function fetchTopics(config) {
+  function toTopicIdSet(values) {
+    var result = new Set();
+    if (values instanceof Set) {
+      values.forEach(function (value) {
+        var id = Number(value);
+        if (id) {
+          result.add(id);
+        }
+      });
+      return result;
+    }
+    (Array.isArray(values) ? values : []).forEach(function (value) {
+      var id = Number(value && value.id ? value.id : value);
+      if (id) {
+        result.add(id);
+      }
+    });
+    return result;
+  }
+
+  function buildDiscoveryConfigs(config) {
+    var base = normalizeConfig(config);
+    var levels = [
+      {
+        label: "原筛选",
+        config: base,
+      },
+    ];
+    var current = base;
+
+    if (current.includeKeywords.length) {
+      current = normalizeConfig(
+        Object.assign({}, current, {
+          configRevision: CONFIG_REVISION,
+          includeKeywords: [],
+        })
+      );
+      levels.push({
+        label: "放宽包含词",
+        config: current,
+      });
+    }
+
+    if (current.categories.length) {
+      current = normalizeConfig(
+        Object.assign({}, current, {
+          configRevision: CONFIG_REVISION,
+          categories: [],
+        })
+      );
+      levels.push({
+        label: "放宽分类",
+        config: current,
+      });
+    }
+
+    return levels;
+  }
+
+  async function fetchTopicBatch(config, options) {
+    options = options || {};
     config = normalizeConfig(config);
     var categoryMap = await loadCategoryMap(config);
-    var seen = new Set();
-    var result = collectVisibleTopics(config, categoryMap, seen);
-    var requestedPages = Math.max(
-      config.pages,
-      Math.ceil(config.limit / TOPICS_PER_PAGE_ESTIMATE) + 1
+    var seen = toTopicIdSet(options.excludedIds);
+    var desiredLimit = clamp(
+      Math.floor(Number(options.limit) || config.limit),
+      1,
+      MAX_TOPICS
     );
-    var pageCount = clamp(requestedPages, 1, MAX_PAGES);
-    var startPage = result.length ? 1 : 0;
+    var hasExplicitStart =
+      options.startPage !== null && options.startPage !== undefined;
+    var startPage = hasExplicitStart
+      ? Math.max(0, Math.floor(Number(options.startPage) || 0))
+      : 0;
+    var result =
+      !hasExplicitStart && !options.skipVisible
+        ? collectVisibleTopics(config, categoryMap, seen)
+        : [];
+    if (!hasExplicitStart && result.length) {
+      startPage = 1;
+    }
+    var defaultPageCount = Math.max(
+      config.pages,
+      Math.ceil(desiredLimit / TOPICS_PER_PAGE_ESTIMATE) + 1
+    );
+    var pagesToScan = clamp(
+      Math.floor(Number(options.pagesToScan) || defaultPageCount),
+      1,
+      MAX_DISCOVERY_PAGES
+    );
+    var endPage = Math.min(
+      MAX_DISCOVERY_PAGES,
+      startPage + pagesToScan
+    );
+    var exhausted = false;
+    var scannedPages = 0;
+    var nextPage = startPage;
 
-    for (var page = startPage; page < pageCount; page += 1) {
-      if (result.length >= config.limit) {
+    for (var page = startPage; page < endPage; page += 1) {
+      if (result.length >= desiredLimit) {
         break;
       }
 
       var data = await fetchJsonWithRetry("/latest.json?page=" + page);
+      scannedPages += 1;
+      nextPage = page + 1;
       var topics = (((data || {}).topic_list || {}).topics || []);
       if (!topics.length) {
+        exhausted = true;
         break;
       }
 
@@ -1636,11 +1821,286 @@
         result.push(normalizeTopic(topic));
       });
 
-      if (page + 1 < pageCount && result.length < config.limit) {
+      setStatus(
+        "正在续扫候选话题 · 第 " +
+          (page + 1) +
+          " 页 · 已找到 " +
+          result.length
+      );
+      if (page + 1 < endPage && result.length < desiredLimit) {
         await sleep(randomInt(FETCH_DELAY_MIN_MS, FETCH_DELAY_MAX_MS));
       }
     }
-    return result.slice(0, config.limit);
+    return {
+      topics: result.slice(0, desiredLimit),
+      nextPage: nextPage,
+      scannedPages: scannedPages,
+      exhausted: exhausted || nextPage >= MAX_DISCOVERY_PAGES,
+    };
+  }
+
+  async function fetchTopics(config, options) {
+    var batch = await fetchTopicBatch(config, options);
+    return batch.topics;
+  }
+
+  function ensureDiscoveryState(session) {
+    if (!session) {
+      return null;
+    }
+    session.discovery = Object.assign(
+      {
+        level: 0,
+        nextPage: 0,
+        pagesScanned: 0,
+        refills: 0,
+        waiting: false,
+        exhaustedAt: 0,
+        browsePageCursor: 0,
+      },
+      session.discovery || {}
+    );
+    return session.discovery;
+  }
+
+  function collectSessionTopicIds(session) {
+    var ids = getVisited();
+    (Array.isArray((session || {}).queue) ? session.queue : []).forEach(
+      function (topic) {
+        var id = Number(topic && topic.id);
+        if (id) {
+          ids.add(id);
+        }
+      }
+    );
+    return ids;
+  }
+
+  function scheduleCandidateRecheck(delayMs) {
+    if (candidateRetryTimer !== null) {
+      return;
+    }
+    candidateRetryTimer = window.setTimeout(function () {
+      candidateRetryTimer = null;
+      var session = getSession();
+      if (
+        !session ||
+        session.status !== "running" ||
+        Number(session.completed || 0) >= Number(session.config.limit || 0)
+      ) {
+        return;
+      }
+      processCurrentTopic();
+    }, Math.max(1000, Number(delayMs) || CANDIDATE_RECHECK_MS));
+  }
+
+  async function refillSessionQueueImpl(session, requestedCount) {
+    session = session || getSession();
+    if (!session || session.status !== "running") {
+      return [];
+    }
+    var remainingTarget = Math.max(
+      0,
+      Number(session.config.limit || 0) -
+        Number(session.completed || 0) -
+        Math.max(
+          0,
+          Number(session.queue.length || 0) - Number(session.index || 0)
+        )
+    );
+    var desired = Math.min(
+      remainingTarget,
+      Math.max(
+        1,
+        Math.floor(Number(requestedCount) || DISCOVERY_REFILL_SIZE)
+      )
+    );
+    if (desired <= 0) {
+      return [];
+    }
+
+    var discovery = ensureDiscoveryState(session);
+    var levels = buildDiscoveryConfigs(session.config);
+    discovery.level = clamp(
+      Math.floor(Number(discovery.level) || 0),
+      0,
+      Math.max(0, levels.length - 1)
+    );
+    var excludedIds = collectSessionTopicIds(session);
+    var added = [];
+    var safetyRounds = levels.length * Math.ceil(
+      MAX_DISCOVERY_PAGES / DISCOVERY_BATCH_PAGES
+    );
+
+    while (added.length < desired && safetyRounds > 0) {
+      safetyRounds -= 1;
+      var level = levels[discovery.level];
+      setStatus(
+        "候选不足，自动续扫 · " +
+          level.label +
+          " · 从第 " +
+          (Number(discovery.nextPage || 0) + 1) +
+          " 页继续"
+      );
+      var batch = await fetchTopicBatch(level.config, {
+        excludedIds: excludedIds,
+        startPage: Number(discovery.nextPage || 0),
+        pagesToScan: DISCOVERY_BATCH_PAGES,
+        limit: desired - added.length,
+        skipVisible: true,
+      });
+      var activeSession = getSession();
+      if (
+        !activeSession ||
+        activeSession.status !== "running" ||
+        Number(activeSession.createdAt || 0) !==
+          Number(session.createdAt || 0)
+      ) {
+        return [];
+      }
+      discovery.nextPage = batch.nextPage;
+      discovery.pagesScanned =
+        Number(discovery.pagesScanned || 0) + batch.scannedPages;
+      batch.topics.forEach(function (topic) {
+        var id = Number(topic.id);
+        if (!id || excludedIds.has(id)) {
+          return;
+        }
+        excludedIds.add(id);
+        added.push(topic);
+      });
+
+      if (added.length >= desired) {
+        break;
+      }
+      if (batch.exhausted || discovery.nextPage >= MAX_DISCOVERY_PAGES) {
+        if (discovery.level + 1 < levels.length) {
+          discovery.level += 1;
+          discovery.nextPage = 0;
+          continue;
+        }
+        discovery.level = 0;
+        discovery.nextPage = 0;
+        discovery.waiting = true;
+        discovery.exhaustedAt = Date.now();
+        break;
+      }
+    }
+
+    if (added.length) {
+      Array.prototype.push.apply(session.queue, added);
+      discovery.refills = Number(discovery.refills || 0) + 1;
+      discovery.waiting = false;
+      discovery.exhaustedAt = 0;
+      var recovery = ensureRecoveryState(session);
+      recovery.browseFailures = 0;
+      recovery.consecutiveFailures = 0;
+      recovery.lastAction = "candidate-refill";
+      recovery.lastError = "";
+      session.error = null;
+      session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+        stage: "candidate-refill",
+        retries: 0,
+        lastError: "",
+        updatedAt: Date.now(),
+      });
+      saveSession(session);
+      markRuntimeProgress("candidate-refill", {
+        addedTopics: added.length,
+        discoveryLevel: discovery.level,
+      });
+      return added;
+    }
+
+    discovery.waiting = true;
+    discovery.exhaustedAt = Date.now();
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "waiting-candidates",
+      lastError:
+        "当前可扫描列表暂时没有新候选；任务保留并自动重查",
+      updatedAt: Date.now(),
+    });
+    saveSession(session);
+    touchRuntime(
+      "waiting-candidates",
+      { lastError: session.diagnostics.lastError },
+      true
+    );
+    setStatus(
+      "暂时没有新候选，任务和进度已保留；30 秒后从最新列表重新扫描，不会自动停。",
+      true
+    );
+    scheduleCandidateRecheck(CANDIDATE_RECHECK_MS);
+    return [];
+  }
+
+  function refillSessionQueue(session, requestedCount) {
+    if (candidateRefillPromise) {
+      return candidateRefillPromise;
+    }
+    candidateRefillPromise = Promise.resolve()
+      .then(function () {
+        return refillSessionQueueImpl(session, requestedCount);
+      })
+      .finally(function () {
+        candidateRefillPromise = null;
+      });
+    return candidateRefillPromise;
+  }
+
+  function finishSession(session, messagePrefix) {
+    var context = session && session.listContext;
+    var completed = Number((session || {}).completed || 0);
+    var liked = Number((session || {}).likedCount || 0);
+    var failedLikes = Number((session || {}).likeFailureCount || 0);
+    clearSession();
+    setStatus(
+      String(messagePrefix || "本轮完成") +
+        "：读完 " +
+        completed +
+        " 个主题，确认点赞 " +
+        liked +
+        " 个，未确认 " +
+        failedLikes +
+        " 次。"
+    );
+    if (
+      session &&
+      session.config.navigationMode === "native" &&
+      context &&
+      (getTopicId(location.pathname) || isSearchPage())
+    ) {
+      location.href = normalizeListUrl(context.url);
+    }
+  }
+
+  async function ensureNextCandidate(session) {
+    session = session || getSession();
+    if (!session) {
+      return false;
+    }
+    auditSessionQueue(session);
+    session = getSession();
+    if (!session) {
+      return false;
+    }
+    if (session.queue[session.index]) {
+      return true;
+    }
+    if (
+      Number(session.completed || 0) >= Number(session.config.limit || 0)
+    ) {
+      finishSession(session);
+      return false;
+    }
+    var added = await refillSessionQueue(session, DISCOVERY_REFILL_SIZE);
+    session = getSession();
+    return Boolean(
+      added.length &&
+        session &&
+        session.queue &&
+        session.queue[session.index]
+    );
   }
 
   function parseServerReadPostNumber(data) {
@@ -2305,6 +2765,36 @@
     return location.origin + "/latest";
   }
 
+  function getTopicSourceListUrl(topic) {
+    var page = Number(topic && topic.sourcePage);
+    if (!Number.isInteger(page) || page < 0) {
+      return null;
+    }
+    return (
+      location.origin +
+      "/latest" +
+      (page > 0 ? "?page=" + page : "")
+    );
+  }
+
+  function isOnTopicSourceListPage(topic) {
+    var sourceUrl = getTopicSourceListUrl(topic);
+    if (!sourceUrl) {
+      return false;
+    }
+    try {
+      var expected = new URL(sourceUrl);
+      var current = new URL(location.href);
+      return (
+        current.pathname === expected.pathname &&
+        Number(current.searchParams.get("page") || 0) ===
+          Number(expected.searchParams.get("page") || 0)
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
   function resolveResumePost(localPostNumber, sitePostNumber) {
     return Math.max(
       1,
@@ -2820,6 +3310,17 @@
 
   function formatProgress(session) {
     var topic = session.queue[session.index];
+    if (!topic) {
+      return (
+        Number(session.completed || 0) +
+        "/" +
+        Number((session.config || {}).limit || 0) +
+        " · " +
+        ((session.discovery || {}).waiting
+          ? "等待新候选"
+          : "正在补充候选")
+      );
+    }
     return (
       (session.index + 1) +
       "/" +
@@ -2857,6 +3358,7 @@
       }
 
       if (!hasReadingProgress(topic.id)) {
+        var previousNavigation = session.navigation || {};
         setNavigationState(session, "list", {
           topicId: null,
           retries: Number((session.navigation || {}).retries || 0),
@@ -2877,6 +3379,33 @@
           });
           setStatus("翻到合格话题，点击：" + selectedTopic.title);
           candidate.link.click();
+          return;
+        }
+
+        var sourceListUrl = getTopicSourceListUrl(topic);
+        var alreadyTriedSourcePage =
+          previousNavigation.stage === "candidate-page" &&
+          Number(previousNavigation.topicId) === Number(topic.id) &&
+          isOnTopicSourceListPage(topic);
+        if (sourceListUrl && !alreadyTriedSourcePage) {
+          session.listContext = {
+            url: sourceListUrl,
+            scrollY: 0,
+            canHistoryBack: false,
+          };
+          setNavigationState(session, "candidate-page", {
+            topicId: topic.id,
+            url: sourceListUrl,
+            retries: Number(previousNavigation.retries || 0),
+            lastError: "",
+            source: "list-browse",
+          });
+          setStatus(
+            "当前列表没翻到，继续翻到候选所在的第 " +
+              (Number(topic.sourcePage) + 1) +
+              " 页。"
+          );
+          location.href = sourceListUrl;
           return;
         }
 
@@ -2988,24 +3517,11 @@
       }
       await requestWakeLock(config);
 
-      setStatus("正在读取最新主题…");
-      var topics = await fetchTopics(config);
-      var visited = getVisited();
-      var queue = topics.filter(function (topic) {
-        return !visited.has(topic.id);
-      });
-
-      if (!queue.length) {
-        releaseLock();
-        releaseWakeLock();
-        setStatus("没有符合条件的未读主题。");
-        return;
-      }
-
+      setStatus("正在读取未读候选主题…");
       var session = {
         version: VERSION,
         status: "running",
-        queue: queue,
+        queue: [],
         index: 0,
         completed: 0,
         likedCount: 0,
@@ -3014,6 +3530,15 @@
         pendingCompletion: null,
         listContext: null,
         navigation: null,
+        discovery: {
+          level: 0,
+          nextPage: 0,
+          pagesScanned: 0,
+          refills: 0,
+          waiting: false,
+          exhaustedAt: 0,
+          browsePageCursor: 0,
+        },
         recovery: {
           totalFailures: 0,
           consecutiveFailures: 0,
@@ -3036,11 +3561,35 @@
       };
       session.listContext = captureListContext(session);
       saveSession(session);
+      var queue = await refillSessionQueue(
+        session,
+        DISCOVERY_REFILL_SIZE
+      );
+      session = getSession();
+      if (!session || !queue.length) {
+        return;
+      }
       markRuntimeProgress("session-start", {
         topicId: queue[0].id,
       });
       await navigateToTopic(queue[0], session);
     } catch (error) {
+      var failedSession = getSession();
+      if (failedSession && failedSession.status === "running") {
+        var discovery = ensureDiscoveryState(failedSession);
+        discovery.waiting = true;
+        recordSessionError(
+          failedSession,
+          "候选读取失败，稍后自动重试：" +
+            String(error && error.message ? error.message : error)
+        );
+        setStatus(
+          "候选读取暂时失败，任务已保留；联网后或 30 秒后自动重试。",
+          true
+        );
+        scheduleCandidateRecheck(CANDIDATE_RECHECK_MS);
+        return;
+      }
       releaseLock();
       releaseWakeLock();
       setStatus("启动失败：" + error.message, true);
@@ -3131,7 +3680,7 @@
     }
   }
 
-  function skipCurrentTopic() {
+  async function skipCurrentTopic() {
     var session = getSession();
     if (!session || !session.queue[session.index]) {
       setStatus("当前没有可跳过的话题。");
@@ -3159,16 +3708,11 @@
     });
 
     if (session.index >= session.queue.length) {
-      var listUrl =
-        (session.listContext || {}).url || location.origin + "/latest";
-      clearSession();
-      setStatus(
-        "已跳过但未标记已读：" + skipped.title + "；本轮队列结束。"
-      );
-      if (getTopicId(location.pathname) || isSearchPage()) {
-        location.href = listUrl;
+      saveSession(session);
+      if (!(await ensureNextCandidate(session))) {
+        return;
       }
-      return;
+      session = getSession();
     }
 
     saveSession(session);
@@ -3391,7 +3935,7 @@
     }
     if (
       !hasReadingProgress(topic.id) &&
-      ["list", "browsing-search", "returning"].indexOf(
+      ["list", "candidate-page", "browsing-search", "returning"].indexOf(
         navigation.stage
       ) !== -1
     ) {
@@ -3779,24 +4323,18 @@
       }
     );
     if (session.index >= session.queue.length) {
-      var context = session.listContext;
-      clearSession();
-      setStatus(
-        "本轮完成：读完 " +
-          session.completed +
-          " 个主题，确认点赞 " +
-          session.likedCount +
-          " 个，未确认 " +
-          Number(session.likeFailureCount || 0) +
-          " 次。"
-      );
-      if (
-        session.config.navigationMode === "native" &&
-        context &&
-        getTopicId(location.pathname)
-      ) {
-        location.href = normalizeListUrl(context.url);
-      }
+      saveSession(session);
+      ensureNextCandidate(session).then(function (hasCandidate) {
+        var current = getSession();
+        if (!hasCandidate || !current) {
+          return;
+        }
+        returnToList(current).then(function (returned) {
+          if (!returned) {
+            processCurrentTopic();
+          }
+        });
+      });
       return;
     }
     saveSession(session);
@@ -3954,8 +4492,10 @@
 
     var topic = session.queue[session.index];
     if (!topic) {
-      clearSession();
-      setStatus("本轮翻帖完成。");
+      if (await ensureNextCandidate(session)) {
+        session = getSession();
+        await navigateToTopic(session.queue[session.index], session);
+      }
       return;
     }
 
@@ -4022,22 +4562,10 @@
       }
 
       if (session.index >= session.queue.length) {
-        var completedListUrl = normalizeListUrl(
-          (session.listContext || {}).url
-        );
-        clearSession();
-        setStatus(
-          "本轮完成：读完 " +
-            session.completed +
-            " 个主题，确认点赞 " +
-            session.likedCount +
-            " 个，未确认 " +
-            Number(session.likeFailureCount || 0) +
-            " 次。"
-        );
-        await sleep(1200);
-        location.href = completedListUrl;
-        return;
+        if (!(await ensureNextCandidate(session))) {
+          return;
+        }
+        session = getSession();
       }
 
       saveSession(session);
@@ -4357,7 +4885,7 @@
       '<button id="' + IDS.skipCurrent + '" type="button">跳过当前</button>',
       '<button id="' + IDS.reset + '" type="button">清空已读</button>',
       "</div>",
-      '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；列表没有时再做宽泛搜索。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
+      '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；候选不足会续扫旧页并自动补充，不会把空队列当成完成。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
@@ -4527,6 +5055,11 @@
       topicMatches: topicMatches,
       normalizeTopic: normalizeTopic,
       fetchTopics: fetchTopics,
+      fetchTopicBatch: fetchTopicBatch,
+      buildDiscoveryConfigs: buildDiscoveryConfigs,
+      ensureDiscoveryState: ensureDiscoveryState,
+      refillSessionQueue: refillSessionQueue,
+      ensureNextCandidate: ensureNextCandidate,
       fetchJsonWithRetry: fetchJsonWithRetry,
       buildSearchQuery: buildSearchQuery,
       buildBrowseSearchQuery: buildBrowseSearchQuery,
@@ -4546,6 +5079,8 @@
       hasReachedLongTopicCap: hasReachedLongTopicCap,
       isTopicListPath: isTopicListPath,
       normalizeListUrl: normalizeListUrl,
+      getTopicSourceListUrl: getTopicSourceListUrl,
+      isOnTopicSourceListPage: isOnTopicSourceListPage,
       isTopicComplete: isTopicComplete,
       calculateReadPlan: calculateReadPlan,
       sampleReadingSpeed: sampleReadingSpeed,
