@@ -46,6 +46,8 @@ function createEnvironment(options = {}) {
   const calls = [];
   const postActionRequests = [];
   const wakeLockRequests = [];
+  const mediaPlayCalls = [];
+  const slowJsonAttempts = [];
   let fakeNow = 1_000_000;
   let retry429 = Boolean(options.retry429);
   let releaseListener = null;
@@ -56,11 +58,40 @@ function createEnvironment(options = {}) {
     href: "https://linux.do/latest",
   };
 
+  const body = {
+    scrollHeight: 5000,
+    appendChild(node) {
+      node.parentNode = body;
+    },
+    removeChild(node) {
+      if (node) node.parentNode = null;
+    },
+  };
+
   const document = {
     readyState: "complete",
     visibilityState: options.hidden ? "hidden" : "visible",
     documentElement: { scrollHeight: 5000 },
-    body: { scrollHeight: 5000 },
+    body,
+    createElement:
+      options.mediaKeepAwakeSupported === true
+        ? function (tagName) {
+            assert.strictEqual(tagName, "video");
+            return {
+              paused: true,
+              parentNode: null,
+              style: {},
+              setAttribute() {},
+              async play() {
+                this.paused = false;
+                mediaPlayCalls.push("play");
+              },
+              pause() {
+                this.paused = true;
+              },
+            };
+          }
+        : undefined,
     getElementById() {
       return null;
     },
@@ -131,9 +162,51 @@ function createEnvironment(options = {}) {
             },
           },
   };
+  if (options.abortController === true) {
+    window.AbortController = class AbortControllerMock {
+      constructor() {
+        const listeners = [];
+        this.signal = {
+          aborted: false,
+          addEventListener(event, listener) {
+            if (event === "abort") listeners.push(listener);
+          },
+        };
+        this.listeners = listeners;
+      }
+
+      abort() {
+        this.signal.aborted = true;
+        this.listeners.forEach((listener) => listener());
+      }
+    };
+  }
 
   async function fetch(url, requestOptions = {}) {
     calls.push(String(url));
+
+    if (String(url) === "/slow-json.json" && options.slowJson === true) {
+      slowJsonAttempts.push(String(url));
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        async json() {
+          if (requestOptions.signal && requestOptions.signal.aborted) {
+            const error = new Error("aborted while reading JSON");
+            error.name = "AbortError";
+            throw error;
+          }
+          return new Promise((resolve, reject) => {
+            requestOptions.signal.addEventListener("abort", () => {
+              const error = new Error("aborted while reading JSON");
+              error.name = "AbortError";
+              reject(error);
+            });
+          });
+        },
+      };
+    }
 
     if (String(url) === "/post_actions") {
       postActionRequests.push(requestOptions);
@@ -265,6 +338,8 @@ function createEnvironment(options = {}) {
     document,
     window,
     wakeLockRequests,
+    mediaPlayCalls,
+    slowJsonAttempts,
     postActionRequests,
   };
 }
@@ -274,6 +349,14 @@ async function run() {
   const api = env.api;
 
   assert(api, "test API should be exposed");
+  assert(
+    source.includes("// @run-at       document-start"),
+    "the runner must start before a slow page reaches document-idle"
+  );
+  assert(
+    source.includes("// @version      1.10.0"),
+    "the watchdog release should publish a new userscript version"
+  );
   assert.deepStrictEqual(
     Array.from(api.parseList(" AI，VPS\n开发 ")),
     ["ai", "vps", "开发"]
@@ -531,6 +614,24 @@ async function run() {
     unsupportedWakeEnv.api.getWakeLockState(),
     "unsupported"
   );
+
+  const fallbackWakeEnv = createEnvironment({
+    wakeLockSupported: false,
+    mediaKeepAwakeSupported: true,
+  });
+  assert.strictEqual(
+    await fallbackWakeEnv.api.requestWakeLock(
+      fallbackWakeEnv.api.DEFAULT_CONFIG
+    ),
+    true
+  );
+  assert.strictEqual(
+    fallbackWakeEnv.api.getWakeLockState(),
+    "media"
+  );
+  assert.deepStrictEqual(fallbackWakeEnv.mediaPlayCalls, ["play"]);
+  fallbackWakeEnv.api.releaseWakeLock();
+  assert.strictEqual(fallbackWakeEnv.api.getWakeLockState(), "idle");
   const topics = await api.fetchTopics(config);
   assert.strictEqual(topics.length, 180, "180-topic queues should fetch extra pages");
   assert(topics.every((topic) => topic.title.includes("AI")));
@@ -954,10 +1055,70 @@ async function run() {
     status: "running",
     queue: [{ id: 1 }],
     index: 0,
+    createdAt: 12345,
+    config,
   });
   assert.strictEqual(api.getSession().status, "running");
+  let runtime = api.touchRuntime("reading", {}, true);
+  assert.strictEqual(runtime.stage, "reading");
+  assert.strictEqual(
+    api.isRuntimeStalled(runtime, runtime.heartbeatAt + 34_999, 35_000),
+    false
+  );
+  assert.strictEqual(
+    api.isRuntimeStalled(runtime, runtime.heartbeatAt + 35_000, 35_000),
+    true
+  );
+  env.localStorage.setItem(
+    "linuxdoFlipRuntimeV1",
+    JSON.stringify({ ...runtime, recoveryAttempts: 2 })
+  );
+  runtime = api.markRuntimeProgress("verified");
+  assert.strictEqual(runtime.recoveryAttempts, 0);
+  assert.strictEqual(runtime.stage, "verified");
   api.clearSession();
   assert.strictEqual(api.getSession(), null);
+  assert.strictEqual(api.getRuntimeState(), null);
+
+  const watchdogTopic = {
+    id: 765432,
+    slug: "watchdog-topic",
+    title: "看门狗恢复主题",
+    url: "https://linux.do/t/watchdog-topic/765432",
+  };
+  api.saveSession({
+    version: api.VERSION,
+    status: "running",
+    queue: [watchdogTopic],
+    index: 0,
+    createdAt: 23456,
+    config,
+  });
+  runtime = api.touchRuntime("reading", {}, true);
+  env.localStorage.setItem(
+    "linuxdoFlipRuntimeV1",
+    JSON.stringify({
+      ...runtime,
+      heartbeatAt: runtime.heartbeatAt - 40_000,
+      recoveryAttempts: 0,
+      href: watchdogTopic.url,
+    })
+  );
+  const hrefBeforeWatchdog = env.window.location.href;
+  assert.strictEqual(
+    api.recoverStalledRuntime(runtime.heartbeatAt + 1),
+    true,
+    "the independent watchdog must recover even outside navigation timeout handling"
+  );
+  assert.strictEqual(api.getRuntimeState().recoveryAttempts, 1);
+  assert.notStrictEqual(env.window.location.href, hrefBeforeWatchdog);
+  assert(
+    env.window.location.href.includes("linuxdo_flip_recover="),
+    "watchdog recovery should force a fresh same-origin navigation"
+  );
+  api.clearSession();
+  env.window.location.href = "https://linux.do/latest";
+  env.window.location.pathname = "/latest";
 
   api.saveSession({
     version: api.VERSION,
@@ -1149,6 +1310,20 @@ async function run() {
   assert(
     retryEnv.calls.filter((url) => url === "/latest.json?page=0").length >= 2,
     "429 responses should be retried"
+  );
+
+  const slowJsonEnv = createEnvironment({
+    abortController: true,
+    slowJson: true,
+  });
+  await assert.rejects(
+    slowJsonEnv.api.fetchJsonWithRetry("/slow-json.json"),
+    /网络请求失败：请求超过 20 秒未响应/
+  );
+  assert.strictEqual(
+    slowJsonEnv.slowJsonAttempts.length,
+    4,
+    "a body-read timeout should stay inside the retry loop"
   );
 
   console.log("Linux.do Flip tests passed");
