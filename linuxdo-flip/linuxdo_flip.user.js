@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.9.0
-// @description  Linux.do 阅读进度助手：150 话题、25 次确认点赞、千楼帖约 300 楼上限与自动故障恢复
+// @version      1.10.0
+// @description  Linux.do 阅读进度助手：150 话题、25 次确认点赞、千楼帖约 300 楼上限、独立心跳与断点自愈
 // @match        https://linux.do/*
 // @grant        none
-// @run-at       document-idle
+// @run-at       document-start
 // ==/UserScript==
 
 (function () {
@@ -51,6 +51,7 @@
     panel: "linuxdoFlipPanelV2",
     tabId: "linuxdoFlipTabIdV2",
     lock: "linuxdoFlipLockV2",
+    runtime: "linuxdoFlipRuntimeV1",
   };
 
   var TOPIC_RE = /\/t\/(?:[^/]+\/)?(\d+)(?:\/(?:\d+|last))?(?:[/?#]|$)/;
@@ -68,6 +69,13 @@
   var FETCH_TIMEOUT_MS = 20000;
   var SEARCH_WAIT_MS = 9000;
   var NAVIGATION_TIMEOUT_MS = 25000;
+  var RUNTIME_HEARTBEAT_MIN_MS = 2000;
+  var RUNTIME_WATCHDOG_INTERVAL_MS = 5000;
+  var RUNTIME_STALE_MS = 35000;
+  var PAGE_LOAD_RECOVERY_MS = 45000;
+  var MAX_RUNTIME_RELOADS = 3;
+  var WAKE_LOCK_RETRY_MS = 8000;
+  var WAKE_LOCK_REQUEST_TIMEOUT_MS = 5000;
   var MAX_NAVIGATION_RECOVERIES = 2;
   var MAX_TOPIC_AUTO_RETRIES = 2;
   var MAX_BROWSE_AUTO_RETRIES = 2;
@@ -85,6 +93,8 @@
   var PANEL_DEFAULT_HEIGHT = 600;
   var PANEL_WIDTH_STEP = 40;
   var PANEL_HEIGHT_STEP = 60;
+  var KEEP_AWAKE_VIDEO =
+    "data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAH6EU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHYTbuMU6uEElTDZ1OsggEeTbuMU6uEHFO7a1OsggHk7AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmsirXsYMPQkBNgI1MYXZmNjAuMTYuMTAwV0GNTGF2ZjYwLjE2LjEwMESJiECfQAAAAAAAFlSua8GuAQAAAAAAADjXgQFzxYigM/VRO6eRKpyBACK1nIN1bmSIgQCGhVZfVlA5g4EBI+ODhDuaygDgibCBELqBEJqBAhJUw2dAgHNzoGPAgGfImkWjh0VOQ09ERVJEh41MYXZmNjAuMTYuMTAwc3PaY8CLY8WIoDP1UTunkSpnyKVFo4dFTkNPREVSRIeYTGF2YzYwLjMxLjEwMiBsaWJ2cHgtdnA5Z8ihRaOIRFVSQVRJT05Eh5MwMDowMDowMi4wMDAwMDAwMDAAH0O2dbvngQCjoYEAAICCSYNCAADwAPYAOCQcGEIAADBgAAAQv//9iyoAAKOTgQPoAIYAQJKcAElAAANgAABCQBxTu2uRu4+zgQC3iveBAfGCAaTwgQM=";
 
   var DEFAULT_CONFIG = {
     configRevision: CONFIG_REVISION,
@@ -108,10 +118,17 @@
   var processing = false;
   var lockTimer = null;
   var routeTimer = null;
+  var runtimeWatchdogTimer = null;
+  var wakeLockTimer = null;
+  var pageLoadRecoveryTimer = null;
   var lastObservedHref = "";
+  var lastRuntimeHeartbeatAt = 0;
   var wakeLockSentinel = null;
   var wakeLockState = "idle";
+  var wakeLockRequestInFlight = false;
+  var keepAwakeVideo = null;
   var likeSubmitting = false;
+  var booted = false;
 
   function loadJSON(storage, key, fallback) {
     try {
@@ -150,6 +167,7 @@
       if (predicate && !predicate()) {
         return false;
       }
+      touchRuntime("waiting");
       var chunk = Math.min(remaining, 300);
       await sleep(chunk);
       remaining -= chunk;
@@ -170,10 +188,86 @@
     );
   }
 
+  function stopMediaKeepAwake() {
+    var video = keepAwakeVideo;
+    keepAwakeVideo = null;
+    if (!video) {
+      return;
+    }
+    try {
+      if (typeof video.pause === "function") {
+        video.pause();
+      }
+      if (video.parentNode) {
+        video.parentNode.removeChild(video);
+      }
+    } catch (error) {}
+  }
+
+  async function requestMediaKeepAwake(config) {
+    config = normalizeConfig(config || loadConfig());
+    if (
+      !config.keepAwake ||
+      !isDocumentVisible() ||
+      !document.body ||
+      typeof document.createElement !== "function"
+    ) {
+      return false;
+    }
+    if (keepAwakeVideo && !keepAwakeVideo.paused) {
+      wakeLockState = "media";
+      return true;
+    }
+
+    stopMediaKeepAwake();
+    var video = document.createElement("video");
+    video.setAttribute("aria-hidden", "true");
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.src = KEEP_AWAKE_VIDEO;
+    video.style.cssText =
+      "position:fixed;width:1px;height:1px;opacity:.001;pointer-events:none;left:-10px;top:-10px;";
+    document.body.appendChild(video);
+    keepAwakeVideo = video;
+    var timeoutId = null;
+    try {
+      await Promise.race([
+        Promise.resolve(video.play()),
+        new Promise(function (_, reject) {
+          timeoutId = window.setTimeout(function () {
+            reject(new Error("媒体常亮启动超时"));
+          }, 3000);
+        }),
+      ]);
+      if (
+        timeoutId !== null &&
+        typeof window.clearTimeout === "function"
+      ) {
+        window.clearTimeout(timeoutId);
+      }
+      wakeLockState = "media";
+      touchRuntime("media-keep-awake");
+      renderDiagnostics(getSession());
+      return true;
+    } catch (error) {
+      if (
+        timeoutId !== null &&
+        typeof window.clearTimeout === "function"
+      ) {
+        window.clearTimeout(timeoutId);
+      }
+      stopMediaKeepAwake();
+      return false;
+    }
+  }
+
   function releaseWakeLock() {
     var sentinel = wakeLockSentinel;
     wakeLockSentinel = null;
-    if (wakeLockState === "active") {
+    stopMediaKeepAwake();
+    if (wakeLockState === "active" || wakeLockState === "media") {
       wakeLockState = "idle";
     }
     if (sentinel && typeof sentinel.release === "function") {
@@ -200,20 +294,58 @@
       wakeLockState = "active";
       return true;
     }
+    if (wakeLockRequestInFlight) {
+      return false;
+    }
     if (
       !window.navigator ||
       !window.navigator.wakeLock ||
       typeof window.navigator.wakeLock.request !== "function"
     ) {
-      wakeLockState = "unsupported";
+      wakeLockState = (await requestMediaKeepAwake(config))
+        ? "media"
+        : "unsupported";
       renderDiagnostics(getSession());
-      return false;
+      return wakeLockState === "media";
     }
 
+    wakeLockRequestInFlight = true;
+    var timeoutId = null;
+    var timedOut = false;
     try {
-      var sentinel = await window.navigator.wakeLock.request("screen");
+      var requestPromise = window.navigator.wakeLock.request("screen");
+      Promise.resolve(requestPromise).then(
+        function (lateSentinel) {
+          if (
+            timedOut &&
+            lateSentinel &&
+            typeof lateSentinel.release === "function"
+          ) {
+            Promise.resolve(lateSentinel.release()).catch(function () {});
+          }
+        },
+        function () {}
+      );
+      var sentinel = await Promise.race([
+        requestPromise,
+        new Promise(function (_, reject) {
+          timeoutId = window.setTimeout(function () {
+            timedOut = true;
+            reject(new Error("屏幕常亮请求超时"));
+          }, WAKE_LOCK_REQUEST_TIMEOUT_MS);
+        }),
+      ]);
+      if (
+        timeoutId !== null &&
+        typeof window.clearTimeout === "function"
+      ) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
       wakeLockSentinel = sentinel;
       wakeLockState = "active";
+      stopMediaKeepAwake();
+      touchRuntime("wake-lock-active");
       if (sentinel && typeof sentinel.addEventListener === "function") {
         sentinel.addEventListener("release", function () {
           if (wakeLockSentinel === sentinel) {
@@ -227,6 +359,7 @@
               session.config.keepAwake &&
               isDocumentVisible()
             ) {
+              requestMediaKeepAwake(session.config);
               window.setTimeout(function () {
                 requestWakeLock(session.config);
               }, 1000);
@@ -237,10 +370,22 @@
       renderDiagnostics(getSession());
       return true;
     } catch (error) {
+      if (
+        timeoutId !== null &&
+        typeof window.clearTimeout === "function"
+      ) {
+        window.clearTimeout(timeoutId);
+      }
       wakeLockSentinel = null;
-      wakeLockState = "denied";
+      wakeLockState = (await requestMediaKeepAwake(config))
+        ? "media"
+        : timedOut
+          ? "timeout"
+          : "denied";
       renderDiagnostics(getSession());
-      return false;
+      return wakeLockState === "media";
+    } finally {
+      wakeLockRequestInFlight = false;
     }
   }
 
@@ -270,6 +415,7 @@
         continue;
       }
 
+      touchRuntime("inter-topic-delay");
       var chunk = Math.min(remaining, 300);
       await sleep(chunk);
       remaining -= chunk;
@@ -348,8 +494,83 @@
     renderDiagnostics(session);
   }
 
+  function getRuntimeState() {
+    var runtime = loadJSON(localStorage, KEYS.runtime, null);
+    return runtime && typeof runtime === "object" ? runtime : null;
+  }
+
+  function isRuntimeStalled(runtime, now, staleMs) {
+    return Boolean(
+      runtime &&
+        Number(runtime.heartbeatAt || 0) > 0 &&
+        Number(now || Date.now()) - Number(runtime.heartbeatAt || 0) >=
+          Math.max(1, Number(staleMs || RUNTIME_STALE_MS))
+    );
+  }
+
+  function touchRuntime(stage, patch, force) {
+    var now = Date.now();
+    if (
+      !force &&
+      now - Number(lastRuntimeHeartbeatAt || 0) <
+        RUNTIME_HEARTBEAT_MIN_MS
+    ) {
+      return getRuntimeState();
+    }
+    var session = getSession();
+    if (!session || session.status === "stopped") {
+      return null;
+    }
+    var existing = getRuntimeState();
+    if (
+      !existing ||
+      Number(existing.sessionCreatedAt || 0) !==
+        Number(session.createdAt || 0)
+    ) {
+      existing = {
+        sessionCreatedAt: Number(session.createdAt || 0),
+        ownerTabId: getTabId(),
+        stage: "booting",
+        heartbeatAt: 0,
+        lastProgressAt: 0,
+        recoveryAttempts: 0,
+        lastError: "",
+        href: "",
+      };
+    }
+    var runtime = Object.assign({}, existing, patch || {}, {
+      sessionCreatedAt: Number(session.createdAt || 0),
+      ownerTabId: getTabId(),
+      stage: String(stage || existing.stage || "running"),
+      heartbeatAt: now,
+      href: String(location.href || ""),
+    });
+    lastRuntimeHeartbeatAt = now;
+    saveJSON(localStorage, KEYS.runtime, runtime);
+    return runtime;
+  }
+
+  function markRuntimeProgress(stage, patch) {
+    var runtime = touchRuntime(
+      stage,
+      Object.assign({}, patch || {}, {
+        lastProgressAt: Date.now(),
+        recoveryAttempts: 0,
+        lastError: "",
+      }),
+      true
+    );
+    return runtime;
+  }
+
+  function clearRuntimeState() {
+    remove(localStorage, KEYS.runtime);
+    lastRuntimeHeartbeatAt = 0;
+  }
+
   function clearSession() {
     remove(localStorage, KEYS.session);
+    clearRuntimeState();
     releaseLock();
     releaseWakeLock();
   }
@@ -404,6 +625,12 @@
     recovery.lastError = "";
     recovery.updatedAt = Date.now();
     session.error = null;
+    markRuntimeProgress("recovery-success", {
+      topicId:
+        topicId !== null && topicId !== undefined
+          ? Number(topicId)
+          : null,
+    });
     return recovery;
   }
 
@@ -796,11 +1023,14 @@
     var navigation = session.navigation || {};
     var diagnostics = session.diagnostics || {};
     var recovery = ensureRecoveryState(session) || {};
+    var runtime = getRuntimeState() || {};
     var wakeLabels = {
       active: "生效",
       waiting: "等待前台",
       unsupported: "浏览器不支持",
       denied: "未获系统许可",
+      timeout: "申请超时，自动重试",
+      media: "媒体后备常亮",
       disabled: "关闭",
       idle: "待申请",
     };
@@ -828,6 +1058,17 @@
         Number(session.likeFailureCount || 0),
       "前台阅读：" + (session.config.foregroundOnly ? "开启" : "关闭"),
       "屏幕常亮：" + (wakeLabels[wakeLockState] || wakeLockState),
+      "运行心跳：" +
+        (runtime.heartbeatAt
+          ? Math.max(
+              0,
+              Math.floor((Date.now() - runtime.heartbeatAt) / 1000)
+            ) + " 秒前"
+          : "待建立") +
+        " · 自愈 " +
+        Number(runtime.recoveryAttempts || 0) +
+        "/" +
+        MAX_RUNTIME_RELOADS,
     ];
     if (topic) {
       var progress = getTopicProgress(topic.id);
@@ -888,6 +1129,11 @@
       updatedAt: Date.now(),
     });
     saveSession(session);
+    touchRuntime(
+      stage,
+      { topicId: session.navigation.topicId },
+      true
+    );
     return session.navigation;
   }
 
@@ -900,6 +1146,11 @@
       updatedAt: Date.now(),
     });
     saveSession(session);
+    touchRuntime(
+      "error",
+      { lastError: String(message || "未知错误") },
+      true
+    );
   }
 
   function auditSessionQueue(session) {
@@ -1217,6 +1468,10 @@
     var lastError = null;
     for (var attempt = 0; attempt <= FETCH_RETRIES; attempt += 1) {
       var response;
+      touchRuntime("network-request", {
+        networkAttempt: attempt + 1,
+        networkUrl: String(url || ""),
+      }, true);
       var controller =
         window.AbortController &&
         typeof window.AbortController === "function"
@@ -1234,6 +1489,14 @@
           signal: controller ? controller.signal : undefined,
           cache: options.noCache ? "no-store" : "default",
         });
+        if (response && response.ok) {
+          var data = await response.json();
+          markRuntimeProgress("network-complete", {
+            networkAttempt: attempt + 1,
+            networkUrl: String(url || ""),
+          });
+          return data;
+        }
       } catch (error) {
         lastError =
           error && error.name === "AbortError"
@@ -1247,10 +1510,6 @@
         ) {
           window.clearTimeout(timeoutId);
         }
-      }
-
-      if (response && response.ok) {
-        return response.json();
       }
 
       if (response && response.status !== 429 && response.status < 500) {
@@ -1272,7 +1531,10 @@
       setStatus(
         "请求受限，" + Math.ceil(waitMs / 1000) + " 秒后重试…"
       );
-      await sleep(waitMs);
+      await interruptibleSleep(waitMs, function () {
+        var session = getSession();
+        return Boolean(!session || session.status !== "stopped");
+      });
     }
 
     throw new Error(
@@ -2408,6 +2670,10 @@
       startedAt = Date.now();
       progress.observedPostNumber = observedPostNumber;
       saveTopicProgress(topic.id, progress);
+      markRuntimeProgress("reading", {
+        topicId: topic.id,
+        observedPostNumber: observedPostNumber,
+      });
 
       if (
         isTopicComplete(
@@ -2439,6 +2705,10 @@
     progress.observedPostNumber = observedPostNumber;
     progress.verificationStatus = "checking";
     progress = saveTopicProgress(topic.id, progress);
+    markRuntimeProgress("verifying", {
+      topicId: topic.id,
+      observedPostNumber: observedPostNumber,
+    });
 
     var currentSession = getSession();
     if (currentSession) {
@@ -2534,6 +2804,10 @@
       ? progress.lastPostNumber
       : Number(progress.cappedAtPostNumber || 0);
     progress = saveTopicProgress(topic.id, progress);
+    markRuntimeProgress("verified", {
+      topicId: topic.id,
+      verifiedPostNumber: progress.lastPostNumber,
+    });
     return {
       stopped: false,
       complete: Boolean(reachedEnd && verification.complete),
@@ -2762,6 +3036,9 @@
       };
       session.listContext = captureListContext(session);
       saveSession(session);
+      markRuntimeProgress("session-start", {
+        topicId: queue[0].id,
+      });
       await navigateToTopic(queue[0], session);
     } catch (error) {
       releaseLock();
@@ -2784,6 +3061,7 @@
     if (session.status === "paused") {
       session.status = "running";
       saveSession(session);
+      markRuntimeProgress("manual-resume");
       requestWakeLock(session.config);
       document.getElementById(IDS.pause).textContent = "暂停";
       setStatus("继续：" + formatProgress(session));
@@ -2793,6 +3071,7 @@
 
     session.status = "paused";
     saveSession(session);
+    touchRuntime("paused", {}, true);
     releaseWakeLock();
     document.getElementById(IDS.pause).textContent = "继续";
     setStatus("已暂停。");
@@ -2904,6 +3183,178 @@
     } else {
       navigateToTopic(session.queue[session.index], session);
     }
+  }
+
+  function getRuntimeRecoveryUrl(session, runtime, attempt) {
+    var topic =
+      session &&
+      Array.isArray(session.queue) &&
+      session.queue[session.index]
+        ? session.queue[session.index]
+        : null;
+    if (
+      topic &&
+      Number(attempt || 0) > 1 &&
+      hasReadingProgress(topic.id)
+    ) {
+      return appendRecoveryMarker(
+        buildResumeUrl(topic, getTopicProgress(topic.id))
+      );
+    }
+
+    var candidate = String(
+      (runtime || {}).href || location.href || location.origin + "/latest"
+    );
+    try {
+      var parsed = new URL(candidate, location.origin);
+      if (parsed.origin !== location.origin) {
+        candidate = location.origin + "/latest";
+      }
+    } catch (error) {
+      candidate = location.origin + "/latest";
+    }
+    return appendRecoveryMarker(candidate);
+  }
+
+  function recoverStalledRuntime(now) {
+    var session = getSession();
+    if (
+      !session ||
+      session.status === "stopped" ||
+      session.status === "paused" ||
+      !shouldRunInForeground(session)
+    ) {
+      return false;
+    }
+
+    var runtime = getRuntimeState();
+    if (!runtime) {
+      touchRuntime(
+        (session.navigation || {}).stage ||
+          (session.diagnostics || {}).stage ||
+          "booting",
+        {},
+        true
+      );
+      return false;
+    }
+    now = Number(now || Date.now());
+    if (!isRuntimeStalled(runtime, now, RUNTIME_STALE_MS)) {
+      return false;
+    }
+
+    var attempt = Number(runtime.recoveryAttempts || 0) + 1;
+    var message =
+      "主循环 " +
+      Math.max(
+        1,
+        Math.floor((now - Number(runtime.heartbeatAt || 0)) / 1000)
+      ) +
+      " 秒无心跳";
+
+    if (attempt > MAX_RUNTIME_RELOADS) {
+      runtime.recoveryAttempts = 0;
+      runtime.heartbeatAt = now;
+      runtime.stage = "watchdog-escalation";
+      runtime.lastError = message;
+      saveJSON(localStorage, KEYS.runtime, runtime);
+      processing = false;
+      var topic = session.queue[session.index];
+      var action = topic
+        ? planTopicFailureRecovery(session, topic, new Error(message))
+        : planBrowseFailureRecovery(session, new Error(message));
+      scheduleRecoveryAction(action);
+      return true;
+    }
+
+    runtime.recoveryAttempts = attempt;
+    runtime.heartbeatAt = now;
+    runtime.stage = "watchdog-reload";
+    runtime.lastError = message;
+    runtime.href = String(location.href || runtime.href || "");
+    saveJSON(localStorage, KEYS.runtime, runtime);
+    session.diagnostics = Object.assign({}, session.diagnostics || {}, {
+      stage: "recovering",
+      retries: attempt,
+      lastError:
+        message + "，正在执行第 " + attempt + " 次整页自愈",
+      updatedAt: now,
+    });
+    saveSession(session);
+    processing = false;
+    setStatus(
+      message + "，正在从持久化进度恢复（" + attempt + "/" +
+        MAX_RUNTIME_RELOADS + "）…",
+      true
+    );
+    location.href = getRuntimeRecoveryUrl(session, runtime, attempt);
+    return true;
+  }
+
+  function installRuntimeWatchdog() {
+    if (runtimeWatchdogTimer) {
+      return;
+    }
+    runtimeWatchdogTimer = window.setInterval(function () {
+      recoverStalledRuntime(Date.now());
+    }, RUNTIME_WATCHDOG_INTERVAL_MS);
+  }
+
+  function installWakeLockKeeper() {
+    if (wakeLockTimer) {
+      return;
+    }
+    wakeLockTimer = window.setInterval(function () {
+      var session = getSession();
+      if (
+        !session ||
+        session.status === "stopped" ||
+        session.status === "paused" ||
+        !session.config.keepAwake ||
+        !isDocumentVisible()
+      ) {
+        return;
+      }
+      if (!wakeLockSentinel || wakeLockSentinel.released) {
+        requestWakeLock(session.config);
+      }
+    }, WAKE_LOCK_RETRY_MS);
+  }
+
+  function installPageLoadRecovery() {
+    if (pageLoadRecoveryTimer) {
+      return;
+    }
+    pageLoadRecoveryTimer = window.setTimeout(function () {
+      pageLoadRecoveryTimer = null;
+      var session = getSession();
+      if (
+        !session ||
+        session.status === "stopped" ||
+        session.status === "paused" ||
+        document.readyState !== "loading"
+      ) {
+        return;
+      }
+      var runtime = getRuntimeState();
+      if (
+        document.body &&
+        !isRuntimeStalled(runtime, Date.now(), PAGE_LOAD_RECOVERY_MS)
+      ) {
+        return;
+      }
+      if (typeof window.stop === "function") {
+        window.stop();
+      }
+      touchRuntime(
+        "page-load-timeout",
+        { lastError: "页面加载超过 45 秒" },
+        true
+      );
+      recoverStalledRuntime(
+        Date.now() + RUNTIME_STALE_MS
+      );
+    }, PAGE_LOAD_RECOVERY_MS);
   }
 
   function recoverStalledNavigation() {
@@ -3455,7 +3906,7 @@
     }
   }
 
-  async function processCurrentTopic() {
+  async function processCurrentTopicImpl() {
     if (processing) {
       return;
     }
@@ -3464,6 +3915,7 @@
     if (!session || session.status === "stopped") {
       return;
     }
+    touchRuntime("runner-start", {}, true);
     if (session.pendingCompletion) {
       finalizePendingCompletion(session);
       session = getSession();
@@ -3620,6 +4072,32 @@
         scheduleRecoveryAction(recoveryAction);
       }
     }
+  }
+
+  function processCurrentTopic() {
+    return Promise.resolve()
+      .then(processCurrentTopicImpl)
+      .catch(function (error) {
+        processing = false;
+        var message =
+          "运行器异常：" +
+          String(error && error.message ? error.message : error);
+        var session = getSession();
+        touchRuntime("runner-error", { lastError: message }, true);
+        if (!session || session.status === "stopped") {
+          setStatus(message, true);
+          return;
+        }
+        if (session.status === "liking" && session.likeTopic) {
+          recordAutoLikeFailure(session, message);
+          return;
+        }
+        var topic = session.queue[session.index];
+        var action = topic
+          ? planTopicFailureRecovery(session, topic, new Error(message))
+          : planBrowseFailureRecovery(session, new Error(message));
+        scheduleRecoveryAction(action);
+      });
   }
 
   function loadPanelPosition() {
@@ -3958,8 +4436,19 @@
   }
 
   function boot() {
+    if (booted) {
+      return;
+    }
+    if (!document.body) {
+      window.setTimeout(boot, 100);
+      return;
+    }
+    booted = true;
     buildPanel();
     installRouteWatcher();
+    installRuntimeWatchdog();
+    installWakeLockKeeper();
+    installPageLoadRecovery();
     document.addEventListener("visibilitychange", function () {
       var session = getSession();
       if (!isDocumentVisible()) {
@@ -3976,6 +4465,27 @@
       ) {
         requestWakeLock(session.config);
       }
+    });
+    window.addEventListener("online", function () {
+      var session = getSession();
+      if (!session || session.status === "stopped") {
+        return;
+      }
+      markRuntimeProgress("network-online");
+      requestWakeLock(session.config);
+      processCurrentTopic();
+    });
+    window.addEventListener("offline", function () {
+      var session = getSession();
+      if (!session || session.status === "stopped") {
+        return;
+      }
+      touchRuntime(
+        "network-offline",
+        { lastError: "设备网络已断开，等待恢复" },
+        true
+      );
+      setStatus("网络已断开，进度已保存；联网后自动继续。", true);
     });
     refreshPanelState();
     var session = getSession();
@@ -4017,6 +4527,7 @@
       topicMatches: topicMatches,
       normalizeTopic: normalizeTopic,
       fetchTopics: fetchTopics,
+      fetchJsonWithRetry: fetchJsonWithRetry,
       buildSearchQuery: buildSearchQuery,
       buildBrowseSearchQuery: buildBrowseSearchQuery,
       findExactSearchTopic: findExactSearchTopic,
@@ -4070,13 +4581,52 @@
       parseLikeActionConfirmation: parseLikeActionConfirmation,
       submitPostLike: submitPostLike,
       waitForLikeConfirmation: waitForLikeConfirmation,
+      getRuntimeState: getRuntimeState,
+      isRuntimeStalled: isRuntimeStalled,
+      touchRuntime: touchRuntime,
+      markRuntimeProgress: markRuntimeProgress,
+      getRuntimeRecoveryUrl: getRuntimeRecoveryUrl,
+      recoverStalledRuntime: recoverStalledRuntime,
     };
     return;
   }
 
+  function startEarlyRuntime() {
+    installRuntimeWatchdog();
+    installWakeLockKeeper();
+    installPageLoadRecovery();
+    var session = getSession();
+    if (
+      session &&
+      session.status !== "stopped" &&
+      session.status !== "paused"
+    ) {
+      touchRuntime(
+        (session.navigation || {}).stage ||
+          (session.diagnostics || {}).stage ||
+          "document-start",
+        {},
+        true
+      );
+      requestWakeLock(session.config);
+    }
+  }
+
+  function bootWhenReady() {
+    if (document.body) {
+      boot();
+      return;
+    }
+    window.setTimeout(bootWhenReady, 100);
+  }
+
+  startEarlyRuntime();
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once: true });
+    document.addEventListener("DOMContentLoaded", bootWhenReady, {
+      once: true,
+    });
+    window.setTimeout(bootWhenReady, 500);
   } else {
-    boot();
+    bootWhenReady();
   }
 })();
