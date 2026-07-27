@@ -354,8 +354,8 @@ async function run() {
     "the runner must start before a slow page reaches document-idle"
   );
   assert(
-    source.includes("// @version      1.13.0"),
-    "unrestricted random discovery should publish a new userscript version"
+    source.includes("// @version      1.14.0"),
+    "visible non-pinned random discovery should publish a new userscript version"
   );
   assert(
     !source.includes("优先关键词（不是硬门槛）"),
@@ -435,8 +435,8 @@ async function run() {
   assert.strictEqual(api.DEFAULT_CONFIG.likeTarget, 25);
   assert.strictEqual(
     api.DEFAULT_CONFIG.includePinned,
-    true,
-    "the default candidate pool should not exclude pinned topics"
+    false,
+    "pinned topics must be excluded from the default candidate pool"
   );
   const discoveryLevels = api.buildDiscoveryConfigs(
     api.normalizeConfig({
@@ -474,7 +474,7 @@ async function run() {
   });
   assert.strictEqual(migratedDefaults.limit, 150);
   assert.strictEqual(migratedDefaults.likeTarget, 25);
-  assert.strictEqual(migratedDefaults.includePinned, true);
+  assert.strictEqual(migratedDefaults.includePinned, false);
   assert.strictEqual(
     migratedDefaults.configRevision,
     api.DEFAULT_CONFIG.configRevision
@@ -564,6 +564,62 @@ async function run() {
   assert.strictEqual(
     browseSession.queue[0].id,
     randomBrowseTopicId
+  );
+  function makeTopicLink(id, title, pinned = false) {
+    const row = {
+      className: pinned ? "topic-list-item pinned" : "topic-list-item",
+      getAttribute(name) {
+        return name === "data-pinned" && pinned ? "true" : "";
+      },
+      querySelector() {
+        return pinned ? { className: "d-icon-thumbtack" } : null;
+      },
+    };
+    return {
+      innerText: title,
+      textContent: title,
+      getAttribute(name) {
+        return name === "href" ? `/t/topic-${id}/${id}` : "";
+      },
+      closest() {
+        return row;
+      },
+    };
+  }
+  const visibleSession = {
+    version: api.VERSION,
+    status: "running",
+    queue: [
+      { id: 901, title: "预抓一" },
+      { id: 902, title: "预抓二" },
+    ],
+    index: 0,
+    config,
+  };
+  const visibleCandidates = api.collectBrowsableLinkCandidates(
+    visibleSession,
+    [
+      makeTopicLink(990, "置顶帖", true),
+      makeTopicLink(991, "不在预抓队列里的普通帖"),
+      makeTopicLink(902, "队列中的普通帖"),
+    ]
+  );
+  assert.deepStrictEqual(
+    Array.from(visibleCandidates, (candidate) => candidate.topic.id),
+    [991, 902],
+    "every visible non-pinned unread topic must be eligible, even outside the prefetched queue"
+  );
+  assert.strictEqual(visibleCandidates[0].queueIndex, -1);
+  const adoptedTopic = api.adoptBrowsableCandidate(
+    visibleSession,
+    visibleCandidates[0]
+  );
+  assert.strictEqual(adoptedTopic.id, 991);
+  assert.strictEqual(visibleSession.queue[0].id, 991);
+  assert.strictEqual(
+    visibleSession.queue.length,
+    2,
+    "adopting a visible random topic must replace the current slot without growing or stopping the task"
   );
   const rotationSession = {
     queue: [
@@ -688,6 +744,10 @@ async function run() {
   const topics = await api.fetchTopics(config);
   assert.strictEqual(topics.length, 180, "180-topic queues should fetch extra pages");
   assert(topics.every((topic) => Number.isInteger(topic.sourcePage)));
+  assert(
+    topics.every((topic) => !topic.pinned),
+    "prefetched candidate batches must exclude pinned topics"
+  );
   assert.strictEqual(
     api.topicMatches(
       {
@@ -700,8 +760,23 @@ async function run() {
       {},
       new Set()
     ),
+    false,
+    "pinned topics must be the only content-based exclusion"
+  );
+  assert.strictEqual(
+    api.topicMatches(
+      {
+        id: 999992,
+        title: "交易普通帖",
+        pinned: false,
+        category_id: 999,
+      },
+      config,
+      {},
+      new Set()
+    ),
     true,
-    "title, category, keywords and pinned state must not restrict random discovery"
+    "title, category and legacy keywords must not restrict random discovery"
   );
   assert.deepStrictEqual(
     Array.from(api.shuffleTopics([{ id: 1 }, { id: 2 }, { id: 3 }]))
@@ -729,7 +804,10 @@ async function run() {
   assert.strictEqual(skippedFrontPageBatch.topics.length, 5);
   assert(
     skippedFrontPageBatch.topics.every(
-      (topic) => topic.id >= 151 && topic.id <= 160
+      (topic) =>
+        topic.id >= 151 &&
+        topic.id <= 160 &&
+        !topic.pinned
     ),
     "candidate fetch must exclude already-read topics before random selection"
   );
@@ -779,7 +857,10 @@ async function run() {
   assert.strictEqual(refilledTopics.length, 5);
   assert(
     refilledTopics.every(
-      (topic) => topic.id >= 151 && topic.id <= 160
+      (topic) =>
+        topic.id >= 151 &&
+        topic.id <= 160 &&
+        !topic.pinned
     ),
     "an empty queue must randomly refill from older unread pages instead of stopping"
   );
