@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.12.0
-// @description  Linux.do 阅读进度助手：宽候选池、千楼帖约 300 楼、普通长帖读完、仅在完成节点核验
+// @version      1.13.0
+// @description  Linux.do 阅读进度助手：无内容门槛随机选帖、普通长帖读完、仅在完成节点核验
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-start
@@ -21,10 +21,6 @@
     minSeconds: "linuxdo-flip-min",
     maxSeconds: "linuxdo-flip-max",
     charsPerSecond: "linuxdo-flip-cps",
-    includePinned: "linuxdo-flip-pinned",
-    includeKeywords: "linuxdo-flip-include",
-    excludeKeywords: "linuxdo-flip-exclude",
-    categories: "linuxdo-flip-categories",
     start: "linuxdo-flip-start",
     pause: "linuxdo-flip-pause",
     stop: "linuxdo-flip-stop",
@@ -64,7 +60,7 @@
   var DISCOVERY_BATCH_PAGES = 10;
   var DISCOVERY_REFILL_SIZE = 30;
   var CANDIDATE_RECHECK_MS = 30000;
-  var CONFIG_REVISION = 5;
+  var CONFIG_REVISION = 6;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
   var LOCK_TTL_MS = 30000;
   var FETCH_DELAY_MIN_MS = 1100;
@@ -1436,14 +1432,10 @@
       minSeconds: document.getElementById(IDS.minSeconds).value,
       maxSeconds: document.getElementById(IDS.maxSeconds).value,
       charsPerSecond: document.getElementById(IDS.charsPerSecond).value,
-      includePinned: document.getElementById(IDS.includePinned).checked,
-      includeKeywords: parseList(
-        document.getElementById(IDS.includeKeywords).value
-      ),
-      excludeKeywords: parseList(
-        document.getElementById(IDS.excludeKeywords).value
-      ),
-      categories: parseList(document.getElementById(IDS.categories).value),
+      includePinned: true,
+      includeKeywords: [],
+      excludeKeywords: [],
+      categories: [],
     });
 
     if (config.maxSeconds < config.minSeconds) {
@@ -1478,12 +1470,6 @@
     document.getElementById(IDS.charsPerSecond).value = String(
       config.charsPerSecond
     );
-    document.getElementById(IDS.includePinned).checked = config.includePinned;
-    document.getElementById(IDS.includeKeywords).value =
-      config.includeKeywords.join(", ");
-    document.getElementById(IDS.excludeKeywords).value =
-      config.excludeKeywords.join(", ");
-    document.getElementById(IDS.categories).value = config.categories.join(", ");
   }
 
   function normalizeTopic(topic) {
@@ -1515,55 +1501,9 @@
     };
   }
 
-  function titleMatches(title, includeKeywords, excludeKeywords) {
-    var value = String(title || "").toLowerCase();
-    var included =
-      !includeKeywords.length ||
-      includeKeywords.some(function (keyword) {
-        return value.indexOf(keyword) !== -1;
-      });
-    var excluded = excludeKeywords.some(function (keyword) {
-      return value.indexOf(keyword) !== -1;
-    });
-    return included && !excluded;
-  }
-
-  function categoryMatches(topic, config, categoryMap) {
-    if (!config.categories.length) {
-      return true;
-    }
-    var id = Number(topic.category_id || topic.categoryId || 0);
-    var category = categoryMap[id];
-    return config.categories.some(function (filter) {
-      return (
-        filter === String(id) ||
-        Boolean(
-          category &&
-            (filter === category.slug.toLowerCase() ||
-              filter === category.name.toLowerCase())
-        )
-      );
-    });
-  }
-
   function topicMatches(topic, config, categoryMap, seen) {
     var id = Number(topic && topic.id);
-    if (!id || seen.has(id)) {
-      return false;
-    }
-    if (!config.includePinned && topic.pinned) {
-      return false;
-    }
-    if (
-      !titleMatches(
-        topic.title,
-        config.includeKeywords,
-        config.excludeKeywords
-      )
-    ) {
-      return false;
-    }
-    return categoryMatches(topic, config, categoryMap);
+    return Boolean(id && !seen.has(id));
   }
 
   async function fetchJsonWithRetry(url, options) {
@@ -1645,36 +1585,7 @@
     );
   }
 
-  async function loadCategoryMap(config) {
-    if (!config.categories.length) {
-      return {};
-    }
-
-    try {
-      var data = await fetchJsonWithRetry("/categories.json");
-      var categories =
-        (((data || {}).category_list || {}).categories || []);
-      var map = {};
-      categories.forEach(function (category) {
-        if (!category || !category.id) {
-          return;
-        }
-        map[Number(category.id)] = {
-          slug: String(category.slug || ""),
-          name: String(category.name || ""),
-        };
-      });
-      return map;
-    } catch (error) {
-      throw new Error("分类列表读取失败：" + error.message);
-    }
-  }
-
   function collectVisibleTopics(config, categoryMap, seen) {
-    if (config.categories.length) {
-      return [];
-    }
-
     var links = document.querySelectorAll(
       "a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title"
     );
@@ -1729,37 +1640,36 @@
 
   function buildDiscoveryConfigs(config) {
     var base = normalizeConfig(config);
-    var hasPreference =
-      base.includeKeywords.length > 0 || base.categories.length > 0;
-    var levels = [];
-    if (hasPreference) {
-      levels.push({
-        label: "优先条件",
-        pageLimit: Math.max(
-          DISCOVERY_BATCH_PAGES,
-          Number(base.pages || 0)
-        ),
-        config: base,
-      });
-    }
-    levels.push({
-      label: "全部未读",
+    return [{
+      label: "随机候选",
       pageLimit: MAX_DISCOVERY_PAGES,
       config: normalizeConfig(
         Object.assign({}, base, {
           configRevision: CONFIG_REVISION,
+          includePinned: true,
           includeKeywords: [],
+          excludeKeywords: [],
           categories: [],
         })
       ),
-    });
-    return levels;
+    }];
+  }
+
+  function shuffleTopics(topics) {
+    var result = Array.isArray(topics) ? topics.slice() : [];
+    for (var index = result.length - 1; index > 0; index -= 1) {
+      var swapIndex = randomInt(0, index);
+      var value = result[index];
+      result[index] = result[swapIndex];
+      result[swapIndex] = value;
+    }
+    return result;
   }
 
   async function fetchTopicBatch(config, options) {
     options = options || {};
     config = normalizeConfig(config);
-    var categoryMap = await loadCategoryMap(config);
+    var categoryMap = {};
     var seen = toTopicIdSet(options.excludedIds);
     var desiredLimit = clamp(
       Math.floor(Number(options.limit) || config.limit),
@@ -1794,9 +1704,17 @@
     var exhausted = false;
     var scannedPages = 0;
     var nextPage = startPage;
+    var samplePages = clamp(
+      Math.floor(Number(options.samplePages) || config.pages || 1),
+      1,
+      pagesToScan
+    );
 
     for (var page = startPage; page < endPage; page += 1) {
-      if (result.length >= desiredLimit) {
+      if (
+        result.length >= desiredLimit &&
+        scannedPages >= samplePages
+      ) {
         break;
       }
 
@@ -1829,7 +1747,7 @@
       }
     }
     return {
-      topics: result.slice(0, desiredLimit),
+      topics: shuffleTopics(result).slice(0, desiredLimit),
       nextPage: nextPage,
       scannedPages: scannedPages,
       exhausted: exhausted || nextPage >= MAX_DISCOVERY_PAGES,
@@ -2420,6 +2338,8 @@
     }
     var visited = getVisited();
     var order = Array.isArray(topicIds) ? topicIds.map(Number) : [];
+    var candidates = [];
+    var candidateSet = new Set();
     for (var idIndex = 0; idIndex < order.length; idIndex += 1) {
       var topicId = order[idIndex];
       for (
@@ -2431,12 +2351,19 @@
           continue;
         }
         var progress = getTopicProgress(topicId);
-        if (!visited.has(topicId) && !progress.completed) {
-          return queueIndex;
+        if (
+          !visited.has(topicId) &&
+          !progress.completed &&
+          !candidateSet.has(queueIndex)
+        ) {
+          candidateSet.add(queueIndex);
+          candidates.push(queueIndex);
         }
       }
     }
-    return -1;
+    return candidates.length
+      ? candidates[randomInt(0, candidates.length - 1)]
+      : -1;
   }
 
   function findBrowsableQueueLink(session) {
@@ -2684,7 +2611,7 @@
       lastError: "",
       source: "list-browse",
     });
-    setStatus("列表暂未翻到合格话题，进入宽泛搜索继续翻找。");
+    setStatus("列表暂未翻到队列中的未读话题，进入宽泛搜索继续翻找。");
     location.href =
       location.origin + "/search?q=" + encodeURIComponent(query);
     return true;
@@ -2696,7 +2623,7 @@
     var attempt = 0;
     while (!candidate && Date.now() < deadline) {
       attempt += 1;
-      setStatus("正在宽泛搜索结果中翻找合格话题…");
+      setStatus("正在宽泛搜索结果中随机翻找未读话题…");
       if (attempt % 4 === 0 && typeof window.scrollBy === "function") {
         window.scrollBy({
           top: Math.max(280, Math.floor(window.innerHeight * 0.62)),
@@ -2723,12 +2650,12 @@
         });
         await sleep(350);
       }
-      setStatus("翻到合格话题，点击：" + topic.title);
+      setStatus("随机选中未读话题，点击：" + topic.title);
       candidate.link.click();
       return true;
     }
 
-    var message = "列表和宽泛搜索都没有翻到剩余队列中的合格话题";
+    var message = "列表和宽泛搜索都没有显示剩余队列中的未读话题";
     var action = planBrowseFailureRecovery(session, message);
     scheduleRecoveryAction(action);
     return false;
@@ -3421,7 +3348,7 @@
             lastError: "",
             source: "list-browse",
           });
-          setStatus("翻到合格话题，点击：" + selectedTopic.title);
+          setStatus("随机选中未读话题，点击：" + selectedTopic.title);
           candidate.link.click();
           return;
         }
@@ -4915,12 +4842,8 @@
       field("最短停留", IDS.minSeconds, "number", "12", "秒"),
       field("单次最长", IDS.maxSeconds, "number", "90", "秒"),
       field("基础速度", IDS.charsPerSecond, "number", "10", "字/秒"),
-      '<label class="ldf-wide"><input id="' + IDS.includePinned + '" type="checkbox"> 包含置顶主题</label>',
       '<label class="ldf-wide"><input id="' + IDS.foregroundOnly + '" type="checkbox"> 仅在页面前台时阅读和计时</label>',
       '<label class="ldf-wide"><input id="' + IDS.keepAwake + '" type="checkbox"> 阅读时申请手机屏幕常亮</label>',
-      '<label class="ldf-wide">优先关键词（不是硬门槛）<input id="' + IDS.includeKeywords + '" type="text" placeholder="AI, VPS"></label>',
-      '<label class="ldf-wide">排除关键词<input id="' + IDS.excludeKeywords + '" type="text" placeholder="广告, 交易"></label>',
-      '<label class="ldf-wide">优先分类、slug 或 ID<input id="' + IDS.categories + '" type="text" placeholder="development, 5"></label>',
       '<div class="ldf-actions">',
       '<button id="' + IDS.start + '" type="button">开始</button>',
       '<button id="' + IDS.pause + '" type="button">暂停</button>',
@@ -4929,7 +4852,7 @@
       '<button id="' + IDS.skipCurrent + '" type="button">跳过当前</button>',
       '<button id="' + IDS.reset + '" type="button">清空已读</button>',
       "</div>",
-      '<p class="ldf-note">原生导航先翻主题列表，遇到第一个合格未读话题就点击；候选不足会续扫旧页并自动补充，不会把空队列当成完成。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
+      '<p class="ldf-note">原生导航跨多个列表页建立未读候选池，再随机点击一个主题；不按标题、分类、关键词、置顶或楼数筛选。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
@@ -5094,10 +5017,9 @@
       textLength: textLength,
       getTopicId: getTopicId,
       normalizeConfig: normalizeConfig,
-      titleMatches: titleMatches,
-      categoryMatches: categoryMatches,
       topicMatches: topicMatches,
       normalizeTopic: normalizeTopic,
+      shuffleTopics: shuffleTopics,
       fetchTopics: fetchTopics,
       fetchTopicBatch: fetchTopicBatch,
       buildDiscoveryConfigs: buildDiscoveryConfigs,
