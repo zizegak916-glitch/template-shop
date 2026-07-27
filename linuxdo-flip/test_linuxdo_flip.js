@@ -354,8 +354,12 @@ async function run() {
     "the runner must start before a slow page reaches document-idle"
   );
   assert(
-    source.includes("// @version      1.12.0"),
-    "long-topic and deferred-verification fixes should publish a new userscript version"
+    source.includes("// @version      1.13.0"),
+    "unrestricted random discovery should publish a new userscript version"
+  );
+  assert(
+    !source.includes("优先关键词（不是硬门槛）"),
+    "the panel must not expose content filters that random discovery ignores"
   );
   assert.deepStrictEqual(
     Array.from(api.parseList(" AI，VPS\n开发 ")),
@@ -412,15 +416,6 @@ async function run() {
     "site search should use the Discourse search endpoint"
   );
 
-  assert.strictEqual(
-    api.titleMatches("AI 开发工具", ["ai"], ["交易"]),
-    true
-  );
-  assert.strictEqual(
-    api.titleMatches("AI 交易工具", ["ai"], ["交易"]),
-    false
-  );
-
   const config = api.normalizeConfig({
     configRevision: api.DEFAULT_CONFIG.configRevision,
     pages: 1,
@@ -453,25 +448,25 @@ async function run() {
   );
   assert.deepStrictEqual(
     Array.from(discoveryLevels, (level) => level.label),
-    ["优先条件", "全部未读"]
+    ["随机候选"]
   );
   assert.deepStrictEqual(
-    Array.from(discoveryLevels[1].config.includeKeywords),
+    Array.from(discoveryLevels[0].config.includeKeywords),
     []
   );
   assert.deepStrictEqual(
-    Array.from(discoveryLevels[1].config.categories),
+    Array.from(discoveryLevels[0].config.categories),
     []
   );
   assert.deepStrictEqual(
-    Array.from(discoveryLevels[1].config.excludeKeywords),
-    ["交易"],
-    "broad candidate discovery must preserve explicit exclusions"
+    Array.from(discoveryLevels[0].config.excludeKeywords),
+    [],
+    "random discovery must ignore legacy content exclusions"
   );
   assert.strictEqual(
     discoveryLevels[0].pageLimit,
-    10,
-    "preference-only filters should not block discovery for dozens of pages"
+    80,
+    "random discovery should be able to keep sampling older pages"
   );
   const migratedDefaults = api.normalizeConfig({
     limit: 180,
@@ -553,15 +548,22 @@ async function run() {
     index: 0,
     config,
   };
-  assert.strictEqual(
-    api.chooseBrowsableQueueIndex(browseSession, [903, 901]),
-    2,
-    "native browsing should select the first eligible topic encountered in the list"
+  const randomBrowseIndex = api.chooseBrowsableQueueIndex(
+    browseSession,
+    [903, 901]
   );
-  assert.strictEqual(api.promoteQueueTopic(browseSession, 2).id, 903);
-  assert.deepStrictEqual(
-    Array.from(browseSession.queue, (topic) => topic.id),
-    [903, 902, 901]
+  assert(
+    [0, 2].includes(randomBrowseIndex),
+    "native browsing should randomly choose among visible unread candidates"
+  );
+  const randomBrowseTopicId = browseSession.queue[randomBrowseIndex].id;
+  assert.strictEqual(
+    api.promoteQueueTopic(browseSession, randomBrowseIndex).id,
+    randomBrowseTopicId
+  );
+  assert.strictEqual(
+    browseSession.queue[0].id,
+    randomBrowseTopicId
   );
   const rotationSession = {
     queue: [
@@ -685,9 +687,29 @@ async function run() {
   assert.strictEqual(fallbackWakeEnv.api.getWakeLockState(), "idle");
   const topics = await api.fetchTopics(config);
   assert.strictEqual(topics.length, 180, "180-topic queues should fetch extra pages");
-  assert(topics.every((topic) => topic.title.includes("AI")));
-  assert(topics.every((topic) => !topic.pinned));
   assert(topics.every((topic) => Number.isInteger(topic.sourcePage)));
+  assert.strictEqual(
+    api.topicMatches(
+      {
+        id: 999991,
+        title: "交易置顶帖",
+        pinned: true,
+        category_id: 999,
+      },
+      config,
+      {},
+      new Set()
+    ),
+    true,
+    "title, category, keywords and pinned state must not restrict random discovery"
+  );
+  assert.deepStrictEqual(
+    Array.from(api.shuffleTopics([{ id: 1 }, { id: 2 }, { id: 3 }]))
+      .map((topic) => topic.id)
+      .sort((left, right) => left - right),
+    [1, 2, 3],
+    "randomization must preserve the candidate set"
+  );
   const skippedFrontPageBatch = await api.fetchTopicBatch(
     api.normalizeConfig({
       ...config,
@@ -704,10 +726,12 @@ async function run() {
       skipVisible: true,
     }
   );
-  assert.deepStrictEqual(
-    Array.from(skippedFrontPageBatch.topics, (topic) => topic.id),
-    [151, 153, 155, 156, 157],
-    "candidate fetch must exclude already-read topics before applying the queue limit"
+  assert.strictEqual(skippedFrontPageBatch.topics.length, 5);
+  assert(
+    skippedFrontPageBatch.topics.every(
+      (topic) => topic.id >= 151 && topic.id <= 160
+    ),
+    "candidate fetch must exclude already-read topics before random selection"
   );
   assert(
     skippedFrontPageBatch.scannedPages >= 4,
@@ -721,8 +745,7 @@ async function run() {
   });
   const categoryTopics = await api.fetchTopics(categoryConfig);
   assert.strictEqual(categoryTopics.length, 20);
-  assert(categoryTopics.every((topic) => topic.categoryId === 5));
-  assert(env.calls.includes("/categories.json"));
+  assert(!env.calls.includes("/categories.json"));
 
   const refillEnv = createEnvironment();
   const refillApi = refillEnv.api;
@@ -753,10 +776,12 @@ async function run() {
     refillApi.getSession(),
     5
   );
-  assert.deepStrictEqual(
-    Array.from(refilledTopics, (topic) => topic.id),
-    [151, 152, 153, 154, 155],
-    "an empty queue must refill from older pages instead of stopping"
+  assert.strictEqual(refilledTopics.length, 5);
+  assert(
+    refilledTopics.every(
+      (topic) => topic.id >= 151 && topic.id <= 160
+    ),
+    "an empty queue must randomly refill from older unread pages instead of stopping"
   );
   assert.strictEqual(refillApi.getSession().status, "running");
   assert.strictEqual(refillApi.getSession().discovery.waiting, false);
@@ -1479,7 +1504,7 @@ async function run() {
 
   console.log("Linux.do Flip tests passed");
   console.log(`Fetched topics: ${topics.length}`);
-  console.log(`Category-filtered topics: ${categoryTopics.length}`);
+  console.log(`Random topics with legacy category config: ${categoryTopics.length}`);
 }
 
 run().catch((error) => {
