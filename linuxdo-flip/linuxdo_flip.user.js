@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Linux.do Flip
 // @namespace    local.linuxdo.flip
-// @version      1.13.0
-// @description  Linux.do 阅读进度助手：无内容门槛随机选帖、普通长帖读完、仅在完成节点核验
+// @version      1.14.0
+// @description  Linux.do 阅读进度助手：除置顶外从当前可见未读帖纯随机、普通长帖读完
 // @match        https://linux.do/*
 // @grant        none
 // @run-at       document-start
@@ -60,7 +60,7 @@
   var DISCOVERY_BATCH_PAGES = 10;
   var DISCOVERY_REFILL_SIZE = 30;
   var CANDIDATE_RECHECK_MS = 30000;
-  var CONFIG_REVISION = 6;
+  var CONFIG_REVISION = 7;
   var TOPICS_PER_PAGE_ESTIMATE = 30;
   var LOCK_TTL_MS = 30000;
   var FETCH_DELAY_MIN_MS = 1100;
@@ -109,7 +109,7 @@
     minSeconds: 12,
     maxSeconds: 90,
     charsPerSecond: 10,
-    includePinned: true,
+    includePinned: false,
     includeKeywords: [],
     excludeKeywords: [],
     categories: [],
@@ -1432,7 +1432,7 @@
       minSeconds: document.getElementById(IDS.minSeconds).value,
       maxSeconds: document.getElementById(IDS.maxSeconds).value,
       charsPerSecond: document.getElementById(IDS.charsPerSecond).value,
-      includePinned: true,
+      includePinned: false,
       includeKeywords: [],
       excludeKeywords: [],
       categories: [],
@@ -1503,7 +1503,7 @@
 
   function topicMatches(topic, config, categoryMap, seen) {
     var id = Number(topic && topic.id);
-    return Boolean(id && !seen.has(id));
+    return Boolean(id && !topic.pinned && !seen.has(id));
   }
 
   async function fetchJsonWithRetry(url, options) {
@@ -1595,15 +1595,12 @@
       var href = link.getAttribute("href") || "";
       var id = getTopicId(href);
       var title = String(link.innerText || link.textContent || "").trim();
-      var row = link.closest
-        ? link.closest("tr, .topic-list-item, .latest-topic-list-item")
-        : null;
       var topic = {
         id: id,
         title: title,
         slug:
           href.split("/").filter(Boolean).slice(-2, -1)[0] || "topic",
-        pinned: Boolean(row && /pinned/i.test(String(row.className || ""))),
+        pinned: isPinnedTopicLink(link),
         category_id: null,
         sourcePage: null,
         listHref: href,
@@ -1646,7 +1643,7 @@
       config: normalizeConfig(
         Object.assign({}, base, {
           configRevision: CONFIG_REVISION,
-          includePinned: true,
+          includePinned: false,
           includeKeywords: [],
           excludeKeywords: [],
           categories: [],
@@ -2366,27 +2363,126 @@
       : -1;
   }
 
-  function findBrowsableQueueLink(session) {
-    var links = Array.from(
-      document.querySelectorAll(
-        "a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title, a.search-link, .fps-result a[href*='/t/']"
-      )
-    );
-    var topicIds = links.map(function (link) {
-      return getTopicId(link.getAttribute("href") || "");
-    });
-    var queueIndex = chooseBrowsableQueueIndex(session, topicIds);
-    if (queueIndex < 0) {
+  function isPinnedTopicLink(link) {
+    if (!link) {
+      return false;
+    }
+    var row = link.closest
+      ? link.closest(
+          "tr, .topic-list-item, .latest-topic-list-item, .search-result, .fps-result"
+        )
+      : null;
+    var container = row || link;
+    var className = String(container.className || "");
+    if (/(?:^|\s)(?:pinned|pinned-globally)(?:\s|$)/i.test(className)) {
+      return true;
+    }
+    if (
+      container.getAttribute &&
+      String(container.getAttribute("data-pinned") || "").toLowerCase() ===
+        "true"
+    ) {
+      return true;
+    }
+    if (!container.querySelector) {
+      return false;
+    }
+    try {
+      return Boolean(
+        container.querySelector(
+          ".d-icon-thumbtack, .d-icon-thumbtack-horizontal, [data-pinned='true'], [title*='置顶'], [aria-label*='置顶'], [title*='pinned'], [title*='Pinned'], [aria-label*='pinned'], [aria-label*='Pinned']"
+        )
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function topicFromBrowsableLink(link) {
+    if (!link) {
       return null;
     }
-    var topic = session.queue[queueIndex];
-    var link = links.find(function (item) {
-      return (
-        getTopicId(item.getAttribute("href") || "") === Number(topic.id)
-      );
+    var href = String(link.getAttribute("href") || "");
+    var id = getTopicId(href);
+    if (!id) {
+      return null;
+    }
+    var pathParts = href
+      .split(/[?#]/)[0]
+      .split("/")
+      .filter(Boolean);
+    var topicMarker = pathParts.indexOf("t");
+    var slug =
+      topicMarker >= 0 &&
+      pathParts[topicMarker + 1] &&
+      !/^\d+$/.test(pathParts[topicMarker + 1])
+        ? pathParts[topicMarker + 1]
+        : "topic";
+    var pageMatch = String(location.search || "").match(/[?&]page=(\d+)/);
+    return normalizeTopic({
+      id: id,
+      title:
+        String(link.innerText || link.textContent || "").trim() ||
+        "话题 #" + id,
+      slug: slug,
+      pinned: isPinnedTopicLink(link),
+      category_id: null,
+      sourcePage: pageMatch ? Number(pageMatch[1]) : null,
+      listHref: href,
+      url:
+        href.indexOf("http") === 0
+          ? href
+          : location.origin + (href.charAt(0) === "/" ? href : "/" + href),
     });
-    return link
-      ? { link: link, topic: topic, queueIndex: queueIndex }
+  }
+
+  function collectBrowsableLinkCandidates(session, providedLinks) {
+    var links = Array.isArray(providedLinks)
+      ? providedLinks
+      : Array.from(
+          document.querySelectorAll(
+            "a.raw-topic-link, .topic-list a.title, .latest-topic-list-item a.title, a.search-link, .fps-result a[href*='/t/']"
+          )
+        );
+    var visited = getVisited();
+    var seen = new Set();
+    var currentIndex = Math.max(0, Number(session && session.index) || 0);
+    var queue =
+      session && Array.isArray(session.queue) ? session.queue : [];
+    var candidates = [];
+
+    links.forEach(function (link) {
+      var topic = topicFromBrowsableLink(link);
+      if (
+        !topic ||
+        topic.pinned ||
+        seen.has(Number(topic.id)) ||
+        visited.has(Number(topic.id)) ||
+        getTopicProgress(topic.id).completed
+      ) {
+        return;
+      }
+      seen.add(Number(topic.id));
+      var queueIndex = -1;
+      for (var index = currentIndex; index < queue.length; index += 1) {
+        if (Number(queue[index].id) === Number(topic.id)) {
+          queueIndex = index;
+          break;
+        }
+      }
+      candidates.push({
+        link: link,
+        topic: topic,
+        queueIndex: queueIndex,
+      });
+    });
+    return candidates;
+  }
+
+  function findBrowsableQueueLink(session) {
+    var candidates = collectBrowsableLinkCandidates(session);
+    return candidates.length
+      ? candidates[randomInt(0, candidates.length - 1)]
       : null;
   }
 
@@ -2409,6 +2505,28 @@
       saveSession(session);
     }
     return session.queue[currentIndex];
+  }
+
+  function adoptBrowsableCandidate(session, candidate) {
+    if (!session || !candidate || !candidate.topic) {
+      return null;
+    }
+    if (Number(candidate.queueIndex) >= 0) {
+      return promoteQueueTopic(session, Number(candidate.queueIndex));
+    }
+    if (!Array.isArray(session.queue)) {
+      session.queue = [];
+    }
+    var currentIndex = Math.max(0, Number(session.index) || 0);
+    var selected = normalizeTopic(candidate.topic);
+    if (currentIndex < session.queue.length) {
+      session.queue[currentIndex] = selected;
+    } else {
+      session.index = session.queue.length;
+      session.queue.push(selected);
+    }
+    saveSession(session);
+    return selected;
   }
 
   function hasReadingProgress(topicId) {
@@ -2442,7 +2560,7 @@
         behavior: "smooth",
       });
       setStatus(
-        "正在翻找符合条件的未读话题 · 第 " +
+        "当前可见区暂无非置顶未读话题，继续滑动 · 第 " +
           (attempt + 1) +
           " 次加载"
       );
@@ -2611,7 +2729,7 @@
       lastError: "",
       source: "list-browse",
     });
-    setStatus("列表暂未翻到队列中的未读话题，进入宽泛搜索继续翻找。");
+    setStatus("当前列表暂无非置顶未读话题，进入宽泛搜索继续随机翻找。");
     location.href =
       location.origin + "/search?q=" + encodeURIComponent(query);
     return true;
@@ -2635,7 +2753,7 @@
     }
 
     if (candidate && candidate.link) {
-      var topic = promoteQueueTopic(session, candidate.queueIndex);
+      var topic = adoptBrowsableCandidate(session, candidate);
       setNavigationState(session, "opening", {
         topicId: topic.id,
         query: (session.navigation || {}).query || "",
@@ -2655,7 +2773,7 @@
       return true;
     }
 
-    var message = "列表和宽泛搜索都没有显示剩余队列中的未读话题";
+    var message = "列表和宽泛搜索都没有显示可用的非置顶未读话题";
     var action = planBrowseFailureRecovery(session, message);
     scheduleRecoveryAction(action);
     return false;
@@ -3338,10 +3456,7 @@
         });
         var candidate = await findBrowsableTopicByScrolling(session);
         if (candidate && candidate.link) {
-          var selectedTopic = promoteQueueTopic(
-            session,
-            candidate.queueIndex
-          );
+          var selectedTopic = adoptBrowsableCandidate(session, candidate);
           setNavigationState(session, "opening", {
             topicId: selectedTopic.id,
             retries: Number((session.navigation || {}).retries || 0),
@@ -4852,7 +4967,7 @@
       '<button id="' + IDS.skipCurrent + '" type="button">跳过当前</button>',
       '<button id="' + IDS.reset + '" type="button">清空已读</button>',
       "</div>",
-      '<p class="ldf-note">原生导航跨多个列表页建立未读候选池，再随机点击一个主题；不按标题、分类、关键词、置顶或楼数筛选。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
+      '<p class="ldf-note">原生导航从当前可见的非置顶未读主题中纯随机点击；不按标题、分类、关键词或楼数筛选，也不要求主题预先进入候选队列。只有未完成长帖续读才按明确主题恢复。站点核验确认的是 Discourse 已读楼层，不等同于 XP 已结算。</p>',
       '<div id="' + IDS.status + '">待命</div>',
       '<div id="' + IDS.diagnostics + '">阶段：待命</div>',
       '<div id="' + IDS.resize + '">◢</div>',
@@ -5032,7 +5147,11 @@
       findExactSearchTopic: findExactSearchTopic,
       searchExactTopic: searchExactTopic,
       chooseBrowsableQueueIndex: chooseBrowsableQueueIndex,
+      isPinnedTopicLink: isPinnedTopicLink,
+      topicFromBrowsableLink: topicFromBrowsableLink,
+      collectBrowsableLinkCandidates: collectBrowsableLinkCandidates,
       promoteQueueTopic: promoteQueueTopic,
+      adoptBrowsableCandidate: adoptBrowsableCandidate,
       hasReadingProgress: hasReadingProgress,
       parseServerReadPostNumber: parseServerReadPostNumber,
       parseTopicAudit: parseTopicAudit,
