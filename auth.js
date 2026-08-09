@@ -1098,6 +1098,7 @@
       document.querySelectorAll('[data-template]').forEach(card => {
         const tpl = card.dataset.template;
         if (!this.isPremiumTemplate(tpl)) return;
+        if (card.__tsBadged) return;      // already processed — skip
 
         // Ensure position relative
         if (getComputedStyle(card).position === 'static') {
@@ -1111,10 +1112,12 @@
           badge.textContent = '旗舰';
           card.appendChild(badge);
         }
+        card.__tsBadged = true;
       });
 
       // Also try to match by href for cards containing download links
       document.querySelectorAll('.card, .template-card, .tpl-card, [class*="card"]').forEach(card => {
+        if (card.__tsBadged) return;      // already processed — skip
         const links = card.querySelectorAll('a[href]');
         let isPremiumCard = false;
         let tplName = '';
@@ -1139,6 +1142,7 @@
             badge.textContent = '旗舰';
             card.appendChild(badge);
           }
+          card.__tsBadged = true;
         }
       });
     },
@@ -1148,9 +1152,15 @@
       const premiumList = this.getPremiumTemplates();
       if (!premiumList.length) return;
 
-      // Observe DOM for dynamically loaded cards
+      // Observe DOM for dynamically loaded cards — but debounced to
+      // avoid infinite self-trigger loops (badges injected → observer fires → re-inject)
+      let observerTimer = null;
       const observer = new MutationObserver(() => {
-        this.applyAuthState();
+        if (observerTimer) return;
+        observerTimer = setTimeout(() => {
+          observerTimer = null;
+          this.applyAuthState();
+        }, 300);
       });
 
       observer.observe(document.body, {
