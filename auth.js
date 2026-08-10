@@ -596,6 +596,11 @@
           z-index: 5;
           pointer-events: none;
         }
+        .__elite_card_badge {
+          background: linear-gradient(135deg, #c0c0c0, #909090);
+          color: #fff;
+          box-shadow: 0 2px 10px rgba(192,192,192,0.3);
+        }
         .__lock_overlay {
           position: absolute;
           inset: 0;
@@ -1147,14 +1152,14 @@
       document.querySelectorAll('.card, .template-card, .tpl-card, [class*="card"]').forEach(card => {
         if (card.__tsBadged) return;      // already processed — skip
         const links = card.querySelectorAll('a[href]');
-        let isPremiumCard = false;
+        let isLockedCard = false;
         let tplName = '';
 
         links.forEach(link => {
           const href = link.getAttribute('href') || '';
-          const match = premiumList.find(p => href.includes(p));
+          const match = lockedList.find(p => href.includes(p));
           if (match) {
-            isPremiumCard = true;
+            isLockedCard = true;
             tplName = match;
           }
         });
