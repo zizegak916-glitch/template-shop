@@ -55,7 +55,8 @@ window.__VALID_HASHES=[
 "90298990b1362aeeaf45682b594267309fe217e36e30573f82018e1bd2911e33",
 "30f8a467a249f33cbe3698c497a11a99296138b87ae65078f7ddf97db97553a1",
 "508aa573a962705ad71656fe9225ff5088630c9bbb3f11ab0e7cda20f631a43d",
-"1515bb0cec1b6dfc06e4a8e6cc301ab815f2fe1f14d4dfe2a548f2fd63b7ea69"];
+"1515bb0cec1b6dfc06e4a8e6cc301ab815f2fe1f14d4dfe2a548f2fd63b7ea69",
+"6f78045d5367500983ab9d484892bb725605110114968c439e80b966914102d2"];
 
 // Admin / management keys — bypass single-device binding entirely.
 // These unlock on ANY device (ignore device limits). For internal testing only.
