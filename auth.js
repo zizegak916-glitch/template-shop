@@ -148,8 +148,24 @@
       return window.__PREMIUM_TEMPLATES || [];
     },
 
+    getEliteTemplates() {
+      return window.__ELITE_TEMPLATES || [];
+    },
+
+    getLockedTemplates() {
+      return [...this.getPremiumTemplates(), ...this.getEliteTemplates()];
+    },
+
     isPremiumTemplate(filename) {
       return this.getPremiumTemplates().includes(filename);
+    },
+
+    isEliteTemplate(filename) {
+      return this.getEliteTemplates().includes(filename);
+    },
+
+    isLockedTemplate(filename) {
+      return this.getLockedTemplates().includes(filename);
     },
 
     // ─── User Registration ──────────────────────────────────────
@@ -1053,14 +1069,14 @@
     },
 
     updateDownloadButtons(authLevel) {
-      const premiumList = this.getPremiumTemplates();
-      if (!premiumList.length) return;
+      const lockedList = this.getLockedTemplates();
+      if (!lockedList.length) return;
 
       document.querySelectorAll('a[href]').forEach(a => {
         const href = a.getAttribute('href') || '';
-        const isPremiumDL = premiumList.some(p => href.includes(p));
+        const isLockedDL = lockedList.some(p => href.includes(p));
 
-        if (isPremiumDL) {
+        if (isLockedDL) {
           // Remove old lock class
           a.classList.remove('__dl_locked');
           // Remove old lock overlay if exists
@@ -1098,13 +1114,13 @@
     },
 
     updatePremiumOverlays(authLevel) {
-      const premiumList = this.getPremiumTemplates();
-      if (!premiumList.length) return;
+      const lockedList = this.getLockedTemplates();
+      if (!lockedList.length) return;
 
       // Find template cards and add overlays
       document.querySelectorAll('[data-template]').forEach(card => {
         const tpl = card.dataset.template;
-        if (!this.isPremiumTemplate(tpl)) return;
+        if (!this.isLockedTemplate(tpl)) return;
         if (card.__tsBadged) return;      // already processed — skip
 
         // Ensure position relative
@@ -1112,11 +1128,16 @@
           card.style.position = 'relative';
         }
 
-        // Add gold badge if not exists
+        // Add badge: 旗舰 (gold) or 精品 (silver)
         if (!card.querySelector('.__premium_card_badge')) {
           const badge = document.createElement('div');
-          badge.className = '__premium_card_badge';
-          badge.textContent = '旗舰';
+          if (this.isPremiumTemplate(tpl)) {
+            badge.className = '__premium_card_badge';
+            badge.textContent = '旗舰';
+          } else {
+            badge.className = '__premium_card_badge __elite_card_badge';
+            badge.textContent = '精品';
+          }
           card.appendChild(badge);
         }
         card.__tsBadged = true;
@@ -1138,15 +1159,20 @@
           }
         });
 
-        if (isPremiumCard && tplName) {
+        if (isLockedCard && tplName) {
           if (getComputedStyle(card).position === 'static') {
             card.style.position = 'relative';
           }
 
           if (!card.querySelector('.__premium_card_badge')) {
             const badge = document.createElement('div');
-            badge.className = '__premium_card_badge';
-            badge.textContent = '旗舰';
+            if (this.isPremiumTemplate(tplName)) {
+              badge.className = '__premium_card_badge';
+              badge.textContent = '旗舰';
+            } else {
+              badge.className = '__premium_card_badge __elite_card_badge';
+              badge.textContent = '精品';
+            }
             card.appendChild(badge);
           }
           card.__tsBadged = true;
