@@ -1,25 +1,25 @@
-// 旗舰模板 — 顶级重工/Canvas大作
+// 旗舰模板 — Canvas重工 / 交互式 / 粒子系统
 window.__PREMIUM_TEMPLATES = [
-  "aurora-borealis.html",
-  "noir.html",
-  "gold-leaf.html",
-  "ink-wash.html",
-  "gemini-flow.html",
-  "dark-gothic.html",
-  "warp-drive.html",
-  "cyber-cultivation.html"
+  "aurora-borealis.html",   // 极光粒子帘幕
+  "mojian.html",            // Canvas水墨交互+剑气粒子+保存
+  "ink-wash.html",          // Canvas Perlin山脉墨渲染
+  "gold-leaf.html",         // Canvas金粉闪烁
+  "noir.html",              // 自定义光标+3D倾斜+磁力按钮
+  "gemini-flow.html",       // 流动渐变+粒子连线
+  "dark-gothic.html",       // 哥特大教堂彩色玻璃
+  "warp-drive.html",        // 星际迷航曲速引擎
+  "cyber-cultivation.html", // 赛博修仙数字曼陀罗
+  "deep-sea-glow.html",     // 深海生物发光+水母CSS
+  "volcanic-lava.html",     // 熔岩流动+余烬粒子
+  "mech-gears.html"         // 旋转齿轮蒸汽朋克
 ];
 
-// 精品模板 — 高质量/有特色，也需密钥解锁
+// 精品模板 — 视觉冲击强 / 丰富动画 / 主题鲜明
 window.__ELITE_TEMPLATES = [
-  "deep-sea-glow.html",
-  "volcanic-lava.html",
   "jade-forest.html",
   "star-trails.html",
   "cyber-ink.html",
-  "mojian.html",
   "neon-nightscape.html",
-  "mech-gears.html",
   "void-space.html",
   "pixel-retro.html",
   "vaporwave.html",
@@ -41,5 +41,9 @@ window.__ELITE_TEMPLATES = [
   "pixel-city.html",
   "silk-road.html",
   "editorial.html",
-  "shadow-flow.html"
+  "shadow-flow.html",
+  "steel-forge.html",
+  "neon-velocity.html",
+  "neon-district.html",
+  "cyberpunk.html"
 ];
