@@ -41,6 +41,11 @@ const DEFAULT_HASHES = [
   "abc5836bcc9ed730cf811259765bd56507a0f5478fb9494f505619f0a6dd4a27",
 ];
 
+// Admin/management key hashes — bypass device binding entirely (any-device login).
+const ADMIN_HASHES = [
+  "6f78045d5367500983ab9d484892bb725605110114968c439e80b966914102d2",
+];
+
 // CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -124,6 +129,17 @@ async function handleLogin(env, key, clientFingerprint, request) {
 
   if (!isValid) {
     return jsonResponse({ success: false, message: '密钥无效' });
+  }
+
+  // Admin keys bypass device binding entirely — login from any device.
+  const isAdminKey = ADMIN_HASHES.includes(keyHash);
+  if (isAdminKey) {
+    return jsonResponse({
+      success: true,
+      message: '管理员密钥 · 不受设备限制',
+      bound: false,
+      admin: true,
+    });
   }
 
   // Check device binding

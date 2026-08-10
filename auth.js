@@ -214,24 +214,31 @@
 
       const keyHash = await this.sha256(keyCode);
       const validHashes = window.__VALID_HASHES || [];
+      const adminHashes = window.__ADMIN_HASHES || [];
 
       if (!validHashes.includes(keyHash)) {
         return { ok: false, msg: '密钥无效' };
       }
 
+      const isAdminKey = adminHashes.includes(keyHash);
+
       const fp = await this.getDeviceFingerprint();
       const bounds = this.getDeviceBounds();
 
-      // Check if this key is already bound to this device
-      if (bounds[keyHash] === fp) {
-        // Already bound device, just log in
-      } else if (!bounds[keyHash]) {
-        // First time: bind this device
-        bounds[keyHash] = fp;
-        this.setDeviceBounds(bounds);
-      } else {
-        // Key is bound to a different device
-        return { ok: false, msg: '此密钥已绑定其他设备' };
+      // Admin keys bypass device limits (single-device binding).
+      // They can unlock any device without being bound to one.
+      if (!isAdminKey) {
+        // Check if this key is already bound to this device
+        if (bounds[keyHash] === fp) {
+          // Already bound device, just log in
+        } else if (!bounds[keyHash]) {
+          // First time: bind this device
+          bounds[keyHash] = fp;
+          this.setDeviceBounds(bounds);
+        } else {
+          // Key is bound to a different device
+          return { ok: false, msg: '此密钥已绑定其他设备' };
+        }
       }
 
       // Create or find key user
